@@ -1,0 +1,72 @@
+{
+  "name": "ApolloUI",
+  "version": "1.0.0-alpha",
+  "description": "Dashboard for Apollo miner from Futurebit",
+  "author": "FutureBit LLC",
+  "homepage": "https://www.futurebit.io",
+  "copyright": "Copyright 2022 FutureBit LLC",
+  "license": "CC BY-NC-ND 4.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jstefanop/apolloui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jstefanop/apolloui/issues"
+  },
+  "scripts": {
+    "dev": "next lint && next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.13",
+    "@chakra-ui/react": "^2.4.3",
+    "@chakra-ui/system": "^2.3.4",
+    "@chakra-ui/theme-tools": "^2.0.14",
+    "@emotion/cache": "^11.7.1",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@reduxjs/toolkit": "^1.9.1",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "apexcharts": "^3.36.3",
+    "axios": "^1.1.3",
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "framer-motion": "^6",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "next": "13.0.2",
+    "next-redux-wrapper": "^8.0.0",
+    "nprogress": "^0.2.0",
+    "react": "18.2.0",
+    "react-apexcharts": "^1.4.0",
+    "react-calendar": "^3.7.0",
+    "react-custom-scrollbars-2": "^4.2.1",
+    "react-dom": "18.2.0",
+    "react-dropzone": "^12.0.4",
+    "react-icons": "^4.6.0",
+    "react-intl": "^6.2.1",
+    "react-is": "^18.0.0",
+    "react-redux": "^8.0.5",
+    "react-scripts": "5.0.0",
+    "react-table": "^7.7.0",
+    "redux": "^4.2.0",
+    "redux-persist": "^6.0.0",
+    "stylis": "^4.1.1",
+    "stylis-plugin-rtl": "2.0.2",
+    "web-vitals": "^1.1.2"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.4",
+    "eslint": "8.27.0",
+    "eslint-config-next": "13.0.2",
+    "redux-devtools-extension": "^2.13.9",
+    "sass": "^1.56.1"
+  }
+}
