@@ -15,6 +15,7 @@ import Card from '../card/Card';
 import React from 'react';
 
 const MiniStatistics = ({
+  bgColor,
   startContent,
   endContent,
   name,
@@ -28,7 +29,7 @@ const MiniStatistics = ({
   const textColorSecondary = 'secondaryGray.600';
 
   return (
-    <Card py='15px'>
+    <Card py='15px' bg={bgColor}>
       <Flex
         my='auto'
         h='100%'

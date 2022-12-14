@@ -13,7 +13,7 @@ import wrapper from '../redux/store';
 import AuthLayout from '../components/layouts/Auth';
 import DefaultLayout from '../components/layouts/Default';
 import ProtectedRoutes from '../components/ProtectedRoutes';
-import illustration from '../assets/img/auth/auth.png';
+import illustration from '../assets/img/auth/auth2.jpg';
 
 import messages_en from '../locales/en.json';
 

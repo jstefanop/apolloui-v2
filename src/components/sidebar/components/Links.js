@@ -3,6 +3,7 @@ import React from 'react';
 // chakra imports
 import { Box, Flex, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const SidebarLinks = ({ routes }) => {
   const router = useRouter();
@@ -50,54 +51,57 @@ const SidebarLinks = ({ routes }) => {
         route.layout === '/rtl'
       ) {
         return (
-          <div key={index} to={route.layout + route.path}>
+          <div key={index}>
             {route.icon ? (
               <Box>
-                <HStack
-                  spacing={
-                    activeRoute(route.path.toLowerCase()) ? '22px' : '26px'
-                  }
-                  py='5px'
-                  ps='10px'
-                >
-                  <Flex w='100%' alignItems='center' justifyContent='center'>
-                    <Box
-                      color={
-                        activeRoute(route.path.toLowerCase())
-                          ? activeIcon
-                          : textColor
-                      }
-                      me='18px'
-                    >
-                      {route.icon}
-                    </Box>
-                    <Text
-                      me='auto'
-                      color={
-                        activeRoute(route.path.toLowerCase())
-                          ? activeColor
-                          : textColor
-                      }
-                      fontWeight={
-                        activeRoute(route.path.toLowerCase())
-                          ? 'bold'
-                          : 'normal'
-                      }
-                    >
-                      {route.name}
-                    </Text>
-                  </Flex>
-                  <Box
-                    h='36px'
-                    w='4px'
-                    bg={
-                      activeRoute(route.path.toLowerCase())
-                        ? brandColor
-                        : 'transparent'
+                <Link href={route.path}>
+                  <HStack
+                    spacing={
+                      activeRoute(route.path.toLowerCase()) ? '22px' : '26px'
                     }
-                    borderRadius='5px'
-                  />
-                </HStack>
+                    py='5px'
+                    ps='10px'
+                  >
+                    <Flex w='100%' alignItems='center' justifyContent='center'>
+                      <Box
+                        color={
+                          activeRoute(route.path.toLowerCase())
+                            ? activeIcon
+                            : textColor
+                        }
+                        me='18px'
+                      >
+                        {route.icon}
+                      </Box>
+                      <Text
+                        me='auto'
+                        color={
+                          activeRoute(route.path.toLowerCase())
+                            ? activeColor
+                            : textColor
+                        }
+                        fontWeight={
+                          activeRoute(route.path.toLowerCase())
+                            ? 'bold'
+                            : 'normal'
+                        }
+                      >
+                        {route.name}
+                      </Text>
+                    </Flex>
+
+                    <Box
+                      h='36px'
+                      w='4px'
+                      bg={
+                        activeRoute(route.path.toLowerCase())
+                          ? brandColor
+                          : 'transparent'
+                      }
+                      borderRadius='5px'
+                    />
+                  </HStack>
+                </Link>
               </Box>
             ) : (
               <Box>

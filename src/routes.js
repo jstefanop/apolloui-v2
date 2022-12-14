@@ -19,14 +19,7 @@ const routes = [
     name: 'Miner',
     layout: '/admin',
     path: '/miner',
-    icon: (
-      <Icon
-        as={MdMemory}
-        width='20px'
-        height='20px'
-        color='inherit'
-      />
-    ),
+    icon: <Icon as={MdMemory} width='20px' height='20px' color='inherit' />,
   },
   {
     name: 'Node',

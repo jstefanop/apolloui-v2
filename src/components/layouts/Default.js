@@ -39,8 +39,6 @@ const Layout = ({ children, routes }, props) => {
             <Box>
               <Navbar
                 onOpen={onOpen}
-                logoText={'Apollo UI Dashboard'}
-                brandText={'Dashboard'}
                 secondary={true}
                 fixed={true}
                 routes={routes}

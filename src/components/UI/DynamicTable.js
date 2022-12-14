@@ -10,6 +10,7 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  Button,
 } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import {
@@ -20,10 +21,9 @@ import {
 } from 'react-table';
 
 import Card from '../card/Card';
-import Menu from '../menu/MainMenu';
 import { MdCheckCircle, MdCancel, MdOutlineError } from 'react-icons/md';
 
-export default function ColumnsTable({ tableTitle, columnsData, tableData }) {
+const ColumnsTable = ({ tableTitle, columnsData, tableData, topRight }) => {
   const columns = useMemo(() => columnsData, [columnsData]);
   const data = useMemo(() => tableData, [tableData]);
 
@@ -66,7 +66,7 @@ export default function ColumnsTable({ tableTitle, columnsData, tableData }) {
         >
           {tableTitle}
         </Text>
-        <Menu />
+        {topRight && <Button variant='action'>See all</Button>}
       </Flex>
       <Table {...getTableProps()} variant='simple' color='gray.500' mb='24px'>
         <Thead>
@@ -171,3 +171,5 @@ export default function ColumnsTable({ tableTitle, columnsData, tableData }) {
     </Card>
   );
 }
+
+export default ColumnsTable;

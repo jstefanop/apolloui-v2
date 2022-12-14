@@ -5,15 +5,18 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Flex,
-  Link,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import _ from 'lodash';
+import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import AdminNavbarLinks from './NavbarLinksAdmin';
+import Link from 'next/link';
 
-const AdminNavbar = ({ secondary, message, brandText, routes, ...props }) => {
+const AdminNavbar = ({ secondary, message, routes, ...props }) => {
+  const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -23,6 +26,8 @@ const AdminNavbar = ({ secondary, message, brandText, routes, ...props }) => {
       window.removeEventListener('scroll', changeNavbar);
     };
   });
+
+  const currentRoute = _.find(routes, { path: router.pathname });
 
   // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
   let mainText = useColorModeValue('navy.700', 'white');
@@ -101,23 +106,20 @@ const AdminNavbar = ({ secondary, message, brandText, routes, ...props }) => {
         mb={gap}
       >
         <Box mb={{ sm: '8px', md: '5px' }}>
-          <Breadcrumb>
-            <BreadcrumbItem color={secondaryText} fontSize='sm'>
-              <BreadcrumbLink href='#' color={secondaryText}>
-                Pages
-              </BreadcrumbLink>
-            </BreadcrumbItem>
+          {currentRoute.name !== 'Dashboard' && (
+            <Breadcrumb>
+              <BreadcrumbItem color={secondaryText} fontSize='sm'>
+                <Link href='/dashboard'>Dashboard</Link>
+              </BreadcrumbItem>
 
-            <BreadcrumbItem color={secondaryText} fontSize='sm'>
-              <BreadcrumbLink href='/' color={secondaryText}>
-                {brandText}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          </Breadcrumb>
+              <BreadcrumbItem color={secondaryText} fontSize='sm'>
+                <Link href={currentRoute.path}>{currentRoute.name}</Link>
+              </BreadcrumbItem>
+            </Breadcrumb>
+          )}
 
-          <Link
+          <Text
             color={mainText}
-            href='/'
             bg='inherit'
             borderRadius='inherit'
             fontWeight='bold'
@@ -132,8 +134,8 @@ const AdminNavbar = ({ secondary, message, brandText, routes, ...props }) => {
               boxShadow: 'none',
             }}
           >
-            {brandText}
-          </Link>
+            {currentRoute.name}
+          </Text>
         </Box>
 
         <Box ms='auto' w={{ sm: '100%', md: 'unset' }}>
@@ -149,10 +151,9 @@ const AdminNavbar = ({ secondary, message, brandText, routes, ...props }) => {
       {secondary ? <Text color='white'>{message}</Text> : null}
     </Box>
   );
-}
+};
 
 AdminNavbar.propTypes = {
-  brandText: PropTypes.string,
   variant: PropTypes.string,
   secondary: PropTypes.bool,
   fixed: PropTypes.bool,
