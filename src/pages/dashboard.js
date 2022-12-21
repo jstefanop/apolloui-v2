@@ -30,7 +30,6 @@ import PoolsTable from '../components/UI/PoolsTable';
 import DailyTraffic from '../components/customs/DailyTraffic';
 import PieCard from '../components/customs/PieCard';
 import TotalHashrate from '../components/UI/TotalHashrate';
-import ItemsCard from '../components/UI/ItemsCard';
 import ConnectionsTable from '../components/UI/ConnectionsTable';
 
 const Dashboard = () => {

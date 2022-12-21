@@ -1,0 +1,107 @@
+import { Icon, Text, Flex, Badge, Button, Tooltip } from '@chakra-ui/react';
+import { useState } from 'react';
+import { ImEye, ImEyeBlocked } from 'react-icons/im';
+import Card from '../../components/card/Card';
+
+const PanelCard = ({
+  children,
+  title,
+  description,
+  textColor,
+  badgeColor,
+  badgeText,
+  icon,
+  showHide,
+  tooltip,
+  ...rest
+}) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [show, setSHow] = useState(false);
+
+  return (
+    <Flex flexDirection='column' {...rest}>
+      <Card p='0px'>
+        <Flex
+          align={{ sm: 'flex-start', lg: 'center' }}
+          justify='space-between'
+          w='100%'
+          px='22px'
+          pt='18px'
+        >
+          <Flex>
+            <Icon w='24px' h='24px' as={icon} mr='8px' mt='2px' />
+            <Text color={textColor} fontSize='xl' fontWeight='600'>
+              {title}
+            </Text>
+          </Flex>
+          {badgeText && (
+            <Flex align-items='center'>
+              {showHide ? (
+                <>
+                  <Button onClick={() => setSHow(!show)} variant='link'>
+                    <Icon
+                      w='18px'
+                      h='18px'
+                      as={!show ? ImEye : ImEyeBlocked}
+                      color={'gray.500'}
+                    />
+                  </Button>
+
+                  <Tooltip
+                    hasArrow
+                    bg={'gray.600'}
+                    color='white'
+                    placement='top'
+                    isOpen={showTooltip}
+                    label={`This is your personal Bitcoin Node RPC password (username is futurebit, use these two values to connect external wallets/services directly to your BTC node)`}
+                  >
+                    <Badge
+                      variant='solid'
+                      colorScheme={badgeColor}
+                      onMouseOver={() => setShowTooltip(true)}
+                      onMouseLeave={() => setShowTooltip(false)}
+                    >
+                      {show ? badgeText : <Text fontSize='sm'>*********</Text>}
+                    </Badge>
+                  </Tooltip>
+                </>
+              ) : (
+                <Tooltip
+                  hasArrow
+                  bg={'gray.600'}
+                  color='white'
+                  placement='top'
+                  isOpen={showTooltip}
+                  label={`${tooltip}`}
+                >
+                  <Badge
+                    variant='solid'
+                    colorScheme={badgeColor}
+                    onMouseOver={() => setShowTooltip(true)}
+                    onMouseLeave={() => setShowTooltip(false)}
+                  >
+                    {badgeText}
+                  </Badge>
+                </Tooltip>
+              )}
+            </Flex>
+          )}
+        </Flex>
+        <Flex px='22px' py='6px'>
+          <Text
+            color='secondaryGray.800'
+            fontSize={{ base: 'sm', lg: 'md' }}
+            fontWeight='400'
+            me='14px'
+          >
+            {description}
+          </Text>
+        </Flex>
+
+        {children}
+      </Card>
+    </Flex>
+  );
+};
+
+export default PanelCard;
