@@ -21,6 +21,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.3",
     "@chakra-ui/icons": "^2.0.13",
     "@chakra-ui/react": "^2.4.3",
     "@chakra-ui/system": "^2.3.4",
@@ -39,6 +40,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-register": "^6.26.0",
     "framer-motion": "^6",
+    "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "next": "13.0.2",
@@ -58,6 +60,7 @@
     "react-table": "^7.7.0",
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
+    "reselect": "^4.1.7",
     "stylis": "^4.1.1",
     "stylis-plugin-rtl": "2.0.2",
     "web-vitals": "^1.1.2"

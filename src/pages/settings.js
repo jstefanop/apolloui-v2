@@ -237,8 +237,6 @@ const Settings = () => {
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
   const [settings, setSettings] = useState({ ...minerSettings });
 
-  console.log(settings);
-
   const handleSwitchMinerMode = (e) => {
     const v = e.target.value === 'true' ? true : false;
     setMinerModes(

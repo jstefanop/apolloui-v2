@@ -1,8 +1,5 @@
 import {
-  Avatar,
   Box,
-  Flex,
-  FormLabel,
   Icon,
   Text,
   SimpleGrid,
@@ -27,12 +24,10 @@ import MiniStatistics from '../components/UI/MiniStatistics';
 import MicroStatistics from '../components/UI/MicroStatistics';
 import HashboardsTable from '../components/UI/HashboardsTable';
 import PoolsTable from '../components/UI/PoolsTable';
-import DailyTraffic from '../components/customs/DailyTraffic';
-import PieCard from '../components/customs/PieCard';
 import TotalHashrate from '../components/UI/TotalHashrate';
 import ConnectionsTable from '../components/UI/ConnectionsTable';
 
-const Dashboard = () => {
+const Dashboard = ({ miner }) => {
   const iconColor = useColorModeValue('brand.500', 'white');
   const iconMicroColor = useColorModeValue('gray.500', 'white');
   const iconMicroBg = useColorModeValue('gray.100', 'secondaryGray.700');
@@ -41,6 +36,8 @@ const Dashboard = () => {
     'secondaryGray.200',
     'secondaryGray.900'
   );
+
+  console.log(miner);
 
   return (
     <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>

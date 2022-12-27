@@ -106,7 +106,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         mb={gap}
       >
         <Box mb={{ sm: '8px', md: '5px' }}>
-          {currentRoute.name !== 'Dashboard' && (
+          {currentRoute && currentRoute.name !== 'Dashboard' && (
             <Breadcrumb>
               <BreadcrumbItem color={secondaryText} fontSize='sm'>
                 <Link href='/dashboard'>Dashboard</Link>
@@ -134,7 +134,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               boxShadow: 'none',
             }}
           >
-            {currentRoute.name}
+            {currentRoute && currentRoute.name}
           </Text>
         </Box>
 
