@@ -26,7 +26,7 @@ const Node = () => {
   );
 
   return (
-    <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
+    <Box>
       {/* Node stats */}
       <SimpleGrid
         columns={{ base: 1, sm: 2, lg: 2, '2xl': 4 }}

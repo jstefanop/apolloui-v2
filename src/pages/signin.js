@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { signinSuccess } from '../redux/actions/auth';
+import { signIn } from 'next-auth/react';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import { RiEyeCloseLine } from 'react-icons/ri';
 // Chakra imports
@@ -25,16 +24,19 @@ const SignIn = () => {
   const textColor = useColorModeValue('navy.700', 'white');
   const textColorSecondary = 'gray.400';
   const brandStars = useColorModeValue('brand.500', 'brand.400');
-
-  const dispatch = useDispatch();
-
+  const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
 
   const handleShowPassword = () => setShowPassword(!showPassword);
 
-  const handleSignin = (e) => {
+  const handleSignin = async (e) => {
     e.preventDefault();
-    dispatch(signinSuccess());
+    const res = await signIn('credentials', {
+      password,
+      callbackUrl: `${window.location.origin}/`,
+      redirect: false,
+    });
+    console.log('RES', res);
   };
 
   return (
@@ -89,6 +91,8 @@ const SignIn = () => {
             </FormLabel>
             <InputGroup size='md'>
               <Input
+                name='password'
+                onChange={(e) => setPassword(e.target.value)}
                 isRequired={true}
                 fontSize='sm'
                 placeholder='Min. 8 characters'

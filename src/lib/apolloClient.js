@@ -1,10 +1,23 @@
 import { useMemo } from 'react';
-import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, from } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  HttpLink,
+  InMemoryCache,
+  from,
+} from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
+import moment from 'moment';
+import { useSession } from 'next-auth/react';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
+
+const ls = (typeof window !== 'undefined') ? localStorage : {};
+
+let hostnameApi;
+(process.env.NODE_ENV) ? hostnameApi = `192.168.86.38` : { hostname } = new URL(window.location.href);
 
 let apolloClient;
 
@@ -19,18 +32,20 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: 'http://192.168.86.38:5000/api/graphql',
+  uri: `http://${hostnameApi}:5000/api/graphql`,
 });
 
 const authLink = new ApolloLink((operation, forward) => {
   // Retrieve the authorization token from local storage.
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzE4MDQ5MTEsImF1ZCI6ImF1dGgiLCJzdWIiOiJhcG9sbG91c2VyIn0.Iedmp5jfsr2nGNPVjCnC40unZNI-jbe5dfh8-pIvjzE'; //localStorage.getItem('token');
+  console.log('TOKEN', ls.getItem('token'));
+  const token =
+  ls.getItem('token');
 
   // Use the setContext method to set the HTTP headers.
   operation.setContext({
     headers: {
-      authorization: token ? `Bearer ${token}` : ''
-    }
+      authorization: token ? `Bearer ${token}` : '',
+    },
   });
 
   // Call the next link in the middleware chain.
@@ -41,7 +56,57 @@ function createApolloClient() {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([errorLink, authLink.concat(httpLink)]),
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({
+      typePolicies: {
+        MinerStatsResult: {
+          fields: {
+            stats: {
+              read(data) {
+                return data.map((board) => {
+                  let boardStatus = true;
+                  let poolStatus = true;
+
+                  const sharesSent = board.pool.intervals.int_0.sharesSent;
+                  const shareTime = board.date;
+                  let storedBoard = ls.getItem(`board_${board.uuid}`);
+                  if (storedBoard) storedBoard = JSON.parse(storedBoard);
+
+                  const interval = moment.duration(moment().diff(shareTime));
+
+                  if (interval.asMinutes() > 1) {
+                    board.pool.status = false;
+                    board.status = false;
+                  }
+
+                  let lastsharetime = storedBoard
+                    ? storedBoard.date
+                    : shareTime;
+
+                  if (!storedBoard || storedBoard.sent !== sharesSent) {
+                    ls.setItem(`board_${board.uuid}`, JSON.stringify({
+                      date: shareTime,
+                      sent: sharesSent,
+                    }));
+                    lastsharetime = shareTime;
+                  }
+
+                  return {
+                    ...board,
+                    status: boardStatus,
+                    lastsharetime,
+                    date: moment(board.date).format(),
+                    pool: {
+                      ...board.pool,
+                      status: poolStatus,
+                    },
+                  };
+                });
+              },
+            },
+          },
+        },
+      },
+    }),
   });
 }
 

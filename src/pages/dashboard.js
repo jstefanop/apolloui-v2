@@ -26,6 +26,7 @@ import HashboardsTable from '../components/UI/HashboardsTable';
 import PoolsTable from '../components/UI/PoolsTable';
 import TotalHashrate from '../components/UI/TotalHashrate';
 import ConnectionsTable from '../components/UI/ConnectionsTable';
+import moment from 'moment';
 
 const Dashboard = ({ miner }) => {
   const iconColor = useColorModeValue('brand.500', 'white');
@@ -37,10 +38,8 @@ const Dashboard = ({ miner }) => {
     'secondaryGray.900'
   );
 
-  console.log(miner);
-
   return (
-    <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
+    <Box>
       {/* Miner stats */}
       <SimpleGrid
         columns={{ base: 1, md: 2, lg: 2, '2xl': 4 }}

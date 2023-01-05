@@ -309,7 +309,7 @@ const Settings = () => {
   const handleButtonExtraSettings = () => {};
 
   return (
-    <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
+    <Box>
       <SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
         {/* POOL SETTINGS */}
         <PanelCard

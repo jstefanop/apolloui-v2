@@ -1,28 +1,21 @@
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-
-const isBrowser = () => typeof window !== "undefined";
+import { useSession } from 'next-auth/react';
 
 const ProtectedRoute = ({ router, children }) => {
-    let unProtectedRoutes = ["/signin"];
+  const { status, data } = useSession();
 
-    let pathIsUnProtected = unProtectedRoutes.indexOf(router.pathname) !== -1;
+  useEffect(() => {
+    // Set Graphql token to localstorage
+    console.log(data)
+    if (data?.user?.name) localStorage.setItem('token', data.user.name);
 
-    const {
-        authState
-    } = useSelector((state) => state.auth);
+    // Redirect unauthenticated users
+    if (status === 'unauthenticated') router.replace('/signin');
+    else if (router.pathname === '/signin' && status === 'authenticated')
+      router.replace('dashboard');
+  }, [status, data]);
 
-    useEffect(() => {
-        if (isBrowser() && authState === 'SIGNEDIN' && pathIsUnProtected) {
-            router.push(`/dashboard`);
-        }
-
-        if (isBrowser() && authState === 'SIGNEDOUT') {
-            router.push(`/signin`);
-        }
-    }, [router, authState, pathIsUnProtected]);
-
-    return children;
+  return children;
 };
 
 export default ProtectedRoute;
