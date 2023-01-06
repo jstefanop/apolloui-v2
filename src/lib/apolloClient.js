@@ -3,21 +3,23 @@ import {
   ApolloClient,
   ApolloLink,
   HttpLink,
-  InMemoryCache,
   from,
+  InMemoryCache,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from 'moment';
-import { useSession } from 'next-auth/react';
+import { ALL_STATS_QUERY } from '../graphql/allStats';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
-const ls = (typeof window !== 'undefined') ? localStorage : {};
+const ls = typeof window !== 'undefined' ? localStorage : {};
 
 let hostnameApi;
-(process.env.NODE_ENV) ? hostnameApi = `192.168.86.38` : { hostname } = new URL(window.location.href);
+process.env.NODE_ENV
+  ? (hostnameApi = `192.168.86.38`)
+  : ({ hostname } = new URL(window.location.href));
 
 let apolloClient;
 
@@ -37,9 +39,7 @@ const httpLink = new HttpLink({
 
 const authLink = new ApolloLink((operation, forward) => {
   // Retrieve the authorization token from local storage.
-  console.log('TOKEN', ls.getItem('token'));
-  const token =
-  ls.getItem('token');
+  const token = ls.getItem('token');
 
   // Use the setContext method to set the HTTP headers.
   operation.setContext({
@@ -53,60 +53,63 @@ const authLink = new ApolloLink((operation, forward) => {
 });
 
 function createApolloClient() {
-  return new ApolloClient({
-    ssrMode: typeof window === 'undefined',
-    link: from([errorLink, authLink.concat(httpLink)]),
-    cache: new InMemoryCache({
-      typePolicies: {
-        MinerStatsResult: {
-          fields: {
-            stats: {
-              read(data) {
-                return data.map((board) => {
-                  let boardStatus = true;
-                  let poolStatus = true;
+  const cache = new InMemoryCache({
+    typePolicies: {
+      MinerStatsResult: {
+        fields: {
+          stats: {
+            read(data) {
+              return data.map((board) => {
+                let boardStatus = true;
+                let poolStatus = true;
 
-                  const sharesSent = board.pool.intervals.int_0.sharesSent;
-                  const shareTime = board.date;
-                  let storedBoard = ls.getItem(`board_${board.uuid}`);
-                  if (storedBoard) storedBoard = JSON.parse(storedBoard);
+                const sharesSent = board.pool.intervals.int_0.sharesSent;
+                const shareTime = board.date;
+                let storedBoard = ls.getItem(`board_${board.uuid}`);
+                if (storedBoard) storedBoard = JSON.parse(storedBoard);
 
-                  const interval = moment.duration(moment().diff(shareTime));
+                const interval = moment.duration(moment().diff(shareTime));
 
-                  if (interval.asMinutes() > 1) {
-                    board.pool.status = false;
-                    board.status = false;
-                  }
+                if (interval.asMinutes() > 1) {
+                  boardStatus = false;
+                  poolStatus = false;
+                }
 
-                  let lastsharetime = storedBoard
-                    ? storedBoard.date
-                    : shareTime;
+                let lastsharetime = storedBoard ? storedBoard.date : shareTime;
 
-                  if (!storedBoard || storedBoard.sent !== sharesSent) {
-                    ls.setItem(`board_${board.uuid}`, JSON.stringify({
+                if (!storedBoard || storedBoard.sent !== sharesSent) {
+                  ls.setItem(
+                    `board_${board.uuid}`,
+                    JSON.stringify({
                       date: shareTime,
                       sent: sharesSent,
-                    }));
-                    lastsharetime = shareTime;
-                  }
+                    })
+                  );
+                  lastsharetime = shareTime;
+                }
 
-                  return {
-                    ...board,
-                    status: boardStatus,
-                    lastsharetime,
-                    date: moment(board.date).format(),
-                    pool: {
-                      ...board.pool,
-                      status: poolStatus,
-                    },
-                  };
-                });
-              },
+                return {
+                  ...board,
+                  status: boardStatus,
+                  lastsharetime,
+                  date: moment(board.date).format(),
+                  pool: {
+                    ...board.pool,
+                    status: poolStatus,
+                  },
+                };
+              });
             },
           },
         },
       },
-    }),
+    },
+  });
+
+  return new ApolloClient({
+    ssrMode: typeof window === 'undefined',
+    link: from([errorLink, authLink.concat(httpLink)]),
+    cache,
   });
 }
 
@@ -129,6 +132,8 @@ export function initializeApollo(initialState = null) {
         ),
       ],
     });
+
+    console.log(data);
 
     // Restore the cache with the merged data
     _apolloClient.cache.restore(data);

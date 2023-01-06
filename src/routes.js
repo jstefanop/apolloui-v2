@@ -31,6 +31,7 @@ const routes = [
     name: 'Settings',
     layout: '/admin',
     path: '/settings',
+    bottom: true,
     icon: <Icon as={MdSettings} width='20px' height='20px' color='inherit' />,
   },
   {
@@ -43,6 +44,7 @@ const routes = [
     name: 'Signout',
     layout: '/admin',
     path: '/signout',
+    bottom: true,
     icon: <Icon as={MdLogout} width='20px' height='20px' color='inherit' />,
   },
 ];

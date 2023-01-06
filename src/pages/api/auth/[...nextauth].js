@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client';
 import axios from 'axios';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
@@ -24,7 +23,7 @@ export const authOptions = {
               query: `
                   {
                     Auth {
-                      login(input: {password: "pippo"}) {
+                      login(input: {password: "${credentials.password}"}) {
                         result {
                           accessToken
                         }
@@ -55,6 +54,7 @@ export const authOptions = {
           // other kind of properties excluding email, name, image
           return { name: accessToken };
         } catch (err) {
+          console.log(err?.response?.data)
           throw err;
         }
       },

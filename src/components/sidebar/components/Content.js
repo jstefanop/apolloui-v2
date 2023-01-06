@@ -15,7 +15,10 @@ function SidebarContent({ routes }) {
       <Brand />
       <Stack direction='column' mb='auto' mt='8px'>
         <Box ps='20px' pe={{ md: '16px', '2xl': '1px' }}>
-          <Links routes={routes} />
+          <Links routes={routes.filter((r) => !r.bottom )} />
+        </Box>
+        <Box position={'absolute'} bottom='60px' ps='20px'>
+          <Links routes={routes.filter((r) => r.bottom )} />
         </Box>
       </Stack>
       {/* 

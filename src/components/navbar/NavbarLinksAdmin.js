@@ -1,8 +1,5 @@
 // Chakra Imports
 import { Flex, Icon, Text, useColorModeValue, Center } from '@chakra-ui/react';
-
-import { SidebarResponsive } from '../sidebar/Sidebar';
-import FixedPlugin from '../fixedPlugin/FixedPlugin';
 import PropTypes from 'prop-types';
 import React from 'react';
 // Assets
@@ -13,8 +10,14 @@ import {
   MdLocalFireDepartment,
   MdThermostat,
 } from 'react-icons/md';
+import { useLazyQuery } from '@apollo/client';
 
-export default function HeaderLinks({ secondary, routes }) {
+import { SidebarResponsive } from '../sidebar/Sidebar';
+import FixedPlugin from '../fixedPlugin/FixedPlugin';
+import { MINER_STOP_QUERY } from '../../graphql/miner';
+import { displayHashrate } from '../../lib/utils';
+
+export default function HeaderLinks({ secondary, routes, stats }) {
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.400', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -29,7 +32,44 @@ export default function HeaderLinks({ secondary, routes }) {
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'
   );
 
-  const minerStatus = 'Online';
+  const [
+    stopMiner,
+    { loading: loadingOnline, error: errorOnline, data: dataOnline },
+  ] = useLazyQuery(MINER_STOP_QUERY);
+
+  const {
+    Miner: {
+      online: {
+        error,
+        result: {
+          online: { status: minerStatus },
+        },
+      },
+      stats: {
+        error: errorStats,
+        result: { stats: minerStats },
+      },
+    },
+  } = stats;
+
+  const minerStatusLabel =
+    minerStatus && !error
+      ? 'Online'
+      : !minerStatus && !error
+      ? 'Offline'
+      : error
+      ? 'Error'
+      : 'Unknown';
+  const globalHahsrate = displayHashrate(
+    _.sumBy(minerStats, (hb) => {
+      if (hb.status) return hb.slots.int_0.ghs;
+    }),
+    'gh'
+  );
+  const avgHashboardTemp = _.meanBy(minerStats, (hb) => {
+    if (hb.status) return hb.slots.int_0.temperature;
+  });
+
   const softwareStatus = 'Updated';
   const softwareVer = '1.0.0-alpha';
 
@@ -67,20 +107,20 @@ export default function HeaderLinks({ secondary, routes }) {
               w='24px'
               h='24px'
               color={
-                minerStatus === 'Online'
+                minerStatusLabel === 'Online'
                   ? 'green.500'
-                  : minerStatus === 'Offline'
+                  : minerStatusLabel === 'Offline'
                   ? 'red.500'
-                  : minerStatus === 'Error'
+                  : minerStatusLabel === 'Error'
                   ? 'orange.500'
                   : null
               }
               as={
-                minerStatus === 'Online'
+                minerStatusLabel === 'Online'
                   ? MdCheckCircle
-                  : minerStatus === 'Offline'
+                  : minerStatusLabel === 'Offline'
                   ? MdCancel
-                  : minerStatus === 'Error'
+                  : minerStatusLabel === 'Error'
                   ? MdOutlineError
                   : null
               }
@@ -93,7 +133,7 @@ export default function HeaderLinks({ secondary, routes }) {
             fontWeight='700'
             me='6px'
           >
-            {minerStatus}
+            {minerStatusLabel}
           </Text>
         </Flex>
 
@@ -107,7 +147,7 @@ export default function HeaderLinks({ secondary, routes }) {
             mt='2px'
           />
           <Text w='max-content' fontSize='sm' fontWeight='700' me='6px'>
-            2.80 TH/s
+            {globalHahsrate}
           </Text>
         </Flex>
 
@@ -121,7 +161,8 @@ export default function HeaderLinks({ secondary, routes }) {
             mt='2px'
           />
           <Text w='max-content' fontSize='sm' fontWeight='700' me='6px'>
-            61°
+            {minerStatusLabel === 'Online' ? avgHashboardTemp : '-'}
+            {minerStatusLabel === 'Online' && <span>°C</span>}
           </Text>
         </Flex>
 

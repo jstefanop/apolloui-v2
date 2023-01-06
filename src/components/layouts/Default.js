@@ -8,37 +8,28 @@ import Footer from '../footer/FooterAdmin';
 import Navbar from '../navbar/NavbarAdmin';
 import AlertCard from '../UI/AlertCard';
 
-import { MINER_STATS_QUERY } from '../../graphql/fragments/minerStats';
-import moment from 'moment';
+import { ALL_STATS_QUERY } from '../../graphql/allStats';
 import _ from 'lodash';
+import initialState from '../../graphql/allStatsInitialState';
 
 const Layout = ({ children, routes }, props) => {
   const { onOpen } = useDisclosure();
-  const [miner, setMiner] = useState();
-  const [node, setNode] = useState();
-  const [mcu, setMcu] = useState();
+  const [stats, setStats] = useState(initialState);
 
   const {
-    loading: loadingQueryMiner,
-    error: errorQueryMiner,
-    data: dataQueryMiner,
-    startPolling: startPollingMiner,
-  } = useQuery(MINER_STATS_QUERY);
+    loading,
+    error,
+    data,
+    startPolling,
+  } = useQuery(ALL_STATS_QUERY);
 
-  startPollingMiner(10000);
+  startPolling(10000);
 
   useEffect(() => {
+    if (loading) return;
 
-    if (dataQueryMiner) {
-      const {
-        Miner: { stats: Miner },
-      } = dataQueryMiner;
-
-      console.log(Miner);
-
-      setMiner(Miner);
-    }
-  }, [dataQueryMiner]);
+    setStats(data);
+  }, [data, loading]);
 
   return (
     <motion.div
@@ -74,6 +65,8 @@ const Layout = ({ children, routes }, props) => {
                 secondary={true}
                 fixed={true}
                 routes={routes}
+                stats={stats}
+                loading={loading}
               />
             </Box>
           </Portal>
@@ -90,7 +83,7 @@ const Layout = ({ children, routes }, props) => {
                 title={'Error'}
                 message={'There was an error'}
               />
-              {React.cloneElement(children, { miner, node, mcu })}
+              {React.cloneElement(children, { stats, loading })}
             </Box>
           </Box>
           <Box>

@@ -15,7 +15,14 @@ import React, { useState, useEffect } from 'react';
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import Link from 'next/link';
 
-const AdminNavbar = ({ secondary, message, routes, ...props }) => {
+const AdminNavbar = ({
+  secondary,
+  message,
+  routes,
+  stats,
+  loading,
+  ...props
+}) => {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
 
@@ -138,15 +145,18 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           </Text>
         </Box>
 
-        <Box ms='auto' w={{ sm: '100%', md: 'unset' }}>
-          <AdminNavbarLinks
-            onOpen={props.onOpen}
-            secondary={secondary}
-            fixed={props.fixed}
-            scrolled={scrolled}
-            routes={routes}
-          />
-        </Box>
+        {!loading && (
+          <Box ms='auto' w={{ sm: '100%', md: 'unset' }}>
+            <AdminNavbarLinks
+              onOpen={props.onOpen}
+              secondary={secondary}
+              fixed={props.fixed}
+              scrolled={scrolled}
+              routes={routes}
+              stats={stats}
+            />
+          </Box>
+        )}
       </Flex>
       {secondary ? <Text color='white'>{message}</Text> : null}
     </Box>

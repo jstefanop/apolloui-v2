@@ -26,17 +26,20 @@ const SignIn = () => {
   const brandStars = useColorModeValue('brand.500', 'brand.400');
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState();
 
   const handleShowPassword = () => setShowPassword(!showPassword);
 
   const handleSignin = async (e) => {
     e.preventDefault();
-    const res = await signIn('credentials', {
+    const response = await signIn('credentials', {
       password,
       callbackUrl: `${window.location.origin}/`,
       redirect: false,
     });
-    console.log('RES', res);
+    console.log('RES', response);
+    const { error } = response;
+    setError(error);
   };
 
   return (
@@ -123,6 +126,16 @@ const SignIn = () => {
             </Button>
           </FormControl>
         </form>
+        {error && (
+          <Flex
+            align={'center'}
+            direction='column'
+          >
+            <Text color='red'>
+              {error}
+            </Text>
+          </Flex>
+        )}
       </Flex>
     </Flex>
   );

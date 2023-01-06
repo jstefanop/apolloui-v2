@@ -6,7 +6,6 @@ const ProtectedRoute = ({ router, children }) => {
 
   useEffect(() => {
     // Set Graphql token to localstorage
-    console.log(data)
     if (data?.user?.name) localStorage.setItem('token', data.user.name);
 
     // Redirect unauthenticated users
