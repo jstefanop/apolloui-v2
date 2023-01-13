@@ -48,12 +48,8 @@ const SignIn = () => {
       w='100%'
       mx={{ base: 'auto', lg: '0px' }}
       me='auto'
-      h='100%'
-      alignItems='start'
       justifyContent='center'
-      mb={{ base: '30px', md: '60px' }}
-      px={{ base: '25px', md: '0px' }}
-      mt={{ base: '40px', md: '14vh' }}
+      px={{ base: '20px', md: '0px' }}
       flexDirection='column'
     >
       <Box me='auto'>
@@ -61,7 +57,7 @@ const SignIn = () => {
           Sign In
         </Heading>
         <Text
-          mb='36px'
+          mb='86px'
           ms='4px'
           color={textColorSecondary}
           fontWeight='400'
@@ -127,15 +123,13 @@ const SignIn = () => {
           </FormControl>
         </form>
         {error && (
-          <Flex
-            align={'center'}
-            direction='column'
-          >
-            <Text color='red'>
-              {error}
-            </Text>
+          <Flex align={'center'} direction='column'>
+            <Text color='red'>{error}</Text>
           </Flex>
         )}
+      </Flex>
+      <Flex align={'center'} direction='column' mt='10'>
+        <Text fontSize={'0.9em'}>© 2023 FutureBit LLC</Text>
       </Flex>
     </Flex>
   );

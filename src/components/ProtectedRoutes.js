@@ -12,7 +12,7 @@ const ProtectedRoute = ({ router, children }) => {
     if (status === 'unauthenticated') router.replace('/signin');
     else if (router.pathname === '/signin' && status === 'authenticated')
       router.replace('dashboard');
-  }, [status, data]);
+  }, [router, status, data]);
 
   return children;
 };

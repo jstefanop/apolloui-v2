@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import React from "react";
+import React from 'react';
 import {
   Flex,
   Link,
@@ -7,79 +7,68 @@ import {
   ListItem,
   Text,
   useColorModeValue,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
+
+import config from '../../config.json';
 
 export default function Footer() {
-  let textColor = useColorModeValue("gray.400", "white");
-  let linkColor = useColorModeValue({ base: "gray.400", lg: "white" }, "white");
+  const textColor = useColorModeValue('gray.400', 'white');
   return (
     <Flex
-      zIndex='3'
+      w={{ base: '100%', xl: '1170px' }}
+      maxW={{ base: '90%', xl: '1170px' }}
+      zIndex='1.5'
       flexDirection={{
-        base: "column",
-        lg: "row",
+        base: 'column',
+        xl: 'row',
       }}
       alignItems={{
-        base: "center",
-        xl: "start",
+        base: 'center',
+        xl: 'start',
       }}
       justifyContent='space-between'
-      px={{ base: "30px", md: "0px" }}
-      pb='30px'>
+      px={{ base: '0px', xl: '0px' }}
+      pb='30px'
+      mx='auto'
+    >
       <Text
         color={textColor}
         textAlign={{
-          base: "center",
-          xl: "start",
+          base: 'center',
+          xl: 'start',
         }}
-        mb={{ base: "20px", lg: "0px" }}>
-        {" "}
+        mb={{ base: '20px', xl: '0px' }}
+      >
+        {' '}
         &copy; {1900 + new Date().getYear()}
         <Text as='span' fontWeight='500' ms='4px'>
-          Apollo UI. All Rights Reserved. Made with love by
           <Link
             mx='3px'
             color={textColor}
-            href='https://www.futurebit.io/'
+            href='https://www.futurebit.io'
             target='_blank'
-            fontWeight='700'>
-            FutureBit
+            fontWeight='700'
+          >
+            FutureBit LLC
           </Link>
         </Text>
       </Text>
       <List display='flex'>
-        <ListItem
-          me={{
-            base: "20px",
-            md: "44px",
-          }}>
-          <Link
-            fontWeight='500'
-            color={linkColor}
-            href='https://www.futurebit.io/contact'>
-            Support
-          </Link>
-        </ListItem>
-        <ListItem
-          me={{
-            base: "20px",
-            md: "44px",
-          }}>
-          <Link
-            fontWeight='500'
-            color={linkColor}
-            href='http://shop.futurebit.io/'>
-            Shop
-          </Link>
-        </ListItem>
-        <ListItem>
-          <Link
-            fontWeight='500'
-            color={linkColor}
-            href='https://www.futurebit.io/'>
-            Website
-          </Link>
-        </ListItem>
+        {config.footerLinks.map((item, index) => {
+          return (
+            <ListItem
+              me={{
+                base: '20px',
+                md: '44px',
+              }}
+              key={index}
+            >
+              <Link fontWeight='500' color={textColor} href={item.url}>
+                {item.anchor}
+              </Link>
+            </ListItem>
+          );
+        })}
       </List>
     </Flex>
   );

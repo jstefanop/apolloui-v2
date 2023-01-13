@@ -9,6 +9,7 @@ import {
   Button,
   Checkbox,
   useColorModeValue,
+  Badge,
 } from '@chakra-ui/react';
 import { MdUndo, MdOutlineWarningAmber } from 'react-icons/md';
 import SliderTooltip from './SliderTooltip';
@@ -37,7 +38,7 @@ const SimpleSwitchSettingsItem = ({
         <Flex position='relative' align='center'>
           <FormControl display='flex'>
             <Flex
-              direction='column'
+              direction='row'
               w={{ base: '90%', md: '100%' }}
               me={{
                 base: '4px',
@@ -46,61 +47,64 @@ const SimpleSwitchSettingsItem = ({
                 '3xl': '32px',
               }}
             >
-              <Flex>
-                <Icon
-                  w='18px'
-                  h='18px'
-                  as={item.icon}
-                  mr='6px'
+              {item.id && (
+                <Flex
+                  me={{ base: '4px', md: '32px', xl: '10px', '3xl': '32px' }}
                   mt='2px'
-                  color='gray.400'
-                />
-                <FormLabel
-                  htmlFor={`${item.id}`}
-                  color={textColor}
-                  fontSize={{
-                    base: 'md',
-                  }}
-                  mb='6px'
-                  fontWeight='bold'
+                >
+                  {handleButton ? (
+                    <Button
+                      onChange={handleButton}
+                      colorScheme={item.color}
+                      size='sm'
+                    >
+                      {item.buttonTitle}
+                    </Button>
+                  ) : (
+                    <Switch
+                      id={`${item.id}`}
+                      colorScheme={item.color}
+                      onChange={handleSwitch}
+                      value={item.selected}
+                      isChecked={inverted ? !item.selected : item.selected}
+                    />
+                  )}
+                </Flex>
+              )}
+              <Flex direction='column'>
+                <Flex align={{ base: 'flex-start' }}>
+                  <Flex>
+                    <FormLabel
+                      htmlFor={`${item.id}`}
+                      color={textColor}
+                      fontSize={{
+                        base: 'md',
+                      }}
+                      mb='6px'
+                      fontWeight='bold'
+                      me='14px'
+                    >
+                      {item.title}
+                    </FormLabel>
+                  </Flex>
+                  {item.alertBadge && (
+                    <Flex>
+                      <Badge variant='solid' colorScheme='gray'>
+                        {item.alertBadge}
+                      </Badge>
+                    </Flex>
+                  )}
+                </Flex>
+                <Text
+                  color='secondaryGray.600'
+                  fontSize={{ base: 'xs', lg: 'sm' }}
+                  fontWeight='400'
                   me='14px'
                 >
-                  {item.title}
-                </FormLabel>
+                  {item.description}
+                </Text>
               </Flex>
-              <Text
-                color='secondaryGray.600'
-                fontSize={{ base: 'xs', lg: 'sm' }}
-                fontWeight='400'
-                me='14px'
-              >
-                {item.description}
-              </Text>
             </Flex>
-            {item.id && (
-              <Flex
-                me={{ base: '4px', md: '32px', xl: '10px', '3xl': '32px' }}
-                align='center'
-              >
-                {handleButton ? (
-                  <Button
-                    onChange={handleButton}
-                    colorScheme={item.color}
-                    size='sm'
-                  >
-                    {item.buttonTitle}
-                  </Button>
-                ) : (
-                  <Switch
-                    id={`${item.id}`}
-                    colorScheme={item.color}
-                    onChange={handleSwitch}
-                    value={item.selected}
-                    isChecked={inverted ? !item.selected : item.selected}
-                  />
-                )}
-              </Flex>
-            )}
           </FormControl>
         </Flex>
         {item.sliders && item.selected && (

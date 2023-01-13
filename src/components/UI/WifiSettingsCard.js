@@ -2,22 +2,55 @@ import {
   Icon,
   Text,
   Flex,
-  FormLabel,
-  FormControl,
   Button,
   useColorModeValue,
   Stack,
   Badge,
   Box,
-  Progress,
   Divider,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  CloseButton,
 } from '@chakra-ui/react';
-import { RiScan2Fill } from 'react-icons/ri';
-import { MdBlock } from 'react-icons/md';
+import { BulletList } from 'react-content-loader';
+import { useLazyQuery } from '@apollo/client';
 import Card from '../card/Card';
+import { MCU_WIFI_CONNECT_QUERY, MCU_WIFI_DISCONNECT_QUERY } from '../../graphql/mcu';
 
-const WifiSettingsCard = ({ item, textColor }) => {
+const WifiSettingsCard = ({ textColor, loading, error, data }) => {
   const cardBgColor = useColorModeValue('gray.50', 'secondaryGray.900');
+  const initialState = {
+    Mcu: {
+      wifiScan: {
+        error: null,
+        result: {
+          wifiScan: null
+        }
+      }
+    }
+  };
+
+  const {
+    Mcu: {
+      wifiScan: {
+        error: resultError,
+        result: { wifiScan: networks }
+      }
+    }
+  } = data || initialState;
+
+  const [
+    handleWifiConnect,
+    { loading: loadingWifiConnect, error: errorWifiConnect, data: dataWifiConnect },
+  ] = useLazyQuery(MCU_WIFI_CONNECT_QUERY);
+
+  const [
+    handleWifiDisconnect,
+    { loading: loadingWifiDisconnect, error: errorWifiDisconnect, data: dataWifiDisconnect },
+  ] = useLazyQuery(MCU_WIFI_DISCONNECT_QUERY);
+
   return (
     <Card
       bg='transparent'
@@ -26,98 +59,69 @@ const WifiSettingsCard = ({ item, textColor }) => {
       py='21px'
       transition='0.2s linear'
     >
-      <Flex direction={{ base: 'column' }} justify='center'>
-        <Flex direction='column'>
-          <Text
-            color='secondaryGray.600'
-            fontSize={{ base: 'xs', lg: 'sm' }}
-            fontWeight='400'
-            me='14px'
-          >
-            Click the scan button and your system will scan for available wifi
-            networks. Click one of the available SSIDs, and enter your WiFi
-            passphrase. Clicking the disconnect button will delete all saved
-            WiFi connections, if you are having issues connecting, click the
-            disconnect button before trying anything else.
-          </Text>
-        </Flex>
-
-        <Flex direction={{ base: 'row' }} my={'5'}>
-          <Stack direction={'row'}>
-            <Button
-              leftIcon={<MdBlock />}
-              colorScheme={'orange'}
-              variant={'solid'}
-            >
-              Disconnect
-            </Button>
-            <Button
-              leftIcon={<RiScan2Fill />}
-              colorScheme={'blue'}
-              variant={'outline'}
-            >
-              Scan
-            </Button>
-          </Stack>
-        </Flex>
+      <Flex direction={{ base: 'column' }}>
+        <Text
+          color='secondaryGray.600'
+          fontSize={{ base: 'xs', lg: 'sm' }}
+          fontWeight='400'
+          me='14px'
+        >
+          Click the scan button and your system will scan for available wifi
+          networks. Click one of the available SSIDs, and enter your WiFi
+          passphrase. Clicking the disconnect button will delete all saved
+          WiFi connections, if you are having issues connecting, click the
+          disconnect button before trying anything else.
+        </Text>
       </Flex>
 
       <Box px='11px' mt={'2'}>
         <Flex direction={'column'}>
-          <Flex position={'relative'} alignItems={'center'} my={'4'}>
-            <Text
-              fontWeight='bold'
-              color={textColor}
-              fontSize='md'
-              w={'100%'}
-              marginInlineEnd={'2'}
-            >
-              Wifi Network 12345
-            </Text>
-            <Flex direction={'column'} alignItems={'center'}>
-              <Button
-                colorScheme={'gray'}
-                variant={'outline'}
-                size={'xs'}
-                mb={'2'}
-              >
-                Connect
-              </Button>
-              <Progress
-                value='60'
-                variant='table'
-                colorScheme={'green'}
-                h='6px'
-              />
-            </Flex>
-          </Flex>
-          <Flex position={'relative'} alignItems={'center'} my={'4'}>
-            <Text
-              fontWeight='bold'
-              color={textColor}
-              fontSize='md'
-              w={'100%'}
-              marginInlineEnd={'2'}
-            >
-              Wifi Network 6789
-            </Text>
-            <Flex direction={'column'} alignItems={'center'}>
-              <Button
-                colorScheme={'gray'}
-                variant={'outline'}
-                size={'xs'}
-                mb={'2'}
-              >
-                Connect
-              </Button>
-              <Progress
-                value='20'
-                variant='table'
-                colorScheme={'red'}
-                h='6px'
-              />
-            </Flex>
-          </Flex>
+          {loading ? (
+            <BulletList />
+          ) : (error || resultError) ? (
+            <Alert borderRadius='8px' status='error' variant='subtle'>
+              <Flex>
+                <AlertIcon />
+                <Flex direction='column'>
+                  <AlertTitle mr='12px'>Error</AlertTitle>
+                  <AlertDescription>Wifi scan had some problems.</AlertDescription>
+                </Flex>
+              </Flex>
+              <CloseButton position='absolute' right='8px' top='8px' />
+            </Alert>
+          ) : (
+            networks && networks.map((network, index) => {
+              return (
+                <Flex position={'relative'} alignItems={'center'} my={'4'} key={index}>
+                  <Text
+                    fontWeight='400'
+                    color={textColor}
+                    fontSize='sm'
+                    w={'100%'}
+                    marginInlineEnd={'2'}
+                  >
+                    {network.ssid}
+                  </Text>
+                  <Flex direction={{ base: 'row' }}>
+                    <Stack direction={'row'}>
+                      {network.inuse && <Badge variant='subtle' colorScheme={'whatsapp'} mr='5'>
+                        Active
+                      </Badge>}
+                      <Button
+                        colorScheme={'gray'}
+                        variant={'outline'}
+                        size={'xs'}
+                        mb={'2'}
+                        handleClick={() => network.inuse ? handleWifiDisconnect() : handleWifiConnect(network.ssid)}
+                      >
+                        {network.inuse ? 'Disconnect' : 'Connect'}
+                      </Button>
+                    </Stack>
+                  </Flex>
+                </Flex>
+              )
+            })
+          )}
         </Flex>
       </Box>
     </Card>

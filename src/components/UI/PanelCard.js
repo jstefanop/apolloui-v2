@@ -1,7 +1,17 @@
-import { Icon, Text, Flex, Badge, Button, Tooltip } from '@chakra-ui/react';
+import {
+  Icon,
+  Text,
+  Flex,
+  Badge,
+  Button,
+  Tooltip,
+  ButtonGroup,
+} from '@chakra-ui/react';
 import { useState } from 'react';
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
+import { RiScan2Fill } from 'react-icons/ri';
 import Card from '../../components/card/Card';
+import LoadingIcon from './loadingIcon';
 
 const PanelCard = ({
   children,
@@ -10,6 +20,9 @@ const PanelCard = ({
   textColor,
   badgeColor,
   badgeText,
+  buttonText,
+  buttonLoading,
+  handleButtonClick,
   icon,
   showHide,
   tooltip,
@@ -34,6 +47,21 @@ const PanelCard = ({
               {title}
             </Text>
           </Flex>
+          {buttonText && (
+            <Flex align-items='center'>
+              <Button
+                leftIcon={buttonLoading ? <LoadingIcon /> : <RiScan2Fill />}
+                colorScheme={'gray'}
+                variant={'outline'}
+                size={'sm'}
+                mb={'2'}
+                onClick={handleButtonClick}
+                disabled={buttonLoading}
+              >
+                {buttonText}
+              </Button>
+            </Flex>
+          )}
           {badgeText && (
             <Flex align-items='center'>
               {showHide ? (

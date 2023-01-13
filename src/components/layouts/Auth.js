@@ -1,88 +1,62 @@
 // Chakra imports
-import { Box, Flex, Icon, Text } from '@chakra-ui/react';
-import PropTypes from 'prop-types';
-import { FaRegQuestionCircle } from 'react-icons/fa';
-import Link from 'next/link';
-
-import Footer from '../footer/FooterAuth';
+import { Box, Flex } from '@chakra-ui/react';
+// Custom components
+import Card from '../card/Card';
 import FixedPlugin from '../fixedPlugin/FixedPlugin';
+import Footer from '../footer/FooterAuth';
+import Navbar from '../navbar/NavbarAuth';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-const AuthIllustration = ({ children, illustrationBackground }) => {
-  // Chakra color mode
+function AuthCentered(props) {
+  const { children, image } = props;
   return (
-    <Flex position='relative' h='max-content'>
-      <Flex
-        h={{
-          sm: 'initial',
-          md: 'unset',
-          lg: '100vh',
-          xl: '97vh',
-        }}
-        w='100%'
-        maxW={{ md: '66%', lg: '1313px' }}
-        mx='auto'
-        pt={{ sm: '50px', md: '0px' }}
-        px={{ lg: '30px', xl: '0px' }}
-        ps={{ xl: '70px' }}
-        justifyContent='start'
-        direction='column'
-      >
-        <Link
-          href='/dashboard'
-          style={{
-            width: 'fit-content',
-            marginTop: '40px',
-          }}
-        >
-          <Flex
-            align='center'
-            ps={{ base: '25px', lg: '0px' }}
-            pt={{ lg: '0px', xl: '0px' }}
-            w='fit-content'
-          >
-            <Icon
-              as={FaRegQuestionCircle}
-              me='12px'
-              h='24px'
-              color='secondaryGray.600'
-            />
-            <Text ms='0px' fontSize='sm' color='secondaryGray.600'>
-              Need support?
-            </Text>
-          </Flex>
-        </Link>
-        {children}
-        <Box
-          display={{ base: 'none', md: 'block' }}
-          h='100%'
-          minH='100vh'
-          w={{ lg: '50vw', '2xl': '44vw' }}
-          position='absolute'
-          right='0px'
-        >
-          <Flex
-            bg={`url(${illustrationBackground})`}
-            justify='center'
-            align='end'
-            w='100%'
-            h='100%'
-            bgSize='cover'
-            bgPosition='50%'
-            position='absolute'
-            borderBottomLeftRadius={{ lg: '120px', xl: '200px' }}
-          ></Flex>
-        </Box>
-        <Footer />
-      </Flex>
+    <Flex
+      direction='column'
+      alignSelf='center'
+      justifySelf='center'
+      overflow='hidden'
+      mx={{ base: '10px', lg: '0px' }}
+      minH='100vh'
+    >
       <FixedPlugin />
+      <Box
+        position='absolute'
+        minH={{ base: '50vh', md: '50vh' }}
+        maxH={{ base: '50vh', md: '50vh' }}
+        w={{ md: 'calc(100vw)' }}
+        maxW={{ md: 'calc(100vw)' }}
+        left='0'
+        right='0'
+        bgRepeat='no-repeat'
+        overflow='hidden'
+        zIndex='-1'
+        top='0'
+        bgImage={image}
+        bgSize='cover'
+        mx={{ md: 'auto' }}
+      ></Box>
+      <Navbar secondaryNavbar={false} />
+      <Card
+        w={{ base: '100%', md: 'max-content' }}
+        h='max-content'
+        mx='auto'
+        maxW='100%'
+        mt={{ base: '100px' }}
+        mb={{ base: '50px', lg: 'auto' }}
+        p={{ base: '10px', md: '50px' }}
+        pt={{ base: '30px', md: '50px' }}
+        pb={{ base: '20px', md: '20px' }}
+      >
+        {children}
+      </Card>
+      <Footer />
     </Flex>
   );
 }
-// PROPS
 
-AuthIllustration.propTypes = {
-  illustrationBackground: PropTypes.string,
+AuthCentered.propTypes = {
   image: PropTypes.any,
 };
 
-export default AuthIllustration;
+export default AuthCentered;

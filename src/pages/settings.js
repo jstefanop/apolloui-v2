@@ -21,9 +21,14 @@ import {
 
 import React, { useState } from 'react';
 import _ from 'lodash';
+import { useLazyQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
 import { FaBalanceScale, FaGratipay } from 'react-icons/fa';
-import { RiUserSettingsFill, RiDatabase2Fill, RiEraserLine } from 'react-icons/ri';
+import {
+  RiUserSettingsFill,
+  RiDatabase2Fill,
+  RiEraserLine,
+} from 'react-icons/ri';
 import { BsWind } from 'react-icons/bs';
 import {
   MdOutlineWidgets,
@@ -44,6 +49,7 @@ import SimpleSwitchSettingsItem from '../components/UI/SimpleSwitchSettingsItem'
 import PanelCard from '../components/UI/PanelCard';
 import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
+import { MCU_WIFI_CONNECT_QUERY, MCU_WIFI_DISCONNECT_QUERY, MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
 
 const Settings = () => {
   const textColor = useColorModeValue('brands.900', 'white');
@@ -65,35 +71,36 @@ const Settings = () => {
     {
       id: 'eco',
       icon: IoLeaf,
-      color: 'green',
-      title: 'ECO Mode',
+      color: 'brand',
+      title: 'ECO',
       selected: false,
       description:
         'In ECO mode your miner will be at its most efficient, but its hashrate will be slightly slower. This mode is recommended, and will produce the least amount of noise and heat.',
     },
     {
       id: 'balanced',
-      color: 'blue',
+      color: 'brand',
       icon: FaBalanceScale,
-      title: 'BALANCED Mode',
+      title: 'BALANCED',
       selected: false,
       description:
         'BALANCED mode is a good compromise between hashrate, efficiency, and noise.',
     },
     {
       id: 'turbo',
-      color: 'orange',
+      color: 'brand',
       icon: IoRocket,
-      title: 'TURBO Mode',
+      title: 'TURBO',
       selected: false,
       description:
         'In TURBO mode your miner will be the least efficient, but its hashrate will be the highest. This mode is only recommended for expert users, and you should monitor your miner for possible overheating. The fan can get loud in this mode.',
     },
     {
       id: 'custom',
-      color: 'red',
+      color: 'brand',
       icon: RiUserSettingsFill,
-      title: 'CUSTOM Mode',
+      title: 'CUSTOM',
+      alertBadge: 'WARNING',
       selected: false,
       description:
         'The Apollo comes with tuned preset values (above), which offer a good range of operating modes. By selecting custom you risk damaging your device and FutureBit will not be responsible for any or all damage caused by over-clocking or over-volting',
@@ -208,8 +215,7 @@ const Settings = () => {
       icon: MdOutlineSimCardDownload,
       title: 'Restore settings',
       buttonTitle: 'RESTORE',
-      description:
-        'Restore all configurations from a backup file',
+      description: 'Restore all configurations from a backup file',
     },
     {
       id: 'format',
@@ -308,6 +314,21 @@ const Settings = () => {
 
   const handleButtonExtraSettings = () => {};
 
+  const [
+    handleWifiScan,
+    { loading: loadingWifiScan, error: errorWifiScan, data: dataWifiScan },
+  ] = useLazyQuery(MCU_WIFI_SCAN_QUERY);
+
+  const [
+    handleWifiConnect,
+    { loading: loadingWifiConnect, error: errorWifiConnect, data: dataWifiConnect },
+  ] = useLazyQuery(MCU_WIFI_CONNECT_QUERY);
+
+  const [
+    handleWifiDisconnect,
+    { loading: loadingWifiDisconnect, error: errorWifiDisconnect, data: dataWifiDisconnect },
+  ] = useLazyQuery(MCU_WIFI_DISCONNECT_QUERY);
+
   return (
     <Box>
       <SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
@@ -396,33 +417,17 @@ const Settings = () => {
             }
             textColor={textColor}
             icon={MdOutlineWifi}
-            badgeText={'FutureBitWifi'}
-            badgeColor={'green'}
-            tooltip={'You are connected to this network'}
+            buttonText='Scan'
+            handleButtonClick={handleWifiScan}
+            buttonLoading={loadingWifiScan}
             mb={'20px'}
           >
-            <WifiSettingsCard textColor={textColor} />
-          </PanelCard>
-
-          {/* EXTRA SETTINGS */}
-          <PanelCard
-            title={'Extra settings'}
-            description={
-              'Backup, restore, reset configurations and format disk'
-            }
-            textColor={textColor}
-            icon={MdSave}
-            mb='20px'
-          >
-            {extraSettingsActions.map((action, index) => {
-              return (
-                <SimpleSwitchSettingsItem key={index}
-                  item={action}
-                  textColor={textColor}
-                  handleButton={handleButtonExtraSettings}
-                />
-              );
-            })}
+            <WifiSettingsCard
+              textColor={textColor}
+              loading={loadingWifiScan}
+              error={errorWifiScan}
+              data={dataWifiScan}
+            />
           </PanelCard>
         </GridItem>
 
@@ -558,6 +563,28 @@ const Settings = () => {
                 </FormControl>
               </Flex>
             </SimpleCard>
+          </PanelCard>
+
+          {/* EXTRA SETTINGS */}
+          <PanelCard
+            title={'Extra settings'}
+            description={
+              'Backup, restore, reset configurations and format disk'
+            }
+            textColor={textColor}
+            icon={MdSave}
+            mb='20px'
+          >
+            {extraSettingsActions.map((action, index) => {
+              return (
+                <SimpleSwitchSettingsItem
+                  key={index}
+                  item={action}
+                  textColor={textColor}
+                  handleButton={handleButtonExtraSettings}
+                />
+              );
+            })}
           </PanelCard>
         </GridItem>
       </Grid>

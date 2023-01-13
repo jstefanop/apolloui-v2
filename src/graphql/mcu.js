@@ -49,3 +49,56 @@ export const MCU_STATS_QUERY = gql`
     }
   }
 `;
+
+export const MCU_WIFI_SCAN_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_WIFI_SCAN {
+    Mcu {
+      wifiScan {
+        result {
+          wifiScan {
+            ssid
+            mode
+            channel
+            rate
+            signal
+            security
+            inuse
+          }
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_WIFI_CONNECT_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_CONNECT_SCAN ($input: McuWifiConnectInput!) {
+    Mcu {
+      wifiConnect (input: $input) {
+        result {
+          address
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_WIFI_DISCONNECT_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_DISCONNECT_SCAN {
+    Mcu {
+      wifiDisconnect {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }    
+  }
+`;

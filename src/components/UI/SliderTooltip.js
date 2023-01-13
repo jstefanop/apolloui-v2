@@ -28,6 +28,7 @@ const SliderTooltip = ({
   } else if (percentageValue >= 75) {
     progressColor = 'red';
   }
+  if (sliderId.match(/fan/)) progressColor = 'gray';
 
   return (
     <Slider
@@ -41,6 +42,7 @@ const SliderTooltip = ({
       onChange={(v) => handleSliderChange(v)}
       onChangeStart={() => setShowTooltip(true)}
       onChangeEnd={() => setShowTooltip(false)}
+      size='lg'
       {...props}
     >
       {Object.keys(ranges).map((key, index) => (
@@ -48,8 +50,8 @@ const SliderTooltip = ({
           {ranges[key]}
         </SliderMark>
       ))}
-      <SliderTrack>
-        <SliderFilledTrack />
+      <SliderTrack minH='6px' borderRadius='4px'>
+        <SliderFilledTrack minH='8px' borderRadius='4px'/>
       </SliderTrack>
       <Tooltip
         hasArrow
