@@ -19,9 +19,9 @@ import {
   InputLeftElement,
 } from '@chakra-ui/react';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
 import { FaBalanceScale, FaGratipay } from 'react-icons/fa';
 import {
@@ -49,7 +49,8 @@ import SimpleSwitchSettingsItem from '../components/UI/SimpleSwitchSettingsItem'
 import PanelCard from '../components/UI/PanelCard';
 import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
-import { MCU_WIFI_CONNECT_QUERY, MCU_WIFI_DISCONNECT_QUERY, MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
+import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
+import { GET_SETTINGS_QUERY } from '../graphql/settings';
 
 const Settings = () => {
   const textColor = useColorModeValue('brands.900', 'white');
@@ -243,6 +244,16 @@ const Settings = () => {
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
   const [settings, setSettings] = useState({ ...minerSettings });
 
+  const {
+    loading,
+    error,
+    data,
+  } = useQuery(GET_SETTINGS_QUERY);
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   const handleSwitchMinerMode = (e) => {
     const v = e.target.value === 'true' ? true : false;
     setMinerModes(
@@ -312,25 +323,48 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableTor: !v });
   };
 
-  const handleButtonExtraSettings = () => {};
+  const handleButtonExtraSettings = () => { };
 
   const [
     handleWifiScan,
     { loading: loadingWifiScan, error: errorWifiScan, data: dataWifiScan },
   ] = useLazyQuery(MCU_WIFI_SCAN_QUERY);
 
-  const [
-    handleWifiConnect,
-    { loading: loadingWifiConnect, error: errorWifiConnect, data: dataWifiConnect },
-  ] = useLazyQuery(MCU_WIFI_CONNECT_QUERY);
-
-  const [
-    handleWifiDisconnect,
-    { loading: loadingWifiDisconnect, error: errorWifiDisconnect, data: dataWifiDisconnect },
-  ] = useLazyQuery(MCU_WIFI_DISCONNECT_QUERY);
-
   return (
     <Box>
+      <Box
+        position='fixed'
+        bg='blue.900'
+        backgroundPosition='center'
+        backgroundSize='cover'
+        p='15px'
+        mx='auto'
+        right='0px'
+        bottom={{ base: '0px' }}
+        w={{
+          base: '100%',
+          xl: 'calc(100vw - 300px)',
+        }}
+        zIndex='1'
+      >
+        <Flex direction='row' justify='space-between'>
+          <Button
+            colorScheme={'gray'}
+            variant={'solid'}
+            size={'md'}
+          >
+            Discard changes
+          </Button>
+          <Button
+            colorScheme={'green'}
+            variant={'solid'}
+            size={'md'}
+          >
+            Save settings
+          </Button>
+        </Flex>
+      </Box>
+
       <SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
         {/* POOL SETTINGS */}
         <PanelCard
