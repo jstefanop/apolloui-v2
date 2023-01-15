@@ -133,8 +133,6 @@ export function initializeApollo(initialState = null) {
       ],
     });
 
-    console.log(data);
-
     // Restore the cache with the merged data
     _apolloClient.cache.restore(data);
   }

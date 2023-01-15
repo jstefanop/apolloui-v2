@@ -4,7 +4,6 @@ import {
   useColorModeValue,
   Divider,
   Textarea,
-  Stack,
   FormLabel,
   Input,
   Flex,
@@ -13,17 +12,16 @@ import {
   FormControl,
   Text,
   InputGroup,
-  InputRightElement,
   Icon,
   Button,
   InputLeftElement,
 } from '@chakra-ui/react';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
-import { FaBalanceScale, FaGratipay } from 'react-icons/fa';
+import { FaBalanceScale } from 'react-icons/fa';
 import {
   RiUserSettingsFill,
   RiDatabase2Fill,
@@ -50,25 +48,14 @@ import PanelCard from '../components/UI/PanelCard';
 import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
-import { GET_SETTINGS_QUERY } from '../graphql/settings';
+import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../graphql/settings';
+import { GET_POOLS_QUERY } from '../graphql/pools';
 
 const Settings = () => {
   const textColor = useColorModeValue('brands.900', 'white');
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
 
-  const minerSettings = {
-    mode: 'balanced',
-    voltage: 45,
-    frequency: 38,
-    fan_low: 40,
-    fan_high: 60,
-    nodeRpcPassword: 'helloworld',
-    nodeEnableTor: false,
-    nodeUserConf: null,
-    nodeConf: null,
-  };
-
-  let minerInitialModes = [
+  const { current: minerInitialModes } = useRef([
     {
       id: 'eco',
       icon: IoLeaf,
@@ -144,17 +131,16 @@ const Settings = () => {
         },
       ],
     },
-  ];
+  ]);
 
   const fanInitialMode = {
     id: 'fan',
     color: 'green',
     icon: MdHdrAuto,
     title: 'AUTO',
-    selected:
-      (minerSettings.fan_low !== 40 && minerSettings.fan_high !== 60) || false,
-    fan_low: minerSettings.fan_low,
-    fan_high: minerSettings.fan_high,
+    selected: false,
+    fan_low: 0,
+    fan_high: 0,
     description:
       'The Apollo comes with auto tuned fan speed, but you can set a custom curve by toggling auto to off.',
     sliders: [
@@ -195,7 +181,7 @@ const Settings = () => {
     color: 'green',
     icon: MdShield,
     title: 'TOR mode',
-    selected: minerSettings.nodeEnableTor,
+    selected: false,
     description:
       'Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: you need to press the Save button on the top of the page after changing settings in this section, and your node will be restarted to apply.',
   };
@@ -229,30 +215,117 @@ const Settings = () => {
     },
   ];
 
-  const currentMode = _.find(minerInitialModes, { id: minerSettings.mode });
-  minerInitialModes = _.map(minerInitialModes, (mode) => {
-    if (mode.id === minerSettings.mode) mode.selected = true;
-    if (mode.id === 'custom') {
-      mode.frequency = minerSettings.frequency;
-      mode.voltage = minerSettings.voltage;
-    }
-    return mode;
-  });
-
   const [minerModes, setMinerModes] = useState(minerInitialModes);
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
-  const [settings, setSettings] = useState({ ...minerSettings });
+  const [settings, setSettings] = useState({ initial: true });
+  const [currentSettings, setCurrentSettings] = useState();
+  const [currentMode, setCurrentMode] = useState({ id: 'loading' })
+  const [isChanged, setIsChanged] = useState(false);
+  const [restartNeeded, setRestartNeeded] = useState(null);
+  const [errorForm, setErrorForm] = useState(null);
 
   const {
-    loading,
-    error,
-    data,
+    loading: loadingSettings,
+    error: errorQuerySettings,
+    data: dataSettings,
   } = useQuery(GET_SETTINGS_QUERY);
 
+  const {
+    loading: loadingPools,
+    error: errorQueryPools,
+    data: dataPools,
+  } = useQuery(GET_POOLS_QUERY);
+
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    if (loadingSettings || loadingPools) return;
+
+    const {
+      Pool: {
+        list: {
+          error: errorPools,
+          result: {
+            pools: poolsData
+          }
+        }
+      }
+    } = dataPools
+
+    const {
+      Settings: {
+        read: {
+          error: errorSettings,
+          result: {
+            settings: settingsData
+          }
+        }
+      }
+    } = dataSettings;
+
+    const finalSettings = { ...settingsData, pool: poolsData[0] };
+    setSettings(finalSettings);
+    setCurrentSettings(finalSettings);
+
+    setCurrentMode(_.find(minerInitialModes, { id: settingsData.minerMode }));
+    setMinerModes(_.map(minerInitialModes, (mode) => {
+      if (mode.id === settingsData.minerMode) mode.selected = true;
+      if (mode.id === 'custom') {
+        mode.frequency = settingsData.frequency;
+        mode.voltage = settingsData.voltage;
+      }
+      return mode;
+    }));
+
+    setFanMode((el) => {
+      return {
+        ...el,
+        selected: (settingsData.fan_low !== 40 && settingsData.fan_high !== 60) || false,
+        fan_low: settingsData.fan_low,
+        fan_high: settingsData.fan_high,
+      }
+    });
+
+    setNodeTorMode((el) => {
+      return {
+        ...el,
+        selected: settingsData.nodeEnableTor,
+      }
+    });
+  }, [loadingSettings, loadingPools, dataSettings, dataPools, minerInitialModes]);
+
+  // Trig any chenge in settings to display the buttons
+  useEffect(() => {
+    const restartMinerFields = [
+      'minerMode',
+      'frequency',
+      'voltage',
+      'pool'
+    ];
+    const restartNodeFields = [
+      'nodeEnableTor',
+      'nodeUserConf'
+    ];
+    const isEqual = _.isEqual(settings, currentSettings);
+    const restartMinerNeeded = !_.isEqual(_.pick(settings, restartMinerFields), _.pick(currentSettings, restartMinerFields));
+    const restartNodeNeeded = !_.isEqual(_.pick(settings, restartNodeFields), _.pick(currentSettings, restartNodeFields));
+    const restartType = (restartMinerNeeded && restartNodeNeeded) ? 'both' : (restartMinerNeeded && !restartNodeNeeded) ? 'miner' : (!restartMinerNeeded && restartNodeNeeded) ? 'node' : null;
+    if (!isEqual && !settings.initial) setIsChanged(true);
+    if (isEqual) setIsChanged(false);
+    setRestartNeeded(restartType);
+  }, [settings]);
+
+  const handlePoolChange = (e) => {
+    setErrorForm(null);
+    if (!e.target.value) setErrorForm(e.target.name);
+    const poolChanged = {
+      ...settings.pool
+    };
+    poolChanged[e.target.name] = e.target.value;
+    setSettings({
+      ...settings,
+      pool: poolChanged
+    });
+  };
 
   const handleSwitchMinerMode = (e) => {
     const v = e.target.value === 'true' ? true : false;
@@ -262,7 +335,7 @@ const Settings = () => {
         return mode;
       })
     );
-    setSettings({ ...settings, mode: e.target.id });
+    setSettings({ ...settings, minerMode: e.target.id });
   };
 
   const handleCustomModeChange = (value, sliderId) => {
@@ -294,6 +367,10 @@ const Settings = () => {
   const handleSwitchFanMode = (e) => {
     const v = e.target.value === 'true' ? true : false;
     setFanMode({ ...fanMode, selected: !v });
+    if (v) {
+      setSettings({ ...settings, fan_low: 40, fan_high: 60 });
+      setFanMode({ ...fanMode, selected: !v, fan_low: 40, fan_high: 60 });
+    }
   };
 
   const handleCustomFanModeChange = (value, sliderId) => {
@@ -323,6 +400,25 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableTor: !v });
   };
 
+  const handleDiscardChanges = () => {
+    setSettings(currentSettings);
+    setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
+    setFanMode({
+      ...fanMode,
+      selected: currentSettings.fan_low !== 40 && currentSettings.fan_high !== 60,
+      fan_low: currentSettings.fan_low,
+      fan_high: currentSettings.fan_high,
+    });
+    setMinerModes(
+      _.map(minerModes, (mode) => {
+        if (mode.id === currentSettings.minerMode) mode.selected = true;
+        else mode.selected = false;
+        return mode;
+      })
+    );
+    setErrorForm(null);
+  };
+
   const handleButtonExtraSettings = () => { };
 
   const [
@@ -330,84 +426,128 @@ const Settings = () => {
     { loading: loadingWifiScan, error: errorWifiScan, data: dataWifiScan },
   ] = useLazyQuery(MCU_WIFI_SCAN_QUERY);
 
+  const [
+    saveSettings,
+    { loading: loadingSave, error: errorSave },
+  ] = useLazyQuery(SET_SETTINGS_QUERY);
+
+  const handlesSaveSettings = (type) => {
+    const input = _.clone(settings);
+    delete input.pool;
+    delete input.__typename;
+    saveSettings({ variables: { input } })
+    // if (type === 'restart') restartNeeded();
+  }
+
   return (
     <Box>
-      <Box
-        position='fixed'
-        bg='blue.900'
-        backgroundPosition='center'
-        backgroundSize='cover'
-        p='15px'
-        mx='auto'
-        right='0px'
-        bottom={{ base: '0px' }}
-        w={{
-          base: '100%',
-          xl: 'calc(100vw - 300px)',
-        }}
-        zIndex='1'
-      >
-        <Flex direction='row' justify='space-between'>
-          <Button
-            colorScheme={'gray'}
-            variant={'solid'}
-            size={'md'}
-          >
-            Discard changes
-          </Button>
-          <Button
-            colorScheme={'green'}
-            variant={'solid'}
-            size={'md'}
-          >
-            Save settings
-          </Button>
-        </Flex>
-      </Box>
-
-      <SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
-        {/* POOL SETTINGS */}
-        <PanelCard
-          title={'Pool settings'}
-          description={'Manage pools configuration for your miner'}
-          textColor={textColor}
-          icon={RiDatabase2Fill}
+      {isChanged && (
+        <Box
+          position='fixed'
+          bg='blue.900'
+          backgroundPosition='center'
+          backgroundSize='cover'
+          p='15px'
+          mx='auto'
+          right='0px'
+          bottom={{ base: '0px' }}
+          w={{
+            base: '100%',
+            xl: 'calc(100vw - 300px)',
+          }}
+          zIndex='1'
         >
-          <Grid templateColumns='repeat(6, 1fr)' gap={2}>
-            <GridItem colSpan={3}>
-              <SimpleCard title={'URL'} textColor={textColor} icon={MdWebAsset}>
-                <Input
-                  name='url'
-                  type='text'
-                  placeholder={'stratum+tcp://stratum.slushpool.com:3333'}
-                />
-              </SimpleCard>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <SimpleCard
-                title={'Username'}
-                textColor={textColor}
-                icon={MdPerson}
+          <Flex direction='row' justify='space-between'>
+            <Button
+              colorScheme={'gray'}
+              variant={'solid'}
+              size={'md'}
+              onClick={handleDiscardChanges}
+            >
+              Discard changes
+            </Button>
+            <Flex direction='row'>
+              {restartNeeded && 
+                <Button
+                  colorScheme='orange'
+                  variant={'solid'}
+                  size={'md'}
+                  mr='4'
+                  disabled={errorForm}
+                >
+                  Save & Restart
+                </Button>
+              }
+              <Button
+                colorScheme='green'
+                variant={'solid'}
+                size={'md'}
+                onClick={() => handlesSaveSettings('restart')}
+                disabled={errorForm}
               >
-                <Input
-                  name='username'
-                  type='text'
-                  placeholder={'futurebit.worker'}
-                />
-              </SimpleCard>
-            </GridItem>
-            <GridItem colSpan={1}>
-              <SimpleCard
-                title={'Password'}
-                textColor={textColor}
-                icon={MdPassword}
-              >
-                <Input name='password' type='text' placeholder={'x'} />
-              </SimpleCard>
-            </GridItem>
-          </Grid>
-        </PanelCard>
-      </SimpleGrid>
+                Save
+              </Button>
+            </Flex>
+          </Flex>
+        </Box>
+      )}
+
+      {settings.pool && (
+        <SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
+          {/* POOL SETTINGS */}
+          <PanelCard
+            title={'Pool settings'}
+            description={'Manage pools configuration for your miner'}
+            textColor={textColor}
+            icon={RiDatabase2Fill}
+          >
+            {errorForm && <Flex px='22px'><Text color='red'>Field {errorForm} can't be empty</Text></Flex>}
+            <Grid templateColumns='repeat(6, 1fr)' gap={2}>
+              <GridItem colSpan={3}>
+                <SimpleCard title={'URL'} textColor={textColor} icon={MdWebAsset}>
+                  <Input
+                    name='url'
+                    type='text'
+                    placeholder={'stratum+tcp://stratum.slushpool.com:3333'}
+                    value={settings.pool.url}
+                    onChange={handlePoolChange}
+                  />
+                </SimpleCard>
+              </GridItem>
+              <GridItem colSpan={2}>
+                <SimpleCard
+                  title={'Username'}
+                  textColor={textColor}
+                  icon={MdPerson}
+                >
+                  <Input
+                    name='username'
+                    type='text'
+                    placeholder={'futurebit.worker'}
+                    value={settings.pool.username}
+                    onChange={handlePoolChange}
+                  />
+                </SimpleCard>
+              </GridItem>
+              <GridItem colSpan={1}>
+                <SimpleCard
+                  title={'Password'}
+                  textColor={textColor}
+                  icon={MdPassword}
+                >
+                  <Input
+                    name='password'
+                    type='text'
+                    placeholder={'x'}
+                    value={settings.pool.password}
+                    onChange={handlePoolChange}
+                  />
+                </SimpleCard>
+              </GridItem>
+            </Grid>
+          </PanelCard>
+        </SimpleGrid>
+      )}
 
       <Grid
         templateRows={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
@@ -492,7 +632,7 @@ const Settings = () => {
             textColor={textColor}
             icon={MdDeviceHub}
             badgeColor={'orange'}
-            badgeText={minerSettings.nodeRpcPassword}
+            badgeText={settings.nodeRpcPassword}
             showHide={true}
             mb={'20px'}
           >
@@ -512,6 +652,7 @@ const Settings = () => {
               icon={MdSettings}
             >
               <Textarea
+                value={settings.nodeUserConf}
                 onChange={(v) =>
                   setSettings({ ...settings, nodeUserConf: v.target.value })
                 }

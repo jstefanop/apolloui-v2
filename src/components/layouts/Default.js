@@ -78,11 +78,6 @@ const Layout = ({ children, routes }, props) => {
             pt='50px'
           >
             <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
-              <AlertCard
-                color='orange.200'
-                title={'Error'}
-                message={'There was an error'}
-              />
               {React.cloneElement(children, { stats, loading })}
             </Box>
           </Box>
