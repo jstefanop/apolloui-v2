@@ -103,6 +103,16 @@ function createApolloClient() {
           },
         },
       },
+      PoolListResult: {
+        fields: {
+          pools: {
+            read(data) {
+              console.log('HELLO', data)
+              return data;
+            }
+          }
+        }
+      },
     },
   });
 

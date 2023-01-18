@@ -10,7 +10,7 @@ export const ALL_STATS_QUERY = gql`
   ${MCU_STATS_FRAGMENT}
   ${MINER_STATS_FRAGMENT}
   ${MINER_ONLINE_FRAGMENT}
-  query {
+  query ALL_STATS {
     Node {
       stats {
         ...NodeStatsFragment

@@ -54,9 +54,10 @@ const SimpleSwitchSettingsItem = ({
                 >
                   {handleButton ? (
                     <Button
-                      onChange={handleButton}
+                      onClick={handleButton}
                       colorScheme={item.color}
                       size='sm'
+                      id={item.id}
                     >
                       {item.buttonTitle}
                     </Button>

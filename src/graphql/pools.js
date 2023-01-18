@@ -8,7 +8,6 @@ export const GET_POOLS_QUERY = gql`
       list {
         result {
           pools {
-            id
             enabled
             donation
             url
@@ -33,7 +32,6 @@ export const SET_POOLS_QUERY = gql`
       create (input: $input) {
         result {
           pool {
-            id
             enabled
             donation
             url
@@ -58,7 +56,6 @@ export const UPDATE_POOLS_QUERY = gql`
       updateAll(input: $input) {
         result {
           pools {
-            id
             enabled
             donation
             url
@@ -68,9 +65,9 @@ export const UPDATE_POOLS_QUERY = gql`
             index
           }
         }
-      }
-      error {
-        ...ErrorFragment
+        error {
+          ...ErrorFragment
+        }
       }
     }
   }

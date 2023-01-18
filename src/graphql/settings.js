@@ -3,7 +3,7 @@ import { ERROR_FRAGMENT } from './fragments/error';
 
 export const GET_SETTINGS_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query Settings {
+  query GET_SETTINGS {
     Settings {
       read {
         result {

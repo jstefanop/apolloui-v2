@@ -49,7 +49,7 @@ import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../graphql/settings';
-import { GET_POOLS_QUERY } from '../graphql/pools';
+import { GET_POOLS_QUERY, SET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../graphql/pools';
 
 const Settings = () => {
   const textColor = useColorModeValue('brands.900', 'white');
@@ -419,7 +419,9 @@ const Settings = () => {
     setErrorForm(null);
   };
 
-  const handleButtonExtraSettings = () => { };
+  const handleButtonExtraSettings = (e) => {
+    console.log(e.target.id)
+  };
 
   const [
     handleWifiScan,
@@ -431,11 +433,20 @@ const Settings = () => {
     { loading: loadingSave, error: errorSave },
   ] = useLazyQuery(SET_SETTINGS_QUERY);
 
+  const [
+    savePools,
+    { loading: loadingSavePools, error: errorSavePools },
+  ] = useLazyQuery(UPDATE_POOLS_QUERY);
+
   const handlesSaveSettings = (type) => {
     const input = _.clone(settings);
+    const poolInput = _.clone(input.pool);
+    delete poolInput.__typename;
     delete input.pool;
     delete input.__typename;
-    saveSettings({ variables: { input } })
+    console.log(poolInput);
+    saveSettings({ variables: { input } });
+    savePools({ variables: { input: { pools: [poolInput] } } });
     // if (type === 'restart') restartNeeded();
   }
 
@@ -467,7 +478,7 @@ const Settings = () => {
               Discard changes
             </Button>
             <Flex direction='row'>
-              {restartNeeded && 
+              {restartNeeded &&
                 <Button
                   colorScheme='orange'
                   variant={'solid'}
