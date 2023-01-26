@@ -6,7 +6,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Provider } from 'react-redux';
 import { ApolloProvider } from '@apollo/client';
 import { useApollo } from '../lib/apolloClient';
-import { SessionProvider, signIn } from 'next-auth/react';
+import { SessionProvider } from 'next-auth/react';
 
 import '../assets/css/App.css';
 import theme from '../theme/theme';

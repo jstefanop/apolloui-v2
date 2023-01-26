@@ -18,6 +18,7 @@ const MiniStatistics = ({
   bgColor,
   startContent,
   endContent,
+  reversed,
   name,
   secondaryText,
   progress,
@@ -29,18 +30,28 @@ const MiniStatistics = ({
   const textColorSecondary = 'secondaryGray.600';
 
   return (
-    <Card py='15px' bg={bgColor}>
+    <Card py="15px" bg={bgColor}>
       <Flex
-        my='auto'
-        h='100%'
+        my="auto"
+        h="100%"
         align={{ base: 'center', xl: 'start' }}
         justify={{ base: 'center', xl: 'center' }}
       >
         {startContent}
 
-        <Stat my='auto' ms={startContent ? '18px' : '0px'}>
+        <Stat my="auto" ms={startContent ? '18px' : '0px'}>
+          {reversed && (
+            <StatNumber
+              color={textColor}
+              fontSize={{
+                base: '2xl',
+              }}
+            >
+              {value}
+            </StatNumber>
+          )}
           <StatLabel
-            lineHeight='100%'
+            lineHeight="100%"
             color={textColorSecondary}
             fontSize={{
               base: 'sm',
@@ -48,28 +59,30 @@ const MiniStatistics = ({
           >
             {name}
           </StatLabel>
-          <StatNumber
-            color={textColor}
-            fontSize={{
-              base: '2xl',
-            }}
-          >
-            {value}
-          </StatNumber>
-          {secondaryText ? <Flex align='center'>{secondaryText}</Flex> : null}
+          {!reversed && (
+            <StatNumber
+              color={textColor}
+              fontSize={{
+                base: '2xl',
+              }}
+            >
+              {value}
+            </StatNumber>
+          )}
+          {secondaryText ? <Flex align="center">{secondaryText}</Flex> : null}
           {progress && (
-            <Flex align='center' mt='8px'>
+            <Flex align="center" mt="8px">
               <Progress
-                variant='table'
+                variant="table"
                 colorScheme={progressColor || 'brandScheme'}
-                h='6px'
-                w='100%'
+                h="6px"
+                w="100%"
                 value={progressValue}
               />
             </Flex>
           )}
         </Stat>
-        <Flex ms='auto' w='max-content'>
+        <Flex ms="auto" w="max-content">
           {endContent}
         </Flex>
       </Flex>

@@ -20,31 +20,19 @@ const persistedReducer = persistReducer(
   combineReducers(reducers)
 );
 
+let store;
+
 const makeStore = () => {
-  /*
-  const sagaMiddleware = createSagaMiddleware({
-    onError(err) {
-      Sentry.captureException(err);
-    },
-  });
-  */
-  const store = configureStore({
+  store = configureStore({
     reducer: persistedReducer,
     devTools: process.env.NODE_ENV !== 'production',
     middleware: [thunkMiddleware],
   });
-
-  /*
-  store.runSagaTask = () => {
-    store.sagaTask = sagaMiddleware.run(rootSaga);
-  };
-
-  store.runSagaTask();
-  */
 
   store.__persistor = persistStore(store); // Nasty hack
 
   return store;
 };
 
+export { store };
 export default createWrapper(makeStore);

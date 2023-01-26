@@ -10,7 +10,8 @@ import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from 'moment';
-import { ALL_STATS_QUERY } from '../graphql/allStats';
+import { resetGraphqlErrors, updateGraphqlErrors } from '../redux/actions/graphqlErrors';
+import { store } from '../redux/store';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
@@ -18,19 +19,27 @@ const ls = typeof window !== 'undefined' ? localStorage : {};
 
 let hostnameApi;
 process.env.NODE_ENV
-  ? (hostnameApi = `192.168.86.38`)
+  ? (hostnameApi = `localhost`)
   : ({ hostname } = new URL(window.location.href));
 
 let apolloClient;
-
+let timeoutId;
 const errorLink = onError(({ graphQLErrors, networkError }) => {
+  clearTimeout(timeoutId);
   if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      )
-    );
-  if (networkError) console.log(`[Network error]: ${networkError}`);
+    graphQLErrors.forEach(({ message }) => {
+      const err = `[GraphQL error]: Message: ${message}`;
+      store.dispatch(updateGraphqlErrors({ error: err }))
+      console.log(err);
+    });
+  if (networkError) {
+    const err = `[Network error]: ${networkError}`;
+    console.log(err);
+  }
+
+  timeoutId = setTimeout(() => {
+    store.dispatch(resetGraphqlErrors());
+  }, 10000);
 });
 
 const httpLink = new HttpLink({
@@ -60,6 +69,8 @@ function createApolloClient() {
           stats: {
             read(data) {
               return data.map((board) => {
+                if (!board.pool) return board;
+
                 let boardStatus = true;
                 let poolStatus = true;
 
@@ -102,16 +113,6 @@ function createApolloClient() {
             },
           },
         },
-      },
-      PoolListResult: {
-        fields: {
-          pools: {
-            read(data) {
-              console.log('HELLO', data)
-              return data;
-            }
-          }
-        }
       },
     },
   });

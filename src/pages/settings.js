@@ -15,6 +15,10 @@ import {
   Icon,
   Button,
   InputLeftElement,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -229,16 +233,33 @@ const Settings = () => {
     loading: loadingSettings,
     error: errorQuerySettings,
     data: dataSettings,
+    refetch: refetchSettings,
   } = useQuery(GET_SETTINGS_QUERY);
 
   const {
     loading: loadingPools,
     error: errorQueryPools,
     data: dataPools,
+    refetch: refetchPools,
   } = useQuery(GET_POOLS_QUERY);
 
+  const [
+    handleWifiScan,
+    { loading: loadingWifiScan, error: errorWifiScan, data: dataWifiScan },
+  ] = useLazyQuery(MCU_WIFI_SCAN_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [
+    saveSettings,
+    { loading: loadingSave, error: errorSave },
+  ] = useLazyQuery(SET_SETTINGS_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [
+    savePools,
+    { loading: loadingSavePools, error: errorSavePools },
+  ] = useLazyQuery(UPDATE_POOLS_QUERY, { fetchPolicy: 'no-cache' });
+
   useEffect(() => {
-    if (loadingSettings || loadingPools) return;
+    if (loadingSettings || loadingPools || errorQuerySettings || errorQueryPools) return;
 
     const {
       Pool: {
@@ -291,9 +312,9 @@ const Settings = () => {
         selected: settingsData.nodeEnableTor,
       }
     });
-  }, [loadingSettings, loadingPools, dataSettings, dataPools, minerInitialModes]);
+  }, [loadingSettings, loadingPools, dataSettings, dataPools, minerInitialModes, errorQuerySettings, errorQueryPools]);
 
-  // Trig any chenge in settings to display the buttons
+  // Trigger any change in settings to display the buttons
   useEffect(() => {
     const restartMinerFields = [
       'minerMode',
@@ -312,7 +333,7 @@ const Settings = () => {
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
-  }, [settings]);
+  }, [settings, currentSettings]);
 
   const handlePoolChange = (e) => {
     setErrorForm(null);
@@ -423,31 +444,73 @@ const Settings = () => {
     console.log(e.target.id)
   };
 
-  const [
-    handleWifiScan,
-    { loading: loadingWifiScan, error: errorWifiScan, data: dataWifiScan },
-  ] = useLazyQuery(MCU_WIFI_SCAN_QUERY);
+  const handlesSaveSettings = async (type) => {
+    const {
+      agree,
+      minerMode,
+      voltage,
+      frequency,
+      fan_low,
+      fan_high,
+      apiAllow,
+      customApproval,
+      temperatureUnit,
+      nodeRpcPassword,
+      nodeEnableTor,
+      nodeUserConf,
+      pool,
+    } = settings;
 
-  const [
-    saveSettings,
-    { loading: loadingSave, error: errorSave },
-  ] = useLazyQuery(SET_SETTINGS_QUERY);
+    const {
+      enabled,
+      url,
+      username,
+      password,
+      index,
+    } = pool;
 
-  const [
-    savePools,
-    { loading: loadingSavePools, error: errorSavePools },
-  ] = useLazyQuery(UPDATE_POOLS_QUERY);
+    const input = {
+      agree,
+      minerMode,
+      voltage,
+      frequency,
+      fan_low,
+      fan_high,
+      apiAllow,
+      customApproval,
+      temperatureUnit,
+      nodeRpcPassword,
+      nodeEnableTor,
+      nodeUserConf,
+    }
 
-  const handlesSaveSettings = (type) => {
-    const input = _.clone(settings);
-    const poolInput = _.clone(input.pool);
-    delete poolInput.__typename;
-    delete input.pool;
-    delete input.__typename;
-    console.log(poolInput);
-    saveSettings({ variables: { input } });
-    savePools({ variables: { input: { pools: [poolInput] } } });
+    const poolInput = {
+      enabled,
+      url,
+      username,
+      password,
+      index,
+    }
+
+    await saveSettings({ variables: { input } });
+    await savePools({ variables: { input: { pools: [poolInput] } } });
+    await refetchSettings();
+    await refetchPools();
     // if (type === 'restart') restartNeeded();
+  }
+
+  if (errorQuerySettings || errorQueryPools) {
+    return (
+      <Alert borderRadius='8px' status='error' variant='subtle'>
+        <Flex>
+          <AlertIcon />
+          <Flex direction='column'>
+            <AlertTitle mr='12px'>Error</AlertTitle>
+            <AlertDescription>{errorQuerySettings.toString() || errorQueryPools.toString()}</AlertDescription>
+          </Flex>
+        </Flex>
+      </Alert>
+    )
   }
 
   return (
@@ -512,7 +575,7 @@ const Settings = () => {
             textColor={textColor}
             icon={RiDatabase2Fill}
           >
-            {errorForm && <Flex px='22px'><Text color='red'>Field {errorForm} can't be empty</Text></Flex>}
+            {errorForm && <Flex px='22px'><Text color='red'>Field {errorForm} can&apos;t be empty</Text></Flex>}
             <Grid templateColumns='repeat(6, 1fr)' gap={2}>
               <GridItem colSpan={3}>
                 <SimpleCard title={'URL'} textColor={textColor} icon={MdWebAsset}>

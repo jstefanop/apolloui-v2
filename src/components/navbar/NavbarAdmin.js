@@ -3,7 +3,6 @@ import {
   Box,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   Flex,
   Text,
   useColorModeValue,
@@ -12,19 +11,63 @@ import _ from 'lodash';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
-import AdminNavbarLinks from './NavbarLinksAdmin';
 import Link from 'next/link';
+import { useQuery, useLazyQuery } from '@apollo/client';
+import { useDispatch, useSelector } from 'react-redux';
 
-const AdminNavbar = ({
-  secondary,
-  message,
-  routes,
-  stats,
-  loading,
-  ...props
-}) => {
+import AdminNavbarLinks from './NavbarLinksAdmin';
+import NavbarSeconday from './NavbarSecondary';
+import { NAVBAR_STATS_QUERY } from '../../graphql/navbarStats';
+import {
+  MINER_RESTART_QUERY,
+  MINER_START_QUERY,
+  MINER_STOP_QUERY,
+} from '../../graphql/miner';
+import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
+import { updateNavbarStats } from '../../redux/actions/navbarStats';
+import { navbarStatsSelector } from '../../redux/reselect/navbarStats';
+import {
+  resetMinerAction,
+  updateMinerAction,
+} from '../../redux/actions/minerAction';
+
+const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [scrolled, setScrolled] = useState(false);
+
+  const { loading, error, data, startPolling } = useQuery(NAVBAR_STATS_QUERY);
+
+  const {
+    data: { online, stats, nodeStats },
+    error: navbarStatsError,
+  } = useSelector(navbarStatsSelector);
+
+  const { error: nodeError, networkInfo: nodeNetworkInfo } = nodeStats;
+
+  useEffect(() => {
+    startPolling(5000);
+    dispatch(updateNavbarStats({ loading, error, data }));
+  }, [startPolling, dispatch, loading, error, data]);
+
+  // Miner actions
+  const [startMiner, { loading: loadingMinerStart, error: errorMinerStart }] =
+    useLazyQuery(MINER_START_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [stopMiner, { loading: loadingMinerStop, error: errorMinerStop }] =
+    useLazyQuery(MINER_STOP_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [
+    restartMiner,
+    { loading: loadingMinerRestart, error: errorMinerRestart },
+  ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
+
+  // Node actions
+  const [startNode, { loading: loadingNodeStart, error: errorNodeStart }] =
+    useLazyQuery(NODE_START_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
+    useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     window.addEventListener('scroll', changeNavbar);
@@ -33,6 +76,73 @@ const AdminNavbar = ({
       window.removeEventListener('scroll', changeNavbar);
     };
   });
+
+  let timeoutId;
+
+  const handleSystemAction = (action) => {
+    clearTimeout(timeoutId);
+    let title;
+    let description;
+    let loadingAction;
+    let errorAction;
+    switch (action) {
+      case 'stopMiner':
+        stopMiner();
+        title = 'Stopping miner';
+        description = 'Your miner will be stopped in a few seconds';
+        loadingAction = loadingMinerStop;
+        errorAction = errorMinerStop;
+        break;
+      case 'startMiner':
+        startMiner();
+        title = 'Starting miner';
+        description = 'Your miner will be available in a moment, please hold on';
+        loadingAction = loadingMinerStart;
+        errorAction = errorMinerStart;
+        break;
+      case 'restartMiner':
+        restartMiner();
+        title = 'Restarting miner';
+        description = 'Your miner will be available in a moment, please hold on';
+        loadingAction = loadingMinerRestart;
+        errorAction = errorMinerRestart;
+        break;
+      case 'stopNode':
+        stopNode();
+        title = 'Stopping Bitcoin node';
+        description = 'Your node will be stopped in a few seconds';
+        loadingAction = loadingNodeStart;
+        errorAction = errorNodeStart;
+        break;
+      case 'startNode':
+        startNode();
+        title = 'Starting Bitcoin node';
+        description = 'Your node will be available in a moment, please hold on';
+        loadingAction = loadingNodeStop;
+        errorAction = errorNodeStop;
+        break;
+      default:
+        modal = false;
+    }
+
+    const dataAction = {
+      action,
+      title,
+      description,
+    };
+
+    dispatch(
+      updateMinerAction({
+        loading: loadingAction,
+        error: errorAction,
+        data: dataAction,
+      })
+    );
+
+    timeoutId = setTimeout(() => {
+      dispatch(resetMinerAction());
+    }, 10000);
+  };
 
   const currentRoute = _.find(routes, { path: router.pathname });
 
@@ -60,106 +170,133 @@ const AdminNavbar = ({
     }
   };
 
-  return (
-    <Box
-      position={navbarPosition}
-      boxShadow={navbarShadow}
-      bg={navbarBg}
-      borderColor={navbarBorder}
-      filter={navbarFilter}
-      backdropFilter={navbarBackdrop}
-      backgroundPosition='center'
-      backgroundSize='cover'
-      borderRadius='16px'
-      borderWidth='1.5px'
-      borderStyle='solid'
-      transitionDelay='0s, 0s, 0s, 0s'
-      transitionDuration=' 0.25s, 0.25s, 0.25s, 0s'
-      transition-property='box-shadow, background-color, filter, border'
-      transitionTimingFunction='linear, linear, linear, linear'
-      alignItems={{ xl: 'center' }}
-      display={secondary ? 'block' : 'flex'}
-      minH='75px'
-      justifyContent={{ xl: 'center' }}
-      lineHeight='25.6px'
-      mx='auto'
-      mt={secondaryMargin}
-      pb='8px'
-      right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
-      px={{
-        sm: paddingX,
-        md: '10px',
-      }}
-      ps={{
-        xl: '12px',
-      }}
-      pt='8px'
-      top={{ base: '12px', md: '16px', xl: '18px' }}
-      w={{
-        base: 'calc(100vw - 6%)',
-        md: 'calc(100vw - 8%)',
-        lg: 'calc(100vw - 6%)',
-        xl: 'calc(100vw - 350px)',
-        '2xl': 'calc(100vw - 365px)',
-      }}
-    >
-      <Flex
-        w='100%'
-        flexDirection={{
-          sm: 'column',
-          md: 'row',
-        }}
-        alignItems={{ xl: 'center' }}
-        mb={gap}
-      >
-        <Box mb={{ sm: '8px', md: '5px' }}>
-          {currentRoute && currentRoute.name !== 'Dashboard' && (
-            <Breadcrumb>
-              <BreadcrumbItem color={secondaryText} fontSize='sm'>
-                <Link href='/dashboard'>Dashboard</Link>
-              </BreadcrumbItem>
+  // console.log(minerOnline, minerStats)
 
-              <BreadcrumbItem color={secondaryText} fontSize='sm'>
-                <Link href={currentRoute.path}>{currentRoute.name}</Link>
-              </BreadcrumbItem>
-            </Breadcrumb>
+  return (
+    <>
+      <Box
+        position={navbarPosition}
+        boxShadow={navbarShadow}
+        bg={navbarBg}
+        borderColor={navbarBorder}
+        filter={navbarFilter}
+        backdropFilter={navbarBackdrop}
+        backgroundPosition="center"
+        backgroundSize="cover"
+        borderRadius="16px"
+        borderWidth="1.5px"
+        borderStyle="solid"
+        transitionDelay="0s, 0s, 0s, 0s"
+        transitionDuration=" 0.25s, 0.25s, 0.25s, 0s"
+        transition-property="box-shadow, background-color, filter, border"
+        transitionTimingFunction="linear, linear, linear, linear"
+        alignItems={{ xl: 'center' }}
+        display={secondary ? 'block' : 'flex'}
+        minH="75px"
+        justifyContent={{ xl: 'center' }}
+        lineHeight="25.6px"
+        mx="auto"
+        mt={secondaryMargin}
+        pb="8px"
+        right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
+        px={{
+          sm: paddingX,
+          md: '10px',
+        }}
+        ps={{
+          xl: '12px',
+        }}
+        pt="8px"
+        top={{ base: '12px', md: '16px', xl: '18px' }}
+        w={{
+          base: 'calc(100vw - 6%)',
+          md: 'calc(100vw - 8%)',
+          lg: 'calc(100vw - 6%)',
+          xl: 'calc(100vw - 350px)',
+          '2xl': 'calc(100vw - 365px)',
+        }}
+      >
+        <Flex
+          w="100%"
+          flexDirection={{
+            sm: 'column',
+            md: 'row',
+          }}
+          alignItems={{ xl: 'center' }}
+          mb={gap}
+        >
+          <Box mb={{ sm: '8px', md: '5px' }}>
+            {currentRoute && currentRoute.name !== 'Dashboard' && (
+              <Breadcrumb>
+                <BreadcrumbItem color={secondaryText} fontSize="sm">
+                  <Link href="/dashboard">Dashboard</Link>
+                </BreadcrumbItem>
+
+                <BreadcrumbItem color={secondaryText} fontSize="sm">
+                  <Link href={currentRoute.path}>{currentRoute.name}</Link>
+                </BreadcrumbItem>
+              </Breadcrumb>
+            )}
+
+            <Text
+              color={mainText}
+              bg="inherit"
+              borderRadius="inherit"
+              fontWeight="bold"
+              fontSize="34px"
+              _hover={{ color: { mainText } }}
+              _active={{
+                bg: 'inherit',
+                transform: 'none',
+                borderColor: 'transparent',
+              }}
+              _focus={{
+                boxShadow: 'none',
+              }}
+            >
+              {currentRoute && currentRoute.name}
+            </Text>
+          </Box>
+
+          {currentRoute && currentRoute.name === 'Miner' && (
+            <Box ml="5" display={{ base: 'none', xl: 'block' }}>
+              <NavbarSeconday
+                type={'miner'}
+                handleSystemAction={handleSystemAction}
+                minerOnline={online}
+              />
+            </Box>
           )}
 
-          <Text
-            color={mainText}
-            bg='inherit'
-            borderRadius='inherit'
-            fontWeight='bold'
-            fontSize='34px'
-            _hover={{ color: { mainText } }}
-            _active={{
-              bg: 'inherit',
-              transform: 'none',
-              borderColor: 'transparent',
-            }}
-            _focus={{
-              boxShadow: 'none',
-            }}
-          >
-            {currentRoute && currentRoute.name}
-          </Text>
-        </Box>
+          {currentRoute && currentRoute.name === 'Node' && (
+            <Box ml="5" display={{ base: 'none', xl: 'block' }}>
+              <NavbarSeconday
+                type={'node'}
+                handleSystemAction={handleSystemAction}
+                nodeNetworkInfo={nodeNetworkInfo}
+              />
+            </Box>
+          )}
 
-        {!loading && (
-          <Box ms='auto' w={{ sm: '100%', md: 'unset' }}>
+          <Box ms="auto" w={{ sm: '100%', md: 'unset' }}>
             <AdminNavbarLinks
               onOpen={props.onOpen}
               secondary={secondary}
               fixed={props.fixed}
               scrolled={scrolled}
               routes={routes}
-              stats={stats}
+              handleSystemAction={handleSystemAction}
+              minerOnline={online}
+              minerStats={stats}
+              nodeError={nodeError}
+              nodeNetworkInfo={nodeNetworkInfo}
+              error={navbarStatsError}
+              loading={loading}
             />
           </Box>
-        )}
-      </Flex>
-      {secondary ? <Text color='white'>{message}</Text> : null}
-    </Box>
+        </Flex>
+      </Box>
+    </>
   );
 };
 

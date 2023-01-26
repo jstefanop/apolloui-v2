@@ -41,3 +41,42 @@ export const NODE_STATS_QUERY = gql`
     }
   }
 `;
+
+export const NODE_STOP_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query NODE_STOP { 
+    Node {
+      stop {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const NODE_START_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query NODE_START { 
+    Node {
+      start {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const NODE_FORMAT_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query NODE_FORMAT { 
+    Node {
+      format {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;

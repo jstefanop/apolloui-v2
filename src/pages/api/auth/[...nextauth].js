@@ -17,7 +17,7 @@ export const authOptions = {
       async authorize(credentials, req) {
         try {
           const authData = await axios({
-            url: 'http://192.168.86.38:5000/api/graphql',
+            url: 'http://localhost:5000/api/graphql',
             method: 'post',
             data: {
               query: `

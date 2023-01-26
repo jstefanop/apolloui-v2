@@ -1,5 +1,9 @@
-import auth from './auth';
+import navbarStats from './navbarStats';
+import minerAction from './minerAction';
+import graphqlErrors from './graphqlErrors';
 
 export {
-  auth,
+  navbarStats,
+  minerAction,
+  graphqlErrors,
 };

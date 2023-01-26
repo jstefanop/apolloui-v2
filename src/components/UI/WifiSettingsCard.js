@@ -7,7 +7,6 @@ import {
   Stack,
   Badge,
   Box,
-  Divider,
   Alert,
   AlertDescription,
   AlertIcon,
@@ -114,7 +113,7 @@ const WifiSettingsCard = ({ textColor, loading, error, data }) => {
                         variant={'outline'}
                         size={'xs'}
                         mb={'2'}
-                        handleClick={() => network.inuse ? handleWifiDisconnect() : handleWifiConnect(network.ssid)}
+                        onClick={() => network.inuse ? handleWifiDisconnect() : handleWifiConnect(network.ssid)}
                       >
                         {network.inuse ? 'Disconnect' : 'Connect'}
                       </Button>

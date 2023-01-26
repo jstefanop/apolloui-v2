@@ -11,7 +11,6 @@ import { useState } from 'react';
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
 import { RiScan2Fill } from 'react-icons/ri';
 import Card from '../../components/card/Card';
-import LoadingIcon from './loadingIcon';
 
 const PanelCard = ({
   children,
@@ -50,7 +49,9 @@ const PanelCard = ({
           {buttonText && (
             <Flex align-items='center'>
               <Button
-                leftIcon={buttonLoading ? <LoadingIcon /> : <RiScan2Fill />}
+                isLoading={buttonLoading}
+                loadingText='Scanning'
+                leftIcon={<RiScan2Fill />}
                 colorScheme={'gray'}
                 variant={'outline'}
                 size={'sm'}
