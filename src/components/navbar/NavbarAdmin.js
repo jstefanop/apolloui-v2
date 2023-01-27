@@ -12,43 +12,44 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useQuery, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { useDispatch, useSelector } from 'react-redux';
 
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import NavbarSeconday from './NavbarSecondary';
-import { NAVBAR_STATS_QUERY } from '../../graphql/navbarStats';
 import {
   MINER_RESTART_QUERY,
   MINER_START_QUERY,
   MINER_STOP_QUERY,
 } from '../../graphql/miner';
 import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
-import { updateNavbarStats } from '../../redux/actions/navbarStats';
-import { navbarStatsSelector } from '../../redux/reselect/navbarStats';
 import {
   resetMinerAction,
   updateMinerAction,
 } from '../../redux/actions/minerAction';
+import { minerSelector } from '../../redux/reselect/miner';
+import { nodeSelector } from '../../redux/reselect/node';
 
 const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [scrolled, setScrolled] = useState(false);
 
-  const { loading, error, data, startPolling } = useQuery(NAVBAR_STATS_QUERY);
-
+  // Miner data
   const {
-    data: { online, stats, nodeStats },
-    error: navbarStatsError,
-  } = useSelector(navbarStatsSelector);
+    loading,
+    data: { online, stats },
+    error,
+  } = useSelector(minerSelector);
+
+  // Node data
+  const {
+    data: nodeStats,
+    error: nodeErrors,
+    loading: nodeLoading,
+  } = useSelector(nodeSelector);
 
   const { error: nodeError, networkInfo: nodeNetworkInfo } = nodeStats;
-
-  useEffect(() => {
-    startPolling(5000);
-    dispatch(updateNavbarStats({ loading, error, data }));
-  }, [startPolling, dispatch, loading, error, data]);
 
   // Miner actions
   const [startMiner, { loading: loadingMinerStart, error: errorMinerStart }] =
@@ -96,14 +97,16 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
       case 'startMiner':
         startMiner();
         title = 'Starting miner';
-        description = 'Your miner will be available in a moment, please hold on';
+        description =
+          'Your miner will be available in a moment, please hold on';
         loadingAction = loadingMinerStart;
         errorAction = errorMinerStart;
         break;
       case 'restartMiner':
         restartMiner();
         title = 'Restarting miner';
-        description = 'Your miner will be available in a moment, please hold on';
+        description =
+          'Your miner will be available in a moment, please hold on';
         loadingAction = loadingMinerRestart;
         errorAction = errorMinerRestart;
         break;
@@ -290,7 +293,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               minerStats={stats}
               nodeError={nodeError}
               nodeNetworkInfo={nodeNetworkInfo}
-              error={navbarStatsError}
+              error={error}
               loading={loading}
             />
           </Box>

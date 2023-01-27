@@ -1,4 +1,4 @@
-import { UPDATE_NAVBAR_STATS } from '../actions/actionTypes';
+import { UPDATE_NODE_STATS } from '../actions/actionTypes';
 
 const initialState = {
   data: null,
@@ -8,7 +8,7 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case UPDATE_NAVBAR_STATS:
+    case UPDATE_NODE_STATS:
       return {
         ...state,
         data: action.payload.data,

@@ -10,7 +10,10 @@ import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from 'moment';
-import { resetGraphqlErrors, updateGraphqlErrors } from '../redux/actions/graphqlErrors';
+import {
+  resetGraphqlErrors,
+  updateGraphqlErrors,
+} from '../redux/actions/graphqlErrors';
 import { store } from '../redux/store';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
@@ -19,7 +22,7 @@ const ls = typeof window !== 'undefined' ? localStorage : {};
 
 let hostnameApi;
 process.env.NODE_ENV
-  ? (hostnameApi = `localhost`)
+  ? (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST)
   : ({ hostname } = new URL(window.location.href));
 
 let apolloClient;
@@ -29,7 +32,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message }) => {
       const err = `[GraphQL error]: Message: ${message}`;
-      store.dispatch(updateGraphqlErrors({ error: err }))
+      store.dispatch(updateGraphqlErrors({ error: err }));
       console.log(err);
     });
   if (networkError) {
@@ -64,6 +67,9 @@ const authLink = new ApolloLink((operation, forward) => {
 function createApolloClient() {
   const cache = new InMemoryCache({
     typePolicies: {
+      MinerActions: {
+        merge: true,
+      },
       MinerStatsResult: {
         fields: {
           stats: {

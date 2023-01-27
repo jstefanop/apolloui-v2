@@ -7,7 +7,10 @@ import {
   StatNumber,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { percentColor } from '../../lib/utils';
 import GaugeChart from '../charts/GaugeCharts';
+import ChartLoader from './Loaders/ChartLoader';
 
 const NoCardStatisticsGauge = ({
   id,
@@ -15,26 +18,26 @@ const NoCardStatisticsGauge = ({
   name,
   value,
   rawValue,
+  percent,
   total,
   gauge,
+  align,
+  loading,
   ...props
 }) => {
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const textColorSecondary = 'secondaryGray.600';
-  let percentage;
-  let roundedPercentage;
+  const [roundedPercentage, setRoundedPercentage] = useState(percent);
 
-  if (rawValue && total) {
-    percentage = (rawValue / total) * 100;
-    roundedPercentage = Math.round(percentage * 100) / 100;
-  }
+  useEffect(() => {
+    if (rawValue && total) {
+      const percentage = (rawValue / total) * 100;
+      setRoundedPercentage(Math.round(percentage * 100) / 100);
+    }
+    if (percent) setRoundedPercentage(percent);
+  }, [rawValue, total, percent]);
 
-  const gaugeColor =
-    roundedPercentage <= 30
-      ? '#8bc34a'
-      : roundedPercentage <= 70
-      ? '#ffab00'
-      : '#f44336';
+  const gaugeColor = percentColor(roundedPercentage);
 
   const chartOptions = {
     chart: {
@@ -77,72 +80,49 @@ const NoCardStatisticsGauge = ({
     fill: {
       type: 'solid',
       opacity: '1',
-      /*
-      gradient: {
-        inverseColors: true,
-        gradientToColors: [gaugeColor],
-        colorStops: [
-          {
-            offset: 0,
-            color: '#f44336',
-            opacity: 1,
-          },
-          {
-            offset: 20,
-            color: '#ffab00',
-            opacity: 1,
-          },
-          {
-            offset: 70,
-            color: '#8bc34a',
-            opacity: 1,
-          },
-          {
-            offset: 100,
-            color: '#fff',
-            opacity: 1,
-          },
-        ],
-      },
-      */
     },
   };
 
   return (
-    <Flex align="center" direction="column" w="100%">
-      <Flex justify="space-between" align="start">
-        <Flex flexDirection="column" align="start">
-          {startContent}
-        </Flex>
-        <Flex align="center">
-          <Stat my="auto" ms={startContent ? '8px' : '0px'}>
-            <StatNumber
-              color={textColor}
-              fontSize={{
-                base: '2xl',
-              }}
-            >
-              {value}
-            </StatNumber>
-            <StatLabel
-              lineHeight="100%"
-              color={textColorSecondary}
-              fontSize={{
-                base: 'sm',
-              }}
-            >
-              {name}
-            </StatLabel>
-          </Stat>
-        </Flex>
-      </Flex>
-      {gauge && roundedPercentage && (
-        <Box>
-          <GaugeChart
-            chartOptions={chartOptions}
-            chartData={[roundedPercentage]}
-          />
-        </Box>
+    <Flex align={align || 'center'} direction="column" w="100%">
+      {loading ? (
+        <ChartLoader />
+      ) : (
+        <>
+          <Flex justify="space-between">
+            <Flex flexDirection="column">{startContent}</Flex>
+            <Flex align="center">
+              <Stat my="auto" ms={startContent ? '8px' : '0px'}>
+                <StatNumber
+                  color={textColor}
+                  fontSize={{
+                    base: '2xl',
+                  }}
+                >
+                  {value}
+                </StatNumber>
+                <StatLabel
+                  lineHeight="100%"
+                  color={textColorSecondary}
+                  fontSize={{
+                    base: 'sm',
+                  }}
+                >
+                  {name}
+                </StatLabel>
+              </Stat>
+            </Flex>
+          </Flex>
+          {gauge && roundedPercentage && (
+            <Box>
+              <GaugeChart
+                chartOptions={chartOptions}
+                chartData={[roundedPercentage]}
+                id={id}
+              />
+            </Box>
+          )}
+        </>
       )}
     </Flex>
   );

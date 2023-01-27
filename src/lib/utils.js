@@ -2,7 +2,8 @@ export const displayHashrate = (
   hashRate,
   unit = 'h',
   withUnit = true,
-  precision = 2
+  precision = 2,
+  returnObject = false
 ) => {
   var rate = 1000;
   precision = typeof precision === 'number' ? precision : 2;
@@ -31,45 +32,73 @@ export const displayHashrate = (
   if (hashRate > 900000000000) {
     return withUnit
       ? parseFloat(hashRate / 1000000000000).toFixed(precision) + ' Th/s'
+      : returnObject
+      ? {
+          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
+          unit: 'Th/s',
+        }
       : parseFloat(parseFloat(hashRate / 1000000000000).toFixed(precision));
   } else if (hashRate > 900000000) {
     return withUnit
       ? parseFloat(hashRate / 1000000000).toFixed(precision) + ' Gh/s'
+      : returnObject
+      ? {
+          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
+          unit: 'Gh/s',
+        }
       : parseFloat(parseFloat(hashRate / 1000000000).toFixed(precision));
   } else if (hashRate > 900000) {
     return withUnit
       ? parseFloat(hashRate / 1000000).toFixed(precision) + ' Mh/s'
+      : returnObject
+      ? {
+          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
+          unit: 'Mh/s',
+        }
       : parseFloat(parseFloat(hashRate / 1000000).toFixed(precision));
   } else if (hashRate > 900) {
     return withUnit
       ? parseFloat(hashRate / 1000).toFixed(precision) + ' Kh/s'
+      : returnObject
+      ? {
+          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
+          unit: 'Kh/s',
+        }
       : parseFloat(parseFloat(hashRate / 1000).toFixed(precision));
   } else {
     return withUnit
       ? hashRate.toFixed(precision) + ' H/s'
+      : returnObject
+      ? {
+          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
+          unit: 'H/s',
+        }
       : hashRate.toFixed(precision);
   }
 };
 
-export const bytesToSize = (bytes) => {
-  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  if (bytes === 0) return '0 Byte';
-  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
+export const percentColor = (value) => {
+  return value <= 40
+    ? '#03a9f4'
+    : value <= 55
+    ? '#8bc34a'
+    : value <= 70
+    ? '#ffab00'
+    : value <= 85
+    ? '#ff5722'
+    : '#f44336';
 };
 
-export const percentColor = (percent, inverse = false) => {
-  if (inverse) {
-    if (percent && percent < 25) return 'danger';
-    else if (percent >= 25 && percent < 50) return 'warning';
-    else if (percent >= 50 && percent < 75) return 'primary';
-    else if (percent >= 75) return 'success';
-  }
+export const bytesToSize = (bytes, decimals = 2, withUnits = true) => {
+  if (bytes === 0) return '0 Bytes';
 
-  if (percent && percent < 25) return 'primary';
-  else if (percent >= 25 && percent < 50) return 'success';
-  else if (percent >= 50 && percent < 75) return 'warning';
-  else if (percent >= 75) return 'danger';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${(withUnits) ? ' ' + sizes[i] : ''}`;
 };
 
 export const tempColor = (value) => {

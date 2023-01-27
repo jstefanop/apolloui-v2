@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client';
 import {
   Box,
   useColorModeValue,
@@ -7,9 +8,15 @@ import {
   Flex,
   Icon,
   SimpleGrid,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
+import _ from 'lodash';
 
-import React from 'react';
+import React, { memo, useEffect, useRef } from 'react';
+import CountUp from 'react-countup';
 import {
   MdLocalFireDepartment,
   MdPower,
@@ -19,11 +26,18 @@ import {
   MdOutlinePower,
   MdOutlineSignalWifi0Bar,
 } from 'react-icons/md';
+import { BulletList, List } from 'react-content-loader';
+import { useSelector } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
+import LoadingIcon from '../components/UI/LoadingIcon';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
 import TileCard from '../components/UI/TileCard';
+import { bytesToSize, displayHashrate } from '../lib/utils';
+import { nodeSelector } from '../redux/reselect/node';
+import { minerSelector } from '../redux/reselect/miner';
+import { mcuSelector } from '../redux/reselect/mcu';
 
 const Dashboard = () => {
   const cardColor = useColorModeValue('white', 'blue.700');
@@ -36,6 +50,136 @@ const Dashboard = () => {
   );
   const powerCardColor = useColorModeValue('gray.900', 'gray.500');
   const powerIconBgColor = useColorModeValue('gray.600', 'white');
+
+  // Miner data
+  const {
+    loading: loadingMiner,
+    data: { stats: dataMiner },
+    error: errorMiner,
+  } = useSelector(minerSelector);
+
+  // Mcu data
+  const {
+    loading: loadingMcu,
+    data: dataMcu,
+    error: errorMcu,
+  } = useSelector(mcuSelector);
+
+  // Node data
+  const {
+    loading: loadingNode,
+    data: dataNode,
+    error: errorNode,
+  } = useSelector(nodeSelector);
+
+  // Set Previous state for CountUp component
+  const prevData = useRef(null);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      prevData.current = dataMiner;
+    }, process.env.NEXT_PUBLIC_POLLING_TIME);
+
+    return () => clearInterval(intervalId);
+  }, [dataMiner]);
+
+  // Miner hashrate
+  const globalHashrate = displayHashrate(
+    _.sumBy(dataMiner, (hb) => {
+      if (hb.status) return hb.hashrateInGh;
+      return null;
+    }),
+    'gh',
+    false,
+    2,
+    true
+  );
+
+  const prevGlobalHashrate = displayHashrate(
+    _.sumBy(prevData.current, (hb) => {
+      if (hb.status) return hb.hashrateInGh;
+      return null;
+    }),
+    'gh',
+    false,
+    2,
+    true
+  );
+
+  const globalAvgHashrate = displayHashrate(
+    _.sumBy(dataMiner, (hb) => {
+      if (hb.status) return hb.avgHashrateInGh;
+      return null;
+    }),
+    'gh',
+    false,
+    2,
+    true
+  );
+
+  const prevGlobalAvgHashrate = displayHashrate(
+    _.sumBy(prevData.current, (hb) => {
+      if (hb.status) return hb.avgHashrateInGh;
+      return null;
+    }),
+    'gh',
+    false,
+    2,
+    true
+  );
+
+  // Miner watt
+  const minerPower =
+    _.chain(dataMiner)
+      .filter((hb) => {
+        return hb.status;
+      })
+      .meanBy((hb) => {
+        return hb.wattTotal;
+      })
+      .value() || 0;
+  const minerPowerPerGh =
+    _.chain(dataMiner)
+      .filter((hb) => {
+        return hb.status;
+      })
+      .meanBy((hb) => {
+        return hb.wattPerGHs;
+      })
+      .value() || 0;
+
+  const avgHashboardTemp = _.meanBy(dataMiner, (hb) => {
+    if (hb.status) return hb.temperature;
+    return null;
+  });
+
+  const avgHashboardErrors = _.chain(dataMiner)
+    .filter((hb) => {
+      return hb.status;
+    })
+    .meanBy((hb) => {
+      return hb.errorRate;
+    })
+    .value();
+
+  // Mcu stats
+  const {
+    temperature: mcuTemperature,
+    cpu: { threads: cpuCores, usedPercent: cpuUsage },
+    disks,
+    memory,
+  } = dataMcu;
+
+  const mcuPrimaryDisk = _.find(disks, { mountPoint: '/' });
+  const { used: diskUsed, total: diskTotal } = mcuPrimaryDisk || {};
+
+  const { used: memoryUsed, total: memoryTotal } = memory || {};
+
+  // Node stats
+  const {
+    error: { code: errorCodeNode },
+    connectionCount,
+  } = dataNode;
 
   return (
     <Box>
@@ -55,8 +199,27 @@ const Dashboard = () => {
               iconBgColor={hashIconBgColor}
               secondaryTextColor={hashSecondaryColor}
               title="Current hashrate"
-              mainData="2.98 TH/s"
-              secondaryData="2.87 TH/s"
+              loading={loadingMiner}
+              mainData={
+                <CountUp
+                  start={prevGlobalHashrate.value}
+                  end={globalHashrate.value}
+                  duration="1"
+                  decimals="2"
+                  separator={' '}
+                  suffix={` ${globalHashrate.unit}`}
+                />
+              }
+              secondaryData={
+                <CountUp
+                  start={prevGlobalAvgHashrate.value}
+                  end={globalAvgHashrate.value}
+                  duration="1"
+                  decimals="2"
+                  separator={' '}
+                  suffix={` ${globalAvgHashrate.unit}`}
+                />
+              }
               secondaryText="15 minutes average"
             />
           </GridItem>
@@ -81,65 +244,71 @@ const Dashboard = () => {
             gap={'20px'}
           >
             <GridItem>
-              <Card py="15px" bgColor={cardColor}>
+              <Card py="15px" bgColor={cardColor} h="100%">
                 <Flex direction="column" my="auto">
-                  <NoCardStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'white'}
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={MdWatchLater}
-                            color="brand.500"
+                  {loadingMiner ? (
+                    <BulletList />
+                  ) : (
+                    <>
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'white'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={MdWatchLater}
+                                color="brand.500"
+                              />
+                            }
                           />
                         }
+                        name="Miner temperature"
+                        value={`${avgHashboardTemp}°C`}
                       />
-                    }
-                    name="Miner temperature"
-                    value="62.5°C"
-                  />
-                  <NoCardStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'white'}
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={MdMemory}
-                            color="brand.500"
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'white'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={MdMemory}
+                                color="brand.500"
+                              />
+                            }
                           />
                         }
+                        name="System temperature"
+                        value={`${Math.round(mcuTemperature / 1000)}°C`}
                       />
-                    }
-                    name="System temperature"
-                    value="45.9°C"
-                  />
-                  <NoCardStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'white'}
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={MdWarning}
-                            color="brand.500"
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'white'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={MdWarning}
+                                color="brand.500"
+                              />
+                            }
                           />
                         }
+                        name="Hardware errors"
+                        value={`${avgHashboardErrors}%`}
                       />
-                    }
-                    name="Hardware errors"
-                    value="0.9%"
-                  />
+                    </>
+                  )}
                 </Flex>
               </Card>
             </GridItem>
@@ -150,7 +319,15 @@ const Dashboard = () => {
                 iconColor={iconColor}
                 iconBgColor={powerIconBgColor}
                 title="Power usage"
-                mainData="202 Watt"
+                mainData={
+                  <CountUp
+                    end={minerPower}
+                    duration="1"
+                    decimals="0"
+                    suffix={` Watt`}
+                  />
+                }
+                loading={loadingMiner}
               />
             </GridItem>
           </Grid>
@@ -182,11 +359,11 @@ const Dashboard = () => {
                     }
                   />
                 }
-                name="Miner temperature"
-                value="62.5°C"
-                rawValue="78"
-                total="90"
+                name="CPU usage"
+                value={`${cpuUsage}%`}
+                percent={cpuUsage}
                 gauge={true}
+                loading={loadingMcu}
               />
             </GridItem>
             <GridItem>
@@ -201,11 +378,16 @@ const Dashboard = () => {
                     }
                   />
                 }
-                name="System temperature"
-                value="45.9°C"
-                rawValue="45.9"
-                total="90"
+                name="Disk usage"
+                value={`${bytesToSize(
+                  diskUsed * 1024,
+                  0,
+                  false
+                )} / ${bytesToSize(diskTotal * 1024, 0)}`}
+                rawValue={diskUsed}
+                total={diskTotal}
                 gauge={true}
+                loading={loadingMcu}
               />
             </GridItem>
             <GridItem>
@@ -225,11 +407,16 @@ const Dashboard = () => {
                     }
                   />
                 }
-                name="Hardware errors"
-                value="0.9%"
-                rawValue="15"
-                total="100"
+                name="Memory usage"
+                value={`${bytesToSize(
+                  memoryUsed * 1024,
+                  1,
+                  false
+                )} / ${bytesToSize(memoryTotal * 1024, 1)}`}
+                rawValue={memoryUsed}
+                total={memoryTotal}
                 gauge={true}
+                loading={loadingMcu}
               />
             </GridItem>
           </Grid>
@@ -243,70 +430,83 @@ const Dashboard = () => {
                     Node status
                   </Text>
                 </Flex>
-                <Flex
-                  my="auto"
-                  align={{ base: 'center', xl: 'start' }}
-                  justify={{ base: 'center', xl: 'center' }}
-                  direction="row"
-                >
-                  <NoCardStatisticsGauge
-                    id="minerTemp"
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={MdWatchLater}
-                            color="brand.500"
-                          />
-                        }
-                      />
-                    }
-                    name="Miner temperature"
-                    value="62.5°C"
-                  />
-                  <NoCardStatisticsGauge
-                    id="minerTemp"
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={MdWatchLater}
-                            color="brand.500"
-                          />
-                        }
-                      />
-                    }
-                    name="Miner temperature"
-                    value="62.5°C"
-                  />
-                  <NoCardStatisticsGauge
-                    id="minerTemp"
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={MdWatchLater}
-                            color="brand.500"
-                          />
-                        }
-                      />
-                    }
-                    name="Miner temperature"
-                    value="62.5°C"
-                  />
-                </Flex>
+                {loadingNode ? (
+                  <BulletList />
+                ) : errorCodeNode ? (
+                  <Alert borderRadius={'10px'} status="warning">
+                    <AlertIcon />
+                    <AlertTitle>Warning</AlertTitle>
+                      <AlertDescription>Can't get stats from Node (error: {errorCodeNode})</AlertDescription>
+                  </Alert>
+                ) : (
+                  <Flex
+                    my="auto"
+                    align={{ base: 'center', xl: 'start' }}
+                    justify={{ base: 'center', xl: 'center' }}
+                    direction="row"
+                  >
+                    <NoCardStatisticsGauge
+                      id="minerTemp"
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={MdWatchLater}
+                              color="brand.500"
+                            />
+                          }
+                        />
+                      }
+                      name="Connections"
+                      value="20 / 32"
+                      align="start"
+                    />
+                    <NoCardStatisticsGauge
+                      id="minerTemp"
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={MdWatchLater}
+                              color="brand.500"
+                            />
+                          }
+                        />
+                      }
+                      name="Blocks"
+                      value="2345678"
+                      align="start"
+                    />
+                    <NoCardStatisticsGauge
+                      id="minerTemp"
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={MdWatchLater}
+                              color="brand.500"
+                            />
+                          }
+                        />
+                      }
+                      name="uptime"
+                      value="9 days"
+                      align="start"
+                    />
+                  </Flex>
+                )}
               </Card>
             </GridItem>
           </Grid>

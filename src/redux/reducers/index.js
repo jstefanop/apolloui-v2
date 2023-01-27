@@ -1,9 +1,13 @@
-import navbarStats from './navbarStats';
 import minerAction from './minerAction';
 import graphqlErrors from './graphqlErrors';
+import node from './node';
+import miner from './miner';
+import mcu from './mcu';
 
 export {
-  navbarStats,
   minerAction,
   graphqlErrors,
+  node,
+  miner,
+  mcu,
 };

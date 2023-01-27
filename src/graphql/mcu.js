@@ -76,9 +76,9 @@ export const MCU_WIFI_SCAN_QUERY = gql`
 
 export const MCU_WIFI_CONNECT_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query MCU_CONNECT_SCAN ($input: McuWifiConnectInput!) {
+  query MCU_CONNECT_SCAN($input: McuWifiConnectInput!) {
     Mcu {
-      wifiConnect (input: $input) {
+      wifiConnect(input: $input) {
         result {
           address
         }
@@ -99,6 +99,40 @@ export const MCU_WIFI_DISCONNECT_QUERY = gql`
           ...ErrorFragment
         }
       }
-    }    
+    }
   }
 `;
+
+export const initialState = {
+  Mcu: {
+    stats: {
+      result: {
+        stats: {
+          timestamp: null,
+          hostname: null,
+          operatingSystem: null,
+          uptime: null,
+          loadAverage: null,
+          architecture: null,
+          temperature: null,
+          minerTemperature: null,
+          minerFanSpeed: null,
+          activeWifi: null,
+          bfgminerLog: null,
+          network: [],
+          memory: {
+            total: null,
+            available: null,
+            used: null,
+            cache: null,
+          },
+          cpu: {
+            threads: null,
+            usedPercent: null,
+          },
+          disks: [],
+        },
+      },
+    },
+  },
+};

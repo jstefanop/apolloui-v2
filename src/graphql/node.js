@@ -80,3 +80,20 @@ export const NODE_FORMAT_QUERY = gql`
     }
   }
 `;
+
+export const initialState = {
+  Node: {
+    stats: {
+      result: {
+        stats: {
+          timestamp: null,
+          networkInfo: null,
+          error: {
+            code: null,
+            message: null,
+          },
+        },
+      },
+    },
+  },
+};

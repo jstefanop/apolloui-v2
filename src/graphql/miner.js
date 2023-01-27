@@ -220,7 +220,7 @@ export const MINER_STATS_QUERY = gql`
 
 export const MINER_STOP_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query MINER_STOP { 
+  query MINER_STOP {
     Miner {
       stop {
         error {
@@ -233,7 +233,7 @@ export const MINER_STOP_QUERY = gql`
 
 export const MINER_START_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query MINER_START { 
+  query MINER_START {
     Miner {
       start {
         error {
@@ -246,7 +246,7 @@ export const MINER_START_QUERY = gql`
 
 export const MINER_RESTART_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query MINER_RESTART { 
+  query MINER_RESTART {
     Miner {
       restart {
         error {
@@ -256,3 +256,219 @@ export const MINER_RESTART_QUERY = gql`
     }
   }
 `;
+
+export const initialState = {
+  Miner: {
+    online: {
+      result: {
+        online: {
+          timestamp: null,
+          status: false,
+        },
+      },
+    },
+    stats: {
+      result: {
+        stats: [
+          {
+            uuid: null,
+            date: null,
+            statVersion: null,
+            versions: {
+              miner: null,
+              minerDate: null,
+              minerDebug: null,
+              mspVer: null,
+            },
+            master: {
+              upTime: null,
+              diff: null,
+              boards: null,
+              errorSpi: null,
+              osc: null,
+              hwAddr: null,
+              boardsI: null,
+              boardsW: null,
+              wattPerGHs: null,
+              intervals: {
+                int_0: {
+                  name: null,
+                  interval: null,
+                  bySol: null,
+                  byDiff: null,
+                  byPool: null,
+                  byJobs: null,
+                  solutions: null,
+                  errors: null,
+                  errorRate: null,
+                  chipSpeed: null,
+                  chipRestarts: null,
+                },
+                int_30: {
+                  name: null,
+                  interval: null,
+                  bySol: null,
+                  byDiff: null,
+                  byPool: null,
+                  byJobs: null,
+                  solutions: null,
+                  errors: null,
+                  errorRate: null,
+                  chipSpeed: null,
+                  chipRestarts: null,
+                },
+                int_300: {
+                  name: null,
+                  interval: null,
+                  bySol: null,
+                  byDiff: null,
+                  byPool: null,
+                  byJobs: null,
+                  solutions: null,
+                  errors: null,
+                  errorRate: null,
+                  chipSpeed: null,
+                  chipRestarts: null,
+                },
+                int_900: {
+                  name: null,
+                  interval: null,
+                  bySol: null,
+                  byDiff: null,
+                  byPool: null,
+                  byJobs: null,
+                  solutions: null,
+                  errors: null,
+                  errorRate: null,
+                  chipSpeed: null,
+                  chipRestarts: null,
+                },
+                int_3600: {
+                  name: null,
+                  interval: null,
+                  bySol: null,
+                  byDiff: null,
+                  byPool: null,
+                  byJobs: null,
+                  solutions: null,
+                  errors: null,
+                  errorRate: null,
+                  chipSpeed: null,
+                  chipRestarts: null,
+                },
+              },
+            },
+            pool: {
+              host: null,
+              port: null,
+              userName: null,
+              diff: null,
+              intervals: {
+                int_0: {
+                  name: null,
+                  interval: null,
+                  jobs: null,
+                  cleanFlags: null,
+                  sharesSent: null,
+                  sharesAccepted: null,
+                  sharesRejected: null,
+                  solutionsAccepted: null,
+                  minRespTime: null,
+                  avgRespTime: null,
+                  maxRespTime: null,
+                  shareLoss: null,
+                  poolTotal: null,
+                  inService: null,
+                  subscribeError: null,
+                  diffChanges: null,
+                  reconnections: null,
+                  reconnectionsOnErrors: null,
+                  defaultJobShares: null,
+                  staleJobShares: null,
+                  duplicateShares: null,
+                  lowDifficultyShares: null,
+                  pwcSharesSent: null,
+                  pwcSharesDropped: null,
+                  bigDiffShares: null,
+                  belowTargetShare: null,
+                  pwcRestart: null,
+                  statOverflow: null,
+                },
+              },
+            },
+            fans: {
+              int_0: {
+                rpm: [],
+              },
+            },
+            temperature: {
+              count: null,
+              min: null,
+              avr: null,
+              max: null,
+            },
+            slots: {
+              int_0: {
+                revision: null,
+                spiNum: null,
+                spiLen: null,
+                pwrNum: null,
+                pwrLen: null,
+                btcNum: null,
+                specVoltage: null,
+                chips: null,
+                pwrOn: null,
+                pwrOnTarget: null,
+                revAdc: null,
+                temperature: null,
+                temperature1: null,
+                ocp: null,
+                heaterErr: null,
+                heaterErrNum: null,
+                inOHOsc: null,
+                ohOscNum: null,
+                ohOscTime: null,
+                overheats: null,
+                overheatsTime: null,
+                lowCurrRst: null,
+                currents: [],
+                brokenPwc: null,
+                solutions: null,
+                errors: null,
+                ghs: null,
+                errorRate: null,
+                chipRestarts: null,
+                wattPerGHs: null,
+                tmpAlert: [
+                  {
+                    alertLo: null,
+                    alertHi: null,
+                    numWrite: null,
+                  },
+                  {
+                    alertLo: null,
+                    alertHi: null,
+                    numWrite: null,
+                  },
+                ],
+                osc: null,
+                oscStopChip: null,
+              },
+            },
+            slaves: [
+              {
+                id: null,
+                uid: null,
+                ver: null,
+                rx: null,
+                err: null,
+                time: null,
+                ping: null,
+              },
+            ],
+          },
+        ],
+      },
+    },
+  },
+};

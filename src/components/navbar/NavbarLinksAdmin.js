@@ -70,14 +70,14 @@ export default function HeaderLinks({
 
   const globalHahsrate = displayHashrate(
     _.sumBy(minerStats, (hb) => {
-      if (hb.status) return hb.slots.int_0.ghs;
+      if (hb.status) return hb.hashrateInGh;
       return null;
     }),
     'gh'
   );
 
   const avgHashboardTemp = _.meanBy(minerStats, (hb) => {
-    if (hb.status) return hb.slots.int_0.temperature;
+    if (hb.status) return hb.temperature;
     return null;
   });
 

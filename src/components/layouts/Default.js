@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Portal,
   Box,
@@ -13,20 +13,83 @@ import { motion } from 'framer-motion';
 import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
 import Navbar from '../navbar/NavbarAdmin';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useQuery } from '@apollo/client';
+import { updateNodeStats } from '../../redux/actions/node';
+import { NODE_STATS_QUERY } from '../../graphql/node';
+import { MINER_STATS_QUERY } from '../../graphql/miner';
+import { updateMinerStats } from '../../redux/actions/miner';
+import { MCU_STATS_QUERY } from '../../graphql/mcu';
+import { updateMcuStats } from '../../redux/actions/mcu';
 
 const Layout = ({ children, routes }, props) => {
   const { onOpen } = useDisclosure();
+  const dispatch = useDispatch();
+
+  // Miner data
+  const {
+    loading: loadingMiner,
+    error: errorMiner,
+    data: dataMiner,
+    startPolling: startPollingMiner,
+  } = useQuery(MINER_STATS_QUERY);
+
+  useEffect(() => {
+    startPollingMiner(process.env.NEXT_PUBLIC_POLLING_TIME);
+    dispatch(
+      updateMinerStats({
+        loading: loadingMiner,
+        error: errorMiner,
+        data: dataMiner,
+      })
+    );
+  }, [startPollingMiner, dispatch, loadingMiner, errorMiner, dataMiner]);
+
+  // Mcu data
+  const {
+    loading: loadingMcu,
+    error: errorMcu,
+    data: dataMcu,
+    startPolling: startPollingMcu,
+  } = useQuery(MCU_STATS_QUERY);
+
+  useEffect(() => {
+    startPollingMcu(process.env.NEXT_PUBLIC_POLLING_TIME);
+    dispatch(
+      updateMcuStats({
+        loading: loadingMcu,
+        error: errorMcu,
+        data: dataMcu,
+      })
+    );
+  }, [startPollingMcu, dispatch, loadingMcu, errorMcu, dataMcu]);
+
+  // Node data
+  const {
+    loading: loadingNode,
+    error: errorNode,
+    data: dataNode,
+    startPolling: startPollingNode,
+  } = useQuery(NODE_STATS_QUERY);
+
+  useEffect(() => {
+    startPollingNode(process.env.NEXT_PUBLIC_POLLING_TIME_NODE);
+    dispatch(
+      updateNodeStats({
+        loading: loadingNode,
+        error: errorNode,
+        data: dataNode,
+      })
+    );
+  }, [startPollingNode, dispatch, loadingNode, errorNode, dataNode]);
 
   const {
-    error: errorAction,
     loading: loadingAction,
+    error: errorAction,
     data: dataAction,
   } = useSelector((state) => state.minerAction);
 
-  const {
-    error: errorGraphql,
-  } = useSelector((state) => state.graphqlErrors);
+  const { error: errorGraphql } = useSelector((state) => state.graphqlErrors);
 
   return (
     <motion.div
