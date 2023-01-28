@@ -7,13 +7,14 @@ import {
   MdViewComfy,
   MdMemory,
 } from 'react-icons/md';
+import { DashboardIcon } from './components/UI/Icons/DashboardIcon';
 
 const routes = [
   {
     name: 'Dashboard',
     layout: '/admin',
     path: '/dashboard',
-    icon: <Icon as={MdHome} width='20px' height='20px' color='inherit' />,
+    icon: <DashboardIcon width='20px' height='20px' color='inherit' />,
   },
   {
     name: 'Miner',

@@ -12,6 +12,7 @@ import {
   IconButton,
   MenuGroup,
   MenuDivider,
+  Button,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -26,21 +27,24 @@ import {
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import FixedPlugin from '../fixedPlugin/FixedPlugin';
-import { displayHashrate } from '../../lib/utils';
+import { MinerIcon } from '../UI/icons/MinerIcon';
+import { NodeIcon } from '../UI/Icons/NodeIcon';
+import { MinerTempIcon } from '../UI/Icons/MinerTemp';
+import { PowerOffIcon } from '../UI/Icons/PowerOffIcon';
 
 export default function HeaderLinks({
   secondary,
   routes,
   minerStats,
   minerOnline,
-  nodeError,
-  nodeNetworkInfo,
+  blocksCount,
+  errorNode,
   error,
   loading,
   handleSystemAction,
 }) {
   // Chakra Color Mode
-  const navbarIcon = useColorModeValue('gray.400', 'white');
+  const navbarIcon = useColorModeValue('gray.600', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
   const badgeColor = useColorModeValue('gray.700', 'white');
   const badgeBg = useColorModeValue('secondaryGray.300', 'navy.900');
@@ -50,12 +54,14 @@ export default function HeaderLinks({
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'
   );
 
+  const { globalHashrate, avgBoardTemp } = minerStats;
+
   const nodeStatusLabel =
-    nodeNetworkInfo && !nodeError
+    blocksCount && !errorNode.length
       ? 'Online'
-      : !nodeNetworkInfo && !nodeError
+      : !blocksCount && !errorNode.length
       ? 'Offline'
-      : nodeError
+      : errorNode.length
       ? 'Error'
       : 'Unknown';
 
@@ -68,19 +74,6 @@ export default function HeaderLinks({
       ? 'Error'
       : 'Unknown';
 
-  const globalHahsrate = displayHashrate(
-    _.sumBy(minerStats, (hb) => {
-      if (hb.status) return hb.hashrateInGh;
-      return null;
-    }),
-    'gh'
-  );
-
-  const avgHashboardTemp = _.meanBy(minerStats, (hb) => {
-    if (hb.status) return hb.temperature;
-    return null;
-  });
-
   return (
     <Flex
       w={{ sm: '100%', md: 'auto' }}
@@ -89,100 +82,13 @@ export default function HeaderLinks({
       bg={menuBg}
       flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'}
       p="10px"
+      px="14px"
       borderRadius="30px"
       boxShadow={shadow}
     >
       {!loading && (
         <Center>
-          <Flex ms="auto" p="6px" align="center" me="6px">
-            <Flex
-              align="center"
-              justify="center"
-              bg={badgeBox}
-              h="29px"
-              w="29px"
-              borderRadius="30px"
-              me="7px"
-            >
-              <Icon
-                w="24px"
-                h="24px"
-                color={
-                  minerStatusLabel === 'Online'
-                    ? 'green.500'
-                    : minerStatusLabel === 'Offline'
-                    ? 'red.500'
-                    : minerStatusLabel === 'Error'
-                    ? 'orange.500'
-                    : null
-                }
-                as={
-                  minerStatusLabel === 'Online'
-                    ? MdCheckCircle
-                    : minerStatusLabel === 'Offline'
-                    ? MdCancel
-                    : minerStatusLabel === 'Error'
-                    ? MdOutlineError
-                    : null
-                }
-              />
-            </Flex>
-            <Text
-              w="max-content"
-              color={badgeColor}
-              fontSize="sm"
-              fontWeight="700"
-              me="6px"
-            >
-              {minerStatusLabel}
-            </Text>
-          </Flex>
-
-          <Flex ms="auto" p="6px" align="center" me="6px">
-            <Flex
-              align="center"
-              justify="center"
-              bg={badgeBox}
-              h="29px"
-              w="29px"
-              borderRadius="30px"
-              me="7px"
-            >
-              <Icon
-                w="24px"
-                h="24px"
-                color={
-                  nodeStatusLabel === 'Online'
-                    ? 'green.500'
-                    : nodeStatusLabel === 'Offline'
-                    ? 'red.500'
-                    : nodeStatusLabel === 'Error'
-                    ? 'orange.500'
-                    : null
-                }
-                as={
-                  nodeStatusLabel === 'Online'
-                    ? MdCheckCircle
-                    : nodeStatusLabel === 'Offline'
-                    ? MdCancel
-                    : nodeStatusLabel === 'Error'
-                    ? MdOutlineError
-                    : null
-                }
-              />
-            </Flex>
-            <Text
-              w="max-content"
-              color={badgeColor}
-              fontSize="sm"
-              fontWeight="700"
-              me="6px"
-            >
-              {nodeStatusLabel}
-            </Text>
-          </Flex>
-
-          {/* HASHRATE */}
+          {/* NODE */}
           <Flex
             bg={badgeBg}
             display={secondary ? 'flex' : 'none'}
@@ -190,7 +96,8 @@ export default function HeaderLinks({
             ms="auto"
             p="6px"
             align="center"
-            me="6px"
+            me="8px"
+            px="10px"
           >
             <Flex
               align="center"
@@ -205,7 +112,57 @@ export default function HeaderLinks({
                 w="18px"
                 h="18px"
                 color={navbarIcon}
-                as={MdLocalFireDepartment}
+                as={NodeIcon}
+              />
+            </Flex>
+            <Icon
+              w="18px"
+              h="18px"
+              color={
+                nodeStatusLabel === 'Online'
+                  ? 'green.500'
+                  : nodeStatusLabel === 'Offline'
+                  ? 'red.500'
+                  : nodeStatusLabel === 'Error'
+                  ? 'orange.500'
+                  : null
+              }
+              as={
+                nodeStatusLabel === 'Online'
+                  ? MdCheckCircle
+                  : nodeStatusLabel === 'Offline'
+                  ? MdCancel
+                  : nodeStatusLabel === 'Error'
+                  ? MdOutlineError
+                  : null
+              }
+            />
+          </Flex>
+
+          {/* HASHRATE */}
+          <Flex
+            bg={badgeBg}
+            display={secondary ? 'flex' : 'none'}
+            borderRadius="30px"
+            ms="auto"
+            p="6px"
+            align="center"
+            me="8px"
+            px="10px"
+          >
+            <Flex
+              align="center"
+              justify="center"
+              bg={badgeBox}
+              h="29px"
+              w="29px"
+              borderRadius="30px"
+              me="7px"
+            >
+              <MinerIcon
+                w="18px"
+                h="18px"
+                color={navbarIcon}
               />
             </Flex>
             <Text
@@ -214,9 +171,32 @@ export default function HeaderLinks({
               fontSize="sm"
               fontWeight="700"
               me="6px"
+              minW="60px"
             >
-              {globalHahsrate}
+              {`${globalHashrate?.value} ${globalHashrate?.unit}`}
             </Text>
+            <Icon
+              w="18px"
+              h="18px"
+              color={
+                minerStatusLabel === 'Online'
+                  ? 'green.500'
+                  : minerStatusLabel === 'Offline'
+                  ? 'red.500'
+                  : minerStatusLabel === 'Error'
+                  ? 'orange.500'
+                  : null
+              }
+              as={
+                minerStatusLabel === 'Online'
+                  ? MdCheckCircle
+                  : minerStatusLabel === 'Offline'
+                  ? MdCancel
+                  : minerStatusLabel === 'Error'
+                  ? MdOutlineError
+                  : null
+              }
+            />
           </Flex>
 
           {/* TEMPERATURE */}
@@ -238,7 +218,7 @@ export default function HeaderLinks({
               borderRadius="30px"
               me="7px"
             >
-              <Icon w="18px" h="18px" color={navbarIcon} as={MdThermostat} />
+              <MinerTempIcon w="18px" h="18px" color={navbarIcon} />
             </Flex>
             <Text
               w="max-content"
@@ -247,7 +227,7 @@ export default function HeaderLinks({
               fontWeight="700"
               me="6px"
             >
-              {minerStatusLabel === 'Online' ? avgHashboardTemp : '-'}
+              {minerStatusLabel === 'Online' ? avgBoardTemp : '-'}
               {minerStatusLabel === 'Online' && <span>°C</span>}
             </Text>
           </Flex>
@@ -262,7 +242,7 @@ export default function HeaderLinks({
             <MenuButton
               as={IconButton}
               aria-label="Options"
-              icon={<MdCancel />}
+              icon={<PowerOffIcon />}
             />
             <MenuList>
               <MenuGroup title="Miner">
@@ -293,7 +273,7 @@ export default function HeaderLinks({
               </MenuGroup>
               <MenuDivider />
               <MenuGroup title="Node">
-                {!nodeNetworkInfo && (
+                {!blocksCount && (
                   <MenuItem
                     icon={<MdCancel />}
                     onClick={() => handleSystemAction('startNode')}
@@ -301,7 +281,7 @@ export default function HeaderLinks({
                     Start
                   </MenuItem>
                 )}
-                {nodeNetworkInfo && (
+                {blocksCount && (
                   <MenuItem
                     icon={<MdCancel />}
                     onClick={() => handleSystemAction('stopNode')}

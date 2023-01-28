@@ -16,9 +16,11 @@ const TileCard = ({
   secondaryData,
   secondaryText,
   loading,
+  errors,
+  ...props
 }) => {
   return (
-    <Card py="15px" bgColor={cardColor} h="100%">
+    <Card py="15px" h="100%" {...props}>
       <>
         <Flex marginBottom={'auto'}>
           <Text color="white" fontSize="lg" fontWeight="800">
@@ -29,16 +31,42 @@ const TileCard = ({
           justify={{ base: 'center' }}
           paddingBottom={secondaryData ? '8' : '0'}
         >
-          <IconBox
-            w="56px"
-            h="56px"
-            bg={iconBgColor}
-            icon={<Icon w="32px" h="32px" as={icon} color={iconColor} />}
-            marginRight="5"
-          />
-          <Text color="white" fontSize={{ base: '4xl' }} fontWeight="800">
-            {loading ? <LoadingIcon /> : mainData}
-          </Text>
+          {errors.length ? (
+            <>
+              <Text
+                color="white"
+                fontSize={{ base: '4xl' }}
+                fontWeight="800"
+              ></Text>
+              {errors.map((error, index) => {
+                <Text
+                  key={index}
+                  color={secondaryTextColor || 'gray'}
+                  fontSize={{ base: 'md' }}
+                >
+                  {error?.message || error?.code || error.toString()}
+                </Text>;
+              })}
+            </>
+          ) : (
+            <>
+              <IconBox
+                w="56px"
+                h="56px"
+                bg={iconBgColor}
+                icon={<Icon w="32px" h="32px" as={icon} color={iconColor} />}
+                marginRight="5"
+              />
+              <Text
+                color="white"
+                fontSize={{ base: '4xl' }}
+                fontWeight="800"
+                minW="180px"
+              >
+                {loading ? <LoadingIcon /> : mainData}
+              </Text>
+            </>
+          )}
         </Flex>
 
         <Flex mx="auto" mt={'auto'} pb={'5'} flexDirection="column">

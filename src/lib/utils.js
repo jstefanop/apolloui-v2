@@ -31,38 +31,38 @@ export const displayHashrate = (
 
   if (hashRate > 900000000000) {
     return withUnit
-      ? parseFloat(hashRate / 1000000000000).toFixed(precision) + ' Th/s'
+      ? parseFloat(hashRate / 1000000000000).toFixed(precision) + ' TH/s'
       : returnObject
       ? {
           value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'Th/s',
+          unit: 'TH/s',
         }
       : parseFloat(parseFloat(hashRate / 1000000000000).toFixed(precision));
   } else if (hashRate > 900000000) {
     return withUnit
-      ? parseFloat(hashRate / 1000000000).toFixed(precision) + ' Gh/s'
+      ? parseFloat(hashRate / 1000000000).toFixed(precision) + ' GH/s'
       : returnObject
       ? {
           value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'Gh/s',
+          unit: 'GH/s',
         }
       : parseFloat(parseFloat(hashRate / 1000000000).toFixed(precision));
   } else if (hashRate > 900000) {
     return withUnit
-      ? parseFloat(hashRate / 1000000).toFixed(precision) + ' Mh/s'
+      ? parseFloat(hashRate / 1000000).toFixed(precision) + ' MH/s'
       : returnObject
       ? {
           value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'Mh/s',
+          unit: 'MH/s',
         }
       : parseFloat(parseFloat(hashRate / 1000000).toFixed(precision));
   } else if (hashRate > 900) {
     return withUnit
-      ? parseFloat(hashRate / 1000).toFixed(precision) + ' Kh/s'
+      ? parseFloat(hashRate / 1000).toFixed(precision) + ' KH/s'
       : returnObject
       ? {
           value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'Kh/s',
+          unit: 'KH/s',
         }
       : parseFloat(parseFloat(hashRate / 1000).toFixed(precision));
   } else {

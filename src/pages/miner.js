@@ -2,7 +2,8 @@ import {
   Box,
   Icon,
   Text,
-  SimpleGrid,
+  Grid,
+  GridItem,
   useColorModeValue,
 } from '@chakra-ui/react';
 
@@ -17,204 +18,176 @@ import {
   MdOutlinePower,
   MdOutlineSignalWifi0Bar,
 } from 'react-icons/md';
-import { BsWind } from 'react-icons/bs';
-import MiniStatistics from '../components/UI/MiniStatistics';
-import MicroStatistics from '../components/UI/MicroStatistics';
-import HashboardsTable from '../components/UI/HashboardsTable';
-import PoolsTable from '../components/UI/PoolsTable';
-import TotalHashrate from '../components/UI/TotalHashrate';
+import CountUp from 'react-countup';
+import { BulletList, List } from 'react-content-loader';
+import { useSelector } from 'react-redux';
+import Card from '../components/card/Card';
+import TileCard from '../components/UI/TileCard';
+import { minerSelector } from '../redux/reselect/miner';
 
 const Miner = () => {
-  const iconColor = useColorModeValue('brand.500', 'white');
-  const iconMicroColor = useColorModeValue('gray.500', 'white');
-  const iconMicroBg = useColorModeValue('gray.100', 'secondaryGray.700');
-  const boxBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
+  const cardColor = useColorModeValue('white', 'blue.700');
+  const hashCardColor = useColorModeValue('blue.900', 'blue.500');
+  const iconColor = useColorModeValue('white', 'brand.500');
+  const hashIconBgColor = useColorModeValue('blue.600', 'white');
+  const hashSecondaryColor = useColorModeValue(
+    'secondaryGray.600',
+    'secondaryGray.200'
+  );
+  const powerCardColor = useColorModeValue('gray.900', 'gray.500');
+  const powerIconBgColor = useColorModeValue('gray.600', 'white');
+  const shadow = useColorModeValue(
+    '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
+  );
+
+  // Miner data
+  const {
+    loading: loadingMiner,
+    data: { stats: dataMiner },
+    error: errorMiner,
+  } = useSelector(minerSelector);
+
+  const {
+    globalHashrate,
+    globalAvgHashrate,
+    minerPower,
+    minerPowerPerGh,
+    avgBoardTemp,
+    avgBoardErrors,
+  } = dataMiner;
 
   return (
     <Box>
-      {/* Miner stats */}
-      <SimpleGrid
-        columns={{ base: 1, md: 2, lg: 2, '2xl': 4 }}
-        gap='20px'
-        mb='20px'
+      <Grid
+        templateRows="repeat(3, 1fr)"
+        templateColumns={{ base: 'repeat(6, 1fr)' }}
+        templateAreas={`'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`}
+        gap={'20px'}
+        mb={'10px'}
       >
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg={boxBg}
-              icon={
-                <Icon
-                  w='32px'
-                  h='32px'
-                  as={MdLocalFireDepartment}
-                  color={iconColor}
+        <Grid
+          gridArea="Main"
+          templateRows="repeat(2, 1fr)"
+          templateColumns={{ base: 'repeat(1, 1fr)' }}
+          templateAreas={`'Hashrate' 'Power'`}
+          gap={'20px'}
+          mb={'10px'}
+        >
+          <GridItem gridArea="Hashrate">
+            <TileCard
+              boxShadow={shadow}
+              bgColor={hashCardColor}
+              icon={MdLocalFireDepartment}
+              iconColor={iconColor}
+              iconBgColor={hashIconBgColor}
+              secondaryTextColor={hashSecondaryColor}
+              title="Current hashrate"
+              loading={loadingMiner}
+              errors={errorMiner}
+              mainData={
+                <CountUp
+                  start="0"
+                  end={globalHashrate?.value}
+                  duration="1"
+                  decimals="2"
+                  separator={' '}
+                  suffix={` ${globalHashrate?.unit}`}
                 />
               }
-            />
-          }
-          name='Current hashrate'
-          value='2.80 TH/s'
-          secondaryText={
-            <Text color='secondaryGray.600' fontSize='xs' fontWeight='400'>
-              15 Min Avg: <strong>2.97 TH/s</strong>
-            </Text>
-          }
-          progress={true}
-          progressColor={'blue'}
-          progressValue={80}
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg={boxBg}
-              icon={<Icon w='32px' h='32px' as={MdPower} color={iconColor} />}
-            />
-          }
-          name='Miner power usage'
-          value='202 Watt'
-          secondaryText={
-            <Text color='secondaryGray.600' fontSize='xs' fontWeight='400'>
-              Watts per TH/s: <strong>66</strong>
-            </Text>
-          }
-          progress={true}
-          progressColor={'orange'}
-          progressValue={89}
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg={boxBg}
-              icon={<Icon w='32px' h='32px' as={MdWarning} color={iconColor} />}
-            />
-          }
-          name='Hardware errors'
-          value='0.9%'
-          secondaryText={
-            <Text color='secondaryGray.600' fontSize='xs' fontWeight='400'>
-              Rejected: <strong>47</strong>
-            </Text>
-          }
-          progress={true}
-          progressColor={'green'}
-          progressValue={14}
-        />
-        <MiniStatistics
-          startContent={
-            <IconBox
-              w='56px'
-              h='56px'
-              bg={boxBg}
-              icon={
-                <Icon w='32px' h='32px' as={MdWatchLater} color={iconColor} />
-              }
-            />
-          }
-          name='Miner uptime'
-          value='4 days'
-          secondaryText={
-            <Text color='secondaryGray.600' fontSize='xs' fontWeight='400'>
-              Last share: <strong>a few seconds ago</strong>
-            </Text>
-          }
-          progress={true}
-          progressColor={'green'}
-          progressValue={100}
-        />
-      </SimpleGrid>
-
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap='20px' mb='20px'>
-        <TotalHashrate />
-      </SimpleGrid>
-
-      {/* Hashboard stats */}
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap='20px' mb='20px'>
-        <HashboardsTable />
-      </SimpleGrid>
-
-      {/* Pools stats */}
-      <SimpleGrid columns={{ base: 1, md: 1, xl: 1 }} gap='20px' mb='20px'>
-        <PoolsTable />
-      </SimpleGrid>
-
-      <SimpleGrid
-        columns={{ base: 1, md: 2, lg: 2, '2xl': 4 }}
-        gap='20px'
-        mb='20px'
-      >
-        <MicroStatistics
-          startContent={
-            <IconBox
-              w='42px'
-              h='42px'
-              bg={iconMicroBg}
-              icon={
-                <Icon w='24px' h='24px' as={MdMemory} color={iconMicroColor} />
-              }
-            />
-          }
-          name='Miner mode'
-          value='Turbo'
-        />
-        <MicroStatistics
-          startContent={
-            <IconBox
-              w='42px'
-              h='42px'
-              bg={iconMicroBg}
-              icon={
-                <Icon
-                  w='24px'
-                  h='24px'
-                  as={MdOutlinePower}
-                  color={iconMicroColor}
+              secondaryData={
+                <CountUp
+                  start="0"
+                  end={globalAvgHashrate?.value}
+                  duration="1"
+                  decimals="2"
+                  separator={' '}
+                  suffix={` ${globalAvgHashrate?.unit}`}
                 />
               }
+              secondaryText="15 minutes average"
             />
-          }
-          name='Miner power'
-          value='Auto'
-        />
-        <MicroStatistics
-          startContent={
-            <IconBox
-              w='42px'
-              h='42px'
-              bg={iconMicroBg}
-              icon={
-                <Icon
-                  w='24px'
-                  h='24px'
-                  as={MdOutlineSignalWifi0Bar}
-                  color={iconMicroColor}
+          </GridItem>
+
+          <GridItem gridArea="Power">
+            <TileCard
+              boxShadow={shadow}
+              bgColor={powerCardColor}
+              icon={MdPower}
+              iconColor={iconColor}
+              iconBgColor={powerIconBgColor}
+              title="Power usage"
+              loading={loadingMiner}
+              errors={errorMiner}
+              mainData={
+                <CountUp
+                  start={0}
+                  end={minerPower}
+                  duration="1"
+                  decimals="0"
+                  suffix={` Watt`}
                 />
               }
-            />
-          }
-          name='Miner frequency'
-          value='Auto'
-        />
-        <MicroStatistics
-          startContent={
-            <IconBox
-              w='42px'
-              h='42px'
-              bg={iconMicroBg}
-              icon={
-                <Icon w='24px' h='24px' as={BsWind} color={iconMicroColor} />
+              secondaryData={
+                <CountUp
+                  start="0"
+                  end={minerPowerPerGh}
+                  duration="1"
+                  decimals="2"
+                  separator={' '}
+                  suffix={` Wh`}
+                />
               }
+              secondaryText="Watt per TH/s"
+              secondaryTextColor={hashSecondaryColor}
             />
-          }
-          name='Fan temp settings'
-          value='Auto'
-        />
-      </SimpleGrid>
+          </GridItem>
+        </Grid>
+
+        <Grid
+          gridArea="Data"
+          templateRows="auto auto auto"
+          templateColumns={{ base: 'repeat(1, 1fr)' }}
+          templateAreas={{
+            base: `'Top' 'Middle' 'Bottom'`,
+          }}
+          gap={'20px'}
+        >
+          {/* TOP */}
+          <Grid
+            gridArea="Top"
+            templateRows="repeat(1, 1fr)"
+            templateColumns={{ base: 'repeat(4, 1fr)' }}
+            templateAreas={{
+              base: `'. .'`,
+            }}
+            gap={'20px'}
+          >
+            <GridItem>Info</GridItem>
+            <GridItem>Power</GridItem>
+            <GridItem>Power</GridItem>
+            <GridItem>Power</GridItem>
+          </Grid>
+
+          {/* MIDDLE */}
+          <Grid
+            gridArea="Middle"
+            templateRows="repeat(1, 1fr)"
+            templateColumns={{ base: '1fr auto' }}
+            templateAreas={{
+              base: `'. .'`,
+            }}
+            gap={'20px'}
+          >
+            <GridItem>1</GridItem>
+            <GridItem>2</GridItem>
+          </Grid>
+
+          {/* BOTTOM */}
+          <Grid gridArea="Bottom">
+            <GridItem>bottom</GridItem>
+          </Grid>
+        </Grid>
+      </Grid>
     </Box>
   );
 };

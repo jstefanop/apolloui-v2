@@ -7,49 +7,53 @@ import {
   Text,
   Flex,
   Icon,
-  SimpleGrid,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Code,
 } from '@chakra-ui/react';
 import _ from 'lodash';
 
-import React, { memo, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import CountUp from 'react-countup';
-import {
-  MdLocalFireDepartment,
-  MdPower,
-  MdWarning,
-  MdWatchLater,
-  MdMemory,
-  MdOutlinePower,
-  MdOutlineSignalWifi0Bar,
-} from 'react-icons/md';
 import { BulletList, List } from 'react-content-loader';
 import { useSelector } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
-import LoadingIcon from '../components/UI/LoadingIcon';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
 import TileCard from '../components/UI/TileCard';
-import { bytesToSize, displayHashrate } from '../lib/utils';
+import { bytesToSize } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
 import { mcuSelector } from '../redux/reselect/mcu';
+import { MinerIcon } from '../components/UI/icons/MinerIcon';
+import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
+import { McuTempIcon } from '../components/UI/Icons/McuTempIcon';
+import { BugIcon } from '../components/UI/Icons/BugIcon';
+import { PowerIcon } from '../components/UI/Icons/PowerIcon';
+import { CpuIcon } from '../components/UI/Icons/CpuIcon';
+import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
+import { MemoryIcon } from '../components/UI/Icons/MemoryIcon';
+import { ConnectionsIcons } from '../components/UI/Icons/ConnectionsIcons';
+import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
+import { FlagIcon } from '../components/UI/Icons/FlagIcon';
 
 const Dashboard = () => {
   const cardColor = useColorModeValue('white', 'blue.700');
-  const hashCardColor = useColorModeValue('blue.900', 'blue.500');
+  const hashCardColor = useColorModeValue('linear-gradient(135deg, #040406 0%, #4B5381 100%);', 'blue.500');
   const iconColor = useColorModeValue('white', 'brand.500');
   const hashIconBgColor = useColorModeValue('blue.600', 'white');
   const hashSecondaryColor = useColorModeValue(
     'secondaryGray.600',
     'secondaryGray.200'
   );
-  const powerCardColor = useColorModeValue('gray.900', 'gray.500');
+  const powerCardColor = useColorModeValue('linear-gradient(135deg, #485C7B 0%, #080C0C 100%)', 'gray.500');
   const powerIconBgColor = useColorModeValue('gray.600', 'white');
+  const shadow = useColorModeValue(
+    '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
+  );
 
   // Miner data
   const {
@@ -58,6 +62,14 @@ const Dashboard = () => {
     error: errorMiner,
   } = useSelector(minerSelector);
 
+  const {
+    globalHashrate,
+    globalAvgHashrate,
+    minerPower,
+    avgBoardTemp,
+    avgBoardErrors,
+  } = dataMiner;
+
   // Mcu data
   const {
     loading: loadingMcu,
@@ -65,104 +77,6 @@ const Dashboard = () => {
     error: errorMcu,
   } = useSelector(mcuSelector);
 
-  // Node data
-  const {
-    loading: loadingNode,
-    data: dataNode,
-    error: errorNode,
-  } = useSelector(nodeSelector);
-
-  // Set Previous state for CountUp component
-  const prevData = useRef(null);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      prevData.current = dataMiner;
-    }, process.env.NEXT_PUBLIC_POLLING_TIME);
-
-    return () => clearInterval(intervalId);
-  }, [dataMiner]);
-
-  // Miner hashrate
-  const globalHashrate = displayHashrate(
-    _.sumBy(dataMiner, (hb) => {
-      if (hb.status) return hb.hashrateInGh;
-      return null;
-    }),
-    'gh',
-    false,
-    2,
-    true
-  );
-
-  const prevGlobalHashrate = displayHashrate(
-    _.sumBy(prevData.current, (hb) => {
-      if (hb.status) return hb.hashrateInGh;
-      return null;
-    }),
-    'gh',
-    false,
-    2,
-    true
-  );
-
-  const globalAvgHashrate = displayHashrate(
-    _.sumBy(dataMiner, (hb) => {
-      if (hb.status) return hb.avgHashrateInGh;
-      return null;
-    }),
-    'gh',
-    false,
-    2,
-    true
-  );
-
-  const prevGlobalAvgHashrate = displayHashrate(
-    _.sumBy(prevData.current, (hb) => {
-      if (hb.status) return hb.avgHashrateInGh;
-      return null;
-    }),
-    'gh',
-    false,
-    2,
-    true
-  );
-
-  // Miner watt
-  const minerPower =
-    _.chain(dataMiner)
-      .filter((hb) => {
-        return hb.status;
-      })
-      .meanBy((hb) => {
-        return hb.wattTotal;
-      })
-      .value() || 0;
-  const minerPowerPerGh =
-    _.chain(dataMiner)
-      .filter((hb) => {
-        return hb.status;
-      })
-      .meanBy((hb) => {
-        return hb.wattPerGHs;
-      })
-      .value() || 0;
-
-  const avgHashboardTemp = _.meanBy(dataMiner, (hb) => {
-    if (hb.status) return hb.temperature;
-    return null;
-  });
-
-  const avgHashboardErrors = _.chain(dataMiner)
-    .filter((hb) => {
-      return hb.status;
-    })
-    .meanBy((hb) => {
-      return hb.errorRate;
-    })
-    .value();
-
-  // Mcu stats
   const {
     temperature: mcuTemperature,
     cpu: { threads: cpuCores, usedPercent: cpuUsage },
@@ -175,11 +89,31 @@ const Dashboard = () => {
 
   const { used: memoryUsed, total: memoryTotal } = memory || {};
 
-  // Node stats
+  // Node data
   const {
-    error: { code: errorCodeNode },
-    connectionCount,
-  } = dataNode;
+    loading: loadingNode,
+    data: dataNode,
+    error: errorNode,
+  } = useSelector(nodeSelector);
+
+  const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
+
+  // Set Previous state for CountUp component
+  const prevData = useRef(null);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      prevData.current = dataMiner;
+    }, process.env.NEXT_PUBLIC_POLLING_TIME);
+
+    return () => clearInterval(intervalId);
+  }, [dataMiner]);
+
+  const {
+    globalHashrate: prevGlobalHashrate,
+    globalHashrate: prevGlobalAvgHashrate,
+    minerPower: prevMinerPower,
+  } = prevData.current || {};
 
   return (
     <Box>
@@ -190,40 +124,40 @@ const Dashboard = () => {
         gap={'20px'}
         mb={'10px'}
       >
-        <Grid gridArea="Hashrate">
-          <GridItem>
-            <TileCard
-              cardColor={hashCardColor}
-              icon={MdLocalFireDepartment}
-              iconColor={iconColor}
-              iconBgColor={hashIconBgColor}
-              secondaryTextColor={hashSecondaryColor}
-              title="Current hashrate"
-              loading={loadingMiner}
-              mainData={
-                <CountUp
-                  start={prevGlobalHashrate.value}
-                  end={globalHashrate.value}
-                  duration="1"
-                  decimals="2"
-                  separator={' '}
-                  suffix={` ${globalHashrate.unit}`}
-                />
-              }
-              secondaryData={
-                <CountUp
-                  start={prevGlobalAvgHashrate.value}
-                  end={globalAvgHashrate.value}
-                  duration="1"
-                  decimals="2"
-                  separator={' '}
-                  suffix={` ${globalAvgHashrate.unit}`}
-                />
-              }
-              secondaryText="15 minutes average"
-            />
-          </GridItem>
-        </Grid>
+        <GridItem gridArea="Hashrate">
+          <TileCard
+            className={'banner-hashrate'}
+            boxShadow={shadow}
+            bgGradient={hashCardColor}
+            icon={MinerIcon}
+            iconColor={iconColor}
+            iconBgColor={hashIconBgColor}
+            secondaryTextColor={hashSecondaryColor}
+            title="Current hashrate"
+            loading={loadingMiner}
+            errors={errorMiner}
+            mainData={
+              <CountUp
+                start={prevGlobalHashrate?.value || 0}
+                end={globalHashrate?.value}
+                duration="1"
+                decimals="2"
+                suffix={` ${globalHashrate?.unit}`}
+              />
+            }
+            secondaryData={
+              <CountUp
+                start={prevGlobalAvgHashrate?.value || 0}
+                end={globalAvgHashrate?.value}
+                duration="1"
+                decimals="2"
+                suffix={` ${globalAvgHashrate?.unit}`}
+              />
+            }
+            secondaryText="15 minutes average"
+          />
+        </GridItem>
+
         <Grid
           gridArea="MainData"
           templateRows="auto auto auto"
@@ -244,7 +178,7 @@ const Dashboard = () => {
             gap={'20px'}
           >
             <GridItem>
-              <Card py="15px" bgColor={cardColor} h="100%">
+              <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow}>
                 <Flex direction="column" my="auto">
                   {loadingMiner ? (
                     <BulletList />
@@ -260,14 +194,14 @@ const Dashboard = () => {
                               <Icon
                                 w="32px"
                                 h="32px"
-                                as={MdWatchLater}
+                                as={MinerTempIcon}
                                 color="brand.500"
                               />
                             }
                           />
                         }
                         name="Miner temperature"
-                        value={`${avgHashboardTemp}°C`}
+                        value={`${avgBoardTemp}°C`}
                       />
                       <NoCardStatistics
                         startContent={
@@ -279,7 +213,7 @@ const Dashboard = () => {
                               <Icon
                                 w="32px"
                                 h="32px"
-                                as={MdMemory}
+                                as={McuTempIcon}
                                 color="brand.500"
                               />
                             }
@@ -298,14 +232,14 @@ const Dashboard = () => {
                               <Icon
                                 w="32px"
                                 h="32px"
-                                as={MdWarning}
+                                as={BugIcon}
                                 color="brand.500"
                               />
                             }
                           />
                         }
                         name="Hardware errors"
-                        value={`${avgHashboardErrors}%`}
+                        value={`${avgBoardErrors}%`}
                       />
                     </>
                   )}
@@ -314,13 +248,15 @@ const Dashboard = () => {
             </GridItem>
             <GridItem>
               <TileCard
-                cardColor={powerCardColor}
-                icon={MdPower}
+                boxShadow={shadow}
+                bgGradient={powerCardColor}
+                icon={PowerIcon}
                 iconColor={iconColor}
                 iconBgColor={powerIconBgColor}
                 title="Power usage"
                 mainData={
                   <CountUp
+                    start={prevMinerPower}
                     end={minerPower}
                     duration="1"
                     decimals="0"
@@ -328,6 +264,7 @@ const Dashboard = () => {
                   />
                 }
                 loading={loadingMiner}
+                errors={errorMiner}
               />
             </GridItem>
           </Grid>
@@ -350,17 +287,13 @@ const Dashboard = () => {
                     w="56px"
                     h="56px"
                     icon={
-                      <Icon
-                        w="32px"
-                        h="32px"
-                        as={MdWatchLater}
-                        color="brand.500"
-                      />
+                      <Icon w="32px" h="32px" as={CpuIcon} color="brand.500" />
                     }
                   />
                 }
                 name="CPU usage"
                 value={`${cpuUsage}%`}
+                legendValue={`${cpuCores} cores`}
                 percent={cpuUsage}
                 gauge={true}
                 loading={loadingMcu}
@@ -374,12 +307,12 @@ const Dashboard = () => {
                     w="56px"
                     h="56px"
                     icon={
-                      <Icon w="32px" h="32px" as={MdMemory} color="brand.500" />
+                      <Icon w="32px" h="32px" as={DatabaseIcon} color="brand.500" />
                     }
                   />
                 }
                 name="Disk usage"
-                value={`${bytesToSize(
+                legendValue={`${bytesToSize(
                   diskUsed * 1024,
                   0,
                   false
@@ -401,18 +334,17 @@ const Dashboard = () => {
                       <Icon
                         w="32px"
                         h="32px"
-                        as={MdWarning}
+                        as={MemoryIcon}
                         color="brand.500"
                       />
                     }
                   />
                 }
                 name="Memory usage"
-                value={`${bytesToSize(
+                legendValue={`${bytesToSize(
                   memoryUsed * 1024,
-                  1,
-                  false
-                )} / ${bytesToSize(memoryTotal * 1024, 1)}`}
+                  0
+                )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
                 rawValue={memoryUsed}
                 total={memoryTotal}
                 gauge={true}
@@ -424,19 +356,30 @@ const Dashboard = () => {
           {/* BOTTOM */}
           <Grid gridArea="Bottom">
             <GridItem>
-              <Card py="15px" bgColor={'white'}>
+              <Card py="15px" pb="30px" bgColor={'white'} boxShadow={shadow}>
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
                     Node status
                   </Text>
                 </Flex>
                 {loadingNode ? (
-                  <BulletList />
-                ) : errorCodeNode ? (
+                  <List />
+                ) : errorNode.length ? (
                   <Alert borderRadius={'10px'} status="warning">
                     <AlertIcon />
                     <AlertTitle>Warning</AlertTitle>
-                      <AlertDescription>Can't get stats from Node (error: {errorCodeNode})</AlertDescription>
+                    <AlertDescription>
+                      {errorNode.map((error, index) => {
+                        return (
+                          <div key={index}>
+                            There was an error getting stats for Node:{' '}
+                            <Code>
+                              {error.message || error.code || error.toString()}
+                            </Code>
+                          </div>
+                        );
+                      })}
+                    </AlertDescription>
                   </Alert>
                 ) : (
                   <Flex
@@ -455,14 +398,14 @@ const Dashboard = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={MdWatchLater}
+                              as={ConnectionsIcons}
                               color="brand.500"
                             />
                           }
                         />
                       }
                       name="Connections"
-                      value="20 / 32"
+                      value={`${connectionCount} / 32`}
                       align="start"
                     />
                     <NoCardStatisticsGauge
@@ -475,14 +418,14 @@ const Dashboard = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={MdWatchLater}
+                              as={BlocksIcon}
                               color="brand.500"
                             />
                           }
                         />
                       }
                       name="Blocks"
-                      value="2345678"
+                      value={blocksCount}
                       align="start"
                     />
                     <NoCardStatisticsGauge
@@ -495,14 +438,14 @@ const Dashboard = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={MdWatchLater}
+                              as={FlagIcon}
                               color="brand.500"
                             />
                           }
                         />
                       }
                       name="uptime"
-                      value="9 days"
+                      value={bytesToSize(sizeOnDisk)}
                       align="start"
                     />
                   </Flex>

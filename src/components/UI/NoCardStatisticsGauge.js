@@ -17,6 +17,8 @@ const NoCardStatisticsGauge = ({
   startContent,
   name,
   value,
+  secondaryValue,
+  legendValue,
   rawValue,
   percent,
   total,
@@ -55,6 +57,7 @@ const NoCardStatisticsGauge = ({
         track: {
           background: '#a3aed0',
           strokeWidth: '20%',
+          opacity: 0.3,
           dropShadow: {
             enabled: true,
             blur: 3,
@@ -69,6 +72,9 @@ const NoCardStatisticsGauge = ({
             offsetY: -2,
             fontSize: '14px',
             color: '#a3aed0',
+            formatter: function (val) {
+              return legendValue || `${val}%`;
+            },
           },
         },
       },
@@ -93,14 +99,28 @@ const NoCardStatisticsGauge = ({
             <Flex flexDirection="column">{startContent}</Flex>
             <Flex align="center">
               <Stat my="auto" ms={startContent ? '8px' : '0px'}>
-                <StatNumber
-                  color={textColor}
-                  fontSize={{
-                    base: '2xl',
-                  }}
-                >
-                  {value}
-                </StatNumber>
+                <Flex direction={'row'}>
+                  <StatNumber
+                    color={textColor}
+                    fontSize={{
+                      base: '2xl',
+                    }}
+                  >
+                    {value || `${roundedPercentage}%`}
+                  </StatNumber>
+                  {secondaryValue && (
+                    <StatNumber
+                      color={textColorSecondary}
+                      fontSize={{
+                        base: 'md',
+                      }}
+                      alignSelf="center"
+                      ml="2"
+                    >
+                      {secondaryValue}
+                    </StatNumber>
+                  )}
+                </Flex>
                 <StatLabel
                   lineHeight="100%"
                   color={textColorSecondary}

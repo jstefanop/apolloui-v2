@@ -44,12 +44,12 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
 
   // Node data
   const {
-    data: nodeStats,
-    error: nodeErrors,
-    loading: nodeLoading,
+    data: dataNode,
+    error: errorNode,
+    loading: loadingNode,
   } = useSelector(nodeSelector);
 
-  const { error: nodeError, networkInfo: nodeNetworkInfo } = nodeStats;
+  const { blocksCount } = dataNode;
 
   // Miner actions
   const [startMiner, { loading: loadingMinerStart, error: errorMinerStart }] =
@@ -291,8 +291,8 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               handleSystemAction={handleSystemAction}
               minerOnline={online}
               minerStats={stats}
-              nodeError={nodeError}
-              nodeNetworkInfo={nodeNetworkInfo}
+              errorNode={errorNode}
+              blocksCount={blocksCount}
               error={error}
               loading={loading}
             />

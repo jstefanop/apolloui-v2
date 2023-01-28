@@ -67,6 +67,16 @@ const authLink = new ApolloLink((operation, forward) => {
 function createApolloClient() {
   const cache = new InMemoryCache({
     typePolicies: {
+      NodeStats: {
+        fields: {
+          stats: {
+            read (data) {
+              console.log(data);
+              return data;
+            }
+          }
+        }
+      },
       MinerActions: {
         merge: true,
       },

@@ -44,7 +44,7 @@ export const NODE_STATS_QUERY = gql`
 
 export const NODE_STOP_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query NODE_STOP { 
+  query NODE_STOP {
     Node {
       stop {
         error {
@@ -57,7 +57,7 @@ export const NODE_STOP_QUERY = gql`
 
 export const NODE_START_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query NODE_START { 
+  query NODE_START {
     Node {
       start {
         error {
@@ -70,7 +70,7 @@ export const NODE_START_QUERY = gql`
 
 export const NODE_FORMAT_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query NODE_FORMAT { 
+  query NODE_FORMAT {
     Node {
       format {
         error {
@@ -87,11 +87,23 @@ export const initialState = {
       result: {
         stats: {
           timestamp: null,
-          networkInfo: null,
-          error: {
-            code: null,
-            message: null,
+          blockchainInfo: {
+            blocks: null,
+            blockTime: null,
+            headers: null,
+            sizeOnDisk: null,
           },
+          connectionCount: null,
+          miningInfo: {
+            difficulty: null,
+            networkhashps: null,
+          },
+          peerInfo: [],
+          networkInfo: {
+            version: null,
+            subversion: null,
+          },
+          error: null,
         },
       },
     },

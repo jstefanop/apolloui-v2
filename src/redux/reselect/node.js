@@ -17,14 +17,42 @@ export const nodeSelector = createSelector(
       },
     } = nodeData || initialState;
 
-    const errors = [
-      ...[nodeError, errorStats].filter(Boolean),
-    ];
+    const { error } = nodeStats;
+
+    const errors = [...[nodeError, error, errorStats].filter(Boolean)];
+
+    let stats;
+    if (!errors.length && nodeStats) {
+      const {
+        timestamp,
+        blockchainInfo: { blocks, blockTime, headers, sizeOnDisk },
+        connectionCount,
+        miningInfo: { difficulty, networkhashps },
+        peerInfo,
+        networkInfo: { version, subversion },
+        error,
+      } = nodeStats;
+
+      stats = {
+        timestamp,
+        blocksCount: blocks,
+        blockTime,
+        blockHeader: headers,
+        sizeOnDisk,
+        connectionCount,
+        error,
+        difficulty,
+        networkhashps,
+        peerInfo,
+        version,
+        subversion,
+      };
+    }
 
     return {
       loading: nodeLoading,
       error: errors,
-      data: !errors.length && nodeStats,
+      data: !errors.length && stats,
     };
   }
 );
