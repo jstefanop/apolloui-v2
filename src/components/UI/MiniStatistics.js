@@ -24,6 +24,7 @@ const MiniStatistics = ({
   progress,
   progressColor,
   progressValue,
+  fontSize,
   value,
 }) => {
   const textColor = useColorModeValue('secondaryGray.900', 'white');
@@ -44,7 +45,7 @@ const MiniStatistics = ({
             <StatNumber
               color={textColor}
               fontSize={{
-                base: '2xl',
+                base: fontSize || '2xl',
               }}
             >
               {value}
@@ -63,7 +64,7 @@ const MiniStatistics = ({
             <StatNumber
               color={textColor}
               fontSize={{
-                base: '2xl',
+                base: fontSize || '2xl',
               }}
             >
               {value}

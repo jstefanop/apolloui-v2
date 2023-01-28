@@ -11,7 +11,7 @@ const ProtectedRoute = ({ router, children }) => {
     // Redirect unauthenticated users
     if (status === 'unauthenticated') router.replace('/signin');
     else if (router.pathname === '/signin' && status === 'authenticated')
-      router.replace('dashboard');
+      router.replace('overview');
   }, [router, status, data]);
 
   return children;

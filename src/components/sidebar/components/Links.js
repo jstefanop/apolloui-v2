@@ -31,14 +31,14 @@ const SidebarLinks = ({ routes }) => {
             <Text
               fontSize={'md'}
               color={activeColor}
-              fontWeight='bold'
-              mx='auto'
+              fontWeight="bold"
+              mx="auto"
               ps={{
                 sm: '10px',
                 xl: '16px',
               }}
-              pt='18px'
-              pb='12px'
+              pt="18px"
+              pb="12px"
             >
               {route.name}
             </Text>
@@ -59,22 +59,22 @@ const SidebarLinks = ({ routes }) => {
                     spacing={
                       activeRoute(route.path.toLowerCase()) ? '22px' : '26px'
                     }
-                    py='5px'
-                    ps='10px'
+                    py="5px"
+                    ps="10px"
                   >
-                    <Flex w='100%' alignItems='center' justifyContent='center'>
+                    <Flex w="100%" alignItems="center" justifyContent="center" h="36px">
                       <Box
                         color={
                           activeRoute(route.path.toLowerCase())
                             ? activeIcon
                             : textColor
                         }
-                        me='18px'
+                        me="18px"
                       >
                         {route.icon}
                       </Box>
                       <Text
-                        me='auto'
+                        me="auto"
                         color={
                           activeRoute(route.path.toLowerCase())
                             ? activeColor
@@ -91,14 +91,14 @@ const SidebarLinks = ({ routes }) => {
                     </Flex>
 
                     <Box
-                      h='36px'
-                      w='4px'
+                      h="36px"
+                      w="4px"
                       bg={
                         activeRoute(route.path.toLowerCase())
                           ? brandColor
                           : 'transparent'
                       }
-                      borderRadius='5px'
+                      borderRadius="5px"
                     />
                   </HStack>
                 </Link>
@@ -109,11 +109,11 @@ const SidebarLinks = ({ routes }) => {
                   spacing={
                     activeRoute(route.path.toLowerCase()) ? '22px' : '26px'
                   }
-                  py='5px'
-                  ps='10px'
+                  py="5px"
+                  ps="10px"
                 >
                   <Text
-                    me='auto'
+                    me="auto"
                     color={
                       activeRoute(route.path.toLowerCase())
                         ? activeColor
@@ -125,7 +125,7 @@ const SidebarLinks = ({ routes }) => {
                   >
                     {route.name}
                   </Text>
-                  <Box h='36px' w='4px' bg='brand.400' borderRadius='5px' />
+                  <Box h="36px" w="4px" bg="brand.400" borderRadius="5px" />
                 </HStack>
               </Box>
             )}

@@ -51,8 +51,8 @@ const TileCard = ({
           ) : (
             <>
               <IconBox
-                w="56px"
-                h="56px"
+                w="80px"
+                h="80px"
                 bg={iconBgColor}
                 icon={<Icon w="32px" h="32px" as={icon} color={iconColor} />}
                 marginRight="5"
@@ -62,6 +62,7 @@ const TileCard = ({
                 fontSize={{ base: '4xl' }}
                 fontWeight="800"
                 minW="180px"
+                my="auto"
               >
                 {loading ? <LoadingIcon /> : mainData}
               </Text>

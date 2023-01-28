@@ -215,8 +215,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           base: 'calc(100vw - 6%)',
           md: 'calc(100vw - 8%)',
           lg: 'calc(100vw - 6%)',
-          xl: 'calc(100vw - 350px)',
-          '2xl': 'calc(100vw - 365px)',
+          xl: 'calc(100vw - 300px)',
         }}
       >
         <Flex
@@ -229,17 +228,11 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           mb={gap}
         >
           <Box mb={{ sm: '8px', md: '5px' }}>
-            {currentRoute && currentRoute.name !== 'Dashboard' && (
-              <Breadcrumb>
-                <BreadcrumbItem color={secondaryText} fontSize="sm">
-                  <Link href="/dashboard">Dashboard</Link>
-                </BreadcrumbItem>
-
-                <BreadcrumbItem color={secondaryText} fontSize="sm">
-                  <Link href={currentRoute.path}>{currentRoute.name}</Link>
-                </BreadcrumbItem>
-              </Breadcrumb>
-            )}
+            <Breadcrumb>
+              <BreadcrumbItem color={secondaryText} fontSize="sm">
+                {currentRoute && currentRoute.name !== 'Overview' ? <Link href="/overview">Overview</Link> : <Text>Apollo BTC</Text>}
+              </BreadcrumbItem>
+            </Breadcrumb>
 
             <Text
               color={mainText}

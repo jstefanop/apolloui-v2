@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import _ from 'lodash';
 import { initialState } from '../../graphql/miner';
 import { displayHashrate } from '../../lib/utils';
+import moment from 'moment';
 
 const minerDataSelector = (state) => state.miner.data;
 const minerErrorSelector = (state) => state.miner.error;
@@ -27,45 +28,78 @@ export const minerSelector = createSelector(
 
     const errors = [...[minerError, errorOnline, errorStats].filter(Boolean)];
 
-    const stats = {
-      boards: [],
-      globalHashrate: null,
-      globalAvgHashrate: null,
-      minerPower: null,
-      minerPowerPerGh: null,
-      avgBoardTemp: null,
-      avgBoardErrors: null,
-    };
+    let stats;
 
     if (minerStats) {
-      stats.boards = minerStats.map((board) => {
+      const boards = minerStats.map((board) => {
+        console.log(board);
         const {
           status,
+          lastsharetime,
           master: {
             boardsW: wattTotal,
             wattPerGHs,
+            upTime,
             intervals: {
               int_900: { bySol: avgHashrateInGh },
+              int_0: { chipSpeed }
             },
           },
           slots: {
             int_0: { ghs: hashrateInGh, temperature, errorRate },
           },
+          pool: {
+            intervals: {
+              int_0: { sharesRejected, sharesAccepted },
+            },
+          },
+          fans: {
+            int_0: { rpm: fanRpm}
+          }
         } = board;
 
         return {
           status,
+          upTime,
+          lastShareTimeX: parseInt(moment(lastsharetime).format('X')),
+          lastShareTime: moment(lastsharetime, 'X').fromNow(),
           wattPerGHs,
           wattTotal,
           hashrateInGh,
           avgHashrateInGh,
+          fanSpeed: _.mean(fanRpm),
           temperature,
           errorRate,
+          chipSpeed,
+          sharesAccepted,
+          sharesRejected,
         };
       });
 
-      stats.globalHashrate = displayHashrate(
-        _.sumBy(stats.boards, (hb) => {
+      const maxBoardByShareTime = _.maxBy(boards, 'lastShareTimeX');
+      const maxLastShareTime = maxBoardByShareTime.lastShareTimeX;
+      const lastShareTime = moment(maxLastShareTime, 'X').fromNow();
+
+      let minerUptime = moment().to(
+        moment().subtract(
+          _.chain(boards)
+            .filter((hb) => {
+              return hb.status;
+            })
+            .meanBy((hb) => {
+              return hb.upTime;
+            })
+            .value(),
+          'seconds'
+        ),
+        true
+      );
+
+      if (_.every(boards, ['status', false]))
+        minerUptime = 'Inactive';
+
+      const globalHashrate = displayHashrate(
+        _.sumBy(boards, (hb) => {
           if (hb.status) return hb.hashrateInGh;
           return null;
         }),
@@ -75,8 +109,8 @@ export const minerSelector = createSelector(
         true
       );
 
-      stats.globalAvgHashrate = displayHashrate(
-        _.sumBy(stats.boards, (hb) => {
+      const globalAvgHashrate = displayHashrate(
+        _.sumBy(boards, (hb) => {
           if (hb.status) return hb.avgHashrateInGh;
           return null;
         }),
@@ -87,8 +121,8 @@ export const minerSelector = createSelector(
       );
 
       // Miner watt
-      stats.minerPower =
-        _.chain(stats.boards)
+      const minerPower =
+        _.chain(boards)
           .filter((hb) => {
             return hb.status;
           })
@@ -97,8 +131,8 @@ export const minerSelector = createSelector(
           })
           .value() || 0;
 
-      stats.minerPowerPerGh =
-        _.chain(stats.boards)
+      const minerPowerPerGh =
+        _.chain(boards)
           .filter((hb) => {
             return hb.status;
           })
@@ -107,12 +141,12 @@ export const minerSelector = createSelector(
           })
           .value() || 0;
 
-      stats.avgBoardTemp = _.meanBy(stats.boards, (hb) => {
+      const avgBoardTemp = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.temperature;
         return null;
       });
 
-      stats.avgBoardErrors = _.chain(stats.boards)
+      const avgBoardErrors = _.chain(boards)
         .filter((hb) => {
           return hb.status;
         })
@@ -120,6 +154,36 @@ export const minerSelector = createSelector(
           return hb.errorRate;
         })
         .value();
+
+      const avgBoardRejected = _.meanBy(boards, (hb) => {
+        if (hb.status) return hb.sharesRejected;
+        return null;
+      });
+
+      const avgChipSpeed = _.meanBy(boards, (hb) => {
+        if (hb.status) return hb.chipSpeed;
+        return null;
+      });
+
+      const avgFanSpeed = _.meanBy(boards, (hb) => {
+        if (hb.status) return hb.fanSpeed;
+        return null;
+      });
+
+      stats = {
+        boards,
+        minerUptime,
+        globalHashrate,
+        globalAvgHashrate,
+        minerPower,
+        minerPowerPerGh,
+        avgBoardTemp,
+        avgBoardErrors,
+        avgBoardRejected,
+        avgChipSpeed,
+        avgFanSpeed,
+        lastShareTime,
+      };
     }
 
     return {

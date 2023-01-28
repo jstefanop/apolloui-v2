@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react';
 
 // Custom components
-import { HorizonLogo } from '../icons/Icons';
 import Brand from '../sidebar/components/Brand';
 
 export default function AuthNavbar(props) {

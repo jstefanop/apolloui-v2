@@ -527,7 +527,7 @@ const Settings = () => {
           bottom={{ base: '0px' }}
           w={{
             base: '100%',
-            xl: 'calc(100vw - 300px)',
+            xl: 'calc(100vw - 250px)',
           }}
           zIndex='1'
         >

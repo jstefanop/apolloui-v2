@@ -11,27 +11,16 @@ import React from 'react';
 function SidebarContent({ routes }) {
   // SIDEBAR
   return (
-    <Flex direction='column' height='100%' pt='25px' borderRadius='30px'>
+    <Flex direction="column" height="100%" pt="25px" borderRadius="30px">
       <Brand />
-      <Stack direction='column' mb='auto' mt='8px'>
-        <Box ps='20px' pe={{ md: '16px', '2xl': '1px' }}>
-          <Links routes={routes.filter((r) => !r.bottom )} />
+      <Stack direction="column"  mt="8px" h="100%" mb="80px">
+        <Box ps="20px" mb="auto">
+          <Links routes={routes.filter((r) => !r.bottom)} />
         </Box>
-        <Box position={'absolute'} bottom='60px' ps='20px'>
-          <Links routes={routes.filter((r) => r.bottom )} />
+        <Box ps="20px" mt="auto">
+          <Links routes={routes.filter((r) => r.bottom)} />
         </Box>
       </Stack>
-      {/* 
-      <Box
-        ps='20px'
-        pe={{ md: '16px', '2xl': '0px' }}
-        mt='60px'
-        mb='40px'
-        borderRadius='30px'
-      >
-        <SidebarCard />
-      </Box>
-      */}
     </Flex>
   );
 }

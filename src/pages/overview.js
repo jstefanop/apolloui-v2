@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client';
 import {
   Box,
   useColorModeValue,
@@ -28,7 +27,7 @@ import { bytesToSize } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
 import { mcuSelector } from '../redux/reselect/mcu';
-import { MinerIcon } from '../components/UI/icons/MinerIcon';
+import { MinerIcon } from '../components/UI/Icons/MinerIcon';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
 import { McuTempIcon } from '../components/UI/Icons/McuTempIcon';
 import { BugIcon } from '../components/UI/Icons/BugIcon';
@@ -39,18 +38,15 @@ import { MemoryIcon } from '../components/UI/Icons/MemoryIcon';
 import { ConnectionsIcons } from '../components/UI/Icons/ConnectionsIcons';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { FlagIcon } from '../components/UI/Icons/FlagIcon';
+import HashrateCard from '../components/apollo/HashrateCard';
+import PowerCard from '../components/apollo/PowerCard';
 
-const Dashboard = () => {
+const Overview = () => {
   const cardColor = useColorModeValue('white', 'blue.700');
-  const hashCardColor = useColorModeValue('linear-gradient(135deg, #040406 0%, #4B5381 100%);', 'blue.500');
-  const iconColor = useColorModeValue('white', 'brand.500');
-  const hashIconBgColor = useColorModeValue('blue.600', 'white');
-  const hashSecondaryColor = useColorModeValue(
-    'secondaryGray.600',
-    'secondaryGray.200'
-  );
-  const powerCardColor = useColorModeValue('linear-gradient(135deg, #485C7B 0%, #080C0C 100%)', 'gray.500');
-  const powerIconBgColor = useColorModeValue('gray.600', 'white');
+
+  const iconColor = useColorModeValue('white');
+  const iconColorReversed = useColorModeValue('brand.500', 'white');
+
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
@@ -111,7 +107,7 @@ const Dashboard = () => {
 
   const {
     globalHashrate: prevGlobalHashrate,
-    globalHashrate: prevGlobalAvgHashrate,
+    globalAvgHashrate: prevGlobalAvgHashrate,
     minerPower: prevMinerPower,
   } = prevData.current || {};
 
@@ -125,36 +121,15 @@ const Dashboard = () => {
         mb={'10px'}
       >
         <GridItem gridArea="Hashrate">
-          <TileCard
-            className={'banner-hashrate'}
-            boxShadow={shadow}
-            bgGradient={hashCardColor}
-            icon={MinerIcon}
-            iconColor={iconColor}
-            iconBgColor={hashIconBgColor}
-            secondaryTextColor={hashSecondaryColor}
-            title="Current hashrate"
+          <HashrateCard 
             loading={loadingMiner}
             errors={errorMiner}
-            mainData={
-              <CountUp
-                start={prevGlobalHashrate?.value || 0}
-                end={globalHashrate?.value}
-                duration="1"
-                decimals="2"
-                suffix={` ${globalHashrate?.unit}`}
-              />
-            }
-            secondaryData={
-              <CountUp
-                start={prevGlobalAvgHashrate?.value || 0}
-                end={globalAvgHashrate?.value}
-                duration="1"
-                decimals="2"
-                suffix={` ${globalAvgHashrate?.unit}`}
-              />
-            }
-            secondaryText="15 minutes average"
+            data={globalHashrate}
+            avgData={globalAvgHashrate}
+            prevData={prevGlobalHashrate}
+            prevAvgData={prevGlobalAvgHashrate}
+            shadow={shadow}
+            iconColor={iconColor}
           />
         </GridItem>
 
@@ -189,13 +164,13 @@ const Dashboard = () => {
                           <IconBox
                             w="56px"
                             h="56px"
-                            bg={'white'}
+                            bg={'transparent'}
                             icon={
                               <Icon
                                 w="32px"
                                 h="32px"
                                 as={MinerTempIcon}
-                                color="brand.500"
+                                color={iconColorReversed}
                               />
                             }
                           />
@@ -208,13 +183,13 @@ const Dashboard = () => {
                           <IconBox
                             w="56px"
                             h="56px"
-                            bg={'white'}
+                            bg={'transparent'}
                             icon={
                               <Icon
                                 w="32px"
                                 h="32px"
                                 as={McuTempIcon}
-                                color="brand.500"
+                                color={iconColorReversed}
                               />
                             }
                           />
@@ -227,13 +202,13 @@ const Dashboard = () => {
                           <IconBox
                             w="56px"
                             h="56px"
-                            bg={'white'}
+                            bg={'transparent'}
                             icon={
                               <Icon
                                 w="32px"
                                 h="32px"
                                 as={BugIcon}
-                                color="brand.500"
+                                color={iconColorReversed}
                               />
                             }
                           />
@@ -247,24 +222,13 @@ const Dashboard = () => {
               </Card>
             </GridItem>
             <GridItem>
-              <TileCard
-                boxShadow={shadow}
-                bgGradient={powerCardColor}
-                icon={PowerIcon}
-                iconColor={iconColor}
-                iconBgColor={powerIconBgColor}
-                title="Power usage"
-                mainData={
-                  <CountUp
-                    start={prevMinerPower}
-                    end={minerPower}
-                    duration="1"
-                    decimals="0"
-                    suffix={` Watt`}
-                  />
-                }
+              <PowerCard
                 loading={loadingMiner}
                 errors={errorMiner}
+                data={minerPower}
+                prevData={prevMinerPower}
+                shadow={shadow}
+                iconColor={iconColor}
               />
             </GridItem>
           </Grid>
@@ -287,7 +251,12 @@ const Dashboard = () => {
                     w="56px"
                     h="56px"
                     icon={
-                      <Icon w="32px" h="32px" as={CpuIcon} color="brand.500" />
+                      <Icon
+                        w="32px"
+                        h="32px"
+                        as={CpuIcon}
+                        color={iconColorReversed}
+                      />
                     }
                   />
                 }
@@ -307,7 +276,12 @@ const Dashboard = () => {
                     w="56px"
                     h="56px"
                     icon={
-                      <Icon w="32px" h="32px" as={DatabaseIcon} color="brand.500" />
+                      <Icon
+                        w="32px"
+                        h="32px"
+                        as={DatabaseIcon}
+                        color={iconColorReversed}
+                      />
                     }
                   />
                 }
@@ -335,7 +309,7 @@ const Dashboard = () => {
                         w="32px"
                         h="32px"
                         as={MemoryIcon}
-                        color="brand.500"
+                        color={iconColorReversed}
                       />
                     }
                   />
@@ -356,7 +330,7 @@ const Dashboard = () => {
           {/* BOTTOM */}
           <Grid gridArea="Bottom">
             <GridItem>
-              <Card py="15px" pb="30px" bgColor={'white'} boxShadow={shadow}>
+              <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow}>
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
                     Node status
@@ -399,7 +373,7 @@ const Dashboard = () => {
                               w="32px"
                               h="32px"
                               as={ConnectionsIcons}
-                              color="brand.500"
+                              color={iconColorReversed}
                             />
                           }
                         />
@@ -419,7 +393,7 @@ const Dashboard = () => {
                               w="32px"
                               h="32px"
                               as={BlocksIcon}
-                              color="brand.500"
+                              color={iconColorReversed}
                             />
                           }
                         />
@@ -439,7 +413,7 @@ const Dashboard = () => {
                               w="32px"
                               h="32px"
                               as={FlagIcon}
-                              color="brand.500"
+                              color={iconColorReversed}
                             />
                           }
                         />
@@ -459,4 +433,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Overview;

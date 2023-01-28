@@ -21,13 +21,11 @@ import {
   MdCheckCircle,
   MdCancel,
   MdOutlineError,
-  MdLocalFireDepartment,
-  MdThermostat,
 } from 'react-icons/md';
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import FixedPlugin from '../fixedPlugin/FixedPlugin';
-import { MinerIcon } from '../UI/icons/MinerIcon';
+import { MinerIcon } from '../UI/Icons/MinerIcon';
 import { NodeIcon } from '../UI/Icons/NodeIcon';
 import { MinerTempIcon } from '../UI/Icons/MinerTemp';
 import { PowerOffIcon } from '../UI/Icons/PowerOffIcon';
@@ -78,6 +76,7 @@ export default function HeaderLinks({
     <Flex
       w={{ sm: '100%', md: 'auto' }}
       alignItems="center"
+      justify={'end'}
       flexDirection="row"
       bg={menuBg}
       flexWrap={secondary ? { base: 'wrap', md: 'nowrap' } : 'unset'}
@@ -108,12 +107,7 @@ export default function HeaderLinks({
               borderRadius="30px"
               me="7px"
             >
-              <Icon
-                w="18px"
-                h="18px"
-                color={navbarIcon}
-                as={NodeIcon}
-              />
+              <Icon w="18px" h="18px" color={navbarIcon} as={NodeIcon} />
             </Flex>
             <Icon
               w="18px"
@@ -159,11 +153,7 @@ export default function HeaderLinks({
               borderRadius="30px"
               me="7px"
             >
-              <MinerIcon
-                w="18px"
-                h="18px"
-                color={navbarIcon}
-              />
+              <MinerIcon w="18px" h="18px" color={navbarIcon} />
             </Flex>
             <Text
               w="max-content"
@@ -238,67 +228,69 @@ export default function HeaderLinks({
 
           <SidebarResponsive routes={routes} />
 
-          <Menu isLazy>
-            <MenuButton
-              as={IconButton}
-              aria-label="Options"
-              icon={<PowerOffIcon />}
-            />
-            <MenuList>
-              <MenuGroup title="Miner">
-                {!minerOnline && (
-                  <MenuItem
-                    icon={<MdCancel />}
-                    onClick={() => handleSystemAction('startMiner')}
-                  >
-                    Start
-                  </MenuItem>
-                )}
-                {minerOnline && (
-                  <>
+          <Flex p="0px" mx="4px" justify="flex-end">
+            <Menu isLazy>
+              <MenuButton
+                as={IconButton}
+                aria-label="Options"
+                icon={<PowerOffIcon />}
+              />
+              <MenuList>
+                <MenuGroup title="Miner">
+                  {!minerOnline && (
                     <MenuItem
                       icon={<MdCancel />}
-                      onClick={() => handleSystemAction('stopMiner')}
+                      onClick={() => handleSystemAction('startMiner')}
+                    >
+                      Start
+                    </MenuItem>
+                  )}
+                  {minerOnline && (
+                    <>
+                      <MenuItem
+                        icon={<MdCancel />}
+                        onClick={() => handleSystemAction('stopMiner')}
+                      >
+                        Stop
+                      </MenuItem>
+                      <MenuItem
+                        icon={<MdCancel />}
+                        onClick={() => handleSystemAction('restartMiner')}
+                      >
+                        Restart
+                      </MenuItem>
+                    </>
+                  )}
+                </MenuGroup>
+                <MenuDivider />
+                <MenuGroup title="Node">
+                  {!blocksCount && (
+                    <MenuItem
+                      icon={<MdCancel />}
+                      onClick={() => handleSystemAction('startNode')}
+                    >
+                      Start
+                    </MenuItem>
+                  )}
+                  {blocksCount && (
+                    <MenuItem
+                      icon={<MdCancel />}
+                      onClick={() => handleSystemAction('stopNode')}
                     >
                       Stop
                     </MenuItem>
-                    <MenuItem
-                      icon={<MdCancel />}
-                      onClick={() => handleSystemAction('restartMiner')}
-                    >
-                      Restart
-                    </MenuItem>
-                  </>
-                )}
-              </MenuGroup>
-              <MenuDivider />
-              <MenuGroup title="Node">
-                {!blocksCount && (
-                  <MenuItem
-                    icon={<MdCancel />}
-                    onClick={() => handleSystemAction('startNode')}
-                  >
-                    Start
-                  </MenuItem>
-                )}
-                {blocksCount && (
-                  <MenuItem
-                    icon={<MdCancel />}
-                    onClick={() => handleSystemAction('stopNode')}
-                  >
-                    Stop
-                  </MenuItem>
-                )}
-              </MenuGroup>
-              <MenuDivider />
-              <MenuGroup title="System">
-                <MenuItem icon={<MdCancel />}>Shutdown</MenuItem>
-                <MenuItem icon={<MdCancel />}>Reboot</MenuItem>
-                <MenuItem icon={<MdCancel />}>Signout</MenuItem>
-              </MenuGroup>
-              <MenuDivider />
-            </MenuList>
-          </Menu>
+                  )}
+                </MenuGroup>
+                <MenuDivider />
+                <MenuGroup title="System">
+                  <MenuItem icon={<MdCancel />}>Shutdown</MenuItem>
+                  <MenuItem icon={<MdCancel />}>Reboot</MenuItem>
+                  <MenuItem icon={<MdCancel />}>Signout</MenuItem>
+                </MenuGroup>
+                <MenuDivider />
+              </MenuList>
+            </Menu>
+          </Flex>
         </Center>
       )}
     </Flex>
