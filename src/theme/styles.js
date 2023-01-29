@@ -77,6 +77,7 @@ export const globalStyles = {
     },
     gray: {
       100: "#FAFCFE",
+      200: "#F4F7FE",
     },
   },
   styles: {

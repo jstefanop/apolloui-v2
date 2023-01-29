@@ -21,6 +21,8 @@ import { MINER_STATS_QUERY } from '../../graphql/miner';
 import { updateMinerStats } from '../../redux/actions/miner';
 import { MCU_STATS_QUERY } from '../../graphql/mcu';
 import { updateMcuStats } from '../../redux/actions/mcu';
+import { GET_SETTINGS_QUERY } from '../../graphql/settings';
+import { updateSettings } from '../../redux/actions/settings';
 
 const Layout = ({ children, routes }, props) => {
   const { onOpen } = useDisclosure();
@@ -83,6 +85,26 @@ const Layout = ({ children, routes }, props) => {
     );
   }, [startPollingNode, dispatch, loadingNode, errorNode, dataNode]);
 
+  // Settings data
+  const {
+    loading: loadingSettings,
+    error: errorSettings,
+    data: dataSettings,
+    startPolling: startPollingSettings,
+  } = useQuery(GET_SETTINGS_QUERY);
+
+  useEffect(() => {
+    startPollingSettings(process.env.NEXT_PUBLIC_POLLING_TIME);
+    dispatch(
+      updateSettings({
+        loading: loadingSettings,
+        error: errorSettings,
+        data: dataSettings,
+      })
+    );
+  }, [startPollingSettings, dispatch, loadingSettings, errorSettings, dataSettings]);
+
+  // Actions data
   const {
     loading: loadingAction,
     error: errorAction,

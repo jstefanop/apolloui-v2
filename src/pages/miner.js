@@ -6,6 +6,11 @@ import {
   Grid,
   GridItem,
   useColorModeValue,
+  Button,
+  SimpleGrid,
+  Divider,
+  Center,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useRef, useEffect } from 'react';
 import { BulletList, List } from 'react-content-loader';
@@ -25,14 +30,36 @@ import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
 import { FanIcon } from '../components/UI/Icons/FanIcon';
+import { settingsSelector } from '../redux/reselect/settings';
+import { ModeIcon } from '../components/UI/Icons/ModeIcon';
+import { PowerManagementIcon } from '../components/UI/Icons/PowerManagementIcon';
+import { FrequencyIcon } from '../components/UI/Icons/FrequencyIcon';
+import { MinerIcon } from '../components/UI/Icons/MinerIcon';
+import { PowerIcon } from '../components/UI/Icons/PowerIcon';
+import { VoltageIcon } from '../components/UI/Icons/VoltageIcon';
+import { DifficultyIcon } from '../components/UI/Icons/DifficultyIcon';
+import { SharesSentIcon } from '../components/UI/Icons/SharesSentIcon';
+import { SharesAcceptedIcon } from '../components/UI/Icons/SharesAcceptedIcon';
+import { SharesRejectedIcon } from '../components/UI/Icons/SharesRejectedIcon';
+import { ChipSpeedIcon } from '../components/UI/Icons/ChipSpeedIcon';
+import MinerDrawer from '../components/apollo/MinerDrawer';
+import PanelGrid from '../components/UI/PanelGrid';
 
 const Miner = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const cardColor = useColorModeValue('white', 'blue.700');
   const iconColor = useColorModeValue('white', 'brand.500');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
+
+  // Settings data
+  const {
+    loading: loadingSettings,
+    data: dataSettings,
+    error: errorSettings,
+  } = useSelector(settingsSelector);
 
   // Miner data
   const {
@@ -56,6 +83,7 @@ const Miner = () => {
     globalHashrate: prevGlobalHashrate,
     globalAvgHashrate: prevGlobalAvgHashrate,
     minerPower: prevMinerPower,
+    minerPowerPerGh: prevMinerPowerPerGh,
   } = prevData.current || {};
 
   const {
@@ -68,12 +96,79 @@ const Miner = () => {
     avgBoardRejected,
     avgChipSpeed,
     avgFanSpeed,
+    avgVoltage,
     lastShareTime,
     minerUptime,
+    totalSharesSent,
+    totalSharesAccepted,
+    totalSharesRejected,
+    avgDiff,
+    poolHashrate,
+    activeBoards,
+    totalBoards,
+    activePools,
+    boards,
   } = dataMiner;
+
+  const { minerMode, fanHigh, fanLow, frequency, voltage } = dataSettings;
+
+  const dataTableBoards = [
+    {
+      value: `${globalHashrate?.value} ${globalHashrate?.unit}`,
+      icon: MinerIcon,
+    },
+    {
+      value: `${avgBoardTemp}°C`,
+      icon: MinerTempIcon,
+    },
+    {
+      value: `${avgFanSpeed} rpm`,
+      icon: FanIcon,
+    },
+    {
+      value: `${minerPower} Watt`,
+      icon: PowerIcon,
+    },
+    {
+      value: `${avgVoltage} v`,
+      icon: VoltageIcon,
+    },
+    {
+      value: `${avgBoardErrors}%`,
+      icon: BugIcon,
+    },
+  ];
+
+  const dataTablePools = [
+    {
+      value: poolHashrate,
+      icon: MinerIcon,
+    },
+    {
+      value: avgDiff,
+      icon: DifficultyIcon,
+    },
+    {
+      value: null,
+      icon: null,
+    },
+    {
+      value: totalSharesSent,
+      icon: SharesSentIcon,
+    },
+    {
+      value: totalSharesAccepted,
+      icon: SharesAcceptedIcon,
+    },
+    {
+      value: totalSharesRejected,
+      icon: SharesRejectedIcon,
+    },
+  ];
 
   return (
     <Box>
+      <MinerDrawer isOpen={isOpen} onClose={onClose} placement="right" data={boards} />
       <Grid
         templateRows="repeat(3, 1fr)"
         templateColumns={{ base: 'repeat(6, 1fr)' }}
@@ -108,7 +203,8 @@ const Miner = () => {
               errors={errorMiner}
               data={minerPower}
               avgData={minerPowerPerGh}
-              prevAvgData={prevMinerPower}
+              prevData={prevMinerPower}
+              prevAvgData={prevMinerPowerPerGh}
               shadow={shadow}
               iconColor={iconColor}
             />
@@ -189,7 +285,7 @@ const Miner = () => {
                   />
                 }
                 name="Last share"
-                value={lastShareTime.replace('a few', '')}
+                value={lastShareTime?.replace('a few', '')}
                 fontSize={'xl'}
                 reversed={true}
               />
@@ -228,7 +324,7 @@ const Miner = () => {
             gap={'20px'}
           >
             <GridItem>
-              <Card py="15px" pb="30px" pr="40px" bgColor={cardColor} boxShadow={shadow}>
+              <Card py="15px" pr="40px" bgColor={cardColor} boxShadow={shadow}>
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
                     Device presets
@@ -248,14 +344,14 @@ const Miner = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={PowerOffSolidIcon}
+                              as={ModeIcon}
                               color={iconColorReversed}
                             />
                           }
                         />
                       }
                       name="Miner mode"
-                      value={`TURBO`}
+                      value={minerMode?.toUpperCase()}
                       reversed={true}
                     />
                     <NoCardStatistics
@@ -268,14 +364,14 @@ const Miner = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={PowerOffSolidIcon}
+                              as={PowerManagementIcon}
                               color={iconColorReversed}
                             />
                           }
                         />
                       }
                       name="Power management"
-                      value={`AUTO`}
+                      value={minerMode === 'custom' ? `${voltage}%` : 'AUTO'}
                       reversed={true}
                     />
                     <NoCardStatistics
@@ -288,14 +384,16 @@ const Miner = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={PowerOffSolidIcon}
+                              as={FrequencyIcon}
                               color={iconColorReversed}
                             />
                           }
                         />
                       }
                       name="Frequency"
-                      value={`AUTO`}
+                      value={
+                        minerMode === 'custom' ? `${frequency}MHz` : 'AUTO'
+                      }
                       reversed={true}
                     />
                     <NoCardStatistics
@@ -308,14 +406,18 @@ const Miner = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={PowerOffSolidIcon}
+                              as={FanIcon}
                               color={iconColorReversed}
                             />
                           }
                         />
                       }
                       name="Fan management"
-                      value={`AUTO`}
+                      value={
+                        fanLow !== 40 && fanHigh !== 60
+                          ? `${fanLow}°C / ${fanHigh}°C`
+                          : 'AUTO'
+                      }
                       reversed={true}
                     />
                   </Flex>
@@ -323,16 +425,48 @@ const Miner = () => {
               </Card>
             </GridItem>
             <GridItem>
-              <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow}>
-                <Flex m="2">
-                  <Text fontSize="lg" fontWeight="800">
-                    Average pools and hashboards
-                  </Text>
+              <Card py="15px" bgColor={cardColor} boxShadow={shadow} h="100%">
+                <Flex
+                  align={{ sm: 'flex-start', lg: 'center' }}
+                  justify="space-between"
+                >
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      Average pools and hashboards
+                    </Text>
+                  </Flex>
+                  <Flex align-items="center">
+                    <Button
+                      bgColor="blue.800"
+                      color="white"
+                      variant="solid"
+                      size="md"
+                      onClick={onOpen}
+                    >
+                      Show all data
+                    </Button>
+                  </Flex>
                 </Flex>
                 {loadingMiner ? (
                   <BulletList />
                 ) : (
-                  <Flex my="auto" direction="column"></Flex>
+                  <Box mt="3">
+                    <PanelGrid
+                      title="Hashboards"
+                      active={activeBoards}
+                      total={totalBoards}
+                      data={dataTableBoards}
+                    />
+                    <Center height="30px" mx="5">
+                      <Divider />
+                    </Center>
+                    <PanelGrid
+                      title="Pools"
+                      active={activePools}
+                      total={totalBoards}
+                      data={dataTablePools}
+                    />
+                  </Box>
                 )}
               </Card>
             </GridItem>
@@ -394,7 +528,7 @@ const Miner = () => {
                           <Icon
                             w="32px"
                             h="32px"
-                            as={PowerOffSolidIcon}
+                            as={ChipSpeedIcon}
                             color={iconColorReversed}
                           />
                         }

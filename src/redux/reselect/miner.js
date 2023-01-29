@@ -32,7 +32,6 @@ export const minerSelector = createSelector(
 
     if (minerStats) {
       const boards = minerStats.map((board) => {
-        console.log(board);
         const {
           status,
           lastsharetime,
@@ -41,25 +40,44 @@ export const minerSelector = createSelector(
             wattPerGHs,
             upTime,
             intervals: {
-              int_900: { bySol: avgHashrateInGh },
-              int_0: { chipSpeed }
+              int_900: { bySol: avgHashrateInGh, byPool: avgPoolHashrateInGh },
+              int_0: { chipSpeed, byPool: poolHashrateInGh },
             },
           },
           slots: {
-            int_0: { ghs: hashrateInGh, temperature, errorRate },
+            int_0: {
+              ghs: hashrateInGh,
+              temperature,
+              errorRate,
+              currents,
+              chips,
+            },
           },
           pool: {
+            diff,
+            status: poolStatus,
+            userName: poolUsername,
+            host: poolHost,
+            port: poolPort,
             intervals: {
-              int_0: { sharesRejected, sharesAccepted },
+              int_0: { sharesRejected, sharesAccepted, sharesSent },
             },
           },
           fans: {
-            int_0: { rpm: fanRpm}
-          }
+            int_0: { rpm: fanRpm },
+          },
         } = board;
+
+        console.log(board);
 
         return {
           status,
+          poolStatus,
+          poolUsername,
+          poolHost,
+          poolPort,
+          poolHashrateInGh,
+          avgPoolHashrateInGh,
           upTime,
           lastShareTimeX: parseInt(moment(lastsharetime).format('X')),
           lastShareTime: moment(lastsharetime, 'X').fromNow(),
@@ -71,8 +89,16 @@ export const minerSelector = createSelector(
           temperature,
           errorRate,
           chipSpeed,
+          chips,
           sharesAccepted,
           sharesRejected,
+          sharesSent,
+          diff,
+          voltage: status
+            ? (((wattPerGHs * hashrateInGh) / _.sum(currents)) * 1000).toFixed(
+                2
+              )
+            : 0,
         };
       });
 
@@ -95,8 +121,7 @@ export const minerSelector = createSelector(
         true
       );
 
-      if (_.every(boards, ['status', false]))
-        minerUptime = 'Inactive';
+      if (_.every(boards, ['status', false])) minerUptime = 'Inactive';
 
       const globalHashrate = displayHashrate(
         _.sumBy(boards, (hb) => {
@@ -118,6 +143,26 @@ export const minerSelector = createSelector(
         false,
         2,
         true
+      );
+
+      const poolHashrate = displayHashrate(
+        _.sumBy(boards, (hb) => {
+          if (hb.status) return hb.poolHashrateInGh;
+          return null;
+        }),
+        'gh',
+        true,
+        2
+      );
+
+      const poolHAvgashrate = displayHashrate(
+        _.sumBy(boards, (hb) => {
+          if (hb.status) return hb.poolHashrateInGh;
+          return null;
+        }),
+        'gh',
+        true,
+        2
       );
 
       // Miner watt
@@ -170,6 +215,36 @@ export const minerSelector = createSelector(
         return null;
       });
 
+      const avgVoltage = _.meanBy(boards, (hb) => {
+        if (hb.status) return hb.voltage;
+        return null;
+      });
+
+      // Pool sum/avg
+      const totalSharesSent = _.sumBy(boards, (hb) => {
+        if (hb.status) return hb.sharesSent;
+        return null;
+      });
+
+      const totalSharesAccepted = _.sumBy(boards, (hb) => {
+        if (hb.status) return hb.sharesAccepted;
+        return null;
+      });
+
+      const totalSharesRejected = _.sumBy(boards, (hb) => {
+        if (hb.status) return hb.sharesRejected;
+        return null;
+      });
+
+      const avgDiff = _.meanBy(boards, (hb) => {
+        if (hb.status) return hb.diff;
+        return null;
+      });
+
+      const activeBoards = _.size(_.filter(boards, { status: true }));
+      const totalBoards = _.size(boards);
+      const activePools = _.size(_.filter(boards, { poolStatus: true }));
+
       stats = {
         boards,
         minerUptime,
@@ -182,7 +257,17 @@ export const minerSelector = createSelector(
         avgBoardRejected,
         avgChipSpeed,
         avgFanSpeed,
+        avgVoltage,
         lastShareTime,
+        totalSharesSent,
+        totalSharesAccepted,
+        totalSharesRejected,
+        avgDiff,
+        poolHashrate,
+        poolHAvgashrate,
+        activeBoards,
+        totalBoards,
+        activePools,
       };
     }
 

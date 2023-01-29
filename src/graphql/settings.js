@@ -34,12 +34,11 @@ export const GET_SETTINGS_QUERY = gql`
   }
 `;
 
-
 export const SET_SETTINGS_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query SET_SETTINGS ($input: SettingsUpdateInput!) {
+  query SET_SETTINGS($input: SettingsUpdateInput!) {
     Settings {
-      update (input: $input) {
+      update(input: $input) {
         result {
           settings {
             agree
@@ -67,3 +66,30 @@ export const SET_SETTINGS_QUERY = gql`
     }
   }
 `;
+
+export const initialState = {
+  Settings: {
+    read: {
+      result: {
+        settings: {
+          agree: null,
+          minerMode: null,
+          voltage: null,
+          frequency: null,
+          fan_low: null,
+          fan_high: null,
+          apiAllow: null,
+          customApproval: null,
+          connectedWifi: null,
+          leftSidebarVisibility: null,
+          leftSidebarExtended: null,
+          rightSidebarVisibility: null,
+          temperatureUnit: null,
+          nodeRpcPassword: null,
+          nodeEnableTor: null,
+          nodeUserConf: null,
+        },
+      },
+    },
+  },
+};

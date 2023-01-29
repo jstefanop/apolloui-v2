@@ -17,11 +17,7 @@ import {
 import PropTypes from 'prop-types';
 import React from 'react';
 // Assets
-import {
-  MdCheckCircle,
-  MdCancel,
-  MdOutlineError,
-} from 'react-icons/md';
+import { MdCheckCircle, MdCancel, MdOutlineError } from 'react-icons/md';
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import FixedPlugin from '../fixedPlugin/FixedPlugin';
@@ -29,6 +25,12 @@ import { MinerIcon } from '../UI/Icons/MinerIcon';
 import { NodeIcon } from '../UI/Icons/NodeIcon';
 import { MinerTempIcon } from '../UI/Icons/MinerTemp';
 import { PowerOffIcon } from '../UI/Icons/PowerOffIcon';
+import { StopIcon } from '../UI/Icons/StopIcon';
+import { RestartIcon } from '../UI/Icons/RestartIcon';
+import { SignOutIcon } from '../UI/Icons/SignOutIcon';
+import { CheckIcon } from '@chakra-ui/icons';
+import { ErrorIcon } from '../UI/Icons/ErrorIcon';
+import { WarningIcon } from '../UI/Icons/WarningIcon';
 
 export default function HeaderLinks({
   secondary,
@@ -109,10 +111,10 @@ export default function HeaderLinks({
             >
               <Icon w="18px" h="18px" color={navbarIcon} as={NodeIcon} />
             </Flex>
-            <Icon
-              w="18px"
-              h="18px"
-              color={
+            <Flex
+              align="center"
+              justify="center"
+              bg={
                 nodeStatusLabel === 'Online'
                   ? 'green.500'
                   : nodeStatusLabel === 'Offline'
@@ -121,16 +123,25 @@ export default function HeaderLinks({
                   ? 'orange.500'
                   : null
               }
-              as={
-                nodeStatusLabel === 'Online'
-                  ? MdCheckCircle
-                  : nodeStatusLabel === 'Offline'
-                  ? MdCancel
-                  : nodeStatusLabel === 'Error'
-                  ? MdOutlineError
-                  : null
-              }
-            />
+              h="20px"
+              w="20px"
+              borderRadius="30px"
+            >
+              <Icon
+                w="12px"
+                h="12px"
+                color={badgeBox}
+                as={
+                  nodeStatusLabel === 'Online'
+                    ? CheckIcon
+                    : nodeStatusLabel === 'Offline'
+                    ? ErrorIcon
+                    : nodeStatusLabel === 'Error'
+                    ? WarningIcon
+                    : null
+                }
+              />
+            </Flex>
           </Flex>
 
           {/* HASHRATE */}
@@ -156,19 +167,20 @@ export default function HeaderLinks({
               <MinerIcon w="18px" h="18px" color={navbarIcon} />
             </Flex>
             <Text
+              align={'center'}
               w="max-content"
               color={badgeColor}
               fontSize="sm"
               fontWeight="700"
               me="6px"
-              minW="60px"
+              minW="70px"
             >
               {`${globalHashrate?.value} ${globalHashrate?.unit}`}
             </Text>
-            <Icon
-              w="18px"
-              h="18px"
-              color={
+            <Flex
+              align="center"
+              justify="center"
+              bg={
                 minerStatusLabel === 'Online'
                   ? 'green.500'
                   : minerStatusLabel === 'Offline'
@@ -177,16 +189,25 @@ export default function HeaderLinks({
                   ? 'orange.500'
                   : null
               }
-              as={
-                minerStatusLabel === 'Online'
-                  ? MdCheckCircle
-                  : minerStatusLabel === 'Offline'
-                  ? MdCancel
-                  : minerStatusLabel === 'Error'
-                  ? MdOutlineError
-                  : null
-              }
-            />
+              h="20px"
+              w="20px"
+              borderRadius="30px"
+            >
+              <Icon
+                w="12px"
+                h="12px"
+                color={badgeBox}
+                as={
+                  minerStatusLabel === 'Online'
+                    ? CheckIcon
+                    : minerStatusLabel === 'Offline'
+                    ? ErrorIcon
+                    : minerStatusLabel === 'Error'
+                    ? WarningIcon
+                    : null
+                }
+              />
+            </Flex>
           </Flex>
 
           {/* TEMPERATURE */}
@@ -248,13 +269,13 @@ export default function HeaderLinks({
                   {minerOnline && (
                     <>
                       <MenuItem
-                        icon={<MdCancel />}
+                        icon={<StopIcon />}
                         onClick={() => handleSystemAction('stopMiner')}
                       >
                         Stop
                       </MenuItem>
                       <MenuItem
-                        icon={<MdCancel />}
+                        icon={<RestartIcon />}
                         onClick={() => handleSystemAction('restartMiner')}
                       >
                         Restart
@@ -274,7 +295,7 @@ export default function HeaderLinks({
                   )}
                   {blocksCount && (
                     <MenuItem
-                      icon={<MdCancel />}
+                      icon={<StopIcon />}
                       onClick={() => handleSystemAction('stopNode')}
                     >
                       Stop
@@ -283,9 +304,9 @@ export default function HeaderLinks({
                 </MenuGroup>
                 <MenuDivider />
                 <MenuGroup title="System">
-                  <MenuItem icon={<MdCancel />}>Shutdown</MenuItem>
-                  <MenuItem icon={<MdCancel />}>Reboot</MenuItem>
-                  <MenuItem icon={<MdCancel />}>Signout</MenuItem>
+                  <MenuItem icon={<PowerOffIcon />}>Shutdown</MenuItem>
+                  <MenuItem icon={<RestartIcon />}>Reboot</MenuItem>
+                  <MenuItem icon={<SignOutIcon />}>Signout</MenuItem>
                 </MenuGroup>
                 <MenuDivider />
               </MenuList>

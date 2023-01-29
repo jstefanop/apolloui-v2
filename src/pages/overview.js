@@ -270,35 +270,6 @@ const Overview = () => {
             </GridItem>
             <GridItem>
               <NoCardStatisticsGauge
-                id="systemTemp"
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    icon={
-                      <Icon
-                        w="32px"
-                        h="32px"
-                        as={DatabaseIcon}
-                        color={iconColorReversed}
-                      />
-                    }
-                  />
-                }
-                name="Disk usage"
-                legendValue={`${bytesToSize(
-                  diskUsed * 1024,
-                  0,
-                  false
-                )} / ${bytesToSize(diskTotal * 1024, 0)}`}
-                rawValue={diskUsed}
-                total={diskTotal}
-                gauge={true}
-                loading={loadingMcu}
-              />
-            </GridItem>
-            <GridItem>
-              <NoCardStatisticsGauge
                 id="hwErr"
                 startContent={
                   <IconBox
@@ -321,6 +292,35 @@ const Overview = () => {
                 )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
                 rawValue={memoryUsed}
                 total={memoryTotal}
+                gauge={true}
+                loading={loadingMcu}
+              />
+            </GridItem>
+            <GridItem>
+              <NoCardStatisticsGauge
+                id="systemTemp"
+                startContent={
+                  <IconBox
+                    w="56px"
+                    h="56px"
+                    icon={
+                      <Icon
+                        w="32px"
+                        h="32px"
+                        as={DatabaseIcon}
+                        color={iconColorReversed}
+                      />
+                    }
+                  />
+                }
+                name="System disk usage"
+                legendValue={`${bytesToSize(
+                  diskUsed * 1024,
+                  0,
+                  false
+                )} / ${bytesToSize(diskTotal * 1024, 0)}`}
+                rawValue={diskUsed}
+                total={diskTotal}
                 gauge={true}
                 loading={loadingMcu}
               />
@@ -412,13 +412,13 @@ const Overview = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={FlagIcon}
+                              as={DatabaseIcon}
                               color={iconColorReversed}
                             />
                           }
                         />
                       }
-                      name="uptime"
+                      name="Node disk usage"
                       value={bytesToSize(sizeOnDisk)}
                       align="start"
                     />
