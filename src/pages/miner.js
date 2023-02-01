@@ -7,7 +7,6 @@ import {
   GridItem,
   useColorModeValue,
   Button,
-  SimpleGrid,
   Divider,
   Center,
   useDisclosure,
@@ -44,11 +43,12 @@ import { SharesRejectedIcon } from '../components/UI/Icons/SharesRejectedIcon';
 import { ChipSpeedIcon } from '../components/UI/Icons/ChipSpeedIcon';
 import MinerDrawer from '../components/apollo/MinerDrawer';
 import PanelGrid from '../components/UI/PanelGrid';
+import Head from 'next/head';
 
 const Miner = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const cardColor = useColorModeValue('white', 'blue.700');
-  const iconColor = useColorModeValue('white', 'brand.500');
+  const cardColor = useColorModeValue('white', 'brand.800');
+  const iconColor = useColorModeValue('brand.500', 'white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
@@ -69,7 +69,7 @@ const Miner = () => {
   } = useSelector(minerSelector);
 
   // Set Previous state for CountUp component
-  const prevData = useRef(null);
+  const prevData = useRef(dataMiner);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -80,6 +80,9 @@ const Miner = () => {
   }, [dataMiner]);
 
   const {
+    avgBoardRejected: prevAvgBoardRejected,
+    avgBoardErrors: prevAvgBoardErrors,
+    avgBoardTemp: prevAvgBoardTemp,
     globalHashrate: prevGlobalHashrate,
     globalAvgHashrate: prevGlobalAvgHashrate,
     minerPower: prevMinerPower,
@@ -168,7 +171,18 @@ const Miner = () => {
 
   return (
     <Box>
-      <MinerDrawer isOpen={isOpen} onClose={onClose} placement="right" data={boards} />
+      <Head>
+        <title>
+          Apollo BTC Miner{' '}
+          {globalHashrate && `${globalHashrate.value} ${globalHashrate.unit}`}
+        </title>
+      </Head>
+      <MinerDrawer
+        isOpen={isOpen}
+        onClose={onClose}
+        placement="right"
+        data={boards}
+      />
       <Grid
         templateRows="repeat(3, 1fr)"
         templateColumns={{ base: 'repeat(6, 1fr)' }}
@@ -236,14 +250,23 @@ const Miner = () => {
                   <IconBox
                     w="56px"
                     h="56px"
-                    bg={'white'}
+                    bg={'transparent'}
                     icon={
                       <BugIcon w="32px" h="32px" color={iconColorReversed} />
                     }
                   />
                 }
                 name="Hardware errors"
-                value={`${avgBoardErrors}%`}
+                value={
+                  <span
+                    className={
+                      avgBoardErrors !== prevAvgBoardErrors ?
+                      'animate__animated animate__flash' : undefined
+                    }
+                  >
+                    {avgBoardErrors}%
+                  </span>
+                }
                 reversed={true}
               />
             </GridItem>
@@ -253,7 +276,7 @@ const Miner = () => {
                   <IconBox
                     w="56px"
                     h="56px"
-                    bg={'white'}
+                    bg={'transparent'}
                     icon={
                       <RejectedIcon
                         w="32px"
@@ -264,7 +287,16 @@ const Miner = () => {
                   />
                 }
                 name="Rejected"
-                value={avgBoardRejected}
+                value={
+                  <span
+                    className={
+                      avgBoardRejected !== prevAvgBoardRejected ?
+                      'animate__animated animate__flash' : undefined
+                    }
+                  >
+                    {avgBoardRejected}
+                  </span>
+                }
                 reversed={true}
               />
             </GridItem>
@@ -274,7 +306,7 @@ const Miner = () => {
                   <IconBox
                     w="56px"
                     h="56px"
-                    bg={'white'}
+                    bg={'transparent'}
                     icon={
                       <LastShareIcon
                         w="32px"
@@ -296,7 +328,7 @@ const Miner = () => {
                   <IconBox
                     w="56px"
                     h="56px"
-                    bg={'white'}
+                    bg={'transparent'}
                     icon={
                       <PowerOffSolidIcon
                         w="32px"
@@ -345,7 +377,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={ModeIcon}
-                              color={iconColorReversed}
+                              color={iconColor}
                             />
                           }
                         />
@@ -365,7 +397,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={PowerManagementIcon}
-                              color={iconColorReversed}
+                              color={iconColor}
                             />
                           }
                         />
@@ -385,7 +417,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={FrequencyIcon}
-                              color={iconColorReversed}
+                              color={iconColor}
                             />
                           }
                         />
@@ -407,7 +439,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={FanIcon}
-                              color={iconColorReversed}
+                              color={iconColor}
                             />
                           }
                         />
@@ -437,7 +469,7 @@ const Miner = () => {
                   </Flex>
                   <Flex align-items="center">
                     <Button
-                      bgColor="blue.800"
+                      bgColor="brand.800"
                       color="white"
                       variant="solid"
                       size="md"
@@ -503,7 +535,7 @@ const Miner = () => {
                             w="32px"
                             h="32px"
                             as={MinerTempIcon}
-                            color={iconColorReversed}
+                            color={iconColor}
                           />
                         }
                       />
@@ -529,7 +561,7 @@ const Miner = () => {
                             w="32px"
                             h="32px"
                             as={ChipSpeedIcon}
-                            color={iconColorReversed}
+                            color={iconColor}
                           />
                         }
                       />
@@ -554,7 +586,7 @@ const Miner = () => {
                             w="32px"
                             h="32px"
                             as={FanIcon}
-                            color={iconColorReversed}
+                            color={iconColor}
                           />
                         }
                       />
@@ -562,7 +594,7 @@ const Miner = () => {
                     name="Fan speed"
                     value={`${avgFanSpeed} rpm`}
                     rawValue={avgFanSpeed}
-                    total={3500}
+                    total={4000}
                     gauge={true}
                     loading={loadingMiner}
                   />

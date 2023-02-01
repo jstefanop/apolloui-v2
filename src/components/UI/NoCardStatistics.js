@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 
 const NoCardStatistics = ({ startContent, name, value, reversed, ...props }) => {
-  const textColor = useColorModeValue('secondaryGray.900', 'white');
+  const textColor = useColorModeValue('brand.800', 'white');
   const textColorSecondary = 'secondaryGray.600';
 
   return (

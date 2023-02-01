@@ -18,6 +18,8 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { Router } from 'next/router';
+import Head from 'next/head';
 
 const SignIn = () => {
   // Chakra color mode
@@ -34,11 +36,11 @@ const SignIn = () => {
     e.preventDefault();
     const response = await signIn('credentials', {
       password,
-      callbackUrl: `${window.location.origin}/`,
       redirect: false,
     });
     console.log('RES', response);
     const { error } = response;
+    // if (!error) Router.replace('/overview');
     setError(error);
   };
 
@@ -52,6 +54,9 @@ const SignIn = () => {
       px={{ base: '20px', md: '0px' }}
       flexDirection='column'
     >
+      <Head>
+        <title>Welcome to Apollo BTC</title>
+      </Head>
       <Box me='auto'>
         <Heading color={textColor} fontSize='36px' mb='10px'>
           Sign In

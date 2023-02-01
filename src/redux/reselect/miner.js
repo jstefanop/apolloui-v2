@@ -68,8 +68,6 @@ export const minerSelector = createSelector(
           },
         } = board;
 
-        console.log(board);
-
         return {
           status,
           poolStatus,
@@ -128,7 +126,7 @@ export const minerSelector = createSelector(
           if (hb.status) return hb.hashrateInGh;
           return null;
         }),
-        'gh',
+        'GH/s',
         false,
         2,
         true
@@ -139,7 +137,7 @@ export const minerSelector = createSelector(
           if (hb.status) return hb.avgHashrateInGh;
           return null;
         }),
-        'gh',
+        'GH/s',
         false,
         2,
         true
@@ -150,7 +148,7 @@ export const minerSelector = createSelector(
           if (hb.status) return hb.poolHashrateInGh;
           return null;
         }),
-        'gh',
+        'GH/s',
         true,
         2
       );
@@ -160,7 +158,7 @@ export const minerSelector = createSelector(
           if (hb.status) return hb.poolHashrateInGh;
           return null;
         }),
-        'gh',
+        'GH/s',
         true,
         2
       );

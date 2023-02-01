@@ -1,4 +1,5 @@
 import NextImage from 'next/image'
+import { useRouter } from 'next/router';
 
 // Chakra imports
 import { Flex, useColorMode, useColorModeValue } from '@chakra-ui/react';
@@ -6,17 +7,16 @@ import { Flex, useColorMode, useColorModeValue } from '@chakra-ui/react';
 // Custom components
 import Logo from '../../../assets/img/logo.png';
 import LogoWhite from '../../../assets/img/logo_white.png';
-import { HSeparator } from '../../separator/Separator';
 
 export function SidebarBrand() {
   //   Chakra color mode
+  const router = useRouter();
   let logoColor = useColorModeValue('navy.700', 'white');
   const { colorMode } = useColorMode();
 
   return (
     <Flex align='center' direction='column'>
-      <NextImage src={colorMode === 'light' ? Logo : LogoWhite} style={{width: '150px', marginBottom: '24px'}} alt="Logo" />
-      <HSeparator mb='20px' />
+      <NextImage src={router.pathname === '/signin' ? LogoWhite : colorMode === 'light' ? Logo : LogoWhite} style={{width: '180px', marginBottom: '24px'}} alt="Logo" />
     </Flex>
   );
 }

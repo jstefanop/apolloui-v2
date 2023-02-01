@@ -1,5 +1,5 @@
 import { CheckIcon } from '@chakra-ui/icons';
-import { Icon, Flex, Text, SimpleGrid } from '@chakra-ui/react';
+import { Icon, Flex, Text, SimpleGrid, useColorModeValue } from '@chakra-ui/react';
 import ActiveBadge from '../apollo/ActiveBadge';
 import { ErrorIcon } from './Icons/ErrorIcon';
 
@@ -12,6 +12,7 @@ const PanelGrid = ({
   badgeText,
   badgeSecondaryText,
 }) => {
+  const badgeBgColor = useColorModeValue('gray.200', 'gray.900');
   return (
     <Flex mt="4" mx="5" direction="column">
       <Flex justify="space-between">
@@ -48,7 +49,7 @@ const PanelGrid = ({
           )}
           {(badgeText || badgeSecondaryText) && (
             <Flex
-              bgColor="gray.200"
+              bgColor={badgeBgColor}
               borderRadius={'12px'}
               ms="auto"
               p={'3px'}

@@ -32,14 +32,15 @@ import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
 
 const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
-  const cardColor = useColorModeValue('white', 'blue.700');
+  const drawerBgColor = useColorModeValue('gray.200', 'brand.700');
+  const cardColor = useColorModeValue('white', 'brand.800');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.2)'
   );
 
   const dataTableBoards = _.map(data, (board) => {
     const items = {
-      hashrate: displayHashrate(board.hashrateInGh, 'gh', true, 2),
+      hashrate: displayHashrate(board.hashrateInGh, 'GH/s', true, 2),
       temperature: `${board.temperature}°C`,
       fanSPeed: `${board.fanSpeed} rpm`,
       power: `${board.wattTotal} Watt`,
@@ -74,7 +75,7 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
 
   const dataTablePools = _.map(data, (board) => {
     const items = {
-      hashrate: displayHashrate(board.poolHashrateInGh, 'gh', true, 2),
+      hashrate: displayHashrate(board.poolHashrateInGh, 'GH/s', true, 2),
       diff: board.diff,
       empty: null,
       sharesSent: board.sharesSent,
@@ -107,13 +108,12 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
   return (
     <Drawer placement={placement} onClose={onClose} isOpen={isOpen} size="xl">
       <DrawerOverlay />
-      <DrawerContent>
+      <DrawerContent bgColor={drawerBgColor} >
         <DrawerCloseButton />
         <DrawerHeader fontSize="3xl">Hashboards and Pools</DrawerHeader>
 
         <DrawerBody>
           <Tabs
-            colorScheme="facebook"
             size="md"
             align={'center'}
             isLazy

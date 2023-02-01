@@ -12,12 +12,10 @@ import {
   IconButton,
   MenuGroup,
   MenuDivider,
-  Button,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import React from 'react';
-// Assets
-import { MdCheckCircle, MdCancel, MdOutlineError } from 'react-icons/md';
+import { signOut } from 'next-auth/react';
+import { MdCancel } from 'react-icons/md';
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import FixedPlugin from '../fixedPlugin/FixedPlugin';
@@ -53,6 +51,11 @@ export default function HeaderLinks({
     '14px 17px 40px 4px rgba(112, 144, 176, 0.18)',
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'
   );
+
+  const handleSignout = async () => {
+    await signOut({ redirect: false });
+    localStorage.removeItem('token');
+  };
 
   const { globalHashrate, avgBoardTemp } = minerStats;
 
@@ -306,7 +309,9 @@ export default function HeaderLinks({
                 <MenuGroup title="System">
                   <MenuItem icon={<PowerOffIcon />}>Shutdown</MenuItem>
                   <MenuItem icon={<RestartIcon />}>Reboot</MenuItem>
-                  <MenuItem icon={<SignOutIcon />}>Signout</MenuItem>
+                  <MenuItem icon={<SignOutIcon />} onClick={handleSignout}>
+                    Signout
+                  </MenuItem>
                 </MenuGroup>
                 <MenuDivider />
               </MenuList>

@@ -15,7 +15,7 @@ const ActiveBadge = ({active, total, title, smaller, ...props}) => {
           ? 'orange.500'
           : 'red.500'
       }
-      color={active ? 'blue.800' : 'white'}
+      color={active ? 'brand.800' : 'white'}
       borderRadius={smaller ? '4px' : '8px'}
       ms="auto"
       p={smaller ? '3px' : '6px'}

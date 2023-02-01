@@ -13,7 +13,7 @@ import { StopIcon } from '../UI/Icons/StopIcon';
 const NavbarSeconday = ({
   type,
   handleSystemAction,
-  nodeNetworkInfo,
+  blocksCount,
   minerOnline,
 }) => {
   // Chakra Color Mode
@@ -140,7 +140,7 @@ const NavbarSeconday = ({
 
       {type === 'node' && (
         <Center>
-          {nodeNetworkInfo && (
+          {blocksCount && (
             <Button
               ms="auto"
               p="6px"
@@ -172,7 +172,7 @@ const NavbarSeconday = ({
             </Button>
           )}
 
-          {!nodeNetworkInfo && (
+          {!blocksCount && (
             <Button
               ms="auto"
               p="6px"

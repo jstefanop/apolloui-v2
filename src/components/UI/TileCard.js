@@ -1,5 +1,4 @@
 import { Icon, Text, Flex } from '@chakra-ui/react';
-import { BulletList, Instagram } from 'react-content-loader';
 
 import Card from '../card/Card';
 import IconBox from '../icons/IconBox';

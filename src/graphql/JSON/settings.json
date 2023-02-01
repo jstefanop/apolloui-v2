@@ -1,0 +1,28 @@
+{
+  "data": {
+    "Settings": {
+      "read": {
+        "result": {
+          "settings": {
+            "agree": null,
+            "minerMode": "turbo",
+            "voltage": 44,
+            "frequency": 36,
+            "fan_low": 40,
+            "fan_high": 60,
+            "apiAllow": false,
+            "customApproval": false,
+            "connectedWifi": null,
+            "leftSidebarVisibility": true,
+            "leftSidebarExtended": true,
+            "rightSidebarVisibility": false,
+            "temperatureUnit": "c",
+            "nodeRpcPassword": "DUYlI1Dqkve0",
+            "nodeEnableTor": false,
+            "nodeUserConf": "rpcbind=0.0.0.0\nrpcallowip=192.168.0.0/16\ndisablewallet=1\ndbcache=512\nrpcthreads=6\nrpcworkqueue=1024"
+          }
+        }
+      }
+    }
+  }
+}

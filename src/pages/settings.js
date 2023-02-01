@@ -54,6 +54,7 @@ import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../graphql/settings';
 import { GET_POOLS_QUERY, SET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../graphql/pools';
+import Head from 'next/head';
 
 const Settings = () => {
   const textColor = useColorModeValue('brands.900', 'white');
@@ -515,6 +516,9 @@ const Settings = () => {
 
   return (
     <Box>
+      <Head>
+        <title>Apollo BTC Settings</title>
+      </Head>
       {isChanged && (
         <Box
           position='fixed'

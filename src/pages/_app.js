@@ -9,6 +9,7 @@ import { useApollo } from '../lib/apolloClient';
 import { SessionProvider } from 'next-auth/react';
 
 import '../assets/css/App.css';
+import 'animate.css';
 import theme from '../theme/theme';
 
 import routes from '../routes';
@@ -16,7 +17,7 @@ import wrapper from '../redux/store';
 import AuthLayout from '../components/layouts/Auth';
 import DefaultLayout from '../components/layouts/Default';
 import ProtectedRoutes from '../components/ProtectedRoutes';
-import illustration from '../assets/img/auth/auth2.jpg';
+import illustration from '../assets/img/networking_banner.png';
 
 import messages_en from '../locales/en.json';
 import Error from 'next/error';

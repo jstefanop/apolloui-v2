@@ -1,0 +1,21 @@
+{
+  "data": {
+    "Pool": {
+      "list": {
+        "result": {
+          "pools": [
+            {
+              "enabled": true,
+              "donation": 0,
+              "url": "stratum+tcp://stratum.slushpool.com:3333",
+              "username": "michelem09.worker1",
+              "password": "x",
+              "proxy": null,
+              "index": 0
+            }
+          ]
+        }
+      }
+    }
+  }
+}

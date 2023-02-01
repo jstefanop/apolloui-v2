@@ -1,80 +1,47 @@
 export const displayHashrate = (
-  hashRate,
+  hashrate,
   unit = 'h',
   withUnit = true,
   precision = 2,
   returnObject = false
 ) => {
-  var rate = 1000;
+  const hashrateUnits = ['H/s', 'KH/s', 'MH/s', 'GH/s', 'TH/s', 'PH/s', 'EH/s'];
   precision = typeof precision === 'number' ? precision : 2;
-  switch (unit) {
-    case 'h':
-      rate = 1;
-      break;
-    case 'kh':
-      rate = 1000;
-      break;
-    case 'mh':
-      rate = 1000000;
-      break;
-    case 'gh':
-      rate = 1000000000;
-      break;
-    case 'th':
-      rate = 1000000000000;
-      break;
-    default:
-      rate = 1;
+  let i = hashrateUnits.indexOf(unit);
+  while (i > 0) {
+    hashrate *= 1000;
+    i--;
+  }
+  i = 0;
+  while (hashrate >= 1000) {
+    hashrate /= 1000;
+    i++;
   }
 
-  hashRate = hashRate * rate || 0;
+  return withUnit
+    ? `${parseFloat(hashrate).toFixed(precision)} ${hashrateUnits[i]}`
+    : returnObject
+    ? {
+        value: parseFloat(hashrate).toFixed(precision),
+        unit: hashrateUnits[i],
+      }
+      : parseFloat(parseFloat(hashrate).toFixed(precision));
+};
 
-  if (hashRate > 900000000000) {
-    return withUnit
-      ? parseFloat(hashRate / 1000000000000).toFixed(precision) + ' TH/s'
-      : returnObject
-      ? {
-          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'TH/s',
-        }
-      : parseFloat(parseFloat(hashRate / 1000000000000).toFixed(precision));
-  } else if (hashRate > 900000000) {
-    return withUnit
-      ? parseFloat(hashRate / 1000000000).toFixed(precision) + ' GH/s'
-      : returnObject
-      ? {
-          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'GH/s',
-        }
-      : parseFloat(parseFloat(hashRate / 1000000000).toFixed(precision));
-  } else if (hashRate > 900000) {
-    return withUnit
-      ? parseFloat(hashRate / 1000000).toFixed(precision) + ' MH/s'
-      : returnObject
-      ? {
-          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'MH/s',
-        }
-      : parseFloat(parseFloat(hashRate / 1000000).toFixed(precision));
-  } else if (hashRate > 900) {
-    return withUnit
-      ? parseFloat(hashRate / 1000).toFixed(precision) + ' KH/s'
-      : returnObject
-      ? {
-          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'KH/s',
-        }
-      : parseFloat(parseFloat(hashRate / 1000).toFixed(precision));
-  } else {
-    return withUnit
-      ? hashRate.toFixed(precision) + ' H/s'
-      : returnObject
-      ? {
-          value: parseFloat(hashRate / 1000000000000).toFixed(precision),
-          unit: 'H/s',
-        }
-      : hashRate.toFixed(precision);
+export const numberToText = (number) => {
+  let text = '';
+  const units = ['quadrillions', 'trillions', 'billions', 'millions', 'thousands'];
+  const values = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000];
+  for (let i = 0; i < units.length; i++) {
+    if (number >= values[i]) {
+      text = `${Math.floor(number / values[i])} ${units[i]}`;
+      break;
+    }
   }
+  if (!text) {
+    text = `${number}`;
+  }
+  return `About ${text}`;
 };
 
 export const percentColor = (value) => {
@@ -98,7 +65,9 @@ export const bytesToSize = (bytes, decimals = 2, withUnits = true) => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${(withUnits) ? ' ' + sizes[i] : ''}`;
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${
+    withUnits ? ' ' + sizes[i] : ''
+  }`;
 };
 
 export const tempColor = (value) => {

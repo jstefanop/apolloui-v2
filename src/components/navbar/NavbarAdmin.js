@@ -269,7 +269,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               <NavbarSeconday
                 type={'node'}
                 handleSystemAction={handleSystemAction}
-                nodeNetworkInfo={nodeNetworkInfo}
+                blocksCount={blocksCount}
               />
             </Box>
           )}

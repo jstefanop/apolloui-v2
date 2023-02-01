@@ -1,0 +1,217 @@
+{
+  "data": {
+    "Miner": {
+      "online": {
+        "result": {
+          "online": {
+            "timestamp": "2023-01-30T07:45:51.005Z",
+            "status": true
+          }
+        }
+      },
+      "stats": {
+        "result": {
+          "stats": [
+            {
+              "uuid": "310059000850393855313720",
+              "date": "2023-01-30T08:45:44+01:00",
+              "statVersion": "1.2",
+              "versions": {
+                "miner": "09bb0bf",
+                "minerDate": "2021-11-22",
+                "minerDebug": "0",
+                "mspVer": "0xd166"
+              },
+              "master": {
+                "upTime": 231219,
+                "diff": 3343,
+                "boards": 1,
+                "errorSpi": 0,
+                "osc": 50,
+                "hwAddr": "00:00:00:00:00:00",
+                "boardsI": 24.3,
+                "boardsW": 202,
+                "wattPerGHs": 0.066,
+                "intervals": {
+                  "int_0": {
+                    "name": "total",
+                    "interval": 231207,
+                    "bySol": 3056.3,
+                    "byDiff": 3042.7,
+                    "byPool": 3011.1,
+                    "byJobs": 3091.1,
+                    "solutions": 164525096,
+                    "errors": 1488873,
+                    "errorRate": 0.9,
+                    "chipSpeed": 69.46,
+                    "chipRestarts": 100080
+                  },
+                  "int_30": {
+                    "name": "30 sec",
+                    "interval": 10,
+                    "bySol": 3503.4,
+                    "byDiff": 2871.6,
+                    "byPool": 2871.6,
+                    "byJobs": 3567,
+                    "solutions": 8157,
+                    "errors": 71,
+                    "errorRate": 0.9,
+                    "chipSpeed": 79.62,
+                    "chipRestarts": 0
+                  },
+                  "int_300": {
+                    "name": "5 min",
+                    "interval": 101,
+                    "bySol": 3095.2,
+                    "byDiff": 2416.7,
+                    "byPool": 2274.6,
+                    "byJobs": 3119.8,
+                    "solutions": 72785,
+                    "errors": 654,
+                    "errorRate": 0.9,
+                    "chipSpeed": 70.34,
+                    "chipRestarts": 44
+                  },
+                  "int_900": {
+                    "name": "15 min",
+                    "interval": 305,
+                    "bySol": 3064.9,
+                    "byDiff": 2824.6,
+                    "byPool": 2777.5,
+                    "byJobs": 3100,
+                    "solutions": 217647,
+                    "errors": 1994,
+                    "errorRate": 0.9,
+                    "chipSpeed": 69.66,
+                    "chipRestarts": 132
+                  },
+                  "int_3600": {
+                    "name": "1 hour",
+                    "interval": 1220,
+                    "bySol": 3057.2,
+                    "byDiff": 2845,
+                    "byPool": 2821.4,
+                    "byJobs": 3093,
+                    "solutions": 868406,
+                    "errors": 8077,
+                    "errorRate": 0.9,
+                    "chipSpeed": 69.48,
+                    "chipRestarts": 517
+                  }
+                }
+              },
+              "pool": {
+                "host": "stratum.slushpool.com",
+                "port": 3333,
+                "userName": "michelem09.worker1",
+                "diff": 3343,
+                "intervals": {
+                  "int_0": {
+                    "name": "total",
+                    "interval": 231207,
+                    "jobs": 8521,
+                    "cleanFlags": 455,
+                    "sharesSent": 46962,
+                    "sharesAccepted": 46863,
+                    "sharesRejected": 31,
+                    "solutionsAccepted": 162090078,
+                    "minRespTime": 18446743842431660,
+                    "avgRespTime": 393255087754,
+                    "maxRespTime": 18446744073632240,
+                    "shareLoss": 0.144798,
+                    "poolTotal": 231207,
+                    "inService": 230940,
+                    "subscribeError": 0,
+                    "diffChanges": 35,
+                    "reconnections": 1,
+                    "reconnectionsOnErrors": 1,
+                    "defaultJobShares": 0,
+                    "staleJobShares": 136,
+                    "duplicateShares": 0,
+                    "lowDifficultyShares": 0,
+                    "pwcSharesSent": 47361,
+                    "pwcSharesDropped": 0,
+                    "bigDiffShares": 0,
+                    "belowTargetShare": 0,
+                    "pwcRestart": 0,
+                    "statOverflow": 0
+                  }
+                }
+              },
+              "fans": {
+                "int_0": {
+                  "rpm": [3053]
+                }
+              },
+              "temperature": {
+                "count": 2,
+                "min": 0,
+                "avr": 31,
+                "max": 62
+              },
+              "slots": {
+                "int_0": {
+                  "revision": 20,
+                  "spiNum": 1,
+                  "spiLen": 4,
+                  "pwrNum": 2,
+                  "pwrLen": 2,
+                  "btcNum": 11,
+                  "specVoltage": 12,
+                  "chips": 44,
+                  "pwrOn": 1,
+                  "pwrOnTarget": 1,
+                  "revAdc": 4003,
+                  "temperature": 62,
+                  "temperature1": 0,
+                  "ocp": 0,
+                  "heaterErr": 0,
+                  "heaterErrNum": 0,
+                  "inOHOsc": 0,
+                  "ohOscNum": 0,
+                  "ohOscTime": 0,
+                  "overheats": 0,
+                  "overheatsTime": 0,
+                  "lowCurrRst": 0,
+                  "currents": [12132, 12140],
+                  "brokenPwc": 0,
+                  "solutions": 8157,
+                  "errors": 71,
+                  "ghs": 3503.4,
+                  "errorRate": 0.9,
+                  "chipRestarts": 0,
+                  "wattPerGHs": 0.057658,
+                  "tmpAlert": [
+                    {
+                      "alertLo": 0,
+                      "alertHi": 0,
+                      "numWrite": 0
+                    },
+                    {
+                      "alertLo": 0,
+                      "alertHi": 0,
+                      "numWrite": 0
+                    }
+                  ],
+                  "osc": 50,
+                  "oscStopChip": "N/A"
+                }
+              },
+              "slaves": [
+                {
+                  "id": 0,
+                  "uid": "310059000850393855313720",
+                  "ver": "0x13160100",
+                  "rx": 726504,
+                  "err": 1,
+                  "time": 231201,
+                  "ping": 590
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

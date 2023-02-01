@@ -13,8 +13,18 @@ option {
 
 .banner-hashrate {
   background-image: url(../img/networking_banner.png) !important;
-  background-position: auto !important;
   background-size: cover  !important;
+  background-position: center top !important;
+}
+
+.banner-node {
+  background-image: url(../img/node_banner.png) !important;
+  background-size: cover  !important;
+  background-position: center top !important;
+}
+
+#tsparticles {
+  height: 100%;
 }
 
 @keyframes spin {

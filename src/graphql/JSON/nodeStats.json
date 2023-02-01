@@ -1,0 +1,155 @@
+{
+  "data": {
+    "Node": {
+      "stats": {
+        "result": {
+          "stats": {
+            "timestamp": "2023-01-30T07:43:35.160Z",
+              "blockchainInfo": {
+              "blocks": 774302,
+                "blockTime": 1675064393,
+                  "headers": 774302,
+                    "sizeOnDisk": "512953621594"
+            },
+            "connectionCount": 31,
+              "miningInfo": {
+              "difficulty": 39350942467772.63,
+                "networkhashps": 313389538900588200000
+            },
+            "peerInfo": [
+              {
+                "addr": "5.45.73.13:8333",
+                "subver": "/Satoshi:0.20.0/"
+              },
+              {
+                "addr": "73.6.116.224:8333",
+                "subver": "/Satoshi:0.21.1/"
+              },
+              {
+                "addr": "188.166.69.73:7601",
+                "subver": "/bitnodes.earn.com:0.1/"
+              },
+              {
+                "addr": "185.239.220.210:8333",
+                "subver": "/Satoshi:0.21.1/"
+              },
+              {
+                "addr": "104.199.71.15:8333",
+                "subver": "/Satoshi:0.21.1/"
+              },
+              {
+                "addr": "79.189.211.201:8333",
+                "subver": "/Satoshi:0.18.0/"
+              },
+              {
+                "addr": "142.134.87.112:8333",
+                "subver": "/Satoshi:22.0.0/"
+              },
+              {
+                "addr": "5.150.239.205:8333",
+                "subver": "/Satoshi:24.0.1/"
+              },
+              {
+                "addr": "45.94.58.23:8333",
+                "subver": "/Satoshi:22.0.0/"
+              },
+              {
+                "addr": "159.69.10.20:46306",
+                "subver": "/Satoshi:22.99.0/"
+              },
+              {
+                "addr": "129.13.189.200:46592",
+                "subver": "/dsn.tm.kit.edu/bitcoin:0.9.99/"
+              },
+              {
+                "addr": "129.13.189.202:37122",
+                "subver": "/dsn.tm.kit.edu/bitcoin:0.9.99/"
+              },
+              {
+                "addr": "195.37.209.62:55155",
+                "subver": "/dsn.tm.kit.edu/bitcoin:0.9.99/"
+              },
+              {
+                "addr": "185.25.48.184:8333",
+                "subver": "/Satoshi:22.0.0/"
+              },
+              {
+                "addr": "112.11.139.231:4301",
+                "subver": "/Satoshi:22.0.0/"
+              },
+              {
+                "addr": "194.180.110.10:41260",
+                "subver": "/Satoshi:23.0.0/"
+              },
+              {
+                "addr": "194.180.154.2:47986",
+                "subver": "/Satoshi:23.0.0/"
+              },
+              {
+                "addr": "62.210.206.84:8333",
+                "subver": "/Satoshi:0.21.1/"
+              },
+              {
+                "addr": "5.135.141.114:52838",
+                "subver": "/Odarhom:0.90.9.10/"
+              },
+              {
+                "addr": "185.220.101.130:21732",
+                "subver": "/Satoshi:24.0.0/"
+              },
+              {
+                "addr": "213.227.132.121:47631",
+                "subver": "/bitcoinj:0.16.1/"
+              },
+              {
+                "addr": "122.116.90.171:38712",
+                "subver": "/Satoshi:22.0.0/"
+              },
+              {
+                "addr": "3.72.130.203:39534",
+                "subver": "/Satoshi:0.19.0.1/"
+              },
+              {
+                "addr": "94.237.44.67:29655",
+                "subver": "/nodes.mom.market:0.2/"
+              },
+              {
+                "addr": "91.198.115.114:20488",
+                "subver": "/bitcoinj:0.13.3/MultiBitHD:0.4.1/"
+              },
+              {
+                "addr": "209.222.252.45:3750",
+                "subver": "/Satoshi:0.12.1(bitcore)/"
+              },
+              {
+                "addr": "209.222.252.108:38581",
+                "subver": "/bitcoinj:0.14.4/Bitcoin Wallet:5.18/"
+              },
+              {
+                "addr": "91.198.115.201:26451",
+                "subver": "/bitcoinj:0.14.3/Bitcoin Wallet:1.0.5/"
+              },
+              {
+                "addr": "209.222.252.140:10630",
+                "subver": "/Satoshi:0.14.99/"
+              },
+              {
+                "addr": "91.198.115.41:17044",
+                "subver": "/bitcoinj:0.14.4/Bitcoin Wallet:5.29/"
+              },
+              {
+                "addr": "209.222.252.203:54360",
+                "subver": "/Satoshi:0.11.2/"
+              }
+            ],
+              "networkInfo": {
+              "version": "220000",
+                "subversion": "/Satoshi:22.0.0(FutureBit-Apollo-Node)/"
+            },
+            "error": null
+          }
+        }
+      }
+    }
+  }
+}

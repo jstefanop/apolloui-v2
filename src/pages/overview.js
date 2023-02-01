@@ -15,34 +15,31 @@ import {
 import _ from 'lodash';
 
 import React, { useEffect, useRef } from 'react';
-import CountUp from 'react-countup';
 import { BulletList, List } from 'react-content-loader';
 import { useSelector } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
-import TileCard from '../components/UI/TileCard';
 import { bytesToSize } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
 import { mcuSelector } from '../redux/reselect/mcu';
-import { MinerIcon } from '../components/UI/Icons/MinerIcon';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
 import { McuTempIcon } from '../components/UI/Icons/McuTempIcon';
 import { BugIcon } from '../components/UI/Icons/BugIcon';
-import { PowerIcon } from '../components/UI/Icons/PowerIcon';
 import { CpuIcon } from '../components/UI/Icons/CpuIcon';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 import { MemoryIcon } from '../components/UI/Icons/MemoryIcon';
 import { ConnectionsIcons } from '../components/UI/Icons/ConnectionsIcons';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
-import { FlagIcon } from '../components/UI/Icons/FlagIcon';
 import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
+import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
+import Head from 'next/head';
 
 const Overview = () => {
-  const cardColor = useColorModeValue('white', 'blue.700');
+  const cardColor = useColorModeValue('white', 'brand.800');
 
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
@@ -95,7 +92,7 @@ const Overview = () => {
   const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
 
   // Set Previous state for CountUp component
-  const prevData = useRef(null);
+  const prevData = useRef(dataMiner);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -106,13 +103,31 @@ const Overview = () => {
   }, [dataMiner]);
 
   const {
+    avgBoardErrors: prevAvgBoardErrors,
+    avgBoardTemp: prevAvgBoardTemp,
     globalHashrate: prevGlobalHashrate,
     globalAvgHashrate: prevGlobalAvgHashrate,
     minerPower: prevMinerPower,
   } = prevData.current || {};
 
+  const prevDataNode = useRef(dataNode);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      prevDataNode.current = dataNode;
+    }, process.env.NEXT_PUBLIC_POLLING_TIME_NODE);
+
+    return () => clearInterval(intervalId);
+  }, [dataNode]);
+
+  const { connectionCount: prevConnectionCount, blocksCount: prevBlocksCount } =
+    prevData.current || {};
+
   return (
     <Box>
+      <Head>
+        <title>Apollo BTC Overview</title>
+      </Head>
       <Grid
         templateRows="repeat(3, 1fr)"
         templateColumns={{ base: 'repeat(6, 1fr)' }}
@@ -121,7 +136,7 @@ const Overview = () => {
         mb={'10px'}
       >
         <GridItem gridArea="Hashrate">
-          <HashrateCard 
+          <HashrateCard
             loading={loadingMiner}
             errors={errorMiner}
             data={globalHashrate}
@@ -176,7 +191,16 @@ const Overview = () => {
                           />
                         }
                         name="Miner temperature"
-                        value={`${avgBoardTemp}°C`}
+                        value={
+                          <span
+                            className={
+                              avgBoardTemp !== prevAvgBoardTemp ?
+                              'animate__animated animate__flash' : undefined
+                            }
+                          >
+                            {avgBoardTemp}°C
+                          </span>
+                        }
                       />
                       <NoCardStatistics
                         startContent={
@@ -214,7 +238,16 @@ const Overview = () => {
                           />
                         }
                         name="Hardware errors"
-                        value={`${avgBoardErrors}%`}
+                        value={
+                          <span
+                            className={
+                              avgBoardErrors !== prevAvgBoardErrors ?
+                              'animate__animated animate__flash' : undefined
+                            }
+                          >
+                            {avgBoardErrors}%
+                          </span>
+                        }
                       />
                     </>
                   )}
@@ -379,7 +412,19 @@ const Overview = () => {
                         />
                       }
                       name="Connections"
-                      value={`${connectionCount} / 32`}
+                      value={
+                        <Flex>
+                          <span
+                            className={
+                              prevConnectionCount !== connectionCount ?
+                              'animate__animated animate__flash' : undefined
+                            }
+                          >
+                            {connectionCount}
+                          </span>
+                          <Text color="gray.400">/32</Text>
+                        </Flex>
+                      }
                       align="start"
                     />
                     <NoCardStatisticsGauge
@@ -399,7 +444,16 @@ const Overview = () => {
                         />
                       }
                       name="Blocks"
-                      value={blocksCount}
+                      value={
+                        <span
+                          className={
+                            prevBlocksCount !== blocksCount ?
+                            'animate__animated animate__flash' : undefined
+                          }
+                        >
+                          {blocksCount}
+                        </span>
+                      }
                       align="start"
                     />
                     <NoCardStatisticsGauge
@@ -412,13 +466,13 @@ const Overview = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={DatabaseIcon}
+                              as={BlockchainIcon}
                               color={iconColorReversed}
                             />
                           }
                         />
                       }
-                      name="Node disk usage"
+                      name="Blockchain size"
                       value={bytesToSize(sizeOnDisk)}
                       align="start"
                     />
