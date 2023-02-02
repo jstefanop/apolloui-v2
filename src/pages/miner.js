@@ -376,7 +376,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={ModeIcon}
-                              color={iconColor}
+                              color={iconColorReversed}
                             />
                           }
                         />
@@ -396,7 +396,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={PowerManagementIcon}
-                              color={iconColor}
+                              color={iconColorReversed}
                             />
                           }
                         />
@@ -416,7 +416,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={FrequencyIcon}
-                              color={iconColor}
+                              color={iconColorReversed}
                             />
                           }
                         />
@@ -438,7 +438,7 @@ const Miner = () => {
                               w="32px"
                               h="32px"
                               as={FanIcon}
-                              color={iconColor}
+                              color={iconColorReversed}
                             />
                           }
                         />

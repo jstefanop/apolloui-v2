@@ -15,7 +15,6 @@ import {
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { signOut } from 'next-auth/react';
-import { MdCancel } from 'react-icons/md';
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import FixedPlugin from '../fixedPlugin/FixedPlugin';
@@ -29,6 +28,7 @@ import { SignOutIcon } from '../UI/Icons/SignOutIcon';
 import { CheckIcon } from '@chakra-ui/icons';
 import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 import { WarningIcon } from '../UI/Icons/WarningIcon';
+import { StartIcon } from '../UI/Icons/StartIcon';
 
 export default function HeaderLinks({
   secondary,
@@ -261,49 +261,44 @@ export default function HeaderLinks({
               />
               <MenuList>
                 <MenuGroup title="Miner">
-                  {!minerOnline && (
-                    <MenuItem
-                      icon={<MdCancel />}
-                      onClick={() => handleSystemAction('startMiner')}
-                    >
-                      Start
-                    </MenuItem>
-                  )}
-                  {minerOnline && (
-                    <>
-                      <MenuItem
-                        icon={<StopIcon />}
-                        onClick={() => handleSystemAction('stopMiner')}
-                      >
-                        Stop
-                      </MenuItem>
-                      <MenuItem
-                        icon={<RestartIcon />}
-                        onClick={() => handleSystemAction('restartMiner')}
-                      >
-                        Restart
-                      </MenuItem>
-                    </>
-                  )}
+                  <MenuItem
+                    icon={<StartIcon />}
+                    isDisabled={minerOnline}
+                    onClick={() => handleSystemAction('startMiner')}
+                  >
+                    Start
+                  </MenuItem>
+                  <MenuItem
+                    icon={<StopIcon />}
+                    isDisabled={!minerOnline}
+                    onClick={() => handleSystemAction('stopMiner')}
+                  >
+                    Stop
+                  </MenuItem>
+                  <MenuItem
+                    icon={<RestartIcon />}
+                    isDisabled={!minerOnline}
+                    onClick={() => handleSystemAction('restartMiner')}
+                  >
+                    Restart
+                  </MenuItem>
                 </MenuGroup>
                 <MenuDivider />
                 <MenuGroup title="Node">
-                  {!blocksCount && (
-                    <MenuItem
-                      icon={<MdCancel />}
-                      onClick={() => handleSystemAction('startNode')}
-                    >
-                      Start
-                    </MenuItem>
-                  )}
-                  {blocksCount && (
-                    <MenuItem
-                      icon={<StopIcon />}
-                      onClick={() => handleSystemAction('stopNode')}
-                    >
-                      Stop
-                    </MenuItem>
-                  )}
+                  <MenuItem
+                    icon={<StartIcon />}
+                    isDisabled={blocksCount}
+                    onClick={() => handleSystemAction('startNode')}
+                  >
+                    Start
+                  </MenuItem>
+                  <MenuItem
+                    icon={<StopIcon />}
+                    isDisabled={!blocksCount}
+                    onClick={() => handleSystemAction('stopNode')}
+                  >
+                    Stop
+                  </MenuItem>
                 </MenuGroup>
                 <MenuDivider />
                 <MenuGroup title="System">

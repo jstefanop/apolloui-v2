@@ -31,7 +31,7 @@ function AuthCentered(props) {
         bgRepeat='no-repeat'
         overflow='hidden'
         zIndex='-1'
-        top='0'
+        top='-2px'
         bgImage={image}
         bgSize='cover'
         mx={{ md: 'auto' }}

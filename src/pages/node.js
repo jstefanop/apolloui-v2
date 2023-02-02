@@ -148,11 +148,7 @@ const Node = () => {
         </title>
       </Head>
       <Flex direction="column">
-        <Card
-          className="banner-node"
-          h="370px"
-          shadow={shadow}
-        >
+        <Card className="banner-node" h="370px" shadow={shadow}>
           <Flex justify="center" align="center" mt="3">
             <Text fontSize="2xl" fontWeight="bold" color="white">
               {blockHeader === blocksCount
@@ -189,8 +185,8 @@ const Node = () => {
               )}
               {blockHeader !== blocksCount && (
                 <>
-                  <FormattedNumber value={blockHeader} />/
-                  <FormattedNumber value={blocksCount} />
+                  <FormattedNumber value={blocksCount} /> /{' '}
+                  <FormattedNumber value={blockHeader} />
                 </>
               )}
             </Text>
@@ -364,7 +360,7 @@ const Node = () => {
             )}
           </Card>
         </Flex>
-        {!loadingNode && !errorNode &&  (
+        {!loadingNode && !errorNode?.length && (
           <DynamicTable
             columnsData={columnsData}
             tableData={dataTable}
