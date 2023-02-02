@@ -23,7 +23,9 @@ import Head from 'next/head';
 
 const SignIn = () => {
   // Chakra color mode
-  const textColor = useColorModeValue('navy.700', 'white');
+  const bgButtonColor = useColorModeValue('brand.800', 'white');
+  const textButtonColor = useColorModeValue('white', 'brand.800');
+  const textColor = useColorModeValue('brand.800', 'white');
   const textColorSecondary = 'gray.400';
   const brandStars = useColorModeValue('brand.500', 'brand.400');
   const [password, setPassword] = useState();
@@ -117,7 +119,8 @@ const SignIn = () => {
             <Button
               type='submit'
               fontSize='sm'
-              variant='brand'
+              bgColor={textColor}
+              color={textButtonColor}
               fontWeight='500'
               w='100%'
               h='50'
@@ -132,9 +135,6 @@ const SignIn = () => {
             <Text color='red'>{error}</Text>
           </Flex>
         )}
-      </Flex>
-      <Flex align={'center'} direction='column' mt='10'>
-        <Text fontSize={'0.9em'}>© 2023 FutureBit LLC</Text>
       </Flex>
     </Flex>
   );

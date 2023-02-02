@@ -13,18 +13,17 @@ export const minerSelector = createSelector(
   (minerData, minerError, minerLoading) => {
     const {
       Miner: {
-        online: {
-          error: errorOnline,
-          result: {
-            online: { status: minerOnline },
-          },
-        },
+        online: { error: errorOnline, result },
         stats: {
           error: errorStats,
           result: { stats: minerStats },
         },
       },
     } = minerData || initialState;
+
+    let minerOnline;
+    if (result.online && result.online.status)
+      minerOnline = result.online.status;
 
     const errors = [...[minerError, errorOnline, errorStats].filter(Boolean)];
 
@@ -102,7 +101,9 @@ export const minerSelector = createSelector(
 
       const maxBoardByShareTime = _.maxBy(boards, 'lastShareTimeX');
       const maxLastShareTime = maxBoardByShareTime?.lastShareTimeX || null;
-      const lastShareTime = (maxLastShareTime) ? moment(maxLastShareTime, 'X').fromNow() : null;
+      const lastShareTime = maxLastShareTime
+        ? moment(maxLastShareTime, 'X').fromNow()
+        : null;
 
       let minerUptime = moment().to(
         moment().subtract(
