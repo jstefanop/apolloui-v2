@@ -106,7 +106,7 @@ const Node = () => {
   }, [disks]);
 
   useEffect(() => {
-    if (!peerInfo.length) return;
+    if (!peerInfo || !peerInfo.length) return;
 
     setDataTable(
       peerInfo.map((peer) => {
@@ -140,8 +140,7 @@ const Node = () => {
     <Box mx="5">
       <Head>
         <title>
-          Bitcoin Node{' '}
-          {blockHeader === blocksCount
+          {blockHeader === blocksCount && lastBlockTime
             ? `${lastBlockTime}m since the last block`
             : blockHeader > blocksCount
             ? 'New block incoming...'
@@ -365,7 +364,7 @@ const Node = () => {
             )}
           </Card>
         </Flex>
-        {!loadingNode && (
+        {!loadingNode && !errorNode &&  (
           <DynamicTable
             columnsData={columnsData}
             tableData={dataTable}

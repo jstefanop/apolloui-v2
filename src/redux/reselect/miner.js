@@ -101,8 +101,8 @@ export const minerSelector = createSelector(
       });
 
       const maxBoardByShareTime = _.maxBy(boards, 'lastShareTimeX');
-      const maxLastShareTime = maxBoardByShareTime.lastShareTimeX;
-      const lastShareTime = moment(maxLastShareTime, 'X').fromNow();
+      const maxLastShareTime = maxBoardByShareTime?.lastShareTimeX || null;
+      const lastShareTime = (maxLastShareTime) ? moment(maxLastShareTime, 'X').fromNow() : null;
 
       let minerUptime = moment().to(
         moment().subtract(

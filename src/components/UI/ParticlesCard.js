@@ -46,10 +46,10 @@ const ParticlesCard = () => {
         },
         particles: {
           color: {
-            value: '#f00fff',
+            value: '#9BF6F6',
           },
           links: {
-            color: '#00ffff',
+            color: '#3F63B4',
             distance: 100,
             enable: true,
             opacity: 0.5,
@@ -71,7 +71,7 @@ const ParticlesCard = () => {
               enable: true,
               area: 400,
             },
-            value: 180,
+            value: 100,
           },
           opacity: {
             value: 0.7,

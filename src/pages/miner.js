@@ -48,7 +48,7 @@ import Head from 'next/head';
 const Miner = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cardColor = useColorModeValue('white', 'brand.800');
-  const iconColor = useColorModeValue('brand.500', 'white');
+  const iconColor = useColorModeValue('white', 'white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
@@ -173,8 +173,7 @@ const Miner = () => {
     <Box>
       <Head>
         <title>
-          Apollo BTC Miner{' '}
-          {globalHashrate && `${globalHashrate.value} ${globalHashrate.unit}`}
+          {globalHashrate ? `Apollo BTC Miner ${globalHashrate.value} ${globalHashrate.unit}` : 'Apollo BTC Miner'}
         </title>
       </Head>
       <MinerDrawer
@@ -535,7 +534,7 @@ const Miner = () => {
                             w="32px"
                             h="32px"
                             as={MinerTempIcon}
-                            color={iconColor}
+                            color={iconColorReversed}
                           />
                         }
                       />
@@ -561,7 +560,7 @@ const Miner = () => {
                             w="32px"
                             h="32px"
                             as={ChipSpeedIcon}
-                            color={iconColor}
+                            color={iconColorReversed}
                           />
                         }
                       />
@@ -586,7 +585,7 @@ const Miner = () => {
                             w="32px"
                             h="32px"
                             as={FanIcon}
-                            color={iconColor}
+                            color={iconColorReversed}
                           />
                         }
                       />
