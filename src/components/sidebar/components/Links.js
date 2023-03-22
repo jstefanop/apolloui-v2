@@ -5,7 +5,7 @@ import { Box, Flex, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
-const SidebarLinks = ({ routes }) => {
+const SidebarLinks = ({ routes, onClose }) => {
   const router = useRouter();
   //   Chakra color mode
   let activeColor = useColorModeValue('gray.700', 'white');
@@ -54,7 +54,7 @@ const SidebarLinks = ({ routes }) => {
           <div key={index}>
             {route.icon ? (
               <Box>
-                <Link href={route.path}>
+                <Link href={route.path} onClick={onClose}>
                   <HStack
                     spacing={
                       activeRoute(route.path.toLowerCase()) ? '22px' : '26px'

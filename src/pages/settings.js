@@ -19,6 +19,11 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from '@chakra-ui/react';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -53,7 +58,11 @@ import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../graphql/settings';
-import { GET_POOLS_QUERY, SET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../graphql/pools';
+import {
+  GET_POOLS_QUERY,
+  SET_POOLS_QUERY,
+  UPDATE_POOLS_QUERY,
+} from '../graphql/pools';
 import Head from 'next/head';
 
 const Settings = () => {
@@ -225,7 +234,7 @@ const Settings = () => {
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
-  const [currentMode, setCurrentMode] = useState({ id: 'loading' })
+  const [currentMode, setCurrentMode] = useState({ id: 'loading' });
   const [isChanged, setIsChanged] = useState(false);
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
@@ -249,39 +258,37 @@ const Settings = () => {
     { loading: loadingWifiScan, error: errorWifiScan, data: dataWifiScan },
   ] = useLazyQuery(MCU_WIFI_SCAN_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [
-    saveSettings,
-    { loading: loadingSave, error: errorSave },
-  ] = useLazyQuery(SET_SETTINGS_QUERY, { fetchPolicy: 'no-cache' });
+  const [saveSettings, { loading: loadingSave, error: errorSave }] =
+    useLazyQuery(SET_SETTINGS_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [
-    savePools,
-    { loading: loadingSavePools, error: errorSavePools },
-  ] = useLazyQuery(UPDATE_POOLS_QUERY, { fetchPolicy: 'no-cache' });
+  const [savePools, { loading: loadingSavePools, error: errorSavePools }] =
+    useLazyQuery(UPDATE_POOLS_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
-    if (loadingSettings || loadingPools || errorQuerySettings || errorQueryPools) return;
+    if (
+      loadingSettings ||
+      loadingPools ||
+      errorQuerySettings ||
+      errorQueryPools
+    )
+      return;
 
     const {
       Pool: {
         list: {
           error: errorPools,
-          result: {
-            pools: poolsData
-          }
-        }
-      }
-    } = dataPools
+          result: { pools: poolsData },
+        },
+      },
+    } = dataPools;
 
     const {
       Settings: {
         read: {
           error: errorSettings,
-          result: {
-            settings: settingsData
-          }
-        }
-      }
+          result: { settings: settingsData },
+        },
+      },
     } = dataSettings;
 
     const finalSettings = { ...settingsData, pool: poolsData[0] };
@@ -289,48 +296,65 @@ const Settings = () => {
     setCurrentSettings(finalSettings);
 
     setCurrentMode(_.find(minerInitialModes, { id: settingsData.minerMode }));
-    setMinerModes(_.map(minerInitialModes, (mode) => {
-      if (mode.id === settingsData.minerMode) mode.selected = true;
-      if (mode.id === 'custom') {
-        mode.frequency = settingsData.frequency;
-        mode.voltage = settingsData.voltage;
-      }
-      return mode;
-    }));
+    setMinerModes(
+      _.map(minerInitialModes, (mode) => {
+        if (mode.id === settingsData.minerMode) mode.selected = true;
+        if (mode.id === 'custom') {
+          mode.frequency = settingsData.frequency;
+          mode.voltage = settingsData.voltage;
+        }
+        return mode;
+      })
+    );
 
     setFanMode((el) => {
       return {
         ...el,
-        selected: (settingsData.fan_low !== 40 && settingsData.fan_high !== 60) || false,
+        selected:
+          (settingsData.fan_low !== 40 && settingsData.fan_high !== 60) ||
+          false,
         fan_low: settingsData.fan_low,
         fan_high: settingsData.fan_high,
-      }
+      };
     });
 
     setNodeTorMode((el) => {
       return {
         ...el,
         selected: settingsData.nodeEnableTor,
-      }
+      };
     });
-  }, [loadingSettings, loadingPools, dataSettings, dataPools, minerInitialModes, errorQuerySettings, errorQueryPools]);
+  }, [
+    loadingSettings,
+    loadingPools,
+    dataSettings,
+    dataPools,
+    minerInitialModes,
+    errorQuerySettings,
+    errorQueryPools,
+  ]);
 
   // Trigger any change in settings to display the buttons
   useEffect(() => {
-    const restartMinerFields = [
-      'minerMode',
-      'frequency',
-      'voltage',
-      'pool'
-    ];
-    const restartNodeFields = [
-      'nodeEnableTor',
-      'nodeUserConf'
-    ];
+    const restartMinerFields = ['minerMode', 'frequency', 'voltage', 'pool'];
+    const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
     const isEqual = _.isEqual(settings, currentSettings);
-    const restartMinerNeeded = !_.isEqual(_.pick(settings, restartMinerFields), _.pick(currentSettings, restartMinerFields));
-    const restartNodeNeeded = !_.isEqual(_.pick(settings, restartNodeFields), _.pick(currentSettings, restartNodeFields));
-    const restartType = (restartMinerNeeded && restartNodeNeeded) ? 'both' : (restartMinerNeeded && !restartNodeNeeded) ? 'miner' : (!restartMinerNeeded && restartNodeNeeded) ? 'node' : null;
+    const restartMinerNeeded = !_.isEqual(
+      _.pick(settings, restartMinerFields),
+      _.pick(currentSettings, restartMinerFields)
+    );
+    const restartNodeNeeded = !_.isEqual(
+      _.pick(settings, restartNodeFields),
+      _.pick(currentSettings, restartNodeFields)
+    );
+    const restartType =
+      restartMinerNeeded && restartNodeNeeded
+        ? 'both'
+        : restartMinerNeeded && !restartNodeNeeded
+        ? 'miner'
+        : !restartMinerNeeded && restartNodeNeeded
+        ? 'node'
+        : null;
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
@@ -340,12 +364,12 @@ const Settings = () => {
     setErrorForm(null);
     if (!e.target.value) setErrorForm(e.target.name);
     const poolChanged = {
-      ...settings.pool
+      ...settings.pool,
     };
     poolChanged[e.target.name] = e.target.value;
     setSettings({
       ...settings,
-      pool: poolChanged
+      pool: poolChanged,
     });
   };
 
@@ -427,7 +451,8 @@ const Settings = () => {
     setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
     setFanMode({
       ...fanMode,
-      selected: currentSettings.fan_low !== 40 && currentSettings.fan_high !== 60,
+      selected:
+        currentSettings.fan_low !== 40 && currentSettings.fan_high !== 60,
       fan_low: currentSettings.fan_low,
       fan_high: currentSettings.fan_high,
     });
@@ -442,7 +467,7 @@ const Settings = () => {
   };
 
   const handleButtonExtraSettings = (e) => {
-    console.log(e.target.id)
+    console.log(e.target.id);
   };
 
   const handlesSaveSettings = async (type) => {
@@ -462,13 +487,7 @@ const Settings = () => {
       pool,
     } = settings;
 
-    const {
-      enabled,
-      url,
-      username,
-      password,
-      index,
-    } = pool;
+    const { enabled, url, username, password, index } = pool;
 
     const input = {
       agree,
@@ -483,7 +502,7 @@ const Settings = () => {
       nodeRpcPassword,
       nodeEnableTor,
       nodeUserConf,
-    }
+    };
 
     const poolInput = {
       enabled,
@@ -491,27 +510,29 @@ const Settings = () => {
       username,
       password,
       index,
-    }
+    };
 
     await saveSettings({ variables: { input } });
     await savePools({ variables: { input: { pools: [poolInput] } } });
     await refetchSettings();
     await refetchPools();
     // if (type === 'restart') restartNeeded();
-  }
+  };
 
   if (errorQuerySettings || errorQueryPools) {
     return (
-      <Alert borderRadius='8px' status='error' variant='subtle'>
+      <Alert borderRadius="8px" status="error" variant="subtle">
         <Flex>
           <AlertIcon />
-          <Flex direction='column'>
-            <AlertTitle mr='12px'>Error</AlertTitle>
-            <AlertDescription>{errorQuerySettings.toString() || errorQueryPools.toString()}</AlertDescription>
+          <Flex direction="column">
+            <AlertTitle mr="12px">Error</AlertTitle>
+            <AlertDescription>
+              {errorQuerySettings.toString() || errorQueryPools.toString()}
+            </AlertDescription>
           </Flex>
         </Flex>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -521,21 +542,21 @@ const Settings = () => {
       </Head>
       {isChanged && (
         <Box
-          position='fixed'
-          bg='blue.900'
-          backgroundPosition='center'
-          backgroundSize='cover'
-          p='15px'
-          mx='auto'
-          right='0px'
+          position="fixed"
+          bg="blue.900"
+          backgroundPosition="center"
+          backgroundSize="cover"
+          p="15px"
+          mx="auto"
+          right="0px"
           bottom={{ base: '0px' }}
           w={{
             base: '100%',
             xl: 'calc(100vw - 250px)',
           }}
-          zIndex='1'
+          zIndex="1"
         >
-          <Flex direction='row' justify='space-between'>
+          <Flex direction="row" justify="space-between">
             <Button
               colorScheme={'gray'}
               variant={'solid'}
@@ -544,20 +565,20 @@ const Settings = () => {
             >
               Discard changes
             </Button>
-            <Flex direction='row'>
-              {restartNeeded &&
+            <Flex direction="row">
+              {restartNeeded && (
                 <Button
-                  colorScheme='orange'
+                  colorScheme="orange"
                   variant={'solid'}
                   size={'md'}
-                  mr='4'
+                  mr="4"
                   disabled={errorForm}
                 >
                   Save & Restart
                 </Button>
-              }
+              )}
               <Button
-                colorScheme='green'
+                colorScheme="green"
                 variant={'solid'}
                 size={'md'}
                 onClick={() => handlesSaveSettings('restart')}
@@ -570,277 +591,322 @@ const Settings = () => {
         </Box>
       )}
 
-      {settings.pool && (
-        <SimpleGrid columns={{ base: 1 }} gap='20px' mb='20px'>
-          {/* POOL SETTINGS */}
-          <PanelCard
-            title={'Pool settings'}
-            description={'Manage pools configuration for your miner'}
-            textColor={textColor}
-            icon={RiDatabase2Fill}
-          >
-            {errorForm && <Flex px='22px'><Text color='red'>Field {errorForm} can&apos;t be empty</Text></Flex>}
-            <Grid templateColumns='repeat(6, 1fr)' gap={2}>
-              <GridItem colSpan={3}>
-                <SimpleCard title={'URL'} textColor={textColor} icon={MdWebAsset}>
-                  <Input
-                    name='url'
-                    type='text'
-                    placeholder={'stratum+tcp://stratum.slushpool.com:3333'}
-                    value={settings.pool.url}
-                    onChange={handlePoolChange}
-                  />
-                </SimpleCard>
-              </GridItem>
-              <GridItem colSpan={2}>
-                <SimpleCard
-                  title={'Username'}
+      <Tabs size="md" isLazy variant={'line'}>
+        <TabList ml='5'>
+          <Tab>
+            <Text fontWeight={600} me="2">
+              Pools
+            </Text>
+          </Tab>
+          <Tab>
+            <Text fontWeight={600} me="2">
+              Miner
+            </Text>
+          </Tab>
+          <Tab>
+            <Text fontWeight={600} me="2">
+              Node
+            </Text>
+          </Tab>
+          <Tab>
+            <Text fontWeight={600} me="2">
+              System
+            </Text>
+          </Tab>
+          <Tab>
+            <Text fontWeight={600} me="2">
+              Extra
+            </Text>
+          </Tab>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel>
+            {settings.pool && (
+              <SimpleGrid columns={{ base: 1 }} gap="20px" mb="20px">
+                {/* POOL SETTINGS */}
+                <PanelCard
+                  title={'Pool settings'}
+                  description={'Manage pools configuration for your miner'}
                   textColor={textColor}
-                  icon={MdPerson}
+                  icon={RiDatabase2Fill}
                 >
-                  <Input
-                    name='username'
-                    type='text'
-                    placeholder={'futurebit.worker'}
-                    value={settings.pool.username}
-                    onChange={handlePoolChange}
-                  />
-                </SimpleCard>
-              </GridItem>
-              <GridItem colSpan={1}>
-                <SimpleCard
-                  title={'Password'}
-                  textColor={textColor}
-                  icon={MdPassword}
-                >
-                  <Input
-                    name='password'
-                    type='text'
-                    placeholder={'x'}
-                    value={settings.pool.password}
-                    onChange={handlePoolChange}
-                  />
-                </SimpleCard>
-              </GridItem>
-            </Grid>
-          </PanelCard>
-        </SimpleGrid>
-      )}
-
-      <Grid
-        templateRows={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-        gap='20px'
-        mb='20px'
-      >
-        <GridItem rowSpan={2} colSpan={1}>
-          {/* MINER MODES */}
-          <PanelCard
-            title={'Miner modes settings'}
-            description={'Manage miner specific configurations'}
-            textColor={textColor}
-            badgeColor={currentMode.color}
-            badgeText={currentMode.id.toUpperCase()}
-            icon={MdOutlineWidgets}
-            mb={'20px'}
-          >
-            {minerModes.map((mode, index) => {
-              return (
-                <div key={mode.id}>
-                  <SimpleSwitchSettingsItem
-                    item={mode}
-                    textColor={textColor}
-                    sliderTextColor={sliderTextColor}
-                    handleSwitch={handleSwitchMinerMode}
-                    handleCustomModeChange={handleCustomModeChange}
-                    handleCustomModeReset={handleCustomModeReset}
-                  />
-                  {index !== minerModes.length - 1 && <Divider mb='10px' />}
-                </div>
-              );
-            })}
-          </PanelCard>
-
-          {/* WIFI SETTINGS */}
-          <PanelCard
-            title={'Wifi settings'}
-            description={
-              'Connect your system controller to a Wifi instead using ethernet'
-            }
-            textColor={textColor}
-            icon={MdOutlineWifi}
-            buttonText='Scan'
-            handleButtonClick={handleWifiScan}
-            buttonLoading={loadingWifiScan}
-            mb={'20px'}
-          >
-            <WifiSettingsCard
-              textColor={textColor}
-              loading={loadingWifiScan}
-              error={errorWifiScan}
-              data={dataWifiScan}
-            />
-          </PanelCard>
-        </GridItem>
-
-        <GridItem rowSpan={2} colSpan={1}>
-          {/* MINER FAN */}
-          <PanelCard
-            title={'Miner fan settings'}
-            description={'Adjust the fan speed or set it to automatic'}
-            textColor={textColor}
-            icon={BsWind}
-            mb='20px'
-          >
-            <SimpleSwitchSettingsItem
-              item={fanMode}
-              textColor={textColor}
-              sliderTextColor={sliderTextColor}
-              inverted={true}
-              handleSwitch={handleSwitchFanMode}
-              handleCustomModeChange={handleCustomFanModeChange}
-              handleCustomModeReset={handleCustomFanModeReset}
-            />
-          </PanelCard>
-
-          {/* NODE SETTINGS */}
-          <PanelCard
-            title={'Bitcoin node settings'}
-            description={'Manage Bitcoin Node Configuration'}
-            textColor={textColor}
-            icon={MdDeviceHub}
-            badgeColor={'orange'}
-            badgeText={settings.nodeRpcPassword}
-            showHide={true}
-            mb={'20px'}
-          >
-            <SimpleSwitchSettingsItem
-              item={nodeTorMode}
-              textColor={textColor}
-              sliderTextColor={sliderTextColor}
-              handleSwitch={handleSwitchNodeTorMode}
-            />
-            <Divider mb='10px' />
-            <SimpleCard
-              title={'Bitcoin node configuration'}
-              description={
-                'Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. You can add things like ipallow to allow external devices that host wallets etc to connect directly to your node for broadcasting transactions etc.)'
-              }
-              textColor={textColor}
-              icon={MdSettings}
-            >
-              <Textarea
-                value={settings.nodeUserConf}
-                onChange={(v) =>
-                  setSettings({ ...settings, nodeUserConf: v.target.value })
-                }
-                mt='4'
-              />
-            </SimpleCard>
-          </PanelCard>
-
-          {/* PASSWORD SETTINGS */}
-          <PanelCard
-            title={'Change lockscreen password'}
-            description={'Change the password to access the dashboard'}
-            textColor={textColor}
-            icon={MdVpnKey}
-            mb='20px'
-          >
-            <SimpleCard textColor={textColor}>
-              <Flex>
-                <FormControl>
-                  <FormLabel
-                    display='flex'
-                    ms='4px'
-                    fontSize='sm'
-                    fontWeight='500'
-                    color={textColor}
-                    mb='8px'
-                  >
-                    Password<Text color={'red'}>*</Text>
-                  </FormLabel>
-                  <InputGroup size='md'>
-                    <InputLeftElement
-                      display='flex'
-                      alignItems='center'
-                      mt='4px'
-                    >
-                      <Icon
-                        color={textColor}
-                        _hover={{ cursor: 'pointer' }}
-                        as={MdPassword}
+                  {errorForm && (
+                    <Flex px="22px">
+                      <Text color="red">
+                        Field {errorForm} can&apos;t be empty
+                      </Text>
+                    </Flex>
+                  )}
+                  <Grid templateColumns="repeat(6, 1fr)" gap={2}>
+                    <GridItem colSpan={3}>
+                      <SimpleCard
+                        title={'URL'}
+                        textColor={textColor}
+                        icon={MdWebAsset}
+                      >
+                        <Input
+                          name="url"
+                          type="text"
+                          placeholder={
+                            'stratum+tcp://stratum.slushpool.com:3333'
+                          }
+                          value={settings.pool.url}
+                          onChange={handlePoolChange}
+                        />
+                      </SimpleCard>
+                    </GridItem>
+                    <GridItem colSpan={2}>
+                      <SimpleCard
+                        title={'Username'}
+                        textColor={textColor}
+                        icon={MdPerson}
+                      >
+                        <Input
+                          name="username"
+                          type="text"
+                          placeholder={'futurebit.worker'}
+                          value={settings.pool.username}
+                          onChange={handlePoolChange}
+                        />
+                      </SimpleCard>
+                    </GridItem>
+                    <GridItem colSpan={1}>
+                      <SimpleCard
+                        title={'Password'}
+                        textColor={textColor}
+                        icon={MdPassword}
+                      >
+                        <Input
+                          name="password"
+                          type="text"
+                          placeholder={'x'}
+                          value={settings.pool.password}
+                          onChange={handlePoolChange}
+                        />
+                      </SimpleCard>
+                    </GridItem>
+                  </Grid>
+                </PanelCard>
+              </SimpleGrid>
+            )}
+          </TabPanel>
+          <TabPanel>
+            <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
+              {/* MINER MODES */}
+              <PanelCard
+                title={'Miner modes settings'}
+                description={'Manage miner specific configurations'}
+                textColor={textColor}
+                badgeColor={currentMode.color}
+                badgeText={currentMode.id.toUpperCase()}
+                icon={MdOutlineWidgets}
+                mb={'20px'}
+              >
+                {minerModes.map((mode, index) => {
+                  return (
+                    <div key={mode.id}>
+                      <SimpleSwitchSettingsItem
+                        item={mode}
+                        textColor={textColor}
+                        sliderTextColor={sliderTextColor}
+                        handleSwitch={handleSwitchMinerMode}
+                        handleCustomModeChange={handleCustomModeChange}
+                        handleCustomModeReset={handleCustomModeReset}
                       />
-                    </InputLeftElement>
-                    <Input
-                      isRequired={true}
-                      fontSize='sm'
-                      placeholder='Min. 8 characters'
-                      mb='24px'
-                      size='lg'
-                      type={'password'}
-                      id='password'
-                    />
-                  </InputGroup>
-                  <FormLabel
-                    ms='4px'
-                    fontSize='sm'
-                    fontWeight='500'
-                    color={textColor}
-                    display='flex'
-                  >
-                    Verify Password<Text color={'red'}>*</Text>
-                  </FormLabel>
-                  <InputGroup size='md'>
-                    <InputLeftElement
-                      display='flex'
-                      alignItems='center'
-                      mt='4px'
-                    >
-                      <Icon
-                        color={textColor}
-                        _hover={{ cursor: 'pointer' }}
-                        as={MdPassword}
-                      />
-                    </InputLeftElement>
-                    <Input
-                      isRequired={true}
-                      fontSize='sm'
-                      placeholder='Min. 8 characters'
-                      mb='24px'
-                      size='lg'
-                      type={'password'}
-                      id='verifypassword'
-                    />
-                  </InputGroup>
-                </FormControl>
-              </Flex>
-            </SimpleCard>
-          </PanelCard>
-
-          {/* EXTRA SETTINGS */}
-          <PanelCard
-            title={'Extra settings'}
-            description={
-              'Backup, restore, reset configurations and format disk'
-            }
-            textColor={textColor}
-            icon={MdSave}
-            mb='20px'
-          >
-            {extraSettingsActions.map((action, index) => {
-              return (
+                      {index !== minerModes.length - 1 && <Divider mb="10px" />}
+                    </div>
+                  );
+                })}
+              </PanelCard>
+              {/* MINER FAN */}
+              <PanelCard
+                title={'Miner fan settings'}
+                description={'Adjust the fan speed or set it to automatic'}
+                textColor={textColor}
+                icon={BsWind}
+                mb="20px"
+              >
                 <SimpleSwitchSettingsItem
-                  key={index}
-                  item={action}
+                  item={fanMode}
                   textColor={textColor}
-                  handleButton={handleButtonExtraSettings}
+                  sliderTextColor={sliderTextColor}
+                  inverted={true}
+                  handleSwitch={handleSwitchFanMode}
+                  handleCustomModeChange={handleCustomFanModeChange}
+                  handleCustomModeReset={handleCustomFanModeReset}
                 />
-              );
-            })}
-          </PanelCard>
-        </GridItem>
-      </Grid>
+              </PanelCard>
+            </SimpleGrid>
+          </TabPanel>
+          <TabPanel>
+            <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
+              {/* NODE SETTINGS */}
+              <PanelCard
+                title={'Bitcoin node settings'}
+                description={'Manage Bitcoin Node Configuration'}
+                textColor={textColor}
+                icon={MdDeviceHub}
+                badgeColor={'orange'}
+                badgeText={settings.nodeRpcPassword}
+                showHide={true}
+                mb={'20px'}
+              >
+                <SimpleSwitchSettingsItem
+                  item={nodeTorMode}
+                  textColor={textColor}
+                  sliderTextColor={sliderTextColor}
+                  handleSwitch={handleSwitchNodeTorMode}
+                />
+                <Divider mb="10px" />
+                <SimpleCard
+                  title={'Bitcoin node configuration'}
+                  description={
+                    'Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. You can add things like ipallow to allow external devices that host wallets etc to connect directly to your node for broadcasting transactions etc.)'
+                  }
+                  textColor={textColor}
+                  icon={MdSettings}
+                >
+                  <Textarea
+                    value={settings.nodeUserConf}
+                    onChange={(v) =>
+                      setSettings({ ...settings, nodeUserConf: v.target.value })
+                    }
+                    mt="4"
+                  />
+                </SimpleCard>
+              </PanelCard>
+            </SimpleGrid>
+          </TabPanel>
+          <TabPanel>
+            <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
+              {/* WIFI SETTINGS */}
+              <PanelCard
+                title={'Wifi settings'}
+                description={
+                  'Connect your system controller to a Wifi instead using ethernet'
+                }
+                textColor={textColor}
+                icon={MdOutlineWifi}
+                buttonText="Scan"
+                handleButtonClick={handleWifiScan}
+                buttonLoading={loadingWifiScan}
+                mb={'20px'}
+              >
+                <WifiSettingsCard
+                  textColor={textColor}
+                  loading={loadingWifiScan}
+                  error={errorWifiScan}
+                  data={dataWifiScan}
+                />
+              </PanelCard>
+              {/* PASSWORD SETTINGS */}
+              <PanelCard
+                title={'Change lockscreen password'}
+                description={'Change the password to access the dashboard'}
+                textColor={textColor}
+                icon={MdVpnKey}
+                mb="20px"
+              >
+                <SimpleCard textColor={textColor}>
+                  <Flex>
+                    <FormControl>
+                      <FormLabel
+                        display="flex"
+                        ms="4px"
+                        fontSize="sm"
+                        fontWeight="500"
+                        color={textColor}
+                        mb="8px"
+                      >
+                        Password<Text color={'red'}>*</Text>
+                      </FormLabel>
+                      <InputGroup size="md">
+                        <InputLeftElement
+                          display="flex"
+                          alignItems="center"
+                          mt="4px"
+                        >
+                          <Icon
+                            color={textColor}
+                            _hover={{ cursor: 'pointer' }}
+                            as={MdPassword}
+                          />
+                        </InputLeftElement>
+                        <Input
+                          isRequired={true}
+                          fontSize="sm"
+                          placeholder="Min. 8 characters"
+                          mb="24px"
+                          size="lg"
+                          type={'password'}
+                          id="password"
+                        />
+                      </InputGroup>
+                      <FormLabel
+                        ms="4px"
+                        fontSize="sm"
+                        fontWeight="500"
+                        color={textColor}
+                        display="flex"
+                      >
+                        Verify Password<Text color={'red'}>*</Text>
+                      </FormLabel>
+                      <InputGroup size="md">
+                        <InputLeftElement
+                          display="flex"
+                          alignItems="center"
+                          mt="4px"
+                        >
+                          <Icon
+                            color={textColor}
+                            _hover={{ cursor: 'pointer' }}
+                            as={MdPassword}
+                          />
+                        </InputLeftElement>
+                        <Input
+                          isRequired={true}
+                          fontSize="sm"
+                          placeholder="Min. 8 characters"
+                          mb="24px"
+                          size="lg"
+                          type={'password'}
+                          id="verifypassword"
+                        />
+                      </InputGroup>
+                    </FormControl>
+                  </Flex>
+                </SimpleCard>
+              </PanelCard>
+            </SimpleGrid>
+          </TabPanel>
+          <TabPanel>
+            <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
+              {/* EXTRA SETTINGS */}
+              <PanelCard
+                title={'Extra settings'}
+                description={
+                  'Backup, restore, reset configurations and format disk'
+                }
+                textColor={textColor}
+                icon={MdSave}
+                mb="20px"
+              >
+                {extraSettingsActions.map((action, index) => {
+                  return (
+                    <SimpleSwitchSettingsItem
+                      key={index}
+                      item={action}
+                      textColor={textColor}
+                      handleButton={handleButtonExtraSettings}
+                    />
+                  );
+                })}
+              </PanelCard>
+            </SimpleGrid>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };

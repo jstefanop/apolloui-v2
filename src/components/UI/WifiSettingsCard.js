@@ -101,7 +101,7 @@ const WifiSettingsCard = ({ textColor, loading, error, data }) => {
                     w={'100%'}
                     marginInlineEnd={'2'}
                   >
-                    {network.ssid} - {network.signal}
+                    {network.ssid}
                   </Text>
                   <Flex direction={{ base: 'row' }}>
                     <Stack direction={'row'}>

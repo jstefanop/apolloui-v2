@@ -245,7 +245,7 @@ const Overview = () => {
                               'animate__animated animate__flash' : undefined
                             }
                           >
-                            {avgBoardErrors}%
+                            {avgBoardErrors ? `${avgBoardErrors}%` : '-'}
                           </span>
                         }
                       />

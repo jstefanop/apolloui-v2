@@ -3,14 +3,8 @@ import {
   useColorModeValue,
   Grid,
   GridItem,
-  Text,
   Flex,
   Icon,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-  Code,
   SimpleGrid,
 } from '@chakra-ui/react';
 import _ from 'lodash';
@@ -21,7 +15,6 @@ import IconBox from '../components/icons/IconBox';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
 import { bytesToSize } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
-import { BugIcon } from '../components/UI/Icons/BugIcon';
 import { CpuIcon } from '../components/UI/Icons/CpuIcon';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 import { MemoryIcon } from '../components/UI/Icons/MemoryIcon';
@@ -31,7 +24,6 @@ import MiniStatistics from '../components/UI/MiniStatistics';
 import { ArchIcon } from '../components/UI/Icons/ArchIcon';
 import { HostnameIcon } from '../components/UI/Icons/HostnameIcon';
 import { LinuxIcon } from '../components/UI/Icons/LinuxIcon';
-import { PackageIcon } from '../components/UI/Icons/PackageIcon';
 import { TimeIcon } from '../components/UI/Icons/TimeIcon';
 import moment from 'moment';
 import MultiStatistics from '../components/UI/MultiStatistics';
@@ -79,7 +71,7 @@ const System = () => {
   return (
     <Box>
       <Head>
-        <title>Apollo BTC Overview</title>
+        <title>Apollo BTC System</title>
       </Head>
       <Card py="15px" bgColor={cardColor}>
         <Grid
@@ -285,35 +277,37 @@ const System = () => {
                 loading={loadingMcu}
               />
             </GridItem>
-            <GridItem>
-              <NoCardStatisticsGauge
-                id="systemTemp"
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    icon={
-                      <Icon
-                        w="32px"
-                        h="32px"
-                        as={DatabaseIcon}
-                        color={iconColorReversed}
-                      />
-                    }
-                  />
-                }
-                name="Node disk usage"
-                legendValue={`${bytesToSize(
-                  nodeDiskUsed * 1024,
-                  0,
-                  false
-                )} / ${bytesToSize(nodeDiskTotal * 1024, 0)}`}
-                rawValue={nodeDiskUsed}
-                total={nodeDiskTotal}
-                gauge={true}
-                loading={loadingMcu}
-              />
-            </GridItem>
+            {mcuNoderyDisk && (
+              <GridItem>
+                <NoCardStatisticsGauge
+                  id="systemTemp"
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      icon={
+                        <Icon
+                          w="32px"
+                          h="32px"
+                          as={DatabaseIcon}
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name="Node disk usage"
+                  legendValue={`${bytesToSize(
+                    nodeDiskUsed * 1024,
+                    0,
+                    false
+                  )} / ${bytesToSize(nodeDiskTotal * 1024, 0)}`}
+                  rawValue={nodeDiskUsed}
+                  total={nodeDiskTotal}
+                  gauge={true}
+                  loading={loadingMcu}
+                />
+              </GridItem>
+            )}
           </Grid>
         </Grid>
       </Card>

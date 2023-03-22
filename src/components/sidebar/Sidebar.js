@@ -109,7 +109,7 @@ export function SidebarResponsive(props) {
               renderThumbVertical={renderThumb}
               renderView={renderView}
             >
-              <Content routes={routes} />
+              <Content routes={routes} onClose={onClose} />
             </Scrollbars>
           </DrawerBody>
         </DrawerContent>
