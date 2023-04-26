@@ -19,12 +19,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
-import {
-  useGlobalFilter,
-  usePagination,
-  useSortBy,
-  useTable,
-} from 'react-table';
+import { usePagination, useTable } from 'react-table';
 
 import Card from '../card/Card';
 import {
@@ -34,7 +29,6 @@ import {
   MdChevronLeft,
   MdChevronRight,
 } from 'react-icons/md';
-import { BulletList } from 'react-content-loader';
 
 const ColumnsTable = ({
   tableTitle,
@@ -85,6 +79,7 @@ const ColumnsTable = ({
   const brandColor = useColorModeValue('brand.800', 'brand.400');
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.100');
+  const borderColor2 = useColorModeValue('gray.200', 'white')
 
   return (
     <Card
@@ -219,98 +214,102 @@ const ColumnsTable = ({
             : tableData.length}{' '}
           of {tableData.length} entries
         </Text>
-        <Stack direction="row" alignSelf="flex-end" spacing="4px" ms="auto">
-          <Button
-            variant="no-effects"
-            onClick={() => previousPage()}
-            transition="all .5s ease"
-            w="40px"
-            h="40px"
-            borderRadius="50%"
-            bg="transparent"
-            border="1px solid"
-            borderColor={useColorModeValue('gray.200', 'white')}
-            display={
-              pageSize === 5 ? 'none' : canPreviousPage ? 'flex' : 'none'
-            }
-            _hover={{
-              bg: 'whiteAlpha.100',
-              opacity: '0.7',
-            }}
-          >
-            <Icon as={MdChevronLeft} w="16px" h="16px" color={textColor} />
-          </Button>
-          {pageSize === 5 ? (
-            <NumberInput
-              max={pageCount - 1}
-              min={1}
-              w="75px"
-              mx="6px"
-              defaultValue="1"
-              onChange={(e) => gotoPage(e)}
+        {tableData.length > pageSize && (
+          <Stack direction="row" alignSelf="flex-end" spacing="4px" ms="auto">
+            <Button
+              variant="no-effects"
+              onClick={() => previousPage()}
+              transition="all .5s ease"
+              w="40px"
+              h="40px"
+              borderRadius="50%"
+              bg="transparent"
+              border="1px solid"
+              borderColor={borderColor2}
+              display={
+                pageSize === 5 ? 'none' : canPreviousPage ? 'flex' : 'none'
+              }
+              _hover={{
+                bg: 'whiteAlpha.100',
+                opacity: '0.7',
+              }}
             >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper onClick={() => nextPage()} />
-                <NumberDecrementStepper onClick={() => previousPage()} />
-              </NumberInputStepper>
-            </NumberInput>
-          ) : (
-            createPages(pageCount).map((pageNumber, index) => {
-              return (
-                <Button
-                  variant="no-effects"
-                  transition="all .5s ease"
-                  onClick={() => gotoPage(pageNumber - 1)}
-                  w="40px"
-                  h="40px"
-                  borderRadius="50%"
-                  bg={pageNumber === pageIndex + 1 ? brandColor : 'transparent'}
-                  border={
-                    pageNumber === pageIndex + 1
-                      ? 'none'
-                      : '1px solid lightgray'
-                  }
-                  _hover={
-                    pageNumber === pageIndex + 1
-                      ? {
-                          opacity: '0.7',
-                        }
-                      : {
-                          bg: 'whiteAlpha.100',
-                        }
-                  }
-                  key={index}
-                >
-                  <Text
-                    fontSize="sm"
-                    color={pageNumber === pageIndex + 1 ? '#fff' : textColor}
+              <Icon as={MdChevronLeft} w="16px" h="16px" color={textColor} />
+            </Button>
+            {pageSize === 5 ? (
+              <NumberInput
+                max={pageCount - 1}
+                min={1}
+                w="75px"
+                mx="6px"
+                defaultValue="1"
+                onChange={(e) => gotoPage(e)}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper onClick={() => nextPage()} />
+                  <NumberDecrementStepper onClick={() => previousPage()} />
+                </NumberInputStepper>
+              </NumberInput>
+            ) : (
+              createPages(pageCount).map((pageNumber, index) => {
+                return (
+                  <Button
+                    variant="no-effects"
+                    transition="all .5s ease"
+                    onClick={() => gotoPage(pageNumber - 1)}
+                    w="40px"
+                    h="40px"
+                    borderRadius="50%"
+                    bg={
+                      pageNumber === pageIndex + 1 ? brandColor : 'transparent'
+                    }
+                    border={
+                      pageNumber === pageIndex + 1
+                        ? 'none'
+                        : '1px solid lightgray'
+                    }
+                    _hover={
+                      pageNumber === pageIndex + 1
+                        ? {
+                            opacity: '0.7',
+                          }
+                        : {
+                            bg: 'whiteAlpha.100',
+                          }
+                    }
+                    key={index}
                   >
-                    {pageNumber}
-                  </Text>
-                </Button>
-              );
-            })
-          )}
-          <Button
-            variant="no-effects"
-            onClick={() => nextPage()}
-            transition="all .5s ease"
-            w="40px"
-            h="40px"
-            borderRadius="50%"
-            bg="transparent"
-            border="1px solid"
-            borderColor={useColorModeValue('gray.200', 'white')}
-            display={pageSize === 5 ? 'none' : canNextPage ? 'flex' : 'none'}
-            _hover={{
-              bg: 'whiteAlpha.100',
-              opacity: '0.7',
-            }}
-          >
-            <Icon as={MdChevronRight} w="16px" h="16px" color={textColor} />
-          </Button>
-        </Stack>
+                    <Text
+                      fontSize="sm"
+                      color={pageNumber === pageIndex + 1 ? '#fff' : textColor}
+                    >
+                      {pageNumber}
+                    </Text>
+                  </Button>
+                );
+              })
+            )}
+            <Button
+              variant="no-effects"
+              onClick={() => nextPage()}
+              transition="all .5s ease"
+              w="40px"
+              h="40px"
+              borderRadius="50%"
+              bg="transparent"
+              border="1px solid"
+              borderColor={borderColor2}
+              display={pageSize === 5 ? 'none' : canNextPage ? 'flex' : 'none'}
+              _hover={{
+                bg: 'whiteAlpha.100',
+                opacity: '0.7',
+              }}
+            >
+              <Icon as={MdChevronRight} w="16px" h="16px" color={textColor} />
+            </Button>
+          </Stack>
+        )}
       </Flex>
     </Card>
   );

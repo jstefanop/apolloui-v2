@@ -3,7 +3,7 @@ import { Icon } from '@chakra-ui/react';
 export const Wifi01Icon = (props) => {
   return (
     <Icon viewBox="0 0 17 17" {...props}>
-      <g clip-path="url(#clip0_698_8600)">
+      <g clipPath="url(#clip0_698_8600)">
         <path
           opacity="0.3"
           d="M16.0107 1.89093H12.0107V15.8909H16.0107V1.89093Z"

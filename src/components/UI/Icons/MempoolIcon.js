@@ -3,7 +3,7 @@ import { Icon } from '@chakra-ui/react';
 export const MempoolIcon = (props) => {
   return (
     <Icon viewBox="0 0 66 67" {...props}>
-      <g clip-path="url(#clip0_559_9257)">
+      <g clipPath="url(#clip0_559_9257)">
         <path d="M66 0.25H0V33.25H66V0.25Z" fill="#2E3349" />
         <path
           d="M66 33.25H0V66.25H66V33.25Z"
@@ -24,8 +24,8 @@ export const MempoolIcon = (props) => {
           y2="66.25"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8B81F6" />
-          <stop offset="1" stop-color="#3BCAE2" />
+          <stop stopColor="#8B81F6" />
+          <stop offset="1" stopColor="#3BCAE2" />
         </linearGradient>
         <clipPath id="clip0_559_9257">
           <rect y="0.25" width="66" height="66" rx="8" fill="white" />

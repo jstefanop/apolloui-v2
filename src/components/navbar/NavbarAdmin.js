@@ -29,6 +29,7 @@ import {
 } from '../../redux/actions/minerAction';
 import { minerSelector } from '../../redux/reselect/miner';
 import { nodeSelector } from '../../redux/reselect/node';
+import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
 
 const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
@@ -69,6 +70,13 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
 
   const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
     useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
+
+  // MCU actions
+  const [rebootMcu, { loading: loadingRebootMcu, error: errorRebootMcu }] =
+    useLazyQuery(MCU_REBOOT_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [shutdownMcu, { loading: loadingShutdownMcu, error: errorShutdownMcu }] =
+    useLazyQuery(MCU_SHUTDOWN_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     window.addEventListener('scroll', changeNavbar);
@@ -123,6 +131,20 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         description = 'Your node will be available in a moment, please hold on';
         loadingAction = loadingNodeStop;
         errorAction = errorNodeStop;
+        break;
+      case 'rebootMcu':
+        rebootMcu();
+        title = 'Rebooting system';
+        description = 'Your system is rebooting, please wait at least 1 minute you should see stats again';
+        loadingAction = loadingRebootMcu;
+        errorAction = errorRebootMcu;
+        break;
+      case 'shutdownMcu':
+        shutdownMcu();
+        title = 'Shutting down system';
+        description = 'Your system is halting, you will need to start it manually. See you.';
+        loadingAction = loadingShutdownMcu;
+        errorAction = errorShutdownMcu;
         break;
       default:
         modal = false;

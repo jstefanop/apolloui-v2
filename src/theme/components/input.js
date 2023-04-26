@@ -20,6 +20,7 @@ export const inputStyles = {
             fontSize: "sm",
             p: "20px",
             _placeholder: { color: "secondaryGray.400" },
+            _invalid: { border: "2px solid red", }
           },
         }),
         auth: (props) => ({

@@ -55,7 +55,7 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
             >
               <ProtectedRoutes router={router}>
                 <AnimatePresence mode='wait' initial={false}>
-                  {router.pathname === '/signin' ? (
+                  {(router.pathname === '/signin' || router.pathname === '/setup') ? (
                     <AuthLayout
                       illustrationBackground={illustration.src}
                       image={illustration.src}

@@ -8,6 +8,7 @@ import {
   useColorModeValue,
   Text,
   Progress,
+  Tooltip,
 } from '@chakra-ui/react';
 // Custom components
 import Card from '../card/Card';
@@ -49,11 +50,16 @@ const MiniStatistics = ({
 
   return (
     <Card py="15px" bg={bgColor} shadow={shadow} {...props}>
-      <Flex
-        justify={{ base: 'center', xl: 'center' }}
-      >
+      <Flex justify={{ base: 'center', xl: 'center' }}>
         {startContent}
 
+        <Tooltip
+          hasArrow
+          bg={'gray.600'}
+          color="white"
+          placement="top"
+          label={value}
+        >
         <Stat ms={startContent ? '18px' : '0px'}>
           {reversed && (
             <StatNumber
@@ -62,7 +68,9 @@ const MiniStatistics = ({
                 base: fontSize || '2xl',
               }}
             >
-              {value}
+              
+                <Text noOfLines={1}>{value}</Text>
+              
             </StatNumber>
           )}
           <StatLabel
@@ -72,7 +80,7 @@ const MiniStatistics = ({
               base: 'sm',
             }}
           >
-            {name}
+            <Text noOfLines={1}>{name}</Text>
           </StatLabel>
           {!reversed && (
             <StatNumber
@@ -81,7 +89,7 @@ const MiniStatistics = ({
                 base: fontSize || '2xl',
               }}
             >
-              {value}
+              <Text noOfLines={1}>{value}</Text>
             </StatNumber>
           )}
           {secondaryText ? (
@@ -96,10 +104,11 @@ const MiniStatistics = ({
                 base: 'sm',
               }}
             >
-              {secondaryDescription}
+              <Text noOfLines={1}>{secondaryDescription}</Text>
             </StatLabel>
           ) : null}
         </Stat>
+        </Tooltip>
         <Flex ms="auto" w="max-content">
           {endContent}
         </Flex>

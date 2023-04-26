@@ -28,32 +28,27 @@ export default function AuthNavbar(props) {
 
   let brand = (
     <Link
-      href={`${process.env.PUBLIC_URL}/#/`}
-      target='_blank'
-      display='flex'
-      lineHeight='100%'
-      fontWeight='bold'
-      justifyContent='center'
-      alignItems='center'
+      href={'/'}
+      display="flex"
+      lineHeight="100%"
+      fontWeight="bold"
+      justifyContent="center"
+      alignItems="center"
       color={mainText}
     >
-      <Stack direction='row' align='center' justify='center'>
+      <Stack direction="row">
         <Brand />
       </Stack>
-      <Text fontSize='sm' mt='3px'>
-        {logoText}
-      </Text>
+      {logoText && (
+        <Text fontSize="sm" mt="3px">
+          {logoText}
+        </Text>
+      )}
     </Link>
   );
 
   return (
-    <Flex
-      px='16px'
-      pt='32px'
-      mx='auto'
-      alignItems='center'
-      zIndex='3'
-    >
+    <Flex px="16px" pt="32px" mx="auto" alignItems="center" zIndex="3">
       {brand}
     </Flex>
   );

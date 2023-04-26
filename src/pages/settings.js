@@ -12,6 +12,7 @@ import {
   FormControl,
   Text,
   InputGroup,
+  InputRightElement,
   Icon,
   Button,
   InputLeftElement,
@@ -24,6 +25,7 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 
 import React, { useEffect, useRef, useState } from 'react';
@@ -58,16 +60,19 @@ import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../graphql/settings';
-import {
-  GET_POOLS_QUERY,
-  SET_POOLS_QUERY,
-  UPDATE_POOLS_QUERY,
-} from '../graphql/pools';
+import { GET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../graphql/pools';
 import Head from 'next/head';
+import { MINER_RESTART_QUERY } from '../graphql/miner';
+import { CHANGE_PASSWORD_QUERY } from '../graphql/auth';
 
 const Settings = () => {
   const textColor = useColorModeValue('brands.900', 'white');
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
+
+  const [
+    restartMiner,
+    { loading: loadingMinerRestart, error: errorMinerRestart },
+  ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
   const { current: minerInitialModes } = useRef([
     {
@@ -235,7 +240,12 @@ const Settings = () => {
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
   const [currentMode, setCurrentMode] = useState({ id: 'loading' });
+  const [lockPassword, setLockPassword] = useState();
+  const [verifyLockpassword, setVerifyLockPassword] = useState();
+  const [showLockPassword, setShowLockPassword] = useState(false);
+  const [isLockpasswordError, setIsLockpasswordError] = useState(true);
   const [isChanged, setIsChanged] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
 
@@ -263,6 +273,11 @@ const Settings = () => {
 
   const [savePools, { loading: loadingSavePools, error: errorSavePools }] =
     useLazyQuery(UPDATE_POOLS_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [
+    changeLockPassword,
+    { loading: changeLockPasswordLoading, error: errorChangeLockPassword },
+  ] = useLazyQuery(CHANGE_PASSWORD_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     if (
@@ -310,9 +325,7 @@ const Settings = () => {
     setFanMode((el) => {
       return {
         ...el,
-        selected:
-          (settingsData.fan_low !== 40 && settingsData.fan_high !== 60) ||
-          false,
+        selected: settingsData.fan_low !== 40 || settingsData.fan_high !== 60,
         fan_low: settingsData.fan_low,
         fan_high: settingsData.fan_high,
       };
@@ -336,7 +349,14 @@ const Settings = () => {
 
   // Trigger any change in settings to display the buttons
   useEffect(() => {
-    const restartMinerFields = ['minerMode', 'frequency', 'voltage', 'pool'];
+    const restartMinerFields = [
+      'minerMode',
+      'frequency',
+      'voltage',
+      'pool',
+      'fan_low',
+      'fan_high',
+    ];
     const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
     const isEqual = _.isEqual(settings, currentSettings);
     const restartMinerNeeded = !_.isEqual(
@@ -359,6 +379,22 @@ const Settings = () => {
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
   }, [settings, currentSettings]);
+
+  useEffect(() => {
+    if (!lockPassword || !verifyLockpassword) {
+      setIsLockpasswordError(false);
+      setIsChanged(false);
+    } else if (lockPassword.length < 8) {
+      setIsLockpasswordError('The password must have 8 characters at least');
+      setIsChanged(false);
+    } else if (lockPassword === verifyLockpassword) {
+      setIsLockpasswordError(false);
+      setIsChanged(true);
+    } else {
+      setIsLockpasswordError('Passwords must match');
+      setIsChanged(false);
+    }
+  }, [lockPassword, verifyLockpassword]);
 
   const handlePoolChange = (e) => {
     setErrorForm(null);
@@ -471,52 +507,73 @@ const Settings = () => {
   };
 
   const handlesSaveSettings = async (type) => {
-    const {
-      agree,
-      minerMode,
-      voltage,
-      frequency,
-      fan_low,
-      fan_high,
-      apiAllow,
-      customApproval,
-      temperatureUnit,
-      nodeRpcPassword,
-      nodeEnableTor,
-      nodeUserConf,
-      pool,
-    } = settings;
+    try {
+      const {
+        agree,
+        minerMode,
+        voltage,
+        frequency,
+        fan_low,
+        fan_high,
+        apiAllow,
+        customApproval,
+        temperatureUnit,
+        nodeRpcPassword,
+        nodeEnableTor,
+        nodeUserConf,
+        pool,
+      } = settings;
 
-    const { enabled, url, username, password, index } = pool;
+      const { enabled, url, username, password, index } = pool;
 
-    const input = {
-      agree,
-      minerMode,
-      voltage,
-      frequency,
-      fan_low,
-      fan_high,
-      apiAllow,
-      customApproval,
-      temperatureUnit,
-      nodeRpcPassword,
-      nodeEnableTor,
-      nodeUserConf,
-    };
+      const input = {
+        agree,
+        minerMode,
+        voltage,
+        frequency,
+        fan_low,
+        fan_high,
+        apiAllow,
+        customApproval,
+        temperatureUnit,
+        nodeRpcPassword,
+        nodeEnableTor,
+        nodeUserConf,
+      };
 
-    const poolInput = {
-      enabled,
-      url,
-      username,
-      password,
-      index,
-    };
+      const poolInput = {
+        enabled,
+        url,
+        username,
+        password,
+        index,
+      };
 
-    await saveSettings({ variables: { input } });
-    await savePools({ variables: { input: { pools: [poolInput] } } });
-    await refetchSettings();
-    await refetchPools();
-    // if (type === 'restart') restartNeeded();
+      await saveSettings({ variables: { input } });
+      await savePools({ variables: { input: { pools: [poolInput] } } });
+      await refetchSettings();
+      await refetchPools();
+      if (
+        lockPassword &&
+        verifyLockpassword &&
+        lockPassword === verifyLockpassword
+      ) {
+        changeLockPassword({
+          variables: { input: { password: lockPassword } },
+        });
+        setIsChanged(false);
+      }
+
+      setTabIndex(0);
+      console.log(settings);
+      /* TODO: restart node
+      if (type === 'restart') {
+        await restartMiner();
+      }
+      */
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (errorQuerySettings || errorQueryPools) {
@@ -573,6 +630,7 @@ const Settings = () => {
                   size={'md'}
                   mr="4"
                   disabled={errorForm}
+                  onClick={() => handlesSaveSettings(restartNeeded)}
                 >
                   Save & Restart
                 </Button>
@@ -581,8 +639,8 @@ const Settings = () => {
                 colorScheme="green"
                 variant={'solid'}
                 size={'md'}
-                onClick={() => handlesSaveSettings('restart')}
                 disabled={errorForm}
+                onClick={() => handlesSaveSettings()}
               >
                 Save
               </Button>
@@ -591,8 +649,14 @@ const Settings = () => {
         </Box>
       )}
 
-      <Tabs size="md" isLazy variant={'line'}>
-        <TabList ml='5'>
+      <Tabs
+        size="md"
+        isLazy
+        variant={'line'}
+        index={tabIndex}
+        onChange={(index) => setTabIndex(index)}
+      >
+        <TabList ml="5">
           <Tab>
             <Text fontWeight={600} me="2">
               Pools
@@ -809,73 +873,88 @@ const Settings = () => {
                 mb="20px"
               >
                 <SimpleCard textColor={textColor}>
-                  <Flex>
-                    <FormControl>
-                      <FormLabel
-                        display="flex"
-                        ms="4px"
-                        fontSize="sm"
-                        fontWeight="500"
-                        color={textColor}
-                        mb="8px"
-                      >
-                        Password<Text color={'red'}>*</Text>
-                      </FormLabel>
-                      <InputGroup size="md">
-                        <InputLeftElement
+                  <form onSubmit={handlesSaveSettings}>
+                    <Flex flexDir={'column'}>
+                      <FormControl isRequired>
+                        <FormLabel
                           display="flex"
-                          alignItems="center"
-                          mt="4px"
-                        >
-                          <Icon
-                            color={textColor}
-                            _hover={{ cursor: 'pointer' }}
-                            as={MdPassword}
-                          />
-                        </InputLeftElement>
-                        <Input
-                          isRequired={true}
+                          ms="4px"
                           fontSize="sm"
-                          placeholder="Min. 8 characters"
-                          mb="24px"
-                          size="lg"
-                          type={'password'}
-                          id="password"
-                        />
-                      </InputGroup>
-                      <FormLabel
-                        ms="4px"
-                        fontSize="sm"
-                        fontWeight="500"
-                        color={textColor}
-                        display="flex"
-                      >
-                        Verify Password<Text color={'red'}>*</Text>
-                      </FormLabel>
-                      <InputGroup size="md">
-                        <InputLeftElement
+                          fontWeight="500"
+                          color={textColor}
+                          mb="8px"
+                        >
+                          Password
+                        </FormLabel>
+                        <InputGroup size="md">
+                          <Input
+                            isRequired={true}
+                            fontSize="sm"
+                            placeholder="Your lock screen password"
+                            mb="24px"
+                            size="lg"
+                            type={showLockPassword ? 'text' : 'password'}
+                            id="password"
+                            onChange={(e) => setLockPassword(e.target.value)}
+                            isInvalid={isLockpasswordError}
+                          />
+                          <InputRightElement width="4.5rem">
+                            <Button
+                              h="1.75rem"
+                              size="sm"
+                              onClick={() =>
+                                setShowLockPassword(!showLockPassword)
+                              }
+                            >
+                              {showLockPassword ? 'Hide' : 'Show'}
+                            </Button>
+                          </InputRightElement>
+                        </InputGroup>
+                      </FormControl>
+                      <FormControl isRequired>
+                        <FormLabel
+                          ms="4px"
+                          fontSize="sm"
+                          fontWeight="500"
+                          color={textColor}
                           display="flex"
-                          alignItems="center"
-                          mt="4px"
                         >
-                          <Icon
-                            color={textColor}
-                            _hover={{ cursor: 'pointer' }}
-                            as={MdPassword}
+                          Verify Password
+                        </FormLabel>
+                        <InputGroup size="md">
+                          <Input
+                            isRequired={true}
+                            fontSize="sm"
+                            placeholder="Verify your lock screen password"
+                            mb="24px"
+                            size="lg"
+                            type={showLockPassword ? 'text' : 'password'}
+                            id="verifypassword"
+                            onChange={(e) =>
+                              setVerifyLockPassword(e.target.value)
+                            }
+                            isInvalid={isLockpasswordError}
                           />
-                        </InputLeftElement>
-                        <Input
-                          isRequired={true}
-                          fontSize="sm"
-                          placeholder="Min. 8 characters"
-                          mb="24px"
-                          size="lg"
-                          type={'password'}
-                          id="verifypassword"
-                        />
-                      </InputGroup>
-                    </FormControl>
-                  </Flex>
+                          <InputRightElement width="4.5rem">
+                            <Button
+                              h="1.75rem"
+                              size="sm"
+                              onClick={() =>
+                                setShowLockPassword(!showLockPassword)
+                              }
+                            >
+                              {showLockPassword ? 'Hide' : 'Show'}
+                            </Button>
+                          </InputRightElement>
+                        </InputGroup>
+                        {isLockpasswordError && (
+                          <Text fontSize={'sm'} color={'red'}>
+                            {isLockpasswordError}
+                          </Text>
+                        )}
+                      </FormControl>
+                    </Flex>
+                  </form>
                 </SimpleCard>
               </PanelCard>
             </SimpleGrid>

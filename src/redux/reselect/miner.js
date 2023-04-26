@@ -13,16 +13,15 @@ export const minerSelector = createSelector(
   (minerData, minerError, minerLoading) => {
     const {
       Miner: {
-        online: { error: errorOnline, result },
-        stats: {
-          error: errorStats,
-          result: { stats: minerStats },
-        },
+        online: { error: errorOnline, result = {} },
+        stats: { error: errorStats, result: resultStats },
       },
     } = minerData || initialState;
 
+    const { stats: minerStats } = resultStats || {};
+
     let minerOnline;
-    if (result.online && result.online.status)
+    if (result?.online && result?.online?.status)
       minerOnline = result.online.status;
 
     const errors = [...[minerError, errorOnline, errorStats].filter(Boolean)];
@@ -190,7 +189,7 @@ export const minerSelector = createSelector(
         return null;
       });
 
-      const avgBoardErrors = _.chain(boards)
+      let avgBoardErrors = _.chain(boards)
         .filter((hb) => {
           return hb.status;
         })
@@ -199,45 +198,47 @@ export const minerSelector = createSelector(
         })
         .value();
 
+      if (isNaN(avgBoardErrors)) avgBoardErrors = 0;
+
       const avgBoardRejected = _.meanBy(boards, (hb) => {
-        if (hb.status) return hb.sharesRejected;
-        return null;
+        if (hb.status && hb.sharesRejected) return hb.sharesRejected;
+        return 0;
       });
 
       const avgChipSpeed = _.meanBy(boards, (hb) => {
-        if (hb.status) return hb.chipSpeed;
-        return null;
+        if (hb.status && hb.chipSpeed) return hb.chipSpeed;
+        return 0;
       });
 
       const avgFanSpeed = _.meanBy(boards, (hb) => {
-        if (hb.status) return hb.fanSpeed;
-        return null;
+        if (hb.status && hb.fanSpeed) return hb.fanSpeed;
+        return 0;
       });
 
       const avgVoltage = _.meanBy(boards, (hb) => {
-        if (hb.status) return hb.voltage;
-        return null;
+        if (hb.status && hb.voltage) return hb.voltage;
+        return 0;
       });
 
       // Pool sum/avg
       const totalSharesSent = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.sharesSent;
-        return null;
+        if (hb.status && hb.sharesSent) return hb.sharesSent;
+        return 0;
       });
 
       const totalSharesAccepted = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.sharesAccepted;
-        return null;
+        if (hb.status && hb.sharesAccepted) return hb.sharesAccepted;
+        return 0;
       });
 
       const totalSharesRejected = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.sharesRejected;
-        return null;
+        if (hb.status && hb.sharesRejected) return hb.sharesRejected;
+        return 0;
       });
 
       const avgDiff = _.meanBy(boards, (hb) => {
-        if (hb.status) return hb.diff;
-        return null;
+        if (hb.status && hb.diff) return hb.diff;
+        return 0;
       });
 
       const activeBoards = _.size(_.filter(boards, { status: true }));

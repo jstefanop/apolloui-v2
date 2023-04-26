@@ -27,7 +27,6 @@ import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { MinersIcon } from '../components/UI/Icons/MinersIcon';
 import { useEffect, useRef, useState } from 'react';
 import { mcuSelector } from '../redux/reselect/mcu';
-import NodeBanner from '../assets/img/node_banner.png';
 import DynamicTable from '../components/UI/DynamicTable';
 import CountUp from 'react-countup';
 import Head from 'next/head';
@@ -143,7 +142,7 @@ const Node = () => {
           {blockHeader === blocksCount && lastBlockTime
             ? `${lastBlockTime}m since the last block`
             : blockHeader > blocksCount
-            ? 'New block incoming...'
+            ? 'Syncing blocks...'
             : '...'}
         </title>
       </Head>
@@ -254,7 +253,7 @@ const Node = () => {
                       blockHeader === blocksCount
                         ? lastBlockTime
                         : blockHeader > blocksCount
-                        ? 'New block incoming...'
+                        ? 'Processing queue...'
                         : '...'
                     }
                     reversed={true}

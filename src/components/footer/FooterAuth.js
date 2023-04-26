@@ -19,24 +19,18 @@ export default function Footer() {
       maxW={{ base: '90%', xl: '1170px' }}
       zIndex='1.5'
       flexDirection={{
-        base: 'column',
-        xl: 'row',
+        base: 'row',
       }}
       alignItems={{
         base: 'center',
-        xl: 'start',
       }}
       justifyContent='space-between'
-      px={{ base: '0px', xl: '0px' }}
-      pb='30px'
+      mt='auto'
+      mb='10'
       mx='auto'
     >
       <Text
         color={textColor}
-        textAlign={{
-          base: 'center',
-          xl: 'start',
-        }}
         mb={{ base: '20px', xl: '0px' }}
       >
         {' '}

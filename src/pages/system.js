@@ -117,7 +117,7 @@ const System = () => {
                     }
                   />
                 }
-                name="Hostanem"
+                name="Hostname"
                 value={hostname}
                 reversed={true}
               />

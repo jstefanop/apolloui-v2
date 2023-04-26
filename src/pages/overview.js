@@ -72,10 +72,14 @@ const Overview = () => {
 
   const {
     temperature: mcuTemperature,
-    cpu: { threads: cpuCores, usedPercent: cpuUsage },
+    cpu,
     disks,
     memory,
-  } = dataMcu;
+  } = dataMcu || {};
+
+  const {
+    threads: cpuCores, usedPercent: cpuUsage
+  } = cpu || {};
 
   const mcuPrimaryDisk = _.find(disks, { mountPoint: '/' });
   const { used: diskUsed, total: diskTotal } = mcuPrimaryDisk || {};

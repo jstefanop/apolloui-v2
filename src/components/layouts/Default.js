@@ -9,6 +9,7 @@ import {
   AlertDescription,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { useSession } from 'next-auth/react';
 
 import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
@@ -112,6 +113,9 @@ const Layout = ({ children, routes }, props) => {
   } = useSelector((state) => state.minerAction);
 
   const { error: errorGraphql } = useSelector((state) => state.graphqlErrors);
+
+  const { status } = useSession();
+  if (status === 'loading' || status === 'unauthenticated') return <></>;
 
   return (
     <motion.div

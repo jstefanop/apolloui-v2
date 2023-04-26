@@ -76,7 +76,7 @@ export const MCU_WIFI_SCAN_QUERY = gql`
 
 export const MCU_WIFI_CONNECT_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query MCU_CONNECT_SCAN($input: McuWifiConnectInput!) {
+  query MCU_CONNECT($input: McuWifiConnectInput!) {
     Mcu {
       wifiConnect(input: $input) {
         result {
@@ -92,9 +92,78 @@ export const MCU_WIFI_CONNECT_QUERY = gql`
 
 export const MCU_WIFI_DISCONNECT_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query MCU_DISCONNECT_SCAN {
+  query MCU_DISCONNECT {
     Mcu {
       wifiDisconnect {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_SHUTDOWN_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_SHUTDOWN {
+    Mcu {
+      shutdown {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_REBOOT_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_REBOOT {
+    Mcu {
+      reboot {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_UPDATE_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_UPDATE {
+    Mcu {
+      update {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_UPDATE_PROGRESS_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_UPDATE_PROGRESS {
+    Mcu {
+      updateProgress {
+        result {
+          value
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_VERSION_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_VERSION {
+    Mcu {
+      version {
+        result
         error {
           ...ErrorFragment
         }

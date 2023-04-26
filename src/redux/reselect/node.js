@@ -12,10 +12,14 @@ export const nodeSelector = createSelector(
       Node: {
         stats: {
           error: errorStats,
-          result: { stats: nodeStats },
+          result,
         },
       },
     } = nodeData || initialState;
+
+    const {
+      stats: nodeStats = {},
+    } = result || {};
 
     const { error } = nodeStats;
 

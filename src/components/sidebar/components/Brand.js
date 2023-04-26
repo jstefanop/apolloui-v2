@@ -16,7 +16,7 @@ export function SidebarBrand() {
 
   return (
     <Flex align='center' direction='column'>
-      <NextImage src={router.pathname === '/signin' ? LogoWhite : colorMode === 'light' ? Logo : LogoWhite} style={{width: '180px', marginBottom: '24px'}} alt="Logo" />
+      <NextImage src={(router.pathname === '/signin' || router.pathname === '/setup') ? LogoWhite : colorMode === 'light' ? Logo : LogoWhite} style={{width: '180px', marginBottom: '24px'}} alt="Logo" />
     </Flex>
   );
 }

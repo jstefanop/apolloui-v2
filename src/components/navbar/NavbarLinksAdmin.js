@@ -29,6 +29,7 @@ import { CheckIcon } from '@chakra-ui/icons';
 import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 import { WarningIcon } from '../UI/Icons/WarningIcon';
 import { StartIcon } from '../UI/Icons/StartIcon';
+import Link from 'next/link';
 
 export default function HeaderLinks({
   secondary,
@@ -112,7 +113,9 @@ export default function HeaderLinks({
               borderRadius="30px"
               me="7px"
             >
-              <Icon w="18px" h="18px" color={navbarIcon} as={NodeIcon} />
+              <Link href="/node">
+                <Icon w="18px" h="18px" color={navbarIcon} as={NodeIcon} />
+              </Link>
             </Flex>
             <Flex
               align="center"
@@ -167,19 +170,23 @@ export default function HeaderLinks({
               borderRadius="30px"
               me="7px"
             >
-              <MinerIcon w="18px" h="18px" color={navbarIcon} />
+              <Link href="/miner">
+                <MinerIcon w="18px" h="18px" color={navbarIcon} />
+              </Link>
             </Flex>
-            <Text
-              align={'center'}
-              w="max-content"
-              color={badgeColor}
-              fontSize="sm"
-              fontWeight="700"
-              me="6px"
-              minW="70px"
-            >
-              {`${globalHashrate?.value} ${globalHashrate?.unit}`}
-            </Text>
+            {globalHashrate?.value && (
+              <Text
+                align={'center'}
+                w="max-content"
+                color={badgeColor}
+                fontSize="sm"
+                fontWeight="700"
+                me="6px"
+                minW="70px"
+              >
+                {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
+              </Text>
+            )}
             <Flex
               align="center"
               justify="center"
@@ -302,8 +309,18 @@ export default function HeaderLinks({
                 </MenuGroup>
                 <MenuDivider />
                 <MenuGroup title="System">
-                  <MenuItem icon={<PowerOffIcon />}>Shutdown</MenuItem>
-                  <MenuItem icon={<RestartIcon />}>Reboot</MenuItem>
+                  <MenuItem
+                    icon={<RestartIcon />}
+                    onClick={() => handleSystemAction('rebootMcu')}
+                  >
+                    Reboot
+                  </MenuItem>
+                  <MenuItem
+                    icon={<PowerOffIcon />}
+                    onClick={() => handleSystemAction('shutdownMcu')}
+                  >
+                    Shutdown
+                  </MenuItem>
                   <MenuItem icon={<SignOutIcon />} onClick={handleSignout}>
                     Signout
                   </MenuItem>

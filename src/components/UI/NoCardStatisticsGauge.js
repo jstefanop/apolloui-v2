@@ -5,6 +5,7 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  Text,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
@@ -106,7 +107,7 @@ const NoCardStatisticsGauge = ({
                       base: '2xl',
                     }}
                   >
-                    {value || `${roundedPercentage}%`}
+                      <Text noOfLines={1}>{value || `${roundedPercentage}%` || 'N.a.'}</Text>
                   </StatNumber>
                   {secondaryValue && (
                     <StatNumber

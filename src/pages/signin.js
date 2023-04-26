@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { signIn } from 'next-auth/react';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import { RiEyeCloseLine } from 'react-icons/ri';
@@ -6,7 +6,6 @@ import { RiEyeCloseLine } from 'react-icons/ri';
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
@@ -18,12 +17,11 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { Router } from 'next/router';
 import Head from 'next/head';
+import { useState } from 'react';
 
 const SignIn = () => {
   // Chakra color mode
-  const bgButtonColor = useColorModeValue('brand.800', 'white');
   const textButtonColor = useColorModeValue('white', 'brand.800');
   const textColor = useColorModeValue('brand.800', 'white');
   const textColorSecondary = 'gray.400';
@@ -40,9 +38,7 @@ const SignIn = () => {
       password,
       redirect: false,
     });
-    console.log('RES', response);
     const { error } = response;
-    // if (!error) Router.replace('/overview');
     setError(error);
   };
 

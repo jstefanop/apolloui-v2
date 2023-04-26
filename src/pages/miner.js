@@ -252,10 +252,11 @@ const Miner = () => {
 
             <Grid
               gridArea="Top"
-              templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'repeat(4, 1fr)' }}
+              templateRows={{ base: 'repeat(2, 1fr)', xl: 'repeat(1, 1fr)' }}
+              templateColumns={{ base: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }}
               templateAreas={{
-                base: `'. .'`,
+                base: `'.' '.'`,
+                xl: `'. .'`,
               }}
               gap={'20px'}
             >
@@ -335,7 +336,6 @@ const Miner = () => {
                   }
                   name="Last share"
                   value={lastShareTime?.replace('a few', '')}
-                  fontSize={'xl'}
                   reversed={true}
                 />
               </GridItem>

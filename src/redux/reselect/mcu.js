@@ -12,10 +12,14 @@ export const mcuSelector = createSelector(
       Mcu: {
         stats: {
           error: errorStats,
-          result: { stats: mcuStats },
+          result,
         },
       },
     } = mcuData || initialState;
+
+    const {
+      stats: mcuStats,
+    } = result || {};
 
     const errors = [...[mcuError, errorStats].filter(Boolean)];
 
