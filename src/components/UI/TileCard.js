@@ -1,4 +1,4 @@
-import { Icon, Text, Flex } from '@chakra-ui/react';
+import { Icon, Text, Flex, Box } from '@chakra-ui/react';
 
 import Card from '../card/Card';
 import IconBox from '../icons/IconBox';
@@ -16,10 +16,19 @@ const TileCard = ({
   secondaryText,
   loading,
   errors,
+  bannerImage,
   ...props
 }) => {
   return (
-    <Card py="15px" h="100%" {...props}>
+    <Card
+      py="15px"
+      h="100%"
+      {...props}
+      style={bannerImage && {
+        backgroundImage: `url(${bannerImage.src})`,
+        backgroundSize: 'cover',
+      }}
+    >
       <>
         <Flex marginBottom={'auto'}>
           <Text color="white" fontSize="lg" fontWeight="800">

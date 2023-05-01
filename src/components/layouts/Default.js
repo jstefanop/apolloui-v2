@@ -112,7 +112,7 @@ const Layout = ({ children, routes }, props) => {
     data: dataAction,
   } = useSelector((state) => state.minerAction);
 
-  const { error: errorGraphql } = useSelector((state) => state.graphqlErrors);
+  const { message: feedbackMessage, type: feedbackType } = useSelector((state) => state.feedback);
 
   const { status } = useSession();
   if (status === 'loading' || status === 'unauthenticated') return <></>;
@@ -179,11 +179,10 @@ const Layout = ({ children, routes }, props) => {
                   <AlertTitle>{errorAction.toString()}</AlertTitle>
                 </Alert>
               )}
-              {errorGraphql && (
-                <Alert mb="5" borderRadius={'10px'} status="error">
+              {feedbackMessage && (
+                <Alert mb="5" borderRadius={'10px'} status={feedbackType || 'info'}>
                   <AlertIcon />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{errorGraphql}</AlertDescription>
+                  <AlertDescription>{feedbackMessage}</AlertDescription>
                 </Alert>
               )}
               {React.cloneElement(children)}

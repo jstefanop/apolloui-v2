@@ -1,20 +1,22 @@
 import {
-  UPDATE_GRAPHQL_ERRORS,
-  RESET_GRAPHQL_ERRORS,
+  SEND_FEEDBACK,
+  RESET_FEEDBACK,
 } from '../actions/actionTypes';
 
 const initialState = {
-  error: null,
+  message: null,
+  type: null,
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case UPDATE_GRAPHQL_ERRORS:
+    case SEND_FEEDBACK:
       return {
         ...state,
-        error: action.payload.error,
+        message: action.payload.message,
+        type: action.payload.type,
       };
-    case RESET_GRAPHQL_ERRORS:
+    case RESET_FEEDBACK:
       return initialState;
     default:
       return state;

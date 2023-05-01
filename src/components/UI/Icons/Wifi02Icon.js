@@ -1,6 +1,6 @@
 import { Icon } from '@chakra-ui/react';
 
-export const Wifi01Icon = (props) => {
+export const Wifi02Icon = (props) => {
   return (
     <Icon viewBox="0 0 17 17" {...props}>
       <g clipPath="url(#clip0_698_8600)">

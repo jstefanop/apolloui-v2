@@ -6,6 +6,7 @@ import thunkMiddleware from 'redux-thunk';
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import * as reducers from './reducers';
+import feedbackMiddleware from './middlewares';
 
 const persistConfig = {
   key: 'root',
@@ -26,7 +27,7 @@ const makeStore = () => {
   store = configureStore({
     reducer: persistedReducer,
     devTools: process.env.NODE_ENV !== 'production',
-    middleware: [thunkMiddleware],
+    middleware: [thunkMiddleware, feedbackMiddleware],
   });
 
   store.__persistor = persistStore(store); // Nasty hack

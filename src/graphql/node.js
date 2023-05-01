@@ -68,6 +68,22 @@ export const NODE_START_QUERY = gql`
   }
 `;
 
+export const NODE_CONF_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query NODE_CONF {
+    Node {
+      conf {
+        result {
+          bitcoinConf
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
 export const NODE_FORMAT_QUERY = gql`
   ${ERROR_FRAGMENT}
   query NODE_FORMAT {

@@ -2,6 +2,7 @@ import { useColorModeValue } from '@chakra-ui/system';
 import CountUp from 'react-countup';
 import { MinerIcon } from '../UI/Icons/MinerIcon';
 import TileCard from '../UI/TileCard';
+import BannerHashrate from '../../assets/img/networking_banner.png';
 
 const HashrateCard = ({
   shadow,
@@ -25,7 +26,7 @@ const HashrateCard = ({
 
   return (
     <TileCard
-      className={'banner-hashrate'}
+      bannerImage={BannerHashrate}
       boxShadow={shadow}
       bgGradient={hashCardColor}
       icon={MinerIcon}

@@ -41,7 +41,7 @@ const PanelCard = ({
           pt='18px'
         >
           <Flex>
-            <Icon w='24px' h='24px' as={icon} mr='8px' mt='2px' />
+            <Icon w='20px' h='20px' as={icon} mr='8px' mt='4px' />
             <Text color={textColor} fontSize='xl' fontWeight='600'>
               {title}
             </Text>

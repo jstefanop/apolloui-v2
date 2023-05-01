@@ -3,6 +3,7 @@ import CountUp from 'react-countup';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import TileCard from '../UI/TileCard';
 
+
 const PowerCard = ({
   shadow,
   iconColor,

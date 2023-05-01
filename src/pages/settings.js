@@ -15,7 +15,6 @@ import {
   InputRightElement,
   Icon,
   Button,
-  InputLeftElement,
   Alert,
   AlertIcon,
   AlertTitle,
@@ -25,35 +24,18 @@ import {
   TabPanels,
   Tab,
   TabPanel,
-  FormErrorMessage,
+  useDisclosure,
 } from '@chakra-ui/react';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Head from 'next/head';
 import _ from 'lodash';
+import { useDispatch } from 'react-redux';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
 import { FaBalanceScale } from 'react-icons/fa';
-import {
-  RiUserSettingsFill,
-  RiDatabase2Fill,
-  RiEraserLine,
-} from 'react-icons/ri';
-import { BsWind } from 'react-icons/bs';
-import {
-  MdOutlineWidgets,
-  MdHdrAuto,
-  MdDeviceHub,
-  MdShield,
-  MdSettings,
-  MdWebAsset,
-  MdPerson,
-  MdPassword,
-  MdOutlineWifi,
-  MdVpnKey,
-  MdSave,
-  MdUploadFile,
-  MdOutlineSimCardDownload,
-} from 'react-icons/md';
+import { RiUserSettingsFill } from 'react-icons/ri';
+import { MdHdrAuto, MdShield, MdSettings, MdOutlineWifi } from 'react-icons/md';
 import SimpleSwitchSettingsItem from '../components/UI/SimpleSwitchSettingsItem';
 import PanelCard from '../components/UI/PanelCard';
 import SimpleCard from '../components/UI/SimpleCard';
@@ -61,18 +43,34 @@ import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../graphql/settings';
 import { GET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../graphql/pools';
-import Head from 'next/head';
 import { MINER_RESTART_QUERY } from '../graphql/miner';
 import { CHANGE_PASSWORD_QUERY } from '../graphql/auth';
+import { KeyIcon } from '../components/UI/Icons/KeyIcon';
+import { MinerIcon } from '../components/UI/Icons/MinerIcon';
+import { FanIcon } from '../components/UI/Icons/FanIcon';
+import { PoolIcon } from '../components/UI/Icons/PoolIcon';
+import { NodeIcon } from '../components/UI/Icons/NodeIcon';
+import { DownloadIcon } from '../components/UI/Icons/DownloadIcon';
+import { RestoreIcon } from '../components/UI/Icons/RestoreIcon';
+import { FormatIcon } from '../components/UI/Icons/FormatIcon';
+import Card from '../components/card/Card';
+import moment from 'moment';
+import ModalRestore from '../components/apollo/ModalRestore';
+import { sendFeedback } from '../redux/actions/feedback';
+import ModalFormat from '../components/apollo/ModalFormat';
+import { NODE_FORMAT_QUERY } from '../graphql/node';
+import { NODE_STOP_QUERY } from '../graphql/node';
 
 const Settings = () => {
+  const dispatch = useDispatch();
   const textColor = useColorModeValue('brands.900', 'white');
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
-
-  const [
-    restartMiner,
-    { loading: loadingMinerRestart, error: errorMinerRestart },
-  ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenFormat,
+    onOpen: onOpenFormat,
+    onClose: onCloseFormat,
+  } = useDisclosure();
 
   const { current: minerInitialModes } = useRef([
     {
@@ -209,7 +207,7 @@ const Settings = () => {
     {
       id: 'backup',
       color: 'blue',
-      icon: MdUploadFile,
+      icon: DownloadIcon,
       title: 'Backup settings',
       buttonTitle: 'BACKUP',
       description:
@@ -217,16 +215,16 @@ const Settings = () => {
     },
     {
       id: 'restore',
-      color: 'blue',
-      icon: MdOutlineSimCardDownload,
+      color: 'orange',
+      icon: RestoreIcon,
       title: 'Restore settings',
       buttonTitle: 'RESTORE',
       description: 'Restore all configurations from a backup file',
     },
     {
       id: 'format',
-      color: 'orange',
-      icon: RiEraserLine,
+      color: 'red',
+      icon: FormatIcon,
       title: 'Format Node SSD',
       buttonTitle: 'FORMAT',
       description:
@@ -239,6 +237,8 @@ const Settings = () => {
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
+  const [backupData, setBackupData] = useState();
+  const [restoreData, setRestoreData] = useState();
   const [currentMode, setCurrentMode] = useState({ id: 'loading' });
   const [lockPassword, setLockPassword] = useState();
   const [verifyLockpassword, setVerifyLockPassword] = useState();
@@ -274,10 +274,21 @@ const Settings = () => {
   const [savePools, { loading: loadingSavePools, error: errorSavePools }] =
     useLazyQuery(UPDATE_POOLS_QUERY, { fetchPolicy: 'no-cache' });
 
+  const [formatDisk, { loading: loadingFormat, error: errorFormat }] =
+    useLazyQuery(NODE_FORMAT_QUERY, { fetchPolicy: 'no-cache' });
+
   const [
     changeLockPassword,
     { loading: changeLockPasswordLoading, error: errorChangeLockPassword },
   ] = useLazyQuery(CHANGE_PASSWORD_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [
+    restartMiner,
+    { loading: loadingMinerRestart, error: errorMinerRestart },
+  ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [stopNode, { loading: loadingNodeRestart, error: errorNodeRestart }] =
+    useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     if (
@@ -309,11 +320,14 @@ const Settings = () => {
     const finalSettings = { ...settingsData, pool: poolsData[0] };
     setSettings(finalSettings);
     setCurrentSettings(finalSettings);
+    setBackupData({ settings: settingsData, pools: poolsData });
 
     setCurrentMode(_.find(minerInitialModes, { id: settingsData.minerMode }));
     setMinerModes(
       _.map(minerInitialModes, (mode) => {
         if (mode.id === settingsData.minerMode) mode.selected = true;
+        else mode.selected = false;
+
         if (mode.id === 'custom') {
           mode.frequency = settingsData.frequency;
           mode.voltage = settingsData.voltage;
@@ -502,11 +516,88 @@ const Settings = () => {
     setErrorForm(null);
   };
 
-  const handleButtonExtraSettings = (e) => {
-    console.log(e.target.id);
+  let timeoutId;
+  const handleButtonExtraSettings = async (e) => {
+    clearTimeout(timeoutId);
+    try {
+      if (e.target.id === 'backup') {
+        await refetchSettings();
+        await refetchPools();
+
+        const blob = new Blob([JSON.stringify(backupData)], {
+          type: 'application/json',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `apollo_backup_${moment().format(
+          'YYYY-MM-DD_HH-mm-ss'
+        )}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        dispatch(
+          sendFeedback({
+            message: 'Downloading backup file, keep it safe!',
+            type: 'success',
+          })
+        );
+      } else if (e.target.id === 'restore') {
+        onOpen();
+      } else if (e.target.id === 'format') {
+        onOpenFormat();
+      }
+    } catch (error) {
+      dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
+    }
+  };
+
+  const handleRestoreBackup = async () => {
+    clearTimeout(timeoutId);
+    try {
+      const { pools, settings } = restoreData;
+      delete settings.__typename;
+      pools.forEach((element) => {
+        delete element.__typename;
+      });
+
+      await saveSettings({ variables: { input: settings } });
+      await savePools({ variables: { input: { pools } } });
+      await refetchSettings();
+      await refetchPools();
+      onClose();
+      dispatch(
+        sendFeedback({
+          message:
+            'Restore done! Please remember to restart your miner and node.',
+          type: 'success',
+        })
+      );
+    } catch (error) {
+      dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
+    }
+  };
+
+  const handleFormatDisk = async () => {
+    clearTimeout(timeoutId);
+    try {
+      await stopNode();
+      await formatDisk();
+      onCloseFormat();
+      dispatch(
+        sendFeedback({
+          message: 'Format done! Your system is ready.',
+          type: 'success',
+        })
+      );
+    } catch (error) {
+      dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
+    }
   };
 
   const handlesSaveSettings = async (type) => {
+    clearTimeout(timeoutId);
     try {
       const {
         agree,
@@ -565,14 +656,22 @@ const Settings = () => {
       }
 
       setTabIndex(0);
-      console.log(settings);
-      /* TODO: restart node
-      if (type === 'restart') {
+
+      if (type === 'miner') {
         await restartMiner();
+        dispatch(sendFeedback({ message: 'Restarting miner...', type: 'info' }));
+      } else if (type === 'node') {
+        dispatch(sendFeedback({ message: 'You will need to restart your node manually.', type: 'orange' }));
+      } else if (type === 'both') {
+        await restartMiner();
+        dispatch(sendFeedback({ message: 'Restarting miner...', type: 'info' }));
+        dispatch(sendFeedback({ message: 'You will need to restart your node manually.', type: 'orange' }));
+      } else {
+        dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
-      */
+
     } catch (error) {
-      console.log(error);
+      dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
   };
 
@@ -597,6 +696,20 @@ const Settings = () => {
       <Head>
         <title>Apollo BTC Settings</title>
       </Head>
+
+      <ModalRestore
+        isOpen={isOpen}
+        onClose={onClose}
+        onUpload={setRestoreData}
+        onRestore={handleRestoreBackup}
+      />
+
+      <ModalFormat
+        isOpen={isOpenFormat}
+        onClose={onCloseFormat}
+        onFormat={handleFormatDisk}
+      />
+
       {isChanged && (
         <Box
           position="fixed"
@@ -693,7 +806,7 @@ const Settings = () => {
                   title={'Pool settings'}
                   description={'Manage pools configuration for your miner'}
                   textColor={textColor}
-                  icon={RiDatabase2Fill}
+                  icon={PoolIcon}
                 >
                   {errorForm && (
                     <Flex px="22px">
@@ -704,11 +817,7 @@ const Settings = () => {
                   )}
                   <Grid templateColumns="repeat(6, 1fr)" gap={2}>
                     <GridItem colSpan={3}>
-                      <SimpleCard
-                        title={'URL'}
-                        textColor={textColor}
-                        icon={MdWebAsset}
-                      >
+                      <SimpleCard title={'URL'} textColor={textColor}>
                         <Input
                           name="url"
                           type="text"
@@ -721,11 +830,7 @@ const Settings = () => {
                       </SimpleCard>
                     </GridItem>
                     <GridItem colSpan={2}>
-                      <SimpleCard
-                        title={'Username'}
-                        textColor={textColor}
-                        icon={MdPerson}
-                      >
+                      <SimpleCard title={'Username'} textColor={textColor}>
                         <Input
                           name="username"
                           type="text"
@@ -736,11 +841,7 @@ const Settings = () => {
                       </SimpleCard>
                     </GridItem>
                     <GridItem colSpan={1}>
-                      <SimpleCard
-                        title={'Password'}
-                        textColor={textColor}
-                        icon={MdPassword}
-                      >
+                      <SimpleCard title={'Password'} textColor={textColor}>
                         <Input
                           name="password"
                           type="text"
@@ -764,7 +865,7 @@ const Settings = () => {
                 textColor={textColor}
                 badgeColor={currentMode.color}
                 badgeText={currentMode.id.toUpperCase()}
-                icon={MdOutlineWidgets}
+                icon={MinerIcon}
                 mb={'20px'}
               >
                 {minerModes.map((mode, index) => {
@@ -788,7 +889,7 @@ const Settings = () => {
                 title={'Miner fan settings'}
                 description={'Adjust the fan speed or set it to automatic'}
                 textColor={textColor}
-                icon={BsWind}
+                icon={FanIcon}
                 mb="20px"
               >
                 <SimpleSwitchSettingsItem
@@ -810,7 +911,7 @@ const Settings = () => {
                 title={'Bitcoin node settings'}
                 description={'Manage Bitcoin Node Configuration'}
                 textColor={textColor}
-                icon={MdDeviceHub}
+                icon={NodeIcon}
                 badgeColor={'orange'}
                 badgeText={settings.nodeRpcPassword}
                 showHide={true}
@@ -866,10 +967,10 @@ const Settings = () => {
               </PanelCard>
               {/* PASSWORD SETTINGS */}
               <PanelCard
-                title={'Change lockscreen password'}
+                title={'Lockscreen'}
                 description={'Change the password to access the dashboard'}
                 textColor={textColor}
-                icon={MdVpnKey}
+                icon={KeyIcon}
                 mb="20px"
               >
                 <SimpleCard textColor={textColor}>
@@ -962,26 +1063,55 @@ const Settings = () => {
           <TabPanel>
             <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
               {/* EXTRA SETTINGS */}
-              <PanelCard
-                title={'Extra settings'}
-                description={
-                  'Backup, restore, reset configurations and format disk'
-                }
-                textColor={textColor}
-                icon={MdSave}
-                mb="20px"
-              >
-                {extraSettingsActions.map((action, index) => {
-                  return (
-                    <SimpleSwitchSettingsItem
-                      key={index}
-                      item={action}
-                      textColor={textColor}
-                      handleButton={handleButtonExtraSettings}
-                    />
-                  );
-                })}
-              </PanelCard>
+              {extraSettingsActions.map((action, index) => {
+                return (
+                  <Card
+                    bg="white"
+                    boxShadow="unset"
+                    px="24px"
+                    py="21px"
+                    transition="0.2s linear"
+                    key={index}
+                  >
+                    <Flex justify={'space-between'}>
+                      <Box>
+                        <Flex>
+                          <Icon
+                            w="20px"
+                            h="20px"
+                            as={action.icon}
+                            mr="8px"
+                            mt="4px"
+                          />
+                          <Text
+                            fontSize="xl"
+                            fontWeight="600"
+                            color={textColor}
+                          >
+                            {action.title}
+                          </Text>
+                        </Flex>
+                        <Text
+                          fontSize={{ base: 'sm', lg: 'md' }}
+                          fontWeight="400"
+                          color={'secondaryGray.800'}
+                        >
+                          {action.description}
+                        </Text>
+                      </Box>
+                      <Button
+                        variant={'solid'}
+                        colorScheme={action.color}
+                        w="200px"
+                        id={action.id}
+                        onClick={handleButtonExtraSettings}
+                      >
+                        {action.buttonTitle}
+                      </Button>
+                    </Flex>
+                  </Card>
+                );
+              })}
             </SimpleGrid>
           </TabPanel>
         </TabPanels>

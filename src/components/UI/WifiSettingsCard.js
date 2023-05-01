@@ -15,9 +15,11 @@ import {
 } from '@chakra-ui/react';
 import { BulletList } from 'react-content-loader';
 import { useLazyQuery } from '@apollo/client';
-import { BsWifi, BsWifi1, BsWifi2 } from 'react-icons/bs';
 import Card from '../card/Card';
 import { MCU_WIFI_CONNECT_QUERY, MCU_WIFI_DISCONNECT_QUERY } from '../../graphql/mcu';
+import { Wifi01Icon } from './Icons/Wifi01Icon';
+import { Wifi02Icon } from './Icons/Wifi02Icon';
+import { Wifi03Icon } from './Icons/Wifi03Icon';
 
 const WifiSettingsCard = ({ textColor, loading, error, data }) => {
   const cardBgColor = useColorModeValue('gray.50', 'secondaryGray.900');
@@ -93,7 +95,7 @@ const WifiSettingsCard = ({ textColor, loading, error, data }) => {
             networks && networks.map((network, index) => {
               return (
                 <Flex position={'relative'} alignItems={'center'} my={'4'} key={index}>
-                  <Icon w='24px' h='24px' mr='3' as={(network.signal > 30 && network.signal <= 60) ? BsWifi2 : (network.signal <= 30) ? BsWifi1 : BsWifi} />
+                  <Icon w='24px' h='24px' mr='3' as={(network.signal > 30 && network.signal <= 60) ? Wifi01Icon : (network.signal <= 30) ? Wifi02Icon : Wifi03Icon} />
                   <Text
                     fontWeight='400'
                     color={textColor}

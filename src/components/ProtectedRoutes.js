@@ -6,15 +6,14 @@ import { useLazyQuery } from '@apollo/client';
 const ProtectedRoute = ({ router, children }) => {
   const { status, data } = useSession();
 
-  const [
-    getStatus,
-    { data: setup },
-  ] = useLazyQuery(AUTH_STATUS_QUERY, { fetchPolicy: 'no-cache' });
+  const [getStatus, { data: setup }] = useLazyQuery(AUTH_STATUS_QUERY, {
+    fetchPolicy: 'no-cache',
+  });
 
   useEffect(() => {
     if (!router.isReady) return;
     getStatus();
-  }, [router.pathname]);
+  }, [router.pathname, getStatus, router.isReady]);
 
   useEffect(() => {
     let setupDone = 'done';
@@ -33,7 +32,7 @@ const ProtectedRoute = ({ router, children }) => {
       router.replace('/signin');
     else if (router.pathname === '/signin' && status === 'authenticated')
       router.replace('/overview');
-  }, [status, data, setup]);
+  }, [status, data, setup, router]);
 
   return children;
 };
