@@ -10,7 +10,9 @@ import {
   SimpleGrid,
   Code,
 } from '@chakra-ui/react';
-import moment from 'moment';
+import moment from 'moment'
+import CountUp from 'react-countup';
+import Head from 'next/head';
 import { List } from 'react-content-loader';
 import { useSelector } from 'react-redux';
 import Card from '../components/card/Card';
@@ -28,8 +30,7 @@ import { MinersIcon } from '../components/UI/Icons/MinersIcon';
 import { useEffect, useRef, useState } from 'react';
 import { mcuSelector } from '../redux/reselect/mcu';
 import DynamicTable from '../components/UI/DynamicTable';
-import CountUp from 'react-countup';
-import Head from 'next/head';
+import BannerNode from '../assets/img/node_banner.png';
 
 const Node = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
@@ -147,7 +148,16 @@ const Node = () => {
         </title>
       </Head>
       <Flex direction="column">
-        <Card className="banner-node" h="370px" shadow={shadow}>
+        <Card
+          h="370px"
+          shadow={shadow}
+          style={
+            {
+              backgroundImage: `url(${BannerNode.src})`,
+              backgroundSize: 'cover',
+            }
+          }
+        >
           <Flex justify="center" align="center" mt="3">
             <Text fontSize="2xl" fontWeight="bold" color="white">
               {blockHeader === blocksCount
