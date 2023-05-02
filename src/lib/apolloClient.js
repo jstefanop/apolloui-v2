@@ -26,9 +26,7 @@ typeof window !== "undefined" && process.env.NODE_ENV !== 'development'
   : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST);
 
 let apolloClient;
-let timeoutId;
 const errorLink = onError(({ graphQLErrors, networkError }) => {
-  clearTimeout(timeoutId);
   if (graphQLErrors)
     graphQLErrors.forEach(({ message }) => {
       const err = `[GraphQL error]: Message: ${message}`;
@@ -39,10 +37,6 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
     const err = `[Network error]: ${networkError}`;
     console.log(err);
   }
-
-  timeoutId = setTimeout(() => {
-    store.dispatch(resetFeedback());
-  }, 10000);
 });
 
 const httpLink = new HttpLink({
