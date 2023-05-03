@@ -184,10 +184,12 @@ export const minerSelector = createSelector(
           })
           .value() || 0;
 
-      const avgBoardTemp = _.meanBy(boards, (hb) => {
+      let avgBoardTemp = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.temperature;
         return null;
       });
+
+      if (isNaN(avgBoardTemp)) avgBoardTemp = 0;
 
       let avgBoardErrors = _.chain(boards)
         .filter((hb) => {
@@ -200,25 +202,33 @@ export const minerSelector = createSelector(
 
       if (isNaN(avgBoardErrors)) avgBoardErrors = 0;
 
-      const avgBoardRejected = _.meanBy(boards, (hb) => {
+      let avgBoardRejected = _.meanBy(boards, (hb) => {
         if (hb.status && hb.sharesRejected) return hb.sharesRejected;
         return 0;
       });
 
-      const avgChipSpeed = _.meanBy(boards, (hb) => {
+      if (isNaN(avgBoardRejected)) avgBoardRejected = 0;
+
+      let avgChipSpeed = _.meanBy(boards, (hb) => {
         if (hb.status && hb.chipSpeed) return hb.chipSpeed;
         return 0;
       });
 
-      const avgFanSpeed = _.meanBy(boards, (hb) => {
+      if (isNaN(avgChipSpeed)) avgChipSpeed = 0;
+
+      let avgFanSpeed = _.meanBy(boards, (hb) => {
         if (hb.status && hb.fanSpeed) return hb.fanSpeed;
         return 0;
       });
 
-      const avgVoltage = _.meanBy(boards, (hb) => {
+      if (isNaN(avgFanSpeed)) avgFanSpeed = 0;
+
+      let avgVoltage = _.meanBy(boards, (hb) => {
         if (hb.status && hb.voltage) return hb.voltage;
         return 0;
       });
+
+      if (isNaN(avgVoltage)) avgVoltage = 0;
 
       // Pool sum/avg
       const totalSharesSent = _.sumBy(boards, (hb) => {
@@ -236,10 +246,12 @@ export const minerSelector = createSelector(
         return 0;
       });
 
-      const avgDiff = _.meanBy(boards, (hb) => {
+      let avgDiff = _.meanBy(boards, (hb) => {
         if (hb.status && hb.diff) return hb.diff;
         return 0;
       });
+
+      if (isNaN(avgDiff)) avgDiff = 0;
 
       const activeBoards = _.size(_.filter(boards, { status: true }));
       const totalBoards = _.size(boards);

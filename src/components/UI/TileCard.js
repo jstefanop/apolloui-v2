@@ -45,7 +45,7 @@ const TileCard = ({
                 color="white"
                 fontSize={{ base: '4xl' }}
                 fontWeight="800"
-              ></Text>
+              >Error</Text>
               {errors.map((error, index) => {
                 <Text
                   key={index}

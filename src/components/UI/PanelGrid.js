@@ -21,7 +21,7 @@ const PanelGrid = ({
             {title}
           </Text>
         </Flex>
-        {active && total && (
+        {(typeof active !== 'undefined' && active !== null && typeof total !== 'undefined' && total !== null) && (
           <ActiveBadge active={active} total={total} title="Active" />
         )}
         <Flex>

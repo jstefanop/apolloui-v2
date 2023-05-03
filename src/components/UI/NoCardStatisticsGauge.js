@@ -2,6 +2,7 @@
 import {
   Box,
   Flex,
+  Icon,
   Stat,
   StatLabel,
   StatNumber,
@@ -12,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { percentColor } from '../../lib/utils';
 import GaugeChart from '../charts/GaugeCharts';
 import ChartLoader from './Loaders/ChartLoader';
+import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 
 const NoCardStatisticsGauge = ({
   id,
@@ -26,11 +28,13 @@ const NoCardStatisticsGauge = ({
   gauge,
   align,
   loading,
+  error,
   ...props
 }) => {
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const textColorSecondary = 'secondaryGray.600';
   const [roundedPercentage, setRoundedPercentage] = useState(percent);
+  const isOnError = error && error.length > 0;
 
   useEffect(() => {
     if (rawValue && total) {
@@ -39,7 +43,6 @@ const NoCardStatisticsGauge = ({
     }
     if (percent) setRoundedPercentage(percent);
   }, [rawValue, total, percent]);
-
   const gaugeColor = percentColor(roundedPercentage);
 
   const chartOptions = {
@@ -101,14 +104,22 @@ const NoCardStatisticsGauge = ({
             <Flex align="center">
               <Stat my="auto" ms={startContent ? '8px' : '0px'}>
                 <Flex direction={'row'}>
-                  <StatNumber
-                    color={textColor}
-                    fontSize={{
-                      base: '2xl',
-                    }}
-                  >
-                      <Text noOfLines={1}>{value || `${roundedPercentage}%` || 'N.a.'}</Text>
-                  </StatNumber>
+                    {!isOnError && roundedPercentage ? (
+                    <StatNumber
+                      color={textColor}
+                      fontSize={{
+                        base: '2xl',
+                      }}
+                    >
+                      <Text noOfLines={1}>
+                        {value || `${roundedPercentage}%` || 'N.a.'}
+                      </Text>
+                    </StatNumber>
+                  ) : (
+                    <Text color={textColor} fontSize={'xs'}>
+                      <Icon as={ErrorIcon} color={'red'} /> Can&apos;t get data
+                    </Text>
+                  )}
                   {secondaryValue && (
                     <StatNumber
                       color={textColorSecondary}
@@ -118,7 +129,7 @@ const NoCardStatisticsGauge = ({
                       alignSelf="center"
                       ml="2"
                     >
-                      {secondaryValue}
+                      {secondaryValue || 'n.a.'}
                     </StatNumber>
                   )}
                 </Flex>
@@ -134,7 +145,7 @@ const NoCardStatisticsGauge = ({
               </Stat>
             </Flex>
           </Flex>
-          {gauge && roundedPercentage && (
+          {!isOnError && gauge && roundedPercentage && (
             <Box>
               <GaugeChart
                 chartOptions={chartOptions}

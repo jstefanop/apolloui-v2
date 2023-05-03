@@ -65,7 +65,6 @@ function createApolloClient() {
         fields: {
           stats: {
             read (data) {
-              console.log(data);
               return data;
             }
           }
