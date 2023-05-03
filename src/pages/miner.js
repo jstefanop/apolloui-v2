@@ -335,7 +335,9 @@ const Miner = () => {
                     />
                   }
                   name="Last share"
-                    value={lastShareTime ? lastShareTime?.replace('a few', '') : 'N/A'}
+                  value={
+                    lastShareTime ? lastShareTime?.replace('a few', '') : 'N/A'
+                  }
                   reversed={true}
                 />
               </GridItem>

@@ -3,8 +3,7 @@ import { CheckIcon } from '@chakra-ui/icons';
 import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 import { WarningIcon } from '../UI/Icons/WarningIcon';
 
-
-const ActiveBadge = ({active, total, title, smaller, ...props}) => {
+const ActiveBadge = ({ active, total, title, smaller, ...props }) => {
   return (
     <Flex
       {...props}
@@ -35,10 +34,11 @@ const ActiveBadge = ({active, total, title, smaller, ...props}) => {
             : ErrorIcon
         }
       />
-      <Text fontWeight="600">{title} {`${active}/${total}`}</Text>
+      <Text fontWeight="600">
+        {title} {`${active}/${total}`}
+      </Text>
     </Flex>
   );
 };
 
 export default ActiveBadge;
-

@@ -205,3 +205,14 @@ export const initialState = {
     },
   },
 };
+
+export const initialStateWifi = {
+  Mcu: {
+    wifiConnect: {
+      result: {
+        address: null,
+      },
+    },
+  },
+};
+

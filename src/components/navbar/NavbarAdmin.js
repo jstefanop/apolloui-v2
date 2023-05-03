@@ -75,8 +75,10 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const [rebootMcu, { loading: loadingRebootMcu, error: errorRebootMcu }] =
     useLazyQuery(MCU_REBOOT_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [shutdownMcu, { loading: loadingShutdownMcu, error: errorShutdownMcu }] =
-    useLazyQuery(MCU_SHUTDOWN_QUERY, { fetchPolicy: 'no-cache' });
+  const [
+    shutdownMcu,
+    { loading: loadingShutdownMcu, error: errorShutdownMcu },
+  ] = useLazyQuery(MCU_SHUTDOWN_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     window.addEventListener('scroll', changeNavbar);
@@ -135,14 +137,16 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
       case 'rebootMcu':
         rebootMcu();
         title = 'Rebooting system';
-        description = 'Your system is rebooting, please wait at least 1 minute you should see stats again';
+        description =
+          'Your system is rebooting, please wait at least 1 minute you should see stats again';
         loadingAction = loadingRebootMcu;
         errorAction = errorRebootMcu;
         break;
       case 'shutdownMcu':
         shutdownMcu();
         title = 'Shutting down system';
-        description = 'Your system is halting, you will need to start it manually. See you.';
+        description =
+          'Your system is halting, you will need to start it manually. See you.';
         loadingAction = loadingShutdownMcu;
         errorAction = errorShutdownMcu;
         break;
@@ -252,7 +256,11 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           <Box mb={{ sm: '8px', md: '5px' }}>
             <Breadcrumb>
               <BreadcrumbItem color={secondaryText} fontSize="sm">
-                {currentRoute && currentRoute.name !== 'Overview' ? <Link href="/overview">Overview</Link> : <Text>Apollo BTC</Text>}
+                {currentRoute && currentRoute.name !== 'Overview' ? (
+                  <Link href="/overview">Overview</Link>
+                ) : (
+                  <Text>Apollo BTC</Text>
+                )}
               </BreadcrumbItem>
             </Breadcrumb>
 

@@ -3,7 +3,6 @@ import CountUp from 'react-countup';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import TileCard from '../UI/TileCard';
 
-
 const PowerCard = ({
   shadow,
   iconColor,
@@ -44,13 +43,15 @@ const PowerCard = ({
         />
       }
       secondaryData={
-        avgData && <CountUp
-          start={prevAvgData || 0}
-          end={avgData}
-          duration="1"
-          decimals="2"
-          suffix={` Watt`}
-        />
+        avgData && (
+          <CountUp
+            start={prevAvgData || 0}
+            end={avgData}
+            duration="1"
+            decimals="2"
+            suffix={` Watt`}
+          />
+        )
       }
       loading={loading}
       errors={errors}

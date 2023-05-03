@@ -1,5 +1,11 @@
 import { CheckIcon } from '@chakra-ui/icons';
-import { Icon, Flex, Text, SimpleGrid, useColorModeValue } from '@chakra-ui/react';
+import {
+  Icon,
+  Flex,
+  Text,
+  SimpleGrid,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import ActiveBadge from '../apollo/ActiveBadge';
 import { ErrorIcon } from './Icons/ErrorIcon';
 
@@ -21,9 +27,12 @@ const PanelGrid = ({
             {title}
           </Text>
         </Flex>
-        {(typeof active !== 'undefined' && active !== null && typeof total !== 'undefined' && total !== null) && (
-          <ActiveBadge active={active} total={total} title="Active" />
-        )}
+        {typeof active !== 'undefined' &&
+          active !== null &&
+          typeof total !== 'undefined' &&
+          total !== null && (
+            <ActiveBadge active={active} total={total} title="Active" />
+          )}
         <Flex>
           {status && (
             <Flex align="center">

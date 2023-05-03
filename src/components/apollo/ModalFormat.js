@@ -30,7 +30,9 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
           <Button variant="ghost" mr={3} onClick={onClose}>
             Close
           </Button>
-          <Button colorScheme="red" onClick={onFormat}>YES, Format it</Button>
+          <Button colorScheme="red" onClick={onFormat}>
+            YES, Format it
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

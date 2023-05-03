@@ -47,13 +47,15 @@ const HashrateCard = ({
         />
       }
       secondaryData={
-        avgData && <CountUp
-          start={prevAvgData?.value || 0}
-          end={avgData?.value}
-          duration="1"
-          decimals="2"
-          suffix={` ${avgData?.unit}`}
-        /> 
+        avgData && (
+          <CountUp
+            start={prevAvgData?.value || 0}
+            end={avgData?.value}
+            duration="1"
+            decimals="2"
+            suffix={` ${avgData?.unit}`}
+          />
+        )
       }
     />
   );

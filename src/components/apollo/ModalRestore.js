@@ -11,12 +11,7 @@ import {
   ModalCloseButton,
 } from '@chakra-ui/react';
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useDropzone } from 'react-dropzone';
 
@@ -124,7 +119,10 @@ const ModalRestore = ({ isOpen, onClose, onUpload, onRestore }) => {
             {isDragActive ? (
               <p>Drop the files here ...</p>
             ) : (
-              <p>Drag &apos;n&apos; drop some files here, or click to select files</p>
+              <p>
+                Drag &apos;n&apos; drop some files here, or click to select
+                files
+              </p>
             )}
           </div>
 
@@ -157,7 +155,11 @@ const ModalRestore = ({ isOpen, onClose, onUpload, onRestore }) => {
           <Button variant="ghost" mr={3} onClick={onClose}>
             Close
           </Button>
-          {restoreReady && <Button colorScheme="orange" onClick={onRestore}>Restore</Button>}
+          {restoreReady && (
+            <Button colorScheme="orange" onClick={onRestore}>
+              Restore
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>

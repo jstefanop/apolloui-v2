@@ -4,6 +4,7 @@ import node from './node';
 import miner from './miner';
 import mcu from './mcu';
 import settings from './settings';
+import wifi from './wifi';
 
 export {
   minerAction,
@@ -12,4 +13,5 @@ export {
   miner,
   mcu,
   settings,
+  wifi,
 };

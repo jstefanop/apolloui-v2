@@ -1,8 +1,6 @@
 import {
-  Button,
   Drawer,
   DrawerBody,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
@@ -37,6 +35,10 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.2)'
   );
+
+  const activeBoards = _.size(_.filter(data, { status: true }));
+  const totalBoards = _.size(data);
+  const activePools = _.size(_.filter(data, { poolStatus: true }));
 
   const dataTableBoards = _.map(data, (board) => {
     const items = {
@@ -108,29 +110,42 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
   return (
     <Drawer placement={placement} onClose={onClose} isOpen={isOpen} size="xl">
       <DrawerOverlay />
-      <DrawerContent bgColor={drawerBgColor} >
+      <DrawerContent bgColor={drawerBgColor}>
         <DrawerCloseButton />
         <DrawerHeader fontSize="3xl">Hashboards and Pools</DrawerHeader>
 
         <DrawerBody>
-          <Tabs
-            size="md"
-            align={'center'}
-            isLazy
-            variant={'line'}
-          >
+          <Tabs size="md" align={'center'} isLazy variant={'line'}>
             <TabList>
               <Tab>
                 <Text fontWeight={600} me="2">
                   Hashboards
                 </Text>
-                <ActiveBadge active={2} total={2} smaller />
+                {typeof activeBoards !== 'undefined' &&
+                  activeBoards !== null &&
+                  typeof totalBoards !== 'undefined' &&
+                  totalBoards !== null && (
+                    <ActiveBadge
+                      active={activeBoards}
+                      total={totalBoards}
+                      smaller
+                    />
+                  )}
               </Tab>
               <Tab>
                 <Text fontWeight={600} me="2">
                   Pools
                 </Text>
-                <ActiveBadge active={2} total={2} smaller />
+                {typeof activePools !== 'undefined' &&
+                  activePools !== null &&
+                  typeof totalBoards !== 'undefined' &&
+                  totalBoards !== null && (
+                    <ActiveBadge
+                      active={activePools}
+                      total={totalBoards}
+                      smaller
+                    />
+                  )}
               </Tab>
             </TabList>
 

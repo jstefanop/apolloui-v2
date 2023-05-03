@@ -516,9 +516,8 @@ const Settings = () => {
     setErrorForm(null);
   };
 
-  let timeoutId;
+
   const handleButtonExtraSettings = async (e) => {
-    clearTimeout(timeoutId);
     try {
       if (e.target.id === 'backup') {
         await refetchSettings();
@@ -554,7 +553,6 @@ const Settings = () => {
   };
 
   const handleRestoreBackup = async () => {
-    clearTimeout(timeoutId);
     try {
       const { pools, settings } = restoreData;
       delete settings.__typename;
@@ -580,7 +578,6 @@ const Settings = () => {
   };
 
   const handleFormatDisk = async () => {
-    clearTimeout(timeoutId);
     try {
       await stopNode();
       await formatDisk();
@@ -597,7 +594,6 @@ const Settings = () => {
   };
 
   const handlesSaveSettings = async (type) => {
-    clearTimeout(timeoutId);
     try {
       const {
         agree,
@@ -963,6 +959,7 @@ const Settings = () => {
                   loading={loadingWifiScan}
                   error={errorWifiScan}
                   data={dataWifiScan}
+                  onScan={handleWifiScan}
                 />
               </PanelCard>
               {/* PASSWORD SETTINGS */}
