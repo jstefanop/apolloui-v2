@@ -1,12 +1,13 @@
 import {
   UPDATE_MINER_ACTION,
-  RESET_MINER_ACTION,
 } from '../actions/actionTypes';
 
 const initialState = {
   data: null,
   loading: false,
   error: null,
+  status: false,
+  timestamp: null,
 };
 
 const reducer = (state = initialState, action) => {
@@ -17,9 +18,9 @@ const reducer = (state = initialState, action) => {
         data: !action.payload.error && action.payload.data,
         loading: action.payload.loading,
         error: action.payload.error,
+        status: action.payload.status,
+        timestamp: action.payload.timestamp,
       };
-    case RESET_MINER_ACTION:
-      return initialState;
     default:
       return state;
   }

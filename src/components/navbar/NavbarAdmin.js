@@ -23,13 +23,11 @@ import {
   MINER_STOP_QUERY,
 } from '../../graphql/miner';
 import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
-import {
-  resetMinerAction,
-  updateMinerAction,
-} from '../../redux/actions/minerAction';
+import { updateMinerAction } from '../../redux/actions/minerAction';
 import { minerSelector } from '../../redux/reselect/miner';
 import { nodeSelector } from '../../redux/reselect/node';
 import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
+import { sendFeedback } from '../../redux/actions/feedback';
 
 const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
@@ -88,10 +86,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     };
   });
 
-  let timeoutId;
-
   const handleSystemAction = (action) => {
-    clearTimeout(timeoutId);
     let title;
     let description;
     let loadingAction;
@@ -165,12 +160,17 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         loading: loadingAction,
         error: errorAction,
         data: dataAction,
+        status: action.match(/start/i) ? true : false,
+        timestamp: Date.now(),
       })
     );
 
-    timeoutId = setTimeout(() => {
-      dispatch(resetMinerAction());
-    }, 10000);
+    dispatch(
+      sendFeedback({
+        message: `${title} - ${description}`,
+        type: errorAction ? 'error' : 'success',
+      })
+    );
   };
 
   const currentRoute = _.find(routes, { path: router.pathname });

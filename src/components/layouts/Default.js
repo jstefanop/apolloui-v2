@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Portal,
   Box,
@@ -7,6 +7,12 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Flex,
+  Text,
+  Spinner,
+  Button,
+  Card,
+  Icon,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
@@ -24,6 +30,9 @@ import { MCU_STATS_QUERY } from '../../graphql/mcu';
 import { updateMcuStats } from '../../redux/actions/mcu';
 import { GET_SETTINGS_QUERY } from '../../graphql/settings';
 import { updateSettings } from '../../redux/actions/settings';
+import { minerSelector } from '../../redux/reselect/miner';
+import { updateMinerAction } from '../../redux/actions/minerAction';
+import { CheckIcon } from '@chakra-ui/icons';
 
 const Layout = ({ children, routes }, props) => {
   const { onOpen } = useDisclosure();
@@ -103,16 +112,53 @@ const Layout = ({ children, routes }, props) => {
         data: dataSettings,
       })
     );
-  }, [startPollingSettings, dispatch, loadingSettings, errorSettings, dataSettings]);
+  }, [
+    startPollingSettings,
+    dispatch,
+    loadingSettings,
+    errorSettings,
+    dataSettings,
+  ]);
 
-  // Actions data
+  const { message: feedbackMessage, type: feedbackType } = useSelector(
+    (state) => state.feedback
+  );
+
+  const { status: minerStatus, timestamp } = useSelector(
+    (state) => state.minerAction
+  );
+
+  // Miner online data
   const {
-    loading: loadingAction,
-    error: errorAction,
-    data: dataAction,
-  } = useSelector((state) => state.minerAction);
+    data: { online: minerOnline },
+  } = useSelector(minerSelector);
 
-  const { message: feedbackMessage, type: feedbackType } = useSelector((state) => state.feedback);
+  // Miner status diff time
+  const minerStatusDiffTime = Math.round((Date.now() - timestamp) / 1000);
+
+  const [minerStatusDone, setMinerStatusDone] = useState(false);
+
+  useEffect(() => {
+    let timeoutId;
+    if (minerOnline === minerStatus) setMinerStatusDone(true);
+    timeoutId = setTimeout(() => {
+      setMinerStatusDone(false);
+    }, 5000);
+
+    return () => clearInterval(timeoutId);
+  }, [minerOnline, minerStatus]);
+
+  const handleDiscardMinerStatus = () => {
+    dispatch(
+      updateMinerAction({
+        loading: false,
+        error: false,
+        data: null,
+        status: minerOnline,
+        timestamp: Date.now(),
+      })
+    );
+  };
 
   const { status } = useSession();
   if (status === 'loading' || status === 'unauthenticated') return <></>;
@@ -162,28 +208,64 @@ const Layout = ({ children, routes }, props) => {
             pt="50px"
           >
             <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
-              {dataAction && (
-                <Alert mb="5" borderRadius={'10px'} status="info">
-                  <AlertIcon />
-                  <AlertTitle>{dataAction.title}</AlertTitle>
-                  {dataAction.description && (
-                    <AlertDescription>
-                      {dataAction.description}
-                    </AlertDescription>
-                  )}
-                </Alert>
-              )}
-              {errorAction && (
-                <Alert mb="5" borderRadius={'10px'} status="error">
-                  <AlertIcon />
-                  <AlertTitle>{errorAction.toString()}</AlertTitle>
-                </Alert>
-              )}
               {feedbackMessage && (
-                <Alert mb="5" borderRadius={'10px'} status={feedbackType || 'info'}>
+                <Alert
+                  mb="5"
+                  borderRadius={'10px'}
+                  status={feedbackType || 'info'}
+                >
                   <AlertIcon />
                   <AlertDescription>{feedbackMessage}</AlertDescription>
                 </Alert>
+              )}
+              {minerStatus !== minerOnline && minerStatusDiffTime > 10 && (
+                <Card
+                  mb="5"
+                  borderRadius={'10px'}
+                  bg={
+                    minerStatusDiffTime < 60 ? 'secondaryGray.800' : 'brand.800'
+                  }
+                  p="4"
+                >
+                  <Flex justifyContent={'space-between'} flexDirection={'row'}>
+                    <Flex align={'center'} color="white">
+                      <Spinner size="sm" mr="2" />
+                      {minerStatusDiffTime < 60 ? (
+                        <Text>
+                          Waiting for the current miner status to match the
+                          desired one ({minerStatus ? 'Online' : 'Offline'}
+                          ).
+                        </Text>
+                      ) : (
+                        <Text>
+                          Your desired miner status is still different from the
+                          current one, select to force an update, discard this
+                          message or keep waiting.
+                        </Text>
+                      )}
+                    </Flex>
+                    {minerStatusDiffTime >= 60 && (
+                      <Flex>
+                        <Button size="xs" mr="3">
+                          FORCE
+                        </Button>
+                        <Button size="xs" onClick={handleDiscardMinerStatus}>
+                          DISCARD
+                        </Button>
+                      </Flex>
+                    )}
+                  </Flex>
+                </Card>
+              )}
+              {minerStatusDone && (
+                <Card mb="5" borderRadius={'10px'} bg={'green.300'} p="4">
+                  <Flex justifyContent={'space-between'} flexDirection={'row'}>
+                    <Flex align={'center'} color="white">
+                      <Icon as={CheckIcon} mr='2' />
+                      <Text>Your miner is <strong>{minerOnline ? 'Online' : 'Offline'}</strong></Text>
+                    </Flex>
+                  </Flex>
+                </Card>
               )}
               {React.cloneElement(children)}
             </Box>

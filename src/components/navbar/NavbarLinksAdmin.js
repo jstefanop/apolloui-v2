@@ -12,6 +12,7 @@ import {
   IconButton,
   MenuGroup,
   MenuDivider,
+  Spinner,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { signOut } from 'next-auth/react';
@@ -26,10 +27,11 @@ import { StopIcon } from '../UI/Icons/StopIcon';
 import { RestartIcon } from '../UI/Icons/RestartIcon';
 import { SignOutIcon } from '../UI/Icons/SignOutIcon';
 import { CheckIcon } from '@chakra-ui/icons';
-import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 import { WarningIcon } from '../UI/Icons/WarningIcon';
 import { StartIcon } from '../UI/Icons/StartIcon';
 import Link from 'next/link';
+import { PowerIcon } from '../UI/Icons/PowerIcon';
+import { useSelector } from 'react-redux';
 
 export default function HeaderLinks({
   secondary,
@@ -53,6 +55,10 @@ export default function HeaderLinks({
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'
   );
 
+  const { status: minerStatus, timestamp } = useSelector(
+    (state) => state.minerAction
+  );
+
   const handleSignout = async () => {
     await signOut({ redirect: false });
     localStorage.removeItem('token');
@@ -72,6 +78,8 @@ export default function HeaderLinks({
   const minerStatusLabel =
     minerOnline && !error.length
       ? 'Online'
+      : minerOnline !== minerStatus
+      ? 'Pending'
       : !minerOnline && !error.length
       ? 'Offline'
       : error
@@ -124,7 +132,7 @@ export default function HeaderLinks({
                 nodeStatusLabel === 'Online'
                   ? 'green.500'
                   : nodeStatusLabel === 'Offline'
-                  ? 'red.500'
+                  ? 'gray.400'
                   : nodeStatusLabel === 'Error'
                   ? 'orange.500'
                   : null
@@ -141,7 +149,7 @@ export default function HeaderLinks({
                   nodeStatusLabel === 'Online'
                     ? CheckIcon
                     : nodeStatusLabel === 'Offline'
-                    ? ErrorIcon
+                    ? PowerIcon
                     : nodeStatusLabel === 'Error'
                     ? WarningIcon
                     : null
@@ -194,9 +202,11 @@ export default function HeaderLinks({
                 minerStatusLabel === 'Online'
                   ? 'green.500'
                   : minerStatusLabel === 'Offline'
-                  ? 'red.500'
+                  ? 'gray.400'
                   : minerStatusLabel === 'Error'
                   ? 'orange.500'
+                  : minerStatusLabel === 'Pending'
+                  ? 'gray.300'
                   : null
               }
               h="20px"
@@ -211,9 +221,11 @@ export default function HeaderLinks({
                   minerStatusLabel === 'Online'
                     ? CheckIcon
                     : minerStatusLabel === 'Offline'
-                    ? ErrorIcon
+                    ? PowerIcon
                     : minerStatusLabel === 'Error'
                     ? WarningIcon
+                    : minerStatusLabel === 'Pending'
+                    ? Spinner
                     : null
                 }
               />

@@ -1,14 +1,8 @@
 import * as types from './actionTypes';
 
-export const updateMinerAction = ({ loading, error, data }) => {
+export const updateMinerAction = ({ loading, error, data, timestamp, status }) => {
   return {
     type: types.UPDATE_MINER_ACTION,
-    payload: { loading, error, data },
-  };
-};
-
-export const resetMinerAction = () => {
-  return {
-    type: types.RESET_MINER_ACTION
+    payload: { loading, error, data, timestamp, status },
   };
 };

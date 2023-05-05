@@ -513,7 +513,7 @@ const Miner = () => {
                         total={totalBoards}
                         data={dataTableBoards}
                       />
-                      <Center height="30px" mx="5">
+                      <Center height="20px" mx="5">
                         <Divider />
                       </Center>
                       <PanelGrid

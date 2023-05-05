@@ -20,7 +20,7 @@ export const minerSelector = createSelector(
 
     const { stats: minerStats } = resultStats || {};
 
-    let minerOnline;
+    let minerOnline = false;
     if (result?.online && result?.online?.status)
       minerOnline = result.online.status;
 
