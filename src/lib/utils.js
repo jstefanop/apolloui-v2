@@ -25,12 +25,18 @@ export const displayHashrate = (
         value: parseFloat(hashrate).toFixed(precision),
         unit: hashrateUnits[i],
       }
-      : parseFloat(parseFloat(hashrate).toFixed(precision));
+    : parseFloat(parseFloat(hashrate).toFixed(precision));
 };
 
 export const numberToText = (number) => {
   let text = '';
-  const units = ['quadrillions', 'trillions', 'billions', 'millions', 'thousands'];
+  const units = [
+    'quadrillions',
+    'trillions',
+    'billions',
+    'millions',
+    'thousands',
+  ];
   const values = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000];
   for (let i = 0; i < units.length; i++) {
     if (number >= values[i]) {
@@ -104,4 +110,11 @@ export const convertTemp = (celsius, unit, addUnit) => {
   if (unit === 'f') temp = (temp * 9) / 5 + 32;
   if (addUnit) return temp.toFixed(2) + '°' + unit.toUpperCase();
   return parseFloat(temp.toFixed(2));
+};
+
+export const isValidBitcoinAddress = (address) => {
+  // Bitcoin addresses are alphanumeric and start with either '1', '3', or 'bc1'
+  const addressRegex = /^(1|3|bc1)[a-zA-HJ-NP-Z0-9]{25,39}$/;
+
+  return addressRegex.test(address);
 };

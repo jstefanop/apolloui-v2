@@ -104,16 +104,15 @@ const NoCardStatisticsGauge = ({
             <Flex align="center">
               <Stat my="auto" ms={startContent ? '8px' : '0px'}>
                 <Flex direction={'row'}>
-                    {!isOnError && roundedPercentage ? (
+                  {!isOnError && (value || roundedPercentage) ? (
                     <StatNumber
                       color={textColor}
                       fontSize={{
                         base: '2xl',
                       }}
+                      noOfLines={1}
                     >
-                      <Text noOfLines={1}>
-                        {value || `${roundedPercentage}%` || 'N.a.'}
-                      </Text>
+                      {value || `${roundedPercentage}%` || 'N.a.'}
                     </StatNumber>
                   ) : (
                     <Text color={textColor} fontSize={'xs'}>

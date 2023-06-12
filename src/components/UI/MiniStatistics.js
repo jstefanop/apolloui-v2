@@ -60,54 +60,56 @@ const MiniStatistics = ({
           placement="top"
           label={value}
         >
-        <Stat ms={startContent ? '18px' : '0px'}>
-          {reversed && (
-            <StatNumber
-              color={textColor}
-              fontSize={{
-                base: fontSize || '2xl',
-              }}
-            >
-              
-                <Text noOfLines={1}>{value}</Text>
-              
-            </StatNumber>
-          )}
-          <StatLabel
-            lineHeight="100%"
-            color={textColorSecondary}
-            fontSize={{
-              base: 'sm',
-            }}
-          >
-            <Text noOfLines={1}>{name}</Text>
-          </StatLabel>
-          {!reversed && (
-            <StatNumber
-              color={textColor}
-              fontSize={{
-                base: fontSize || '2xl',
-              }}
-            >
-              <Text noOfLines={1}>{value}</Text>
-            </StatNumber>
-          )}
-          {secondaryText ? (
-            <StatNumber fontWeight={600} fontSize="md" mt="3">
-              {secondaryText}
-            </StatNumber>
-          ) : null}
-          {secondaryDescription ? (
+          <Stat ms={startContent ? '18px' : '0px'}>
+            {reversed && (
+              <StatNumber
+                color={textColor}
+                fontSize={{
+                  base: fontSize || '2xl',
+                }}
+                noOfLines={1}
+              >
+                {value}
+              </StatNumber>
+            )}
             <StatLabel
+              lineHeight="100%"
               color={textColorSecondary}
               fontSize={{
                 base: 'sm',
               }}
+              noOfLines={1}
             >
-              <Text noOfLines={1}>{secondaryDescription}</Text>
+              {name}
             </StatLabel>
-          ) : null}
-        </Stat>
+            {!reversed && (
+              <StatNumber
+                color={textColor}
+                fontSize={{
+                  base: fontSize || '2xl',
+                }}
+                noOfLines={1}
+              >
+                {value}
+              </StatNumber>
+            )}
+            {secondaryText ? (
+              <StatNumber fontWeight={600} fontSize="md" mt="3">
+                {secondaryText}
+              </StatNumber>
+            ) : null}
+            {secondaryDescription ? (
+              <StatLabel
+                color={textColorSecondary}
+                fontSize={{
+                  base: 'sm',
+                }}
+                noOfLines={1}
+              >
+                {secondaryDescription}
+              </StatLabel>
+            ) : null}
+          </Stat>
         </Tooltip>
         <Flex ms="auto" w="max-content">
           {endContent}

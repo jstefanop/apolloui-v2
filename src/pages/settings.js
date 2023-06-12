@@ -60,6 +60,7 @@ import { sendFeedback } from '../redux/actions/feedback';
 import ModalFormat from '../components/apollo/ModalFormat';
 import { NODE_FORMAT_QUERY } from '../graphql/node';
 import { NODE_STOP_QUERY } from '../graphql/node';
+import { isValidBitcoinAddress } from '../lib/utils';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -200,7 +201,17 @@ const Settings = () => {
     title: 'TOR mode',
     selected: false,
     description:
-      'Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: you need to press the Save button on the top of the page after changing settings in this section, and your node will be restarted to apply.',
+      'Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply.',
+  };
+
+  const nodeSoloMiningInitialMode = {
+    id: 'solo',
+    color: 'green',
+    icon: MdShield,
+    title: 'SOLO Mining mode',
+    selected: false,
+    description:
+      'Enable solo mining mode to mine directly to your own Bitcoin wallet. Note: your node will be restarted to apply.',
   };
 
   const extraSettingsActions = [
@@ -235,6 +246,9 @@ const Settings = () => {
   const [minerModes, setMinerModes] = useState(minerInitialModes);
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
+  const [soloMiningMode, setSoloMiningMode] = useState(
+    nodeSoloMiningInitialMode
+  );
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
   const [backupData, setBackupData] = useState();
@@ -351,6 +365,13 @@ const Settings = () => {
         selected: settingsData.nodeEnableTor,
       };
     });
+
+    setSoloMiningMode((el) => {
+      return {
+        ...el,
+        selected: settingsData.nodeEnableSoloMining,
+      };
+    });
   }, [
     loadingSettings,
     loadingPools,
@@ -412,13 +433,31 @@ const Settings = () => {
 
   const handlePoolChange = (e) => {
     setErrorForm(null);
-    if (!e.target.value) setErrorForm(e.target.name);
+    if (!e.target.value) setErrorForm(`Field ${e.target.name} can't be empty`);
     const poolChanged = {
       ...settings.pool,
     };
     poolChanged[e.target.name] = e.target.value;
     setSettings({
       ...settings,
+      nodeEnableSoloMining: false,
+      pool: poolChanged,
+    });
+  };
+
+  const handleSoloMiningChange = (e) => {
+    setErrorForm(null);
+    if (!e.target.value) setErrorForm(`Field ${e.target.name} can't be empty`);
+    if (!isValidBitcoinAddress(e.target.value)) setErrorForm('Please add a valid Bitcoin address');
+    const poolChanged = {
+      ...settings.pool,
+      url: 'stratum+tcp://127.0.0.1:3333',
+      username: e.target.value,
+      password: 'x',
+    };
+    setSettings({
+      ...settings,
+      nodeEnableSoloMining: true,
       pool: poolChanged,
     });
   };
@@ -496,9 +535,19 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableTor: !v });
   };
 
+  const handleSwitchSoloMiningMode = (e) => {
+    const v = e.target.value === 'true' ? true : false;
+    setSoloMiningMode({ ...soloMiningMode, selected: !v });
+    setSettings({ ...settings, nodeEnableSoloMining: !v });
+  };
+
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
     setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
+    setSoloMiningMode({
+      ...soloMiningMode,
+      selected: currentSettings.nodeEnableSoloMining,
+    });
     setFanMode({
       ...fanMode,
       selected:
@@ -515,7 +564,6 @@ const Settings = () => {
     );
     setErrorForm(null);
   };
-
 
   const handleButtonExtraSettings = async (e) => {
     try {
@@ -608,6 +656,7 @@ const Settings = () => {
         nodeRpcPassword,
         nodeEnableTor,
         nodeUserConf,
+        nodeEnableSoloMining,
         pool,
       } = settings;
 
@@ -626,6 +675,7 @@ const Settings = () => {
         nodeRpcPassword,
         nodeEnableTor,
         nodeUserConf,
+        nodeEnableSoloMining,
       };
 
       const poolInput = {
@@ -655,17 +705,30 @@ const Settings = () => {
 
       if (type === 'miner') {
         await restartMiner();
-        dispatch(sendFeedback({ message: 'Restarting miner...', type: 'info' }));
+        dispatch(
+          sendFeedback({ message: 'Restarting miner...', type: 'info' })
+        );
       } else if (type === 'node') {
-        dispatch(sendFeedback({ message: 'You will need to restart your node manually.', type: 'orange' }));
+        dispatch(
+          sendFeedback({
+            message: 'You will need to restart your node manually.',
+            type: 'orange',
+          })
+        );
       } else if (type === 'both') {
         await restartMiner();
-        dispatch(sendFeedback({ message: 'Restarting miner...', type: 'info' }));
-        dispatch(sendFeedback({ message: 'You will need to restart your node manually.', type: 'orange' }));
+        dispatch(
+          sendFeedback({ message: 'Restarting miner...', type: 'info' })
+        );
+        dispatch(
+          sendFeedback({
+            message: 'You will need to restart your node manually.',
+            type: 'orange',
+          })
+        );
       } else {
         dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
-
     } catch (error) {
       dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
@@ -807,7 +870,7 @@ const Settings = () => {
                   {errorForm && (
                     <Flex px="22px">
                       <Text color="red">
-                        Field {errorForm} can&apos;t be empty
+                        {errorForm}
                       </Text>
                     </Flex>
                   )}
@@ -822,6 +885,7 @@ const Settings = () => {
                           }
                           value={settings.pool.url}
                           onChange={handlePoolChange}
+                          disabled={soloMiningMode.selected}
                         />
                       </SimpleCard>
                     </GridItem>
@@ -833,6 +897,7 @@ const Settings = () => {
                           placeholder={'futurebit.worker'}
                           value={settings.pool.username}
                           onChange={handlePoolChange}
+                          disabled={soloMiningMode.selected}
                         />
                       </SimpleCard>
                     </GridItem>
@@ -844,10 +909,28 @@ const Settings = () => {
                           placeholder={'x'}
                           value={settings.pool.password}
                           onChange={handlePoolChange}
+                          disabled={soloMiningMode.selected}
                         />
                       </SimpleCard>
                     </GridItem>
                   </Grid>
+                  <SimpleSwitchSettingsItem
+                    item={soloMiningMode}
+                    textColor={textColor}
+                    sliderTextColor={sliderTextColor}
+                    handleSwitch={handleSwitchSoloMiningMode}
+                  />
+                  {soloMiningMode.selected && (
+                    <SimpleCard title={'Wallet address'} textColor={textColor}>
+                      <Input
+                        name="wallet"
+                        type="text"
+                        placeholder={'1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'}
+                        value={settings.pool.username}
+                        onChange={handleSoloMiningChange}
+                      />
+                    </SimpleCard>
+                  )}
                 </PanelCard>
               </SimpleGrid>
             )}

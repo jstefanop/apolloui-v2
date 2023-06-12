@@ -24,6 +24,7 @@ export const GET_SETTINGS_QUERY = gql`
             nodeRpcPassword
             nodeEnableTor
             nodeUserConf
+            nodeEnableSoloMining
           }
         }
         error {
@@ -57,6 +58,7 @@ export const SET_SETTINGS_QUERY = gql`
             nodeRpcPassword
             nodeEnableTor
             nodeUserConf
+            nodeEnableSoloMining
           }
         }
         error {
@@ -88,6 +90,7 @@ export const initialState = {
           nodeRpcPassword: null,
           nodeEnableTor: null,
           nodeUserConf: null,
+          nodeEnableSoloMining: null,
         },
       },
     },
