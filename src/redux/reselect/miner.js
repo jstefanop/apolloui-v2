@@ -40,11 +40,12 @@ export const minerSelector = createSelector(
             intervals: {
               int_900: { bySol: avgHashrateInGh, byPool: avgPoolHashrateInGh },
               int_0: { chipSpeed, byPool: poolHashrateInGh },
+              int_300: { bySol: hashrateInGh },
             },
           },
           slots: {
             int_0: {
-              ghs: hashrateInGh,
+              // ghs: hashrateInGh,
               temperature,
               errorRate,
               currents,
