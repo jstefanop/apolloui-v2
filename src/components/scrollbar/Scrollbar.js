@@ -27,7 +27,6 @@ export const renderThumb = ({ style, ...props }) => {
 export const renderView = ({ style, ...props }) => {
   const viewStyle = {
     marginBottom: -22,
-    width: '100%',
   };
   return (
     <Box
