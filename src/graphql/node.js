@@ -27,6 +27,11 @@ export const NODE_STATS_QUERY = gql`
             networkInfo {
               version
               subversion
+              localaddresses {
+                address
+                port
+                score
+              }
             }
             error {
               code
@@ -118,6 +123,7 @@ export const initialState = {
           networkInfo: {
             version: null,
             subversion: null,
+            localaddresses: [],
           },
           error: null,
         },

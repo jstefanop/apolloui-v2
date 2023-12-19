@@ -33,7 +33,7 @@ export const nodeSelector = createSelector(
         connectionCount,
         miningInfo: { difficulty, networkhashps },
         peerInfo,
-        networkInfo: { version, subversion },
+        networkInfo: { version, subversion, localaddresses },
         error,
       } = nodeStats;
 
@@ -50,6 +50,7 @@ export const nodeSelector = createSelector(
         peerInfo,
         version,
         subversion,
+        localaddresses,
       };
     }
 

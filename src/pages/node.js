@@ -10,7 +10,7 @@ import {
   SimpleGrid,
   Code,
 } from '@chakra-ui/react';
-import moment from 'moment'
+import moment from 'moment';
 import CountUp from 'react-countup';
 import Head from 'next/head';
 import { List } from 'react-content-loader';
@@ -27,6 +27,7 @@ import { FormattedNumber } from 'react-intl';
 import { TimeIcon } from '../components/UI/Icons/TimeIcon';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { MinersIcon } from '../components/UI/Icons/MinersIcon';
+import { NetworkIcon } from '../components/UI/Icons/NetworkIcon';
 import { useEffect, useRef, useState } from 'react';
 import { mcuSelector } from '../redux/reselect/mcu';
 import DynamicTable from '../components/UI/DynamicTable';
@@ -65,6 +66,7 @@ const Node = () => {
     blockTime,
     peerInfo,
     timestamp,
+    localaddresses,
   } = dataNode;
 
   // Set Previous state for CountUp component
@@ -151,12 +153,10 @@ const Node = () => {
         <Card
           h="370px"
           shadow={shadow}
-          style={
-            {
-              backgroundImage: `url(${BannerNode.src})`,
-              backgroundSize: 'cover',
-            }
-          }
+          style={{
+            backgroundImage: `url(${BannerNode.src})`,
+            backgroundSize: 'cover',
+          }}
         >
           <Flex justify="center" align="center" mt="3">
             <Text fontSize="2xl" fontWeight="bold" color="white">
@@ -363,6 +363,33 @@ const Node = () => {
                     progress={true}
                     progressPercent={remainingSpace}
                     reversed={true}
+                  />
+                </SimpleGrid>
+                <SimpleGrid columns={1} spacing="20px" mt="5">
+                  <MiniStatistics
+                    bgColor={statisticColor}
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        bg={'transparent'}
+                        icon={
+                          <NetworkIcon
+                            w="32px"
+                            h="32px"
+                            color={iconColorReversed}
+                          />
+                        }
+                      />
+                    }
+                    name="Local node address"
+                    value={
+                      localaddresses?.length
+                        ? `${localaddresses[0].address}:${localaddresses[0].port}`
+                        : 'Looking at local node...'
+                    }
+                    reversed={true}
+                    fontSize="md"
                   />
                 </SimpleGrid>
               </Box>
