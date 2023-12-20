@@ -6,6 +6,7 @@ import {
   from,
   InMemoryCache,
 } from '@apollo/client';
+import os from 'os';
 import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
@@ -23,7 +24,7 @@ const ls = typeof window !== 'undefined' ? localStorage : {};
 let hostnameApi;
 typeof window !== "undefined" && process.env.NODE_ENV !== 'development'
   ? ({ hostname: hostnameApi } = new URL(window.location.href))
-  : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || '127.0.0.1');
+  : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname());
 
 let apolloClient;
 const errorLink = onError(({ graphQLErrors, networkError }) => {

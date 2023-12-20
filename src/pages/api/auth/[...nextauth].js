@@ -1,4 +1,5 @@
 import axios from 'axios';
+import os from 'os';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
@@ -19,7 +20,7 @@ export const authOptions = {
           let hostnameApi;
           typeof window !== "undefined" && process.env.NODE_ENV !== 'development'
             ? ({ hostname: hostnameApi } = new URL(window.location.href))
-            : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || '127.0.0.1');
+            : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname());
 
           const authData = await axios({
             url: `http://${hostnameApi}:5000/api/graphql`,
