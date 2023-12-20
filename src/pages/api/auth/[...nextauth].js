@@ -19,7 +19,7 @@ export const authOptions = {
           let hostnameApi;
           typeof window !== "undefined" && process.env.NODE_ENV !== 'development'
             ? ({ hostname: hostnameApi } = new URL(window.location.href))
-            : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST);
+            : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || '127.0.0.1');
 
           const authData = await axios({
             url: `http://${hostnameApi}:5000/api/graphql`,
