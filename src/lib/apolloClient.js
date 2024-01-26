@@ -21,10 +21,7 @@ export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
 const ls = typeof window !== 'undefined' ? localStorage : {};
 
-let hostnameApi;
-typeof window !== "undefined" && process.env.NODE_ENV !== 'development'
-  ? ({ hostname: hostnameApi } = new URL(window.location.href))
-  : (hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname());
+const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
 
 let apolloClient;
 const errorLink = onError(({ graphQLErrors, networkError }) => {
