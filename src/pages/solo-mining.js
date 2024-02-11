@@ -500,7 +500,7 @@ const SoloMining = () => {
                     <BulletList />
                   ) : (
                     dataTableBoards.map((dataTable, index) => (
-                      <Box mt="3" index={index}>
+                      <Box mt="3" key={index}>
                         <PanelGrid
                           title={`Worker ${boardNames[index]}`}
                           active={activeBoards}
