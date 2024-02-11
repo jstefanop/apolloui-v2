@@ -2,13 +2,10 @@ import {
   Box,
   Flex,
   Card,
-  Icon,
   Text,
   CardBody,
   Stack,
   Heading,
-  Divider,
-  CardFooter,
 } from '@chakra-ui/react';
 
 const AlertCard = ({ color, title, message }) => {

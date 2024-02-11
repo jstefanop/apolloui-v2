@@ -13,10 +13,10 @@ function SidebarContent({ routes, onClose }) {
     <Flex direction="column" height="100%" pt="25px" borderRadius="30px">
       <Brand />
       <Stack direction="column" mt="8px" h="100%" mb="80px">
-        <Box ps="20px" mb="auto">
+        <Box ps="0px" mb="auto">
           <Links routes={routes.filter((r) => !r.bottom)} onClose={onClose} />
         </Box>
-        <Box ps="20px" mt="auto">
+        <Box ps="0px" mt="auto">
           <Links routes={routes.filter((r) => r.bottom)} onClose={onClose} />
         </Box>
       </Stack>

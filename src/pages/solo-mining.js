@@ -9,49 +9,39 @@ import {
   Button,
   Divider,
   Center,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
   useDisclosure,
 } from '@chakra-ui/react';
 import { useRef, useEffect } from 'react';
-import { BulletList, List } from 'react-content-loader';
+import { BulletList } from 'react-content-loader';
 import { useSelector } from 'react-redux';
-
+import { useRouter } from 'next/router';
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
 import { minerSelector } from '../redux/reselect/miner';
+import { nodeSelector } from '../redux/reselect/node';
 import HashrateCard from '../components/apollo/HashrateCard';
-import PowerCard from '../components/apollo/PowerCard';
+import BestShare from '../components/apollo/BestShareCard';
 import MiniStatistics from '../components/UI/MiniStatistics';
-import { BugIcon } from '../components/UI/Icons/BugIcon';
-import { RejectedIcon } from '../components/UI/Icons/RejectedIcon';
 import { LastShareIcon } from '../components/UI/Icons/LastShareIcon';
 import { PowerOffSolidIcon } from '../components/UI/Icons/PowerOffSolidIcon';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
-import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
-import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
-import { FanIcon } from '../components/UI/Icons/FanIcon';
 import { settingsSelector } from '../redux/reselect/settings';
-import { ModeIcon } from '../components/UI/Icons/ModeIcon';
-import { PowerManagementIcon } from '../components/UI/Icons/PowerManagementIcon';
-import { FrequencyIcon } from '../components/UI/Icons/FrequencyIcon';
 import { MinerIcon } from '../components/UI/Icons/MinerIcon';
-import { PowerIcon } from '../components/UI/Icons/PowerIcon';
-import { VoltageIcon } from '../components/UI/Icons/VoltageIcon';
 import { DifficultyIcon } from '../components/UI/Icons/DifficultyIcon';
 import { SharesSentIcon } from '../components/UI/Icons/SharesSentIcon';
 import { SharesAcceptedIcon } from '../components/UI/Icons/SharesAcceptedIcon';
 import { SharesRejectedIcon } from '../components/UI/Icons/SharesRejectedIcon';
-import { ChipSpeedIcon } from '../components/UI/Icons/ChipSpeedIcon';
-import { GrUserWorker } from 'react-icons/gr';
+import { FaUserCog, FaUserFriends } from 'react-icons/fa';
+import { GiDiamondTrophy } from 'react-icons/gi';
 import MinerDrawer from '../components/apollo/MinerDrawer';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import CustomAlert from '../components/UI/CustomAlert';
+import moment from 'moment';
+import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 
-const Miner = () => {
+const SoloMining = () => {
+  const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white', 'white');
@@ -74,9 +64,14 @@ const Miner = () => {
     error: errorMiner,
   } = useSelector(minerSelector);
 
-  const { status: minerStatus, timestamp } = useSelector(
-    (state) => state.minerAction
-  );
+  // Node data
+  const {
+    loading: loadingNode,
+    data: dataNode,
+    error: errorNode,
+  } = useSelector(nodeSelector);
+
+  const { difficulty, networkhashps } = dataNode;
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
@@ -89,96 +84,99 @@ const Miner = () => {
     return () => clearInterval(intervalId);
   }, [dataMiner]);
 
+  useEffect(() => {
+    if (!loadingSettings && !nodeEnableSoloMining) router.push('/miner');
+  }, [nodeEnableSoloMining]);
+
+  const { nodeEnableSoloMining } = dataSettings;
+
   const {
-    avgBoardRejected: prevAvgBoardRejected,
-    avgBoardErrors: prevAvgBoardErrors,
-    avgBoardTemp: prevAvgBoardTemp,
-    globalHashrate: prevGlobalHashrate,
-    globalAvgHashrate: prevGlobalAvgHashrate,
-    minerPower: prevMinerPower,
-    minerPowerPerGh: prevMinerPowerPerGh,
+    ckPoolGlobalHashrate: prevCkPoolGlobalHashrate,
+    ckPoolGlobalAvgHashrate: prevCkPoolGlobalAvgHashrate,
+    ckPoolGlobalBestshare: prevCkPoolGlobalBestshare,
   } = prevData.current || {};
 
   const {
     globalHashrate,
-    globalAvgHashrate,
+    ckPoolGlobalHashrate,
+    ckPoolGlobalAvgHashrate,
+    ckPoolGlobalHashrate1d,
+    ckPoolGlobalBestshare,
     minerPower,
-    minerPowerPerGh,
     avgBoardTemp,
     avgBoardErrors,
-    avgBoardRejected,
-    avgChipSpeed,
     avgFanSpeed,
     avgVoltage,
-    lastShareTime,
-    minerUptime,
-    totalSharesSent,
-    totalSharesAccepted,
-    totalSharesRejected,
-    avgDiff,
-    poolHashrate,
     activeBoards,
     totalBoards,
-    activePools,
+    ckPoolTotalUsers,
+    ckPoolTotalWorkers,
+    ckPoolTotalIdle,
+    ckPoolLastUpdate,
+    ckPoolUptime,
+    ckPoolDisconnected,
+    ckPoolTotalSharesAccepted,
+    ckPoolTotalSharesRejected,
     boards,
-    soloMining,
   } = dataMiner;
 
-  const { minerMode, fanHigh, fanLow, frequency, voltage } = dataSettings;
+  const bestShare = ckPoolGlobalBestshare / difficulty || 0;
+  const prevBestShare = prevCkPoolGlobalBestshare / difficulty || 0;
 
-  const dataTableBoards = [
-    {
-      value: `${globalHashrate?.value} ${globalHashrate?.unit}`,
-      icon: MinerIcon,
-    },
-    {
-      value: `${avgBoardTemp}°C`,
-      icon: MinerTempIcon,
-    },
-    {
-      value: `${avgFanSpeed} rpm`,
-      icon: FanIcon,
-    },
-    {
-      value: `${minerPower} Watt`,
-      icon: PowerIcon,
-    },
-    {
-      value: `${avgVoltage} v`,
-      icon: VoltageIcon,
-    },
-    {
-      value: `${avgBoardErrors}%`,
-      icon: BugIcon,
-    },
+  const dailyChance = 1 / ((ckPoolGlobalHashrate1d / networkhashps) * 144);
+
+  const boardsWorkersData = boards
+    .map((board) => {
+      return board.ckWorkers;
+    })
+    .flat();
+
+  const desiredKeys = [
+    'hashrate5m',
+    'hashrate1d',
+    'workername',
+    'lastshare',
+    'shares',
+    'bestever',
   ];
 
-  const dataTablePools = [
-    {
-      value: poolHashrate,
-      icon: MinerIcon,
-    },
-    {
-      value: avgDiff,
-      icon: DifficultyIcon,
-    },
-    {
-      value: null,
-      icon: null,
-    },
-    {
-      value: totalSharesSent,
-      icon: SharesSentIcon,
-    },
-    {
-      value: totalSharesAccepted,
-      icon: SharesAcceptedIcon,
-    },
-    {
-      value: totalSharesRejected,
-      icon: SharesRejectedIcon,
-    },
-  ];
+  const boardNames = [];
+
+  const dataTableBoards = boardsWorkersData.map((element) => {
+    const mappedArray = [];
+    desiredKeys.forEach((key) => {
+      if (key in element) {
+        let value, icon;
+        switch (key) {
+          case 'hashrate5m':
+            value = `${element[key]} (5m)`;
+            icon = MinerIcon;
+            break;
+          case 'hashrate1d':
+            value = `${element[key]} (1d)`;
+            icon = MinerIcon;
+            break;
+          case 'workername':
+            boardNames.push(element[key]);
+            break;
+          case 'lastshare':
+            value = `${moment(element[key], 'X').fromNow()}`;
+            icon = LastShareIcon;
+            break;
+          case 'shares':
+            value = `${element[key]?.toLocaleString('en-US')}`;
+            icon = SharesSentIcon;
+            break;
+          case 'bestever':
+            value = `${(element[key] / difficulty * 100).toFixed(4)}%`;
+            icon = BlocksIcon;
+            break;
+        }
+        mappedArray.push({ value, icon });
+      }
+    });
+    return mappedArray;
+  });
 
   return (
     <Box>
@@ -195,14 +193,19 @@ const Miner = () => {
         placement="right"
         data={boards}
       />
-      {!minerOnline && !minerStatus && (
+      {!minerOnline ? (
         <CustomAlert
           title="Miner is offline"
           description="Try to start it from the top menu."
           status="info"
         />
-      )}
-      {minerOnline && (
+      ) : minerOnline && ckPoolDisconnected ? (
+        <CustomAlert
+          title="CK Pool Disconnected"
+          description="Please check your node connection and the CK Pool status."
+          status="warning"
+        />
+      ) : (
         <Grid
           templateRows="repeat(3, 1fr)"
           templateColumns={{ base: 'repeat(6, 1fr)' }}
@@ -222,23 +225,23 @@ const Miner = () => {
               <HashrateCard
                 loading={loadingMiner}
                 errors={errorMiner}
-                data={globalHashrate}
-                avgData={globalAvgHashrate}
-                prevData={prevGlobalHashrate}
-                prevAvgData={prevGlobalAvgHashrate}
+                data={ckPoolGlobalHashrate}
+                avgData={ckPoolGlobalAvgHashrate}
+                prevData={prevCkPoolGlobalHashrate}
+                prevAvgData={prevCkPoolGlobalAvgHashrate}
                 shadow={shadow}
                 iconColor={iconColor}
               />
             </GridItem>
 
             <GridItem gridArea="Power">
-              <PowerCard
-                loading={loadingMiner}
+              <BestShare
+                loading={loadingMiner && loadingNode}
                 errors={errorMiner}
-                data={minerPower}
-                avgData={minerPowerPerGh}
-                prevData={prevMinerPower}
-                prevAvgData={prevMinerPowerPerGh}
+                data={bestShare}
+                avgData={bestShare * 100}
+                prevData={prevBestShare}
+                prevAvgData={prevBestShare * 100}
                 shadow={shadow}
                 iconColor={iconColor}
               />
@@ -274,20 +277,19 @@ const Miner = () => {
                       h="56px"
                       bg={'transparent'}
                       icon={
-                        <BugIcon w="32px" h="32px" color={iconColorReversed} />
+                        <Icon
+                          as={SharesAcceptedIcon}
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
                       }
                     />
                   }
-                  name="Hardware errors"
+                  name="Accepted shares"
                   value={
-                    <span
-                      className={
-                        avgBoardErrors !== prevAvgBoardErrors
-                          ? 'animate__animated animate__flash'
-                          : undefined
-                      }
-                    >
-                      {avgBoardErrors}%
+                    <span>
+                      {ckPoolTotalSharesAccepted?.toLocaleString('en-US')}
                     </span>
                   }
                   reversed={true}
@@ -301,7 +303,8 @@ const Miner = () => {
                       h="56px"
                       bg={'transparent'}
                       icon={
-                        <RejectedIcon
+                        <Icon
+                          as={SharesRejectedIcon}
                           w="32px"
                           h="32px"
                           color={iconColorReversed}
@@ -309,16 +312,10 @@ const Miner = () => {
                       }
                     />
                   }
-                  name="Rejected"
+                  name="Rejected shares"
                   value={
-                    <span
-                      className={
-                        avgBoardRejected !== prevAvgBoardRejected
-                          ? 'animate__animated animate__flash'
-                          : undefined
-                      }
-                    >
-                      {avgBoardRejected}
+                    <span>
+                      {ckPoolTotalSharesRejected?.toLocaleString('en-US')}
                     </span>
                   }
                   reversed={true}
@@ -342,7 +339,9 @@ const Miner = () => {
                   }
                   name="Last share"
                   value={
-                    lastShareTime ? lastShareTime?.replace('a few', '') : 'N/A'
+                    !ckPoolDisconnected && ckPoolLastUpdate
+                      ? ckPoolLastUpdate?.replace('a few', '')
+                      : 'N/A'
                   }
                   reversed={true}
                 />
@@ -364,7 +363,7 @@ const Miner = () => {
                     />
                   }
                   name="Uptime"
-                  value={minerUptime}
+                  value={(!ckPoolDisconnected && ckPoolUptime) || 'N/A'}
                   reversed={true}
                 />
               </GridItem>
@@ -389,35 +388,13 @@ const Miner = () => {
                 >
                   <Flex m="2">
                     <Text fontSize="lg" fontWeight="800">
-                      Device presets
+                      Solo Info
                     </Text>
                   </Flex>
                   {loadingMiner ? (
                     <BulletList />
                   ) : (
                     <Flex my="auto" direction="column">
-                      {soloMining && (
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={GrUserWorker}
-                                  color={iconColorReversed}
-                                />
-                              }
-                            />
-                          }
-                          name="Miner mode"
-                          value={minerMode?.toUpperCase()}
-                          reversed={true}
-                        />
-                      )}
                       <NoCardStatistics
                         startContent={
                           <IconBox
@@ -428,14 +405,18 @@ const Miner = () => {
                               <Icon
                                 w="32px"
                                 h="32px"
-                                as={ModeIcon}
+                                as={GiDiamondTrophy}
                                 color={iconColorReversed}
                               />
                             }
                           />
                         }
-                        name="Miner mode"
-                        value={minerMode?.toUpperCase()}
+                        name="Daily Chance of Solving a Solo Block"
+                        value={`1 in ${
+                          dailyChance.toLocaleString('en-US', {
+                            maximumFractionDigits: 0,
+                          }) || 'N/A'
+                        }`}
                         reversed={true}
                       />
                       <NoCardStatistics
@@ -448,14 +429,14 @@ const Miner = () => {
                               <Icon
                                 w="32px"
                                 h="32px"
-                                as={PowerManagementIcon}
+                                as={FaUserFriends}
                                 color={iconColorReversed}
                               />
                             }
                           />
                         }
-                        name="Power management"
-                        value={minerMode === 'custom' ? `${voltage}%` : 'AUTO'}
+                        name="Users"
+                        value={ckPoolTotalUsers}
                         reversed={true}
                       />
                       <NoCardStatistics
@@ -468,16 +449,14 @@ const Miner = () => {
                               <Icon
                                 w="32px"
                                 h="32px"
-                                as={FrequencyIcon}
+                                as={FaUserCog}
                                 color={iconColorReversed}
                               />
                             }
                           />
                         }
-                        name="Frequency"
-                        value={
-                          minerMode === 'custom' ? `${frequency}MHz` : 'AUTO'
-                        }
+                        name="Workers"
+                        value={ckPoolTotalWorkers}
                         reversed={true}
                       />
                       <NoCardStatistics
@@ -490,18 +469,15 @@ const Miner = () => {
                               <Icon
                                 w="32px"
                                 h="32px"
-                                as={FanIcon}
+                                as={FaUserCog}
                                 color={iconColorReversed}
+                                opacity={'30%'}
                               />
                             }
                           />
                         }
-                        name="Fan management"
-                        value={
-                          fanLow !== 40 && fanHigh !== 60
-                            ? `${fanLow}°C / ${fanHigh}°C`
-                            : 'AUTO'
-                        }
+                        name="Idle"
+                        value={ckPoolTotalIdle}
                         reversed={true}
                       />
                     </Flex>
@@ -516,144 +492,27 @@ const Miner = () => {
                   >
                     <Flex m="2">
                       <Text fontSize="lg" fontWeight="800">
-                        Average pools and hashboards
+                        SOLO Mining Workers
                       </Text>
-                    </Flex>
-                    <Flex align-items="center">
-                      <Button
-                        bgColor="brand.800"
-                        color="white"
-                        variant="solid"
-                        size="md"
-                        onClick={onOpen}
-                      >
-                        Show all data
-                      </Button>
                     </Flex>
                   </Flex>
                   {loadingMiner ? (
                     <BulletList />
                   ) : (
-                    <Box mt="3">
-                      <PanelGrid
-                        title="Hashboards"
-                        active={activeBoards}
-                        total={totalBoards}
-                        data={dataTableBoards}
-                      />
-                      <Center height="20px" mx="5">
-                        <Divider />
-                      </Center>
-                      <PanelGrid
-                        title="Pools"
-                        active={activePools}
-                        total={totalBoards}
-                        data={dataTablePools}
-                      />
-                    </Box>
+                    dataTableBoards.map((dataTable, index) => (
+                      <Box mt="3" index={index}>
+                        <PanelGrid
+                          title={`Worker ${boardNames[index]}`}
+                          active={activeBoards}
+                          total={totalBoards}
+                          data={dataTable}
+                        />
+                      </Box>
+                    ))
                   )}
                 </Card>
               </GridItem>
             </Grid>
-
-            {/* BOTTOM */}
-            <Card bgColor={cardColor} boxShadow={shadow}>
-              <Flex m="2">
-                <Text fontSize="lg" fontWeight="800">
-                  Boards averages
-                </Text>
-              </Flex>
-              {loadingMiner ? (
-                <List />
-              ) : (
-                <Grid
-                  gridArea="Bottom"
-                  templateRows="repeat(1, 1fr)"
-                  templateColumns={{ base: 'repeat(3, 1fr)' }}
-                  templateAreas={{
-                    base: `'. . .'`,
-                  }}
-                  gap={'20px'}
-                >
-                  <GridItem>
-                    <NoCardStatisticsGauge
-                      id="minerTemp"
-                      startContent={
-                        <IconBox
-                          w="56px"
-                          h="56px"
-                          icon={
-                            <Icon
-                              w="32px"
-                              h="32px"
-                              as={MinerTempIcon}
-                              color={iconColorReversed}
-                            />
-                          }
-                        />
-                      }
-                      name="Miner temperature"
-                      value={`${avgBoardTemp}°C`}
-                      rawValue={avgBoardTemp}
-                      legendValue={'On the average'}
-                      total="100"
-                      gauge={true}
-                      loading={loadingMiner}
-                    />
-                  </GridItem>
-                  <GridItem>
-                    <NoCardStatisticsGauge
-                      id="chipSpeed"
-                      startContent={
-                        <IconBox
-                          w="56px"
-                          h="56px"
-                          icon={
-                            <Icon
-                              w="32px"
-                              h="32px"
-                              as={ChipSpeedIcon}
-                              color={iconColorReversed}
-                            />
-                          }
-                        />
-                      }
-                      name="Chip speed"
-                      value={avgChipSpeed}
-                      rawValue={avgChipSpeed}
-                      total={100}
-                      gauge={true}
-                      loading={loadingMiner}
-                    />
-                  </GridItem>
-                  <GridItem>
-                    <NoCardStatisticsGauge
-                      id="fanSpeed"
-                      startContent={
-                        <IconBox
-                          w="56px"
-                          h="56px"
-                          icon={
-                            <Icon
-                              w="32px"
-                              h="32px"
-                              as={FanIcon}
-                              color={iconColorReversed}
-                            />
-                          }
-                        />
-                      }
-                      name="Fan speed"
-                      value={`${avgFanSpeed} rpm`}
-                      rawValue={avgFanSpeed}
-                      total={4000}
-                      gauge={true}
-                      loading={loadingMiner}
-                    />
-                  </GridItem>
-                </Grid>
-              )}
-            </Card>
           </Grid>
         </Grid>
       )}
@@ -661,4 +520,4 @@ const Miner = () => {
   );
 };
 
-export default Miner;
+export default SoloMining;

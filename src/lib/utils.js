@@ -28,6 +28,42 @@ export const displayHashrate = (
     : parseFloat(parseFloat(hashrate).toFixed(precision));
 };
 
+export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
+  let hashValue = parseFloat(hashrateString);
+  let multiplier = 1;
+
+  // Trova il moltiplicatore per l'unità di misura della potenza di calcolo
+  if (hashrateString.toUpperCase().includes('K')) {
+    multiplier = 1e3;
+  } else if (hashrateString.toUpperCase().includes('M')) {
+    multiplier = 1e6;
+  } else if (hashrateString.toUpperCase().includes('G')) {
+    multiplier = 1e9;
+  } else if (hashrateString.toUpperCase().includes('T')) {
+    multiplier = 1e12;
+  } else if (hashrateString.toUpperCase().includes('P')) {
+    multiplier = 1e15;
+  }
+
+  switch (unit.toUpperCase()) {
+    case 'H/S':
+      return hashValue * multiplier;
+    case 'KH/S':
+      return hashValue * multiplier / 1e3;
+    case 'MH/S':
+      return hashValue * multiplier / 1e6;
+    case 'GH/S':
+      return hashValue * multiplier / 1e9;
+    case 'TH/S':
+      return hashValue * multiplier / 1e12;
+    case 'PH/S':
+      return hashValue * multiplier / 1e15;
+    default:
+      return hashValue * multiplier / 1e9;
+  }
+}
+
+
 export const numberToText = (number) => {
   let text = '';
   const units = [

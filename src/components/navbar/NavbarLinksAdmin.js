@@ -29,6 +29,7 @@ import { SignOutIcon } from '../UI/Icons/SignOutIcon';
 import { CheckIcon } from '@chakra-ui/icons';
 import { WarningIcon } from '../UI/Icons/WarningIcon';
 import { StartIcon } from '../UI/Icons/StartIcon';
+import { GrUserWorker } from 'react-icons/gr';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import { useSelector } from 'react-redux';
@@ -38,6 +39,7 @@ export default function HeaderLinks({
   routes,
   minerStats,
   minerOnline,
+  settings,
   blocksCount,
   errorNode,
   error,
@@ -64,7 +66,9 @@ export default function HeaderLinks({
     localStorage.removeItem('token');
   };
 
-  const { globalHashrate, avgBoardTemp } = minerStats;
+  const { globalHashrate, avgBoardTemp, ckPoolDisconnected } = minerStats;
+
+  const { nodeEnableSoloMining } = settings;
 
   const nodeStatusLabel =
     blocksCount && !errorNode.length
@@ -158,6 +162,66 @@ export default function HeaderLinks({
             </Flex>
           </Flex>
 
+          {/* SOLO MINING */}
+          {nodeEnableSoloMining && (
+            <Flex
+              bg={badgeBg}
+              display={secondary ? 'flex' : 'none'}
+              borderRadius="30px"
+              ms="auto"
+              p="6px"
+              align="center"
+              me="8px"
+              px="10px"
+            >
+              <Flex
+                align="center"
+                justify="center"
+                bg={badgeBox}
+                h="29px"
+                w="29px"
+                borderRadius="30px"
+                me="7px"
+              >
+                <Link href="/solo-mining">
+                  <Icon
+                    w="18px"
+                    h="18px"
+                    color={navbarIcon}
+                    as={GrUserWorker}
+                  />
+                </Link>
+              </Flex>
+              <Flex
+                align="center"
+                justify="center"
+                bg={
+                  !ckPoolDisconnected && minerStatusLabel === 'Online'
+                    ? 'green.500'
+                    : minerStatusLabel !== 'Online'
+                    ? 'gray.400'
+                    : 'orange.500'
+                }
+                h="20px"
+                w="20px"
+                borderRadius="30px"
+              >
+                <Icon
+                  w="12px"
+                  h="12px"
+                  color={badgeBox}
+                  as={
+                    !ckPoolDisconnected && minerStatusLabel === 'Online'
+                      ? CheckIcon
+                      : minerStatusLabel === 'Offline'
+                      ? PowerIcon
+                      : WarningIcon
+                  }
+                />
+              </Flex>
+            </Flex>
+          )}
+
           {/* HASHRATE */}
           <Flex
             bg={badgeBg}
@@ -182,7 +246,7 @@ export default function HeaderLinks({
                 <MinerIcon w="18px" h="18px" color={navbarIcon} />
               </Link>
             </Flex>
-            {globalHashrate?.value && (
+            {globalHashrate?.value && minerStatusLabel === 'Online' && (
               <Text
                 align={'center'}
                 w="max-content"

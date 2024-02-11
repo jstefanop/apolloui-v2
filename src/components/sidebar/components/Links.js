@@ -53,14 +53,14 @@ const SidebarLinks = ({ routes, onClose }) => {
         return (
           <div key={index}>
             {route.icon ? (
-              <Box>
+              <Box bg={route.children && 'gray.200'}>
                 <Link href={route.path} onClick={onClose}>
                   <HStack
                     spacing={
                       activeRoute(route.path.toLowerCase()) ? '22px' : '26px'
                     }
                     py="5px"
-                    ps="10px"
+                    ps="30px"
                   >
                     <Flex w="100%" alignItems="center" justifyContent="center" h="36px">
                       <Box

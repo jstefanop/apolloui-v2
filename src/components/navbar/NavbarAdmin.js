@@ -26,6 +26,7 @@ import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
 import { updateMinerAction } from '../../redux/actions/minerAction';
 import { minerSelector } from '../../redux/reselect/miner';
 import { nodeSelector } from '../../redux/reselect/node';
+import { settingsSelector } from '../../redux/reselect/settings';
 import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
 import { sendFeedback } from '../../redux/actions/feedback';
 
@@ -47,6 +48,9 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     error: errorNode,
     loading: loadingNode,
   } = useSelector(nodeSelector);
+
+  // Settings data
+  const { data: settings } = useSelector(settingsSelector);
 
   const { blocksCount } = dataNode;
 
@@ -316,6 +320,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               minerStats={stats}
               errorNode={errorNode}
               blocksCount={blocksCount}
+              settings={settings}
               error={error}
               loading={loading}
             />

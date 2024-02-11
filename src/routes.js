@@ -4,6 +4,7 @@ import { MinerIcon } from './components/UI/Icons/MinerIcon';
 import { NodeIcon } from './components/UI/Icons/NodeIcon';
 import { SettingsIcon } from './components/UI/Icons/SettingsIcon';
 import { SystemIcon } from './components/UI/Icons/SystemIcon';
+import { GrUserWorker } from 'react-icons/gr';
 
 const routes = [
   {
@@ -17,6 +18,13 @@ const routes = [
     layout: '/admin',
     path: '/miner',
     icon: <MinerIcon width='20px' height='20px' color='inherit' />,
+  },
+  {
+    name: 'SOLO Mining',
+    layout: '/admin',
+    path: '/solo-mining',
+    children: true,
+    icon: <GrUserWorker size='1.2em' color='inherit' />,
   },
   {
     name: 'Node',

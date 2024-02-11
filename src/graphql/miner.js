@@ -208,6 +208,56 @@ export const MINER_STATS_QUERY = gql`
               time
               ping
             }
+            ckpool {
+              pool {
+                runtime
+                lastupdate
+                Users
+                Workers
+                Idle
+                Disconnected
+                hashrate1m
+                hashrate5m
+                hashrate15m
+                hashrate1hr
+                hashrate6hr
+                hashrate1d
+                hashrate7d
+                diff
+                accepted
+                rejected
+                bestshare
+                SPS1m
+                SPS5m
+                SPS15m
+                SPS1h
+              }
+              users {
+                hashrate1m
+                hashrate5m
+                hashrate1hr
+                hashrate1d
+                hashrate7d
+                lastshare
+                workers
+                shares
+                bestshare
+                bestever
+                authorised
+                worker {
+                  workername
+                  hashrate1m
+                  hashrate5m
+                  hashrate1hr
+                  hashrate1d
+                  hashrate7d
+                  lastshare
+                  shares
+                  bestshare
+                  bestever
+                }
+              }
+            }
           }
         }
         error {
@@ -466,6 +516,58 @@ export const initialState = {
                 ping: null,
               },
             ],
+            ckpool: {
+              pool: {
+                runtime: null,
+                lastupdate: null,
+                Users: null,
+                Workers: null,
+                Idle: null,
+                Disconnected: null,
+                hashrate1m: null,
+                hashrate5m: null,
+                hashrate15m: null,
+                hashrate1hr: null,
+                hashrate6hr: null,
+                hashrate1d: null,
+                hashrate7d: null,
+                diff: null,
+                accepted: null,
+                rejected: null,
+                bestshare: null,
+                SPS1m: null,
+                SPS5m: null,
+                SPS15m: null,
+                SPS1h: null,
+              },
+              users: {
+                hashrate1m: null,
+                hashrate5m: null,
+                hashrate1hr: null,
+                hashrate1d: null,
+                hashrate7d: null,
+                lastshare: null,
+                workers: null,
+                shares: null,
+                bestshare: null,
+                bestever: null,
+                authorised: null,
+                worker: [
+                  {
+                    workername: null,
+                    hashrate1m: null,
+                    hashrate5m: null,
+                    hashrate1hr: null,
+                    hashrate1d: null,
+                    hashrate7d: null,
+                    lastshare: null,
+                    shares: null,
+                    bestshare: null,
+                    bestever: null,
+                  },
+                ],
+              },
+            },
           },
         ],
       },

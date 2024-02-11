@@ -30,6 +30,7 @@ import { MCU_STATS_QUERY } from '../../graphql/mcu';
 import { updateMcuStats } from '../../redux/actions/mcu';
 import { GET_SETTINGS_QUERY } from '../../graphql/settings';
 import { updateSettings } from '../../redux/actions/settings';
+import { settingsSelector } from '../../redux/reselect/settings';
 import { minerSelector } from '../../redux/reselect/miner';
 import { updateMinerAction } from '../../redux/actions/minerAction';
 import { CheckIcon } from '@chakra-ui/icons';
@@ -128,15 +129,26 @@ const Layout = ({ children, routes }, props) => {
     (state) => state.minerAction
   );
 
-  // Miner online data
+  // Miner online data releseted
   const {
     data: { online: minerOnline },
   } = useSelector(minerSelector);
+
+  // Settings data reselected
+  const {
+    data: { nodeEnableSoloMining }
+  } = useSelector(settingsSelector);
 
   // Miner status diff time
   const minerStatusDiffTime = Math.round((Date.now() - timestamp) / 1000);
 
   const [minerStatusDone, setMinerStatusDone] = useState(false);
+
+  // Reparsing routes
+  routes = routes.filter((route) => {
+    if (route.name === 'SOLO Mining' && !nodeEnableSoloMining) return false;
+    return true;
+  });
 
   useEffect(() => {
     let timeoutId;
