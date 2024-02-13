@@ -8,6 +8,7 @@ const settingsLoadingSelector = (state) => state.settings.loading;
 export const settingsSelector = createSelector(
   [settingsDataSelector, settingsErrorSelector, settingsLoadingSelector],
   (settingsData, settingsError, settingsLoading) => {
+    
     const {
       Settings: {
         read: {
@@ -15,7 +16,7 @@ export const settingsSelector = createSelector(
           result: { settings },
         },
       },
-    } = settingsData || initialState;
+    } = settingsData?.Settings ? settingsData : initialState;
 
     const errors = [...[settingsError, error].filter(Boolean)];
 
