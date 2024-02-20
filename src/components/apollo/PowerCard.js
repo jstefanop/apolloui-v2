@@ -39,7 +39,7 @@ const PowerCard = ({
           end={data}
           duration="1"
           decimals="0"
-          suffix={` Watt`}
+          suffix={` Watts`}
         />
       }
       secondaryData={
@@ -49,7 +49,7 @@ const PowerCard = ({
             end={avgData}
             duration="1"
             decimals="2"
-            suffix={` Watt`}
+            suffix={` Watts`}
           />
         )
       }

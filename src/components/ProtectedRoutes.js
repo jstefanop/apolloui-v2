@@ -24,14 +24,14 @@ const ProtectedRoute = ({ router, children }) => {
     if (data?.user?.name) localStorage.setItem('token', data.user.name);
 
     // Redirect unsetup users
-    if (setupDone !== 'done') router.replace('/setup');
+    if (setupDone !== 'done') router.push('/setup');
     // Redirect unauthenticated users
     else if (router.pathname === '/setup' && setupDone === 'done')
-      router.replace('/signin');
+      router.push('/signin');
     else if (router.pathname !== '/setup' && status === 'unauthenticated')
-      router.replace('/signin');
+      router.push('/signin');
     else if (router.pathname === '/signin' && status === 'authenticated')
-      router.replace('/overview');
+      router.push('/overview');
   }, [status, data, setup, router]);
 
   return children;

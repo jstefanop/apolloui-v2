@@ -33,12 +33,6 @@ const routes = [
     path: '/node',
   },
   {
-    name: 'Apps',
-    layout: '/admin',
-    path: '/apps',
-    icon: <AppsIcon width='20px' height='20px' color='inherit' />,
-  },
-  {
     name: 'System',
     layout: '/admin',
     path: '/system',

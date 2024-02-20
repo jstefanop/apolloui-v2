@@ -22,7 +22,7 @@ export default function InstalledAppItem({ image, icon, name, author, link }) {
     >
       <Flex direction={{ base: 'column' }} justify="center">
         <Flex position="relative" align="center">
-          {image && <Image src={image.src} w="66px" h="66px" borderRadius="20px" me="16px" />}
+          {image && <Image src={image.src} w="66px" h="66px" borderRadius="20px" me="16px" alt="app" />}
           {icon && icon}
           <Flex
             direction="column"

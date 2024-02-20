@@ -28,6 +28,7 @@ export default function AppCard({ image, name, author, download, description }) 
             w={{ base: '100%', '3xl': '100%' }}
             h={{ base: '100%', '3xl': '100%' }}
             borderRadius="20px"
+            alt="app"
           />
           <Button
             position="absolute"

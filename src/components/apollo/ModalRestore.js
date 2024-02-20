@@ -69,7 +69,7 @@ const ModalRestore = ({ isOpen, onClose, onUpload, onRestore }) => {
       };
       reader.readAsArrayBuffer(file);
     });
-  }, []);
+  }, [onUpload]);
 
   const {
     acceptedFiles,
@@ -105,7 +105,7 @@ const ModalRestore = ({ isOpen, onClose, onUpload, onRestore }) => {
     setRestoreReady(false);
     acceptedFiles.length = 0;
     acceptedFiles.splice(0, acceptedFiles.length);
-  }, [isOpen]);
+  }, [isOpen, acceptedFiles]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

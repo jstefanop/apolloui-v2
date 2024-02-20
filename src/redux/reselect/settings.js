@@ -13,18 +13,18 @@ export const settingsSelector = createSelector(
       Settings: {
         read: {
           error,
-          result: { settings },
+          result: settings,
         },
       },
-    } = settingsData?.Settings ? settingsData : initialState;
+    } = settingsData || initialState;
 
     const errors = [...[settingsError, error].filter(Boolean)];
 
-    let data;
+    let data = {};
     if (settings) {
-      const { fan_high: fanHigh, fan_low: fanLow } = settings;
+      const { fan_high: fanHigh, fan_low: fanLow } = settings.settings || {};
       data = {
-        ...settings,
+        ...settings.settings,
         fanHigh,
         fanLow,
       };

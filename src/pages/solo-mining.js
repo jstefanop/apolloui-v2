@@ -86,7 +86,7 @@ const SoloMining = () => {
 
   useEffect(() => {
     if (!loadingSettings && !nodeEnableSoloMining) router.push('/miner');
-  }, [nodeEnableSoloMining]);
+  }, [nodeEnableSoloMining, loadingSettings, router]);
 
   const { nodeEnableSoloMining } = dataSettings;
 

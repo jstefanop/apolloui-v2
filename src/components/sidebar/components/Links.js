@@ -53,7 +53,7 @@ const SidebarLinks = ({ routes, onClose }) => {
         return (
           <div key={index}>
             {route.icon ? (
-              <Box bg={route.children && 'gray.200'}>
+              <Box>
                 <Link href={route.path} onClick={onClose}>
                   <HStack
                     spacing={

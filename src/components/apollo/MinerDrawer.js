@@ -45,7 +45,7 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
       hashrate: displayHashrate(board.hashrateInGh, 'GH/s', true, 2),
       temperature: `${board.temperature}°C`,
       fanSPeed: `${board.fanSpeed} rpm`,
-      power: `${board.wattTotal} Watt`,
+      power: `${board.wattTotal} Watts`,
       voltage: `${board.voltage} v`,
       errorRate: `${board.errorRate}%`,
     };

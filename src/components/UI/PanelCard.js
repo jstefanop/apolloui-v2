@@ -2,10 +2,9 @@ import {
   Icon,
   Text,
   Flex,
-  Badge,
+  Tag,
   Button,
   Tooltip,
-  ButtonGroup,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { ImEye, ImEyeBlocked } from 'react-icons/im';
@@ -84,14 +83,14 @@ const PanelCard = ({
                     isOpen={showTooltip}
                     label={`This is your personal Bitcoin Node RPC password (username is futurebit, use these two values to connect external wallets/services directly to your BTC node)`}
                   >
-                    <Badge
+                    <Tag
                       variant='solid'
                       colorScheme={badgeColor}
                       onMouseOver={() => setShowTooltip(true)}
                       onMouseLeave={() => setShowTooltip(false)}
                     >
                       {show ? badgeText : <Text fontSize='sm'>*********</Text>}
-                    </Badge>
+                    </Tag>
                   </Tooltip>
                 </>
               ) : (
@@ -103,14 +102,14 @@ const PanelCard = ({
                   isOpen={showTooltip}
                   label={`${tooltip}`}
                 >
-                  <Badge
+                    <Tag
                     variant='solid'
                     colorScheme={badgeColor}
                     onMouseOver={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
                   >
                     {badgeText}
-                  </Badge>
+                    </Tag>
                 </Tooltip>
               )}
             </Flex>
