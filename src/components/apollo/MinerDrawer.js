@@ -158,12 +158,14 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                     boxShadow={shadow}
                     h="100%"
                     key={index}
+                    my="15px"
                   >
                     <PanelGrid
                       title={`Hashboard #${index}`}
                       data={board}
                       status={data[index].status}
                       badgeText={data[index].chips}
+                      version={data[index].version}
                       badgeSecondaryText="Active ASICs"
                     />
                   </Card>
@@ -177,12 +179,14 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                     boxShadow={shadow}
                     h="100%"
                     key={index}
+                    my="15px"
                   >
                     <PanelGrid
                       title={`${data[index].poolHost}:${data[index].poolPort}`}
                       data={board}
                       status={data[index].poolStatus}
                       badgeSecondaryText={data[index].poolUsername}
+                      version={data[index].version}
                     />
                   </Card>
                 ))}

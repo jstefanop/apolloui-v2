@@ -20,6 +20,7 @@ export const MINER_STATS_QUERY = gql`
         result {
           stats {
             uuid
+            version
             date
             lastsharetime @client
             status @client
@@ -322,6 +323,7 @@ export const initialState = {
         stats: [
           {
             uuid: null,
+            version: null,
             date: null,
             statVersion: null,
             versions: {

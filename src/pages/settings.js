@@ -29,7 +29,7 @@ import {
 
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import { useDispatch } from 'react-redux';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
@@ -433,11 +433,16 @@ const Settings = () => {
 
   const handlePoolChange = (e) => {
     setErrorForm(null);
-    if (!e.target.value) setErrorForm(`Field ${e.target.name} can't be empty`);
+
+    if (!e.target.value)
+      return setErrorForm(`Field ${e.target.name} can't be empty`);
+
     const poolChanged = {
       ...settings.pool,
     };
+
     poolChanged[e.target.name] = e.target.value;
+
     setSettings({
       ...settings,
       nodeEnableSoloMining: false,
@@ -448,7 +453,8 @@ const Settings = () => {
   const handleSoloMiningChange = (e) => {
     setErrorForm(null);
     if (!e.target.value) setErrorForm(`Field ${e.target.name} can't be empty`);
-    if (!isValidBitcoinAddress(e.target.value)) setErrorForm('Please add a valid Bitcoin address');
+    if (!isValidBitcoinAddress(e.target.value))
+      setErrorForm('Please add a valid Bitcoin address');
     const poolChanged = {
       ...settings.pool,
       url: 'stratum+tcp://127.0.0.1:3333',
@@ -463,6 +469,7 @@ const Settings = () => {
   };
 
   const handleSwitchMinerMode = (e) => {
+    setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
     setMinerModes(
       _.map(minerModes, (mode) => {
@@ -474,6 +481,7 @@ const Settings = () => {
   };
 
   const handleCustomModeChange = (value, sliderId) => {
+    setErrorForm(null);
     setMinerModes(
       _.map(minerModes, (mode) => {
         if (mode.id === 'custom') mode[sliderId] = value;
@@ -486,6 +494,7 @@ const Settings = () => {
   };
 
   const handleCustomModeReset = (sliderId) => {
+    setErrorForm(null);
     const v = sliderId === 'voltage' ? 30 : 25;
     setMinerModes(
       _.map(minerModes, (mode) => {
@@ -500,6 +509,7 @@ const Settings = () => {
   };
 
   const handleSwitchFanMode = (e) => {
+    setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
     setFanMode({ ...fanMode, selected: !v });
     if (v) {
@@ -509,6 +519,7 @@ const Settings = () => {
   };
 
   const handleCustomFanModeChange = (value, sliderId) => {
+    setErrorForm(null);
     const fanCHanges = { ...fanMode };
     fanCHanges[sliderId] = value;
     setFanMode(fanCHanges);
@@ -519,6 +530,7 @@ const Settings = () => {
   };
 
   const handleCustomFanModeReset = (sliderId) => {
+    setErrorForm(null);
     const v = sliderId === 'fan_low' ? 40 : 60;
     const fanCHanges = { ...fanMode };
     fanCHanges[sliderId] = v;
@@ -530,12 +542,14 @@ const Settings = () => {
   };
 
   const handleSwitchNodeTorMode = (e) => {
+    setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
     setNodeTorMode({ ...nodeTorMode, selected: !v });
     setSettings({ ...settings, nodeEnableTor: !v });
   };
 
   const handleSwitchSoloMiningMode = (e) => {
+    setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
     setSoloMiningMode({ ...soloMiningMode, selected: !v });
     setSettings({ ...settings, nodeEnableSoloMining: !v });
@@ -642,6 +656,7 @@ const Settings = () => {
   };
 
   const handlesSaveSettings = async (type) => {
+    setErrorForm(null);
     try {
       const {
         agree,
@@ -661,6 +676,12 @@ const Settings = () => {
       } = settings;
 
       const { enabled, url, username, password, index } = pool;
+
+      if (!url.match(/stratum\+tcp:\/\/(.*):\d+$/))
+        return setErrorForm('Invalid pool URL');
+
+      if (nodeEnableSoloMining && !isValidBitcoinAddress(username))
+        return setErrorForm('Invalid Bitcoin wallet address');
 
       const input = {
         agree,
@@ -869,9 +890,7 @@ const Settings = () => {
                 >
                   {errorForm && (
                     <Flex px="22px">
-                      <Text color="red">
-                        {errorForm}
-                      </Text>
+                      <Text color="red">{errorForm}</Text>
                     </Flex>
                   )}
                   <Grid templateColumns="repeat(6, 1fr)" gap={2}>

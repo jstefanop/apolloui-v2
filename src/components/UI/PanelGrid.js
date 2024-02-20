@@ -5,6 +5,7 @@ import {
   Text,
   SimpleGrid,
   useColorModeValue,
+  Tag,
 } from '@chakra-ui/react';
 import ActiveBadge from '../apollo/ActiveBadge';
 import { ErrorIcon } from './Icons/ErrorIcon';
@@ -15,16 +16,18 @@ const PanelGrid = ({
   total,
   data,
   status,
+  version,
   badgeText,
   badgeSecondaryText,
 }) => {
   const badgeBgColor = useColorModeValue('gray.200', 'gray.900');
+  const versionColors = {'v1': 'blue', 'v2': 'teal'}
   return (
     <Flex mt="4" mx="5" direction="column">
       <Flex justify="space-between">
         <Flex m="1">
           <Text fontSize="md" fontWeight="600">
-            {title}
+            {title}{version && <Tag size='md' ml='10px' colorScheme={versionColors[version]}>{version}</Tag>}
           </Text>
         </Flex>
         {typeof active !== 'undefined' &&

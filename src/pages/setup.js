@@ -165,7 +165,7 @@ const Setup = () => {
     setPoolError(null);
     if (!poolUsername || !poolPassword || !poolUrl)
       return setPoolError('All fields are required');
-    if (!poolUrl.match(/stratum\+tcp:\/\/(.*)/))
+    if (!poolUrl.match(/stratum\+tcp:\/\/(.*):?\d*$/))
       return setPoolError('Invalid pool URL');
 
     setPool({

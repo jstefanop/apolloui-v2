@@ -104,9 +104,11 @@ const Miner = () => {
     globalAvgHashrate,
     minerPower,
     minerPowerPerGh,
+    avgBoardEfficiency,
     avgBoardTemp,
     avgBoardErrors,
     avgBoardRejected,
+    avgBoardAccepted,
     avgChipSpeed,
     avgFanSpeed,
     avgVoltage,
@@ -140,7 +142,7 @@ const Miner = () => {
       icon: FanIcon,
     },
     {
-      value: `${minerPower} Watt`,
+      value: `${avgBoardEfficiency && avgBoardEfficiency.toFixed(2) || 0} W/TH`,
       icon: PowerIcon,
     },
     {
@@ -274,11 +276,16 @@ const Miner = () => {
                       h="56px"
                       bg={'transparent'}
                       icon={
-                        <BugIcon w="32px" h="32px" color={iconColorReversed} />
+                        <Icon
+                          as={SharesAcceptedIcon}
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
                       }
                     />
                   }
-                  name="Hardware errors"
+                  name="Accepted"
                   value={
                     <span
                       className={
@@ -287,7 +294,7 @@ const Miner = () => {
                           : undefined
                       }
                     >
-                      {avgBoardErrors}%
+                      {avgBoardAccepted}
                     </span>
                   }
                   reversed={true}
@@ -301,7 +308,8 @@ const Miner = () => {
                       h="56px"
                       bg={'transparent'}
                       icon={
-                        <RejectedIcon
+                        <Icon
+                          as={SharesRejectedIcon}
                           w="32px"
                           h="32px"
                           color={iconColorReversed}

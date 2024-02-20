@@ -33,14 +33,16 @@ export const minerSelector = createSelector(
         const {
           status,
           lastsharetime,
+          date,
+          version,
           master: {
+            boardsI: voltage,
             boardsW: wattTotal,
             wattPerGHs,
             upTime,
             intervals: {
-              int_900: { bySol: avgHashrateInGh, byPool: avgPoolHashrateInGh },
-              int_0: { chipSpeed, byPool: poolHashrateInGh },
-              int_300: { bySol: hashrateInGh },
+              int_3600: { chipSpeed, bySol: avgHashrateInGh, byPool: avgPoolHashrateInGh },
+              int_30: { bySol: hashrateInGh },
             },
           },
           slots: {
@@ -48,7 +50,6 @@ export const minerSelector = createSelector(
               // ghs: hashrateInGh,
               temperature,
               errorRate,
-              currents,
               chips,
             },
           },
@@ -68,6 +69,7 @@ export const minerSelector = createSelector(
           ckpool: ckData,
         } = board;
 
+        const poolHashrateInGh = avgPoolHashrateInGh;
         const { pool: ckPool, users: ckUsers } = ckData || {};
 
         const {
@@ -85,11 +87,10 @@ export const minerSelector = createSelector(
           rejected: ckSharesRejected,
         } = ckPool || {};
 
-        const {
-          worker: ckWorkers,
-        } = ckUsers || {};
+        const { worker: ckWorkers } = ckUsers || {};
 
         return {
+          date,
           status,
           poolStatus,
           poolUsername,
@@ -98,12 +99,14 @@ export const minerSelector = createSelector(
           poolHashrateInGh,
           avgPoolHashrateInGh,
           upTime,
+          version,
           lastShareTimeX: parseInt(moment(lastsharetime).format('X')),
           lastShareTime: moment(lastsharetime, 'X').fromNow(),
           wattPerGHs,
           wattTotal,
           hashrateInGh,
           avgHashrateInGh,
+          efficiency: avgHashrateInGh / wattTotal,
           fanSpeed: _.mean(fanRpm),
           temperature,
           errorRate,
@@ -113,11 +116,7 @@ export const minerSelector = createSelector(
           sharesRejected,
           sharesSent,
           diff,
-          voltage: status
-            ? (((wattPerGHs * hashrateInGh) / _.sum(currents)) * 1000).toFixed(
-                2
-              )
-            : 0,
+          voltage,
           soloMining: (ckData && true) || false,
           ckRuntime,
           ckLastUpdate,
@@ -139,6 +138,8 @@ export const minerSelector = createSelector(
           ckWorkers,
         };
       });
+
+      const maxBoardDate = _.maxBy(boards, 'date');
 
       const maxBoardByShareTime = _.maxBy(boards, 'lastShareTimeX');
       const maxLastShareTime = maxBoardByShareTime?.lastShareTimeX || null;
@@ -307,6 +308,12 @@ export const minerSelector = createSelector(
           })
           .value() || 0;
 
+      // Board sum/avg
+      let avgBoardEfficiency = _.meanBy(boards, (hb) => {
+        if (hb.status) return hb.efficiency;
+        return null;
+      });
+
       let avgBoardTemp = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.temperature;
         return null;
@@ -331,6 +338,13 @@ export const minerSelector = createSelector(
       });
 
       if (isNaN(avgBoardRejected)) avgBoardRejected = 0;
+
+      let avgBoardAccepted = _.meanBy(boards, (hb) => {
+        if (hb.status && hb.sharesAccepted) return hb.sharesAccepted;
+        return 0;
+      });
+
+      if (isNaN(avgBoardAccepted)) avgBoardAccepted = 0;
 
       let avgChipSpeed = _.meanBy(boards, (hb) => {
         if (hb.status && hb.chipSpeed) return hb.chipSpeed;
@@ -381,15 +395,18 @@ export const minerSelector = createSelector(
       const activePools = _.size(_.filter(boards, { poolStatus: true }));
 
       stats = {
+        date: maxBoardDate?.date || null,
         boards,
         minerUptime,
         globalHashrate,
         globalAvgHashrate,
         minerPower,
         minerPowerPerGh,
+        avgBoardEfficiency,
         avgBoardTemp,
         avgBoardErrors,
         avgBoardRejected,
+        avgBoardAccepted,
         avgChipSpeed,
         avgFanSpeed,
         avgVoltage,

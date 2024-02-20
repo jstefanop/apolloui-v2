@@ -62,6 +62,7 @@ const initialState = {
         stats: [
           {
             uuid: null,
+            version: null,
             date: null,
             statVersion: null,
             versions: {

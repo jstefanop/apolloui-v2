@@ -5,7 +5,6 @@ import {
   useDisclosure,
   Alert,
   AlertIcon,
-  AlertTitle,
   AlertDescription,
   Flex,
   Text,
@@ -125,14 +124,16 @@ const Layout = ({ children, routes }, props) => {
     (state) => state.feedback
   );
 
-  const { status: minerStatus, timestamp } = useSelector(
+  const { status: minerStatus } = useSelector(
     (state) => state.minerAction
   );
 
   // Miner online data releseted
   const {
-    data: { online: minerOnline },
+    data: { online: minerOnline, stats: { date }},
   } = useSelector(minerSelector);
+
+  const timestamp = new Date(date).getTime();
 
   // Settings data reselected
   const {
@@ -230,7 +231,7 @@ const Layout = ({ children, routes }, props) => {
                   <AlertDescription>{feedbackMessage}</AlertDescription>
                 </Alert>
               )}
-              {minerStatus !== minerOnline && minerStatusDiffTime > 10 && (
+              {minerStatus !== minerOnline && minerStatusDiffTime > 20 && (
                 <Card
                   mb="5"
                   borderRadius={'10px'}

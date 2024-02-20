@@ -7,6 +7,7 @@ export const MINER_STATS_FRAGMENT = gql`
     result {
       stats {
         uuid
+        version
         date
         lastsharetime @client
         status @client
