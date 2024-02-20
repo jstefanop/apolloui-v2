@@ -29,7 +29,7 @@ import {
 
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import { useDispatch } from 'react-redux';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
@@ -66,6 +66,7 @@ const Settings = () => {
   const dispatch = useDispatch();
   const textColor = useColorModeValue('brands.900', 'white');
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
+  const inputTextColor = useColorModeValue('gray.900', 'gray.300');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenFormat,
@@ -897,6 +898,7 @@ const Settings = () => {
                     <GridItem colSpan={3}>
                       <SimpleCard title={'URL'} textColor={textColor}>
                         <Input
+                          color={inputTextColor}
                           name="url"
                           type="text"
                           placeholder={
@@ -911,6 +913,7 @@ const Settings = () => {
                     <GridItem colSpan={2}>
                       <SimpleCard title={'Username'} textColor={textColor}>
                         <Input
+                          color={inputTextColor}
                           name="username"
                           type="text"
                           placeholder={'futurebit.worker'}
@@ -923,6 +926,7 @@ const Settings = () => {
                     <GridItem colSpan={1}>
                       <SimpleCard title={'Password'} textColor={textColor}>
                         <Input
+                          color={inputTextColor}
                           name="password"
                           type="text"
                           placeholder={'x'}
@@ -942,6 +946,7 @@ const Settings = () => {
                   {soloMiningMode.selected && (
                     <SimpleCard title={'Wallet address'} textColor={textColor}>
                       <Input
+                        color={inputTextColor}
                         name="wallet"
                         type="text"
                         placeholder={'1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'}
@@ -1088,6 +1093,7 @@ const Settings = () => {
                         </FormLabel>
                         <InputGroup size="md">
                           <Input
+                            color={inputTextColor}
                             isRequired={true}
                             fontSize="sm"
                             placeholder="Your lock screen password"
@@ -1123,6 +1129,7 @@ const Settings = () => {
                         </FormLabel>
                         <InputGroup size="md">
                           <Input
+                            color={inputTextColor}
                             isRequired={true}
                             fontSize="sm"
                             placeholder="Verify your lock screen password"
@@ -1165,7 +1172,6 @@ const Settings = () => {
               {extraSettingsActions.map((action, index) => {
                 return (
                   <Card
-                    bg="white"
                     boxShadow="unset"
                     px="24px"
                     py="21px"
