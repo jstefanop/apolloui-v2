@@ -255,6 +255,7 @@ export default function HeaderLinks({
                 fontWeight="700"
                 me="6px"
                 minW="70px"
+                display={{ base: 'none', md: 'block' }}
               >
                 {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
               </Text>
@@ -299,7 +300,7 @@ export default function HeaderLinks({
           {/* TEMPERATURE */}
           <Flex
             bg={badgeBg}
-            display={secondary ? 'flex' : 'none'}
+            display={secondary ? { base: 'none', md: 'flex' } : 'none'}
             borderRadius="30px"
             ms="auto"
             p="6px"

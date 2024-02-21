@@ -77,12 +77,9 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
     },
   ] = useLazyQuery(MCU_WIFI_CONNECT_QUERY);
 
-  const [
-    wifiDisconnect,
-    {
-      loading: loadingWifiDisconnect,
-    },
-  ] = useLazyQuery(MCU_WIFI_DISCONNECT_QUERY);
+  const [wifiDisconnect, { loading: loadingWifiDisconnect }] = useLazyQuery(
+    MCU_WIFI_DISCONNECT_QUERY
+  );
 
   const handleWifiConnect = async (ssid) => {
     dispatch(
@@ -169,7 +166,7 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
       <Box px="11px" mt={'2'}>
         <Flex direction={'column'}>
           {loading ? (
-            <BulletList width='400px'/>
+            <BulletList width="400px" />
           ) : error || resultError ? (
             <Alert borderRadius="8px" status="error" variant="subtle">
               <Flex>
@@ -246,7 +243,8 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
                             </InputGroup>
                           </FormControl>
                         )}
-                        {(loadingWifi || loadingWifiDisconnect) && show === index ? (
+                        {(loadingWifi || loadingWifiDisconnect) &&
+                        show === index ? (
                           <Spinner size="sm" />
                         ) : (
                           <Button
@@ -286,14 +284,13 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
                   )}
                   {show === index &&
                     errorWifi &&
-                    errorWifi.length &&
-                    errorWifi.map((error, index) => {
+                    errorWifi.map((error, indexE) => {
                       return (
                         <Text
                           color="red"
                           fontSize="xs"
                           align={'right'}
-                          key={index}
+                          key={indexE}
                         >
                           {error.message}
                         </Text>

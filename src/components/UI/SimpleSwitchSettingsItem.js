@@ -24,21 +24,22 @@ const SimpleSwitchSettingsItem = ({
   handleSwitch,
   handleCustomModeChange,
   handleCustomModeReset,
+  isDisabled,
 }) => {
   const cardBgColor = useColorModeValue('gray.50', 'secondaryGray.900');
   return (
     <Card
-      bg='transparent'
-      boxShadow='unset'
-      px='24px'
-      py='21px'
-      transition='0.2s linear'
+      bg="transparent"
+      boxShadow="unset"
+      px="24px"
+      py="21px"
+      transition="0.2s linear"
     >
-      <Flex direction={{ base: 'column' }} justify='center'>
-        <Flex position='relative' align='center'>
-          <FormControl display='flex'>
+      <Flex direction={{ base: 'column' }} justify="center">
+        <Flex position="relative" align="center">
+          <FormControl display="flex">
             <Flex
-              direction='row'
+              direction="row"
               w={{ base: '90%', md: '100%' }}
               me={{
                 base: '4px',
@@ -50,14 +51,15 @@ const SimpleSwitchSettingsItem = ({
               {item.id && (
                 <Flex
                   me={{ base: '4px', md: '32px', xl: '10px', '3xl': '32px' }}
-                  mt='2px'
+                  mt="2px"
                 >
                   {handleButton ? (
                     <Button
                       onClick={handleButton}
                       colorScheme={item.color}
-                      size='sm'
+                      size="sm"
                       id={item.id}
+                      isDisabled={isDisabled}
                     >
                       {item.buttonTitle}
                     </Button>
@@ -68,11 +70,12 @@ const SimpleSwitchSettingsItem = ({
                       onChange={handleSwitch}
                       value={item.selected}
                       isChecked={inverted ? !item.selected : item.selected}
+                      isDisabled={isDisabled}
                     />
                   )}
                 </Flex>
               )}
-              <Flex direction='column'>
+              <Flex direction="column">
                 <Flex align={{ base: 'flex-start' }}>
                   <Flex>
                     <FormLabel
@@ -81,26 +84,26 @@ const SimpleSwitchSettingsItem = ({
                       fontSize={{
                         base: 'md',
                       }}
-                      mb='6px'
-                      fontWeight='bold'
-                      me='14px'
+                      mb="6px"
+                      fontWeight="bold"
+                      me="14px"
                     >
                       {item.title}
                     </FormLabel>
                   </Flex>
                   {item.alertBadge && (
                     <Flex>
-                      <Badge variant='solid' colorScheme='gray'>
+                      <Badge variant="solid" colorScheme="gray">
                         {item.alertBadge}
                       </Badge>
                     </Flex>
                   )}
                 </Flex>
                 <Text
-                  color='secondaryGray.600'
+                  color="secondaryGray.600"
                   fontSize={{ base: 'xs', lg: 'sm' }}
-                  fontWeight='400'
-                  me='14px'
+                  fontWeight="400"
+                  me="14px"
                 >
                   {item.description}
                 </Text>
@@ -110,37 +113,37 @@ const SimpleSwitchSettingsItem = ({
         </Flex>
         {item.sliders && item.selected && (
           <Flex
-            direction='column'
+            direction="column"
             me={{
               base: '4px',
               md: '32px',
               xl: '10px',
               '3xl': '32px',
             }}
-            mt='20px'
+            mt="20px"
           >
-            <SimpleGrid columns={{ base: 1, md: 1 }} gap='4'>
+            <SimpleGrid columns={{ base: 1, md: 1 }} gap="4">
               {item.sliders.map((slider) => (
                 <Card
                   key={slider.id}
-                  p='20px'
-                  variant='outline'
+                  p="20px"
+                  variant="outline"
                   bg={cardBgColor}
                 >
-                  <Flex justify='space-between' align='center'>
-                    <Flex alignItems='baseline'>
+                  <Flex justify="space-between" align="center">
+                    <Flex alignItems="baseline">
                       <Text
                         color={sliderTextColor}
                         fontSize={{ base: 'sm', lg: 'md' }}
-                        fontWeight='600'
-                        me='6px'
+                        fontWeight="600"
+                        me="6px"
                       >
                         {slider.title}
                       </Text>
                       <Text
                         fontSize={'sm'}
                         color={sliderTextColor}
-                        fontWeight='200'
+                        fontWeight="200"
                       >
                         {item[slider.id] || slider.min}
                         {slider.id === 'voltage' && '%'}
@@ -149,30 +152,31 @@ const SimpleSwitchSettingsItem = ({
                     </Flex>
                     <Button
                       onClick={() => handleCustomModeReset(slider.id)}
-                      h='24px'
-                      variant='no-effects'
-                      display='flex'
-                      p='0px'
-                      align='center'
-                      justify='center'
+                      h="24px"
+                      variant="no-effects"
+                      display="flex"
+                      p="0px"
+                      align="center"
+                      justify="center"
+                      isDisabled={isDisabled}
                     >
                       <Icon
                         as={MdUndo}
-                        width='18px'
-                        height='18px'
-                        color='inherit'
+                        width="18px"
+                        height="18px"
+                        color="inherit"
                       />
                     </Button>
                   </Flex>
                   <Text
-                    color='secondaryGray.600'
+                    color="secondaryGray.600"
                     fontSize={{ base: 'xs' }}
-                    fontWeight='400'
+                    fontWeight="400"
                   >
                     {slider.description}
                   </Text>
                   <SliderTooltip
-                    my='5'
+                    my="5"
                     width={'99%'}
                     value={item[slider.id] || slider.min}
                     minValue={slider.min}
@@ -188,16 +192,16 @@ const SimpleSwitchSettingsItem = ({
               ))}
               {item.voltage >= 75 && (
                 <Card
-                  p='20px'
+                  p="20px"
                   bgColor={'red.400'}
-                  color='white'
-                  variant='outline'
+                  color="white"
+                  variant="outline"
                 >
                   <Flex alignItems={'center'} mb={'1.5'}>
                     <Icon
                       as={MdOutlineWarningAmber}
-                      w='24px'
-                      h='24px'
+                      w="24px"
+                      h="24px"
                       mr={'2'}
                     />{' '}
                     <Text fontSize={'xl'} fontWeight={'600'} color={'white'}>
@@ -206,7 +210,7 @@ const SimpleSwitchSettingsItem = ({
                   </Flex>
                   <Text
                     fontSize={{ base: 'sm', lg: 'md' }}
-                    fontWeight='600'
+                    fontWeight="600"
                     mb={'1.5'}
                   >
                     The FutureBit APU-200 Power Supply is limited to 75% power,

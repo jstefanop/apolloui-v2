@@ -151,14 +151,14 @@ const Node = () => {
       </Head>
       <Flex direction="column">
         <Card
-          h="370px"
+          h={{ base: '470px', md: '370px' }}
           shadow={shadow}
           style={{
             backgroundImage: `url(${BannerNode.src})`,
             backgroundSize: 'cover',
           }}
         >
-          <Flex justify="center" align="center" mt="3">
+          <Flex justify="center" align="center" mt="3" direction={{ base: 'column', md: 'row' }}>
             <Text fontSize="2xl" fontWeight="bold" color="white">
               {blockHeader === blocksCount
                 ? `Current block`
@@ -182,6 +182,7 @@ const Node = () => {
                   ? 'animate__animated animate__pulse'
                   : undefined
               }
+              align={{ base: 'center', md: 'start' }}
             >
               {blockHeader === blocksCount && (
                 <CountUp
@@ -204,7 +205,7 @@ const Node = () => {
 
         <Flex
           direction="column"
-          px={{ base: '100px', lg: '100px', xl: '240px' }}
+          px={{ base: '10px', md: '100px', xl: '240px' }}
         >
           <Card
             py="15px"
@@ -241,7 +242,7 @@ const Node = () => {
             ) : (
               <Box>
                 {/* TOP */}
-                <SimpleGrid columns={2} spacing="20px" mb="5">
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing="20px" mb="5">
                   <MiniStatistics
                     bgColor={statisticColor}
                     startContent={
@@ -291,7 +292,7 @@ const Node = () => {
                 </SimpleGrid>
 
                 {/* BOTTOM */}
-                <SimpleGrid columns={3} spacing="20px">
+                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing="20px">
                   <MiniStatistics
                     bgColor={statisticColor}
                     startContent={

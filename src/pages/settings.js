@@ -13,6 +13,7 @@ import {
   Text,
   InputGroup,
   InputRightElement,
+  Select,
   Icon,
   Button,
   Alert,
@@ -30,7 +31,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import _ from 'lodash';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
 import { FaBalanceScale } from 'react-icons/fa';
@@ -60,7 +61,10 @@ import { sendFeedback } from '../redux/actions/feedback';
 import ModalFormat from '../components/apollo/ModalFormat';
 import { NODE_FORMAT_QUERY } from '../graphql/node';
 import { NODE_STOP_QUERY } from '../graphql/node';
-import { isValidBitcoinAddress } from '../lib/utils';
+import { isValidBitcoinAddress, presetPools } from '../lib/utils';
+import { nodeSelector } from '../redux/reselect/node';
+import { SystemIcon } from '../components/UI/Icons/SystemIcon';
+import { GrUserWorker } from 'react-icons/gr';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -263,6 +267,12 @@ const Settings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
+  const [pool, setPool] = useState();
+
+  // Node data
+  const { data: dataNode, error: errorNode } = useSelector(nodeSelector);
+
+  const { blocksCount, blockHeader } = dataNode;
 
   const {
     loading: loadingSettings,
@@ -432,6 +442,25 @@ const Settings = () => {
     }
   }, [lockPassword, verifyLockpassword]);
 
+  const handlePoolPreset = (e) => {
+    const preset = presetPools[e.target.value];
+    if (preset && preset.id !== 'custom') {
+      const poolChanged = {
+        ...settings.pool,
+      };
+
+      poolChanged.url = preset.url;
+
+      setSettings({
+        ...settings,
+        nodeEnableSoloMining: false,
+        pool: poolChanged,
+      });
+    }
+
+    setPool(preset);
+  };
+
   const handlePoolChange = (e) => {
     setErrorForm(null);
 
@@ -453,15 +482,19 @@ const Settings = () => {
 
   const handleSoloMiningChange = (e) => {
     setErrorForm(null);
+
     if (!e.target.value) setErrorForm(`Field ${e.target.name} can't be empty`);
+
     if (!isValidBitcoinAddress(e.target.value))
       setErrorForm('Please add a valid Bitcoin address');
+
     const poolChanged = {
       ...settings.pool,
       url: 'stratum+tcp://127.0.0.1:3333',
       username: e.target.value,
       password: 'x',
     };
+
     setSettings({
       ...settings,
       nodeEnableSoloMining: true,
@@ -852,50 +885,123 @@ const Settings = () => {
       >
         <TabList ml="5">
           <Tab>
-            <Text fontWeight={600} me="2">
+            <Text
+              fontWeight={600}
+              me="2"
+              display={{ base: 'none', md: 'block' }}
+            >
               Pools
             </Text>
+            <PoolIcon display={{ base: 'block', md: 'none' }} />
           </Tab>
           <Tab>
-            <Text fontWeight={600} me="2">
+            <Text
+              fontWeight={600}
+              me="2"
+              display={{ base: 'none', md: 'block' }}
+            >
               Miner
             </Text>
+            <MinerIcon display={{ base: 'block', md: 'none' }} />
           </Tab>
           <Tab>
-            <Text fontWeight={600} me="2">
+            <Text
+              fontWeight={600}
+              me="2"
+              display={{ base: 'none', md: 'block' }}
+            >
               Node
             </Text>
+            <NodeIcon display={{ base: 'block', md: 'none' }} />
           </Tab>
           <Tab>
-            <Text fontWeight={600} me="2">
+            <Text
+              fontWeight={600}
+              me="2"
+              display={{ base: 'none', md: 'block' }}
+            >
               System
             </Text>
+            <SystemIcon display={{ base: 'block', md: 'none' }} />
           </Tab>
           <Tab>
-            <Text fontWeight={600} me="2">
+            <Text
+              fontWeight={600}
+              me="2"
+              display={{ base: 'none', md: 'block' }}
+            >
               Extra
             </Text>
+            <MdSettings display={{ base: 'block', md: 'none' }} />
           </Tab>
         </TabList>
 
+        {errorForm && (
+          <Alert my="5" borderRadius={'10px'} status={'error'}>
+            <AlertIcon />
+            <AlertDescription>{errorForm}</AlertDescription>
+          </Alert>
+        )}
         <TabPanels>
           <TabPanel>
             {settings.pool && (
               <SimpleGrid columns={{ base: 1 }} gap="20px" mb="20px">
                 {/* POOL SETTINGS */}
                 <PanelCard
-                  title={'Pool settings'}
+                  title={'Pooled settings'}
                   description={'Manage pools configuration for your miner'}
                   textColor={textColor}
                   icon={PoolIcon}
                 >
-                  {errorForm && (
-                    <Flex px="22px">
-                      <Text color="red">{errorForm}</Text>
-                    </Flex>
-                  )}
-                  <Grid templateColumns="repeat(6, 1fr)" gap={2}>
-                    <GridItem colSpan={3}>
+                  <SimpleCard title={''} textColor={textColor}>
+                    <FormLabel
+                      display="flex"
+                      htmlFor={'poolPreset'}
+                      color={textColor}
+                      fontWeight="bold"
+                      _hover={{ cursor: 'pointer' }}
+                    >
+                      Select a pool
+                    </FormLabel>
+                    <Select
+                      id="poolPreset"
+                      isRequired={true}
+                      fontSize="sm"
+                      label="Select a pool *"
+                      onChange={handlePoolPreset}
+                    >
+                      <option></option>
+                      {presetPools.map((item, index) => (
+                        <option
+                          value={index}
+                          key={index}
+                          selected={pool && item.name === pool.name}
+                        >
+                          {item.name}
+                        </option>
+                      ))}
+                    </Select>
+                    {pool && pool.webUrl && (
+                      <Flex flexDir="row" mt='2'>
+                        <a
+                          href={pool.webUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Text fontSize={'sm'}>Learn more about this pool</Text>
+                        </a>
+                      </Flex>
+                    )}
+                  </SimpleCard>
+
+                  <Grid
+                    templateColumns={{
+                      base: 'repeat(1, 1fr)',
+                      md: 'repeat(6, 1fr)',
+                    }}
+                    gap={2}
+                  >
+                    <GridItem colSpan={{ base: '', md: 3 }}>
                       <SimpleCard title={'URL'} textColor={textColor}>
                         <Input
                           color={inputTextColor}
@@ -906,11 +1012,13 @@ const Settings = () => {
                           }
                           value={settings.pool.url}
                           onChange={handlePoolChange}
-                          disabled={soloMiningMode.selected}
+                          disabled={
+                            soloMiningMode.selected || pool?.id !== 'custom'
+                          }
                         />
                       </SimpleCard>
                     </GridItem>
-                    <GridItem colSpan={2}>
+                    <GridItem colSpan={{ base: '', md: 2 }}>
                       <SimpleCard title={'Username'} textColor={textColor}>
                         <Input
                           color={inputTextColor}
@@ -923,7 +1031,7 @@ const Settings = () => {
                         />
                       </SimpleCard>
                     </GridItem>
-                    <GridItem colSpan={1}>
+                    <GridItem colSpan={{ base: '', md: 1 }}>
                       <SimpleCard title={'Password'} textColor={textColor}>
                         <Input
                           color={inputTextColor}
@@ -937,22 +1045,49 @@ const Settings = () => {
                       </SimpleCard>
                     </GridItem>
                   </Grid>
-                  <SimpleSwitchSettingsItem
-                    item={soloMiningMode}
-                    textColor={textColor}
-                    sliderTextColor={sliderTextColor}
-                    handleSwitch={handleSwitchSoloMiningMode}
-                  />
-                  {soloMiningMode.selected && (
-                    <SimpleCard title={'Wallet address'} textColor={textColor}>
-                      <Input
-                        color={inputTextColor}
-                        name="wallet"
-                        type="text"
-                        placeholder={'1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'}
-                        value={settings.pool.username}
-                        onChange={handleSoloMiningChange}
+                </PanelCard>
+                <PanelCard
+                  title={'SOLO settings'}
+                  description={'Mine directly to your Bitcoin node'}
+                  textColor={textColor}
+                  icon={GrUserWorker}
+                >
+                  {blockHeader && blockHeader === blocksCount ? (
+                    <>
+                      <SimpleSwitchSettingsItem
+                        item={soloMiningMode}
+                        textColor={textColor}
+                        sliderTextColor={sliderTextColor}
+                        handleSwitch={handleSwitchSoloMiningMode}
                       />
+                      {soloMiningMode.selected && (
+                        <SimpleCard
+                          title={'Wallet address'}
+                          textColor={textColor}
+                        >
+                          <Input
+                            color={inputTextColor}
+                            name="wallet"
+                            type="text"
+                            placeholder={'1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'}
+                            value={settings.pool.username}
+                            onChange={handleSoloMiningChange}
+                          />
+                        </SimpleCard>
+                      )}
+                    </>
+                  ) : (
+                    <SimpleCard
+                      bg="orange.300"
+                      title={'Cannot enable SOLO mining'}
+                      textColor={'orange.600'}
+                      mt="20px"
+                    >
+                      <Text fontSize="sm" color="gray.800">
+                        Your Bitcoin node is not running or not fully synced.
+                        You can enable solo mining only after your node is fully
+                        synced.
+                      </Text>
                     </SimpleCard>
                   )}
                 </PanelCard>

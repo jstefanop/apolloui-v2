@@ -19,6 +19,7 @@ import {
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useState } from 'react';
+import LoadingIcon from '../components/UI/LoadingIcon';
 
 const SignIn = () => {
   // Chakra color mode
@@ -29,17 +30,21 @@ const SignIn = () => {
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState();
+  const [loading, setLoading] = useState(false);
 
   const handleShowPassword = () => setShowPassword(!showPassword);
 
   const handleSignin = async (e) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
     const response = await signIn('credentials', {
       password,
       redirect: false,
     });
     const { error } = response;
     setError(error);
+    setLoading(false);
   };
 
   return (
@@ -115,12 +120,13 @@ const SignIn = () => {
             <Button
               type='submit'
               fontSize='sm'
-              bgColor={textColor}
-              color={textButtonColor}
+              colorScheme='blue'
               fontWeight='500'
               w='100%'
               h='50'
               mb='24px'
+              isDisabled={loading}
+              isLoading={loading}
             >
               Sign In
             </Button>

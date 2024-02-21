@@ -196,7 +196,7 @@ const ColumnsTable = ({
         </Tbody>
       </Table>
       <Flex
-        direction={{ sm: 'column', md: 'row' }}
+        direction={{ base: 'column', md: 'row' }}
         justify="space-between"
         align="center"
         w="100%"

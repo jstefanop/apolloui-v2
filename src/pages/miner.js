@@ -142,11 +142,13 @@ const Miner = () => {
       icon: FanIcon,
     },
     {
-      value: `${avgBoardEfficiency && avgBoardEfficiency.toFixed(2) || 0} W/TH`,
+      value: `${
+        (avgBoardEfficiency && avgBoardEfficiency.toFixed(2)) || 0
+      } W/TH`,
       icon: PowerIcon,
     },
     {
-      value: `${avgVoltage} v`,
+      value: `${avgVoltage} A`,
       icon: VoltageIcon,
     },
     {
@@ -206,9 +208,12 @@ const Miner = () => {
       )}
       {minerOnline && (
         <Grid
-          templateRows="repeat(3, 1fr)"
-          templateColumns={{ base: 'repeat(6, 1fr)' }}
-          templateAreas={`'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`}
+          templateRows={{ base: 'repeat(6, 1fr)', md: 'repeat(3, 1fr)' }}
+          templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }}
+          templateAreas={{
+            base: `'Main' 'Main' 'Data' 'Data' 'Data' 'Data'`,
+            md: `'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`,
+          }}
           gap={'20px'}
           mb={'10px'}
         >
@@ -260,11 +265,15 @@ const Miner = () => {
 
             <Grid
               gridArea="Top"
-              templateRows={{ base: 'repeat(2, 1fr)', xl: 'repeat(1, 1fr)' }}
-              templateColumns={{ base: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }}
+              templateRows={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)', '2xl': 'repeat(1, 1fr)' }}
+              templateColumns={{
+                base: 'repeat(1, 1fr)',
+                md: 'repeat(2, 1fr)',
+                '2xl': 'repeat(4, 1fr)',
+              }}
               templateAreas={{
                 base: `'.' '.'`,
-                xl: `'. .'`,
+                '2xl': `'. .'`,
               }}
               gap={'20px'}
             >
@@ -382,9 +391,10 @@ const Miner = () => {
             <Grid
               gridArea="Middle"
               templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'auto 1fr' }}
+              templateColumns={{ base: '1 1fr', md: 'auto 1fr' }}
               templateAreas={{
-                base: `'. .'`,
+                base: `'.'`,
+                md: `'. .'`,
               }}
               gap={'20px'}
             >
@@ -577,9 +587,10 @@ const Miner = () => {
                 <Grid
                   gridArea="Bottom"
                   templateRows="repeat(1, 1fr)"
-                  templateColumns={{ base: 'repeat(3, 1fr)' }}
+                    templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
                   templateAreas={{
-                    base: `'. . .'`,
+                    base: `'.'`,
+                    md: `'. . .'`,
                   }}
                   gap={'20px'}
                 >

@@ -49,20 +49,19 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
     case 'H/S':
       return hashValue * multiplier;
     case 'KH/S':
-      return hashValue * multiplier / 1e3;
+      return (hashValue * multiplier) / 1e3;
     case 'MH/S':
-      return hashValue * multiplier / 1e6;
+      return (hashValue * multiplier) / 1e6;
     case 'GH/S':
-      return hashValue * multiplier / 1e9;
+      return (hashValue * multiplier) / 1e9;
     case 'TH/S':
-      return hashValue * multiplier / 1e12;
+      return (hashValue * multiplier) / 1e12;
     case 'PH/S':
-      return hashValue * multiplier / 1e15;
+      return (hashValue * multiplier) / 1e15;
     default:
-      return hashValue * multiplier / 1e9;
+      return (hashValue * multiplier) / 1e9;
   }
-}
-
+};
 
 export const numberToText = (number) => {
   let text = '';
@@ -150,7 +149,34 @@ export const convertTemp = (celsius, unit, addUnit) => {
 
 export const isValidBitcoinAddress = (address) => {
   // Bitcoin addresses are alphanumeric and start with either '1', '3', or 'bc1'
-  const addressRegex = /^(1|3|bc1)[a-zA-HJ-NP-Z0-9]{25,39}$/;
+  const addressRegex = /^(1|3|bc1)[a-zA-HJ-NP-Z0-9]{25,62}$/;
 
   return addressRegex.test(address);
 };
+
+export const presetPools = [
+  {
+    name: 'AntPool',
+    url: 'stratum+tcp://ss.antpool.com:3333',
+    webUrl: 'https://www.antpool.com/',
+  },
+  {
+    name: 'F2Pool',
+    url: 'stratum+tcp://btc.f2pool.com:1314',
+    webUrl: 'https://www.f2pool.com/',
+  },
+  {
+    name: 'ViaBTC',
+    url: 'stratum+tcp://btc.viabtc.io:3333',
+    webUrl: 'https://www.viabtc.com/',
+  },
+  {
+    name: 'Braiins',
+    url: 'stratum+tcp://stratum.braiins.com:3333',
+    webUrl: 'https://braiins.com/pool',
+  },
+  {
+    id: 'custom',
+    name: 'New custom pool',
+  },
+];

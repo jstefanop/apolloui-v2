@@ -32,7 +32,8 @@ const MultiStatistics = ({
   return (
     <Card py="15px" bg={bgColor} shadow={shadow} {...props}>
       <Flex
-        justify={{ base: 'center', xl: 'center' }}
+        justify={{ base: 'center' }}
+        direction={{ base: 'column', sm: 'row' }}
       >
         {startContent}
 
@@ -67,7 +68,7 @@ const MultiStatistics = ({
             </StatNumber>
           )}
         </Stat>
-        <Flex ms="auto" w="max-content">
+        <Flex ms="auto" w="max-content" display={{ base: 'none', md: 'block'}}>
           <Stat ms={startContent ? '18px' : '0px'}>
             {reversed && (
               <StatNumber

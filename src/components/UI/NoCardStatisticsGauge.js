@@ -94,7 +94,11 @@ const NoCardStatisticsGauge = ({
   };
 
   return (
-    <Flex align={align || 'center'} direction="column" w="100%">
+    <Flex
+      align={align || 'center'}
+      direction={{ base: 'row', md: 'column' }}
+      w="100%"
+    >
       {loading ? (
         <ChartLoader />
       ) : (

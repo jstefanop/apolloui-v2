@@ -76,17 +76,17 @@ const System = () => {
       <Card py="15px" bgColor={cardColor}>
         <Grid
           templateRows="auto auto"
-          templateColumns={{ base: 'repeat(2, 1fr)' }}
-          templateAreas={`'Illustration MainData' 'Bottom Bottom'`}
+          templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+          templateAreas={{ base: `'Illustration' 'MainData' 'Bottom' 'Bottom'`, md: `'Illustration MainData' 'Bottom Bottom'` }}
           gap={'20px'}
           mb={'10px'}
         >
-          <GridItem gridArea="Illustration">
+          <GridItem gridArea="Illustration" display={{ base: 'none', md: 'block'}}>
             <ParticlesCard />
           </GridItem>
 
           <GridItem gridArea="MainData">
-            <SimpleGrid rows="2" columns="2" spacing="20px">
+            <SimpleGrid rows="2" columns={{ base: 1, md: 2 }} spacing="20px">
               <MiniStatistics
                 startContent={
                   <IconBox
@@ -188,9 +188,10 @@ const System = () => {
           <Grid
             gridArea="Bottom"
             templateRows="auto"
-            templateColumns={{ base: 'repeat(4, 1fr)' }}
+            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
             templateAreas={{
-              base: `. . . .`,
+              base: `.`,
+              md: `. . . .`,
             }}
             gap={'20px'}
             mt="5"

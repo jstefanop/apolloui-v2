@@ -29,19 +29,19 @@ import {
 import Head from 'next/head';
 import Card from '../components/card/Card';
 import { useRouter } from 'next/router';
+import { MINER_RESTART_QUERY } from '../graphql/miner';
 import { AUTH_LOGIN_QUERY, SAVE_SETUP_QUERY } from '../graphql/auth';
 import { useLazyQuery } from '@apollo/client';
 import { SET_POOLS_QUERY } from '../graphql/pools';
 import { SET_SETTINGS_QUERY } from '../graphql/settings';
-import { isValidBitcoinAddress } from '../lib/utils';
+import { isValidBitcoinAddress, presetPools } from '../lib/utils';
 
 const Setup = () => {
   const router = useRouter();
   // Chakra color mode
-  const textButtonColor = useColorModeValue('white', 'brand.800');
+  const textButtonColor = useColorModeValue('white', 'white');
   const textColor = useColorModeValue('brand.800', 'white');
   const textColorSecondary = 'gray.400';
-  const brandStars = useColorModeValue('brand.500', 'brand.400');
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState();
@@ -57,32 +57,10 @@ const Setup = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const presetPools = [
-    {
-      name: 'AntPool',
-      url: 'stratum+tcp://ss.antpool.com:3333',
-      webUrl: 'https://www.antpool.com/',
-    },
-    {
-      name: 'F2Pool',
-      url: 'stratum+tcp://btc.f2pool.com:1314',
-      webUrl: 'https://www.f2pool.com/',
-    },
-    {
-      name: 'ViaBTC',
-      url: 'stratum+tcp://btc.viabtc.io:3333',
-      webUrl: 'https://www.viabtc.com/',
-    },
-    {
-      name: 'Braiins',
-      url: 'stratum+tcp://stratum.braiins.com:3333',
-      webUrl: 'https://braiins.com/pool',
-    },
-    {
-      id: 'custom',
-      name: 'New custom pool',
-    },
-  ];
+  const [
+    restartMiner,
+    { loading: loadingMinerRestart, error: errorMinerRestart },
+  ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
   const [
     saveSetup,
@@ -136,7 +114,15 @@ const Setup = () => {
         },
       },
     });
-  }, [token, soloMining, poolUrl, poolUsername, poolPassword, createPool, saveSettings]);
+  }, [
+    token,
+    soloMining,
+    poolUrl,
+    poolUsername,
+    poolPassword,
+    createPool,
+    saveSettings,
+  ]);
 
   useEffect(() => {
     setPoolError(null);
@@ -228,6 +214,11 @@ const Setup = () => {
     setStep(4);
   };
 
+  const handleStartMining = () => {
+    restartMiner();
+    router.push('/signin');
+  };
+
   return (
     <>
       <Head>
@@ -274,83 +265,94 @@ const Setup = () => {
         >
           <Box alignSelf={'flex-start'}>
             <Heading color={'white'} fontSize="42px" mt="10">
-              Select the type of mining you would like to do
+              Select mining type
             </Heading>
           </Box>
 
-          <Card
-            h="max-content"
-            mx="auto"
-            mt={{ base: '40px' }}
-            mb={{ base: '50px', lg: 'auto' }}
-            p={{ base: '10px', md: '50px' }}
-            pt={{ base: '30px', md: '50px' }}
-            pb={{ base: '20px', md: '20px' }}
+          <Flex
+            mx={{ base: 'auto', lg: '0px' }}
+            me="auto"
+            justifyContent="center"
+            px={{ base: '20px', md: '0px' }}
+            flexDirection="row"
           >
-            <Flex
-              mx={{ base: 'auto', lg: '0px' }}
-              me="auto"
-              justifyContent="center"
-              px={{ base: '20px', md: '0px' }}
-              flexDirection="column"
+            <Card
+              h="400px"
+              mx="20px"
+              mt={{ base: '40px' }}
+              mb={{ base: '50px', lg: 'auto' }}
+              p={{ base: '10px', md: '50px' }}
+              pt={{ base: '30px', md: '50px' }}
+              pb={{ base: '20px', md: '20px' }}
+              bg="blue"
+              border="2px solid"
+              borderColor="blue.900"
+              onClick={onOpen}
             >
-              <Box me="auto" mb="30px">
-                <SimpleGrid columns={{ base: '1', md: '2' }} gap="20px">
-                  <Flex direction="column">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      colorScheme="blue"
-                      onClick={onOpen}
-                    >
-                      Solo Mining
-                    </Button>
-                    <Text
-                      mt="20px"
-                      color={textColorSecondary}
-                      fontWeight="400"
-                      fontSize="md"
-                    >
-                      You are competing with the entire network for a full
-                      Bitcoin Block (the whole 6.25 BTC reward). You gain zero
-                      rewards while mining, in hopes of hitting the entire
-                      block. This is also called &quot;lottery&quot; mining because the
-                      chances are low, but this produces the maximum
-                      decentralization of the bitcoin network. If there are
-                      millions of solo miners then solo blocks will be found
-                      every day and ensure Bitcoin can never be censored!
-                    </Text>
-                  </Flex>
-                  <Flex direction="column">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      colorScheme="teal"
-                      onClick={() => setStep(2)}
-                    >
-                      Pooled Mining
-                    </Button>
-                    <Text
-                      mt="20px"
-                      color={textColorSecondary}
-                      fontWeight="400"
-                      fontSize="md"
-                    >
-                      You are contributing your hashrate to a collective &quot;pool&quot;
-                      that is competing to find a block. This produces daily
-                      rewards in mined &quot;satoshis&quot; because once your pool finds a
-                      block, it shares that block reward with you based on your
-                      % of hashrate contributed to the pool. These is the least
-                      decentralized form of mining, because you give control of
-                      block creation to the pool. Please note most pools have
-                      minimum payouts, that can take months of mining before you
-                      accumulate enough for a payout.
-                    </Text>
-                  </Flex>
-                </SimpleGrid>
-              </Box>
-            </Flex>
-          </Card>
+              <Button
+                variant="outline"
+                size="lg"
+                textColor={textButtonColor}
+                onClick={onOpen}
+              >
+                Solo Mining
+              </Button>
+              <Text
+                mt="20px"
+                color={textColorSecondary}
+                fontWeight="400"
+                fontSize="md"
+              >
+                You are competing with the entire network for a full Bitcoin
+                Block (the whole 6.25 BTC reward). You gain zero rewards while
+                mining, in hopes of hitting the entire block. This is also
+                called &quot;lottery&quot; mining because the chances are low,
+                but this produces the maximum decentralization of the bitcoin
+                network. If there are millions of solo miners then solo blocks
+                will be found every day and ensure Bitcoin can never be
+                censored!
+              </Text>
+            </Card>
+            <Card
+              h="400px"
+              mx="20px"
+              mt={{ base: '40px' }}
+              mb={{ base: '50px', lg: 'auto' }}
+              p={{ base: '10px', md: '50px' }}
+              pt={{ base: '30px', md: '50px' }}
+              pb={{ base: '20px', md: '20px' }}
+              bg="teal"
+              border="2px solid"
+              borderColor="teal.900"
+              onClick={() => setStep(2)}
+            >
+              <Button
+                variant="outline"
+                size="lg"
+                textColor={textButtonColor}
+                onClick={() => setStep(2)}
+              >
+                Pooled Mining
+              </Button>
+              <Text
+                mt="20px"
+                color={textColorSecondary}
+                fontWeight="400"
+                fontSize="md"
+              >
+                You are contributing your hashrate to a collective
+                &quot;pool&quot; that is competing to find a block. This
+                produces daily rewards in mined &quot;satoshis&quot; because
+                once your pool finds a block, it shares that block reward with
+                you based on your % of hashrate contributed to the pool. These
+                is the least decentralized form of mining, because you give
+                control of block creation to the pool. Please note most pools
+                have minimum payouts, that can take months of mining before you
+                accumulate enough for a payout.
+              </Text>
+            </Card>
+          </Flex>
+
           <Modal isOpen={isOpen} onClose={onClose} size="4xl">
             <ModalOverlay />
             <ModalContent>
@@ -1005,7 +1007,7 @@ const Setup = () => {
               w="300px"
               h="50"
               mb="24px"
-              onClick={() => router.push('/signin')}
+              onClick={() => handleStartMining()}
             >
               Start mining
             </Button>

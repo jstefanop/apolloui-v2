@@ -308,7 +308,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
             </Box>
           )}
 
-          <Box ms="auto" w={{ sm: '100%', md: 'unset' }}>
+          <Box ms="auto" w={{ base: '100%', md: 'unset' }}>
             <AdminNavbarLinks
               onOpen={props.onOpen}
               secondary={secondary}

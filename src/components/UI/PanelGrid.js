@@ -82,7 +82,7 @@ const PanelGrid = ({
           )}
         </Flex>
       </Flex>
-      <SimpleGrid columns={3} spacing={0} my="5" ml="2">
+      <SimpleGrid columns={{ base: '2', md: '3' }} spacing={0} my="5" ml="2">
         {data.map((item, index) =>
           !item.value ? (
             <span key={index}></span>

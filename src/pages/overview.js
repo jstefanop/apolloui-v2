@@ -135,9 +135,12 @@ const Overview = () => {
         </Alert>
       ) : (
         <Grid
-          templateRows="repeat(3, 1fr)"
-          templateColumns={{ base: 'repeat(6, 1fr)' }}
-          templateAreas={`'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`}
+          templateRows={{ base: 'repeat(9, 1fr)', md: 'repeat(3, 1fr)' }}
+          templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }}
+          templateAreas={{
+            base: `'Hashrate' 'Hashrate' 'Hashrate' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData'`,
+            md: `'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`,
+          }}
           gap={'20px'}
           mb={'10px'}
         >
@@ -156,8 +159,8 @@ const Overview = () => {
 
           <Grid
             gridArea="MainData"
-            templateRows="auto auto auto"
-            templateColumns={{ base: 'repeat(1, 1fr)' }}
+            templateRows={{ base: 'repeat(3, auto)', md: 'auto' }}
+            templateColumns={{ base: '1fr', md: 'repeat(1, 1fr)' }}
             templateAreas={{
               base: `'Top' 'Middle' 'Bottom'`,
             }}
@@ -167,9 +170,10 @@ const Overview = () => {
             <Grid
               gridArea="Top"
               templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'repeat(2, 1fr)' }}
+                templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
               templateAreas={{
-                base: `'. .'`,
+                base: `'.' '.'`,
+                md: `'. .'`,
               }}
               gap={'20px'}
             >
@@ -289,9 +293,10 @@ const Overview = () => {
             <Grid
               gridArea="Middle"
               templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'repeat(3, 1fr)' }}
+                templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
               templateAreas={{
-                base: `'. . .'`,
+                base: `'.'`,
+                md: `'. . .'`,
               }}
               gap={'20px'}
             >
@@ -422,7 +427,7 @@ const Overview = () => {
                       my="auto"
                       align={{ base: 'center', xl: 'start' }}
                       justify={{ base: 'center', xl: 'center' }}
-                      direction="row"
+                            direction={{ base: 'column', md: 'row' }}
                     >
                       <NoCardStatisticsGauge
                         id="minerTemp"
