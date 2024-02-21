@@ -2,6 +2,7 @@ import { useColorModeValue } from '@chakra-ui/system';
 import CountUp from 'react-countup';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import TileCard from '../UI/TileCard';
+import BannerPower from '../../assets/img/powerusage_banner.png';
 
 const PowerCard = ({
   shadow,
@@ -25,6 +26,7 @@ const PowerCard = ({
 
   return (
     <TileCard
+      bannerImage={BannerPower}
       boxShadow={shadow}
       bgGradient={powerCardColor}
       icon={PowerIcon}
