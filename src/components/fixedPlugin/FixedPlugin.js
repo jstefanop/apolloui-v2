@@ -39,7 +39,6 @@ const FixedPlugin = ({ type }) => {
           zIndex="99"
           position="fixed"
           variant="no-effects"
-          left={''}
           left={'26px'}
           bottom="20px"
           border="1px solid"
