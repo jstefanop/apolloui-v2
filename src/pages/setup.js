@@ -270,21 +270,20 @@ const Setup = () => {
           </Box>
 
           <Flex
-            mx={{ base: 'auto', lg: '0px' }}
-            me="auto"
+            mx={{ base: '0px', lg: '0px' }}
             justifyContent="center"
-            px={{ base: '20px', md: '0px' }}
+            px={{ base: '0px', md: '0px' }}
             flexDirection="row"
           >
             <Card
-              h="400px"
-              mx="20px"
+              h={{base: 'auto', md: '400px' }}
+              mx={{ base: '10px', md: '20px' }}
               mt={{ base: '40px' }}
               mb={{ base: '50px', lg: 'auto' }}
               p={{ base: '10px', md: '50px' }}
               pt={{ base: '30px', md: '50px' }}
               pb={{ base: '20px', md: '20px' }}
-              bg="blue"
+              bg="brand.600"
               border="2px solid"
               borderColor="blue.900"
               onClick={onOpen}
@@ -314,14 +313,14 @@ const Setup = () => {
               </Text>
             </Card>
             <Card
-              h="400px"
-              mx="20px"
+              h={{ base: 'auto', md: '400px' }}
+              mx={{ base: '10px', md: '20px' }}
               mt={{ base: '40px' }}
               mb={{ base: '50px', lg: 'auto' }}
               p={{ base: '10px', md: '50px' }}
               pt={{ base: '30px', md: '50px' }}
               pb={{ base: '20px', md: '20px' }}
-              bg="teal"
+              bg="brand.400"
               border="2px solid"
               borderColor="teal.900"
               onClick={() => setStep(2)}
@@ -420,7 +419,7 @@ const Setup = () => {
           alignItems="center"
           my="0"
           mx="auto"
-          maxW={{ base: '80%', xl: '60%' }}
+          maxW={{ base: '100%', md: '60%' }}
         >
           <Box alignSelf={'flex-start'}>
             <Heading color={'white'} fontSize="42px" mt="10">
@@ -461,7 +460,7 @@ const Setup = () => {
               <Flex direction="column">
                 <form onSubmit={handlesSetupSoloMining}>
                   <Stack direction="column" spacing="20px">
-                    <SimpleGrid columns={{ base: '1', md: '2' }} gap="20px">
+                    <SimpleGrid columns={{ base: '1', md: '1' }} gap="20px">
                       {/* Username */}
                       <Flex direction="column">
                         <FormLabel
@@ -547,7 +546,7 @@ const Setup = () => {
           alignItems="center"
           my="0"
           mx="auto"
-          maxW={{ base: '80%', xl: '60%' }}
+          maxW={{ base: '100%', md: '60%' }}
         >
           <Box alignSelf={'flex-start'}>
             <Heading color={'white'} fontSize="42px" mt="10">
@@ -816,7 +815,7 @@ const Setup = () => {
           alignItems="center"
           my="0"
           mx="auto"
-          maxW={{ base: '80%', xl: '60%' }}
+          maxW={{ base: '100%', md: '60%' }}
         >
           <Box alignSelf={'flex-start'}>
             <Heading color={'white'} fontSize="42px" mt="10">

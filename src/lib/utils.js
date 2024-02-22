@@ -32,7 +32,7 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
   let hashValue = parseFloat(hashrateString);
   let multiplier = 1;
 
-  // Trova il moltiplicatore per l'unità di misura della potenza di calcolo
+  // Find the multiplier
   if (hashrateString.toUpperCase().includes('K')) {
     multiplier = 1e3;
   } else if (hashrateString.toUpperCase().includes('M')) {

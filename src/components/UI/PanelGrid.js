@@ -21,13 +21,18 @@ const PanelGrid = ({
   badgeSecondaryText,
 }) => {
   const badgeBgColor = useColorModeValue('gray.200', 'gray.900');
-  const versionColors = {'v1': 'blue', 'v2': 'teal'}
+  const versionColors = { v1: 'blue', v2: 'teal' };
   return (
     <Flex mt="4" mx="5" direction="column">
       <Flex justify="space-between">
         <Flex m="1">
           <Text fontSize="md" fontWeight="600">
-            {title}{version && <Tag size='md' ml='10px' colorScheme={versionColors[version]}>{version}</Tag>}
+            {title}
+            {version && (
+              <Tag size="md" ml="10px" colorScheme={versionColors[version]}>
+                {version}
+              </Tag>
+            )}
           </Text>
         </Flex>
         {typeof active !== 'undefined' &&
@@ -82,20 +87,22 @@ const PanelGrid = ({
           )}
         </Flex>
       </Flex>
-      <SimpleGrid columns={{ base: '2', md: '3' }} spacing={0} my="5" ml="2">
-        {data.map((item, index) =>
-          !item.value ? (
-            <span key={index}></span>
-          ) : (
-            <Flex align="center" mb="4" key={index}>
-              <Icon as={item.icon} me="3" w="18px" h="18px" />
-              <Text fontWeight="600" minWidth="100px">
-                {item.value}
-              </Text>
-            </Flex>
-          )
-        )}
-      </SimpleGrid>
+      {data && data.length && (
+        <SimpleGrid columns={{ base: '2', md: '3' }} spacing={0} my="5" ml="2">
+          {data.map((item, index) =>
+            !item.value ? (
+              <span key={index}></span>
+            ) : (
+              <Flex align="center" mb="4" key={index}>
+                <Icon as={item.icon} me="3" w="18px" h="18px" />
+                <Text fontWeight="600" minWidth="100px">
+                  {item.value}
+                </Text>
+              </Flex>
+            )
+          )}
+        </SimpleGrid>
+      )}
     </Flex>
   );
 };

@@ -6,9 +6,6 @@ import {
   Grid,
   GridItem,
   useColorModeValue,
-  Button,
-  Divider,
-  Center,
   useDisclosure,
 } from '@chakra-ui/react';
 import { useRef, useEffect } from 'react';
@@ -27,7 +24,6 @@ import { PowerOffSolidIcon } from '../components/UI/Icons/PowerOffSolidIcon';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import { settingsSelector } from '../redux/reselect/settings';
 import { MinerIcon } from '../components/UI/Icons/MinerIcon';
-import { DifficultyIcon } from '../components/UI/Icons/DifficultyIcon';
 import { SharesSentIcon } from '../components/UI/Icons/SharesSentIcon';
 import { SharesAcceptedIcon } from '../components/UI/Icons/SharesAcceptedIcon';
 import { SharesRejectedIcon } from '../components/UI/Icons/SharesRejectedIcon';
@@ -101,12 +97,8 @@ const SoloMining = () => {
     ckPoolGlobalHashrate,
     ckPoolGlobalAvgHashrate,
     ckPoolGlobalHashrate1d,
+    ckPoolGlobalHashrate1h,
     ckPoolGlobalBestshare,
-    minerPower,
-    avgBoardTemp,
-    avgBoardErrors,
-    avgFanSpeed,
-    avgVoltage,
     activeBoards,
     totalBoards,
     ckPoolTotalUsers,
@@ -123,13 +115,18 @@ const SoloMining = () => {
   const bestShare = ckPoolGlobalBestshare / difficulty || 0;
   const prevBestShare = prevCkPoolGlobalBestshare / difficulty || 0;
 
-  const dailyChance = 1 / ((ckPoolGlobalHashrate1d / networkhashps) * 144);
+  console.log(ckPoolGlobalHashrate1d);
+
+  const dailyChance =
+    1 / (((ckPoolGlobalHashrate1d * 1e9) / networkhashps) * 144);
 
   const boardsWorkersData = boards
-    .map((board) => {
-      return board.ckWorkers;
-    })
-    .flat();
+    ? boards
+        .map((board) => {
+          return board.ckWorkers;
+        })
+        .flat()
+    : [];
 
   const desiredKeys = [
     'hashrate5m',
@@ -143,6 +140,7 @@ const SoloMining = () => {
   const boardNames = [];
 
   const dataTableBoards = boardsWorkersData.map((element) => {
+    if (!element) return;
     const mappedArray = [];
     desiredKeys.forEach((key) => {
       if (key in element) {
@@ -168,7 +166,7 @@ const SoloMining = () => {
             icon = SharesSentIcon;
             break;
           case 'bestever':
-            value = `${(element[key] / difficulty * 100).toFixed(4)}%`;
+            value = `${((element[key] / difficulty) * 100).toFixed(4)}%`;
             icon = BlocksIcon;
             break;
         }
@@ -207,9 +205,12 @@ const SoloMining = () => {
         />
       ) : (
         <Grid
-          templateRows="repeat(3, 1fr)"
-          templateColumns={{ base: 'repeat(6, 1fr)' }}
-          templateAreas={`'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`}
+          templateRows={{ base: 'repeat(6, 1fr)', md: 'repeat(3, 1fr)' }}
+          templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }}
+          templateAreas={{
+            base: `'Main' 'Main' 'Data' 'Data' 'Data' 'Data'`,
+            md: `'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`,
+          }}
           gap={'20px'}
           mb={'10px'}
         >
@@ -261,11 +262,19 @@ const SoloMining = () => {
 
             <Grid
               gridArea="Top"
-              templateRows={{ base: 'repeat(2, 1fr)', xl: 'repeat(1, 1fr)' }}
-              templateColumns={{ base: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' }}
+              templateRows={{
+                base: 'repeat(1, 1fr)',
+                md: 'repeat(2, 1fr)',
+                '2xl': 'repeat(1, 1fr)',
+              }}
+              templateColumns={{
+                base: 'repeat(1, 1fr)',
+                md: 'repeat(2, 1fr)',
+                '2xl': 'repeat(4, 1fr)',
+              }}
               templateAreas={{
                 base: `'.' '.'`,
-                xl: `'. .'`,
+                '2xl': `'. .'`,
               }}
               gap={'20px'}
             >
@@ -373,9 +382,10 @@ const SoloMining = () => {
             <Grid
               gridArea="Middle"
               templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'auto 1fr' }}
+              templateColumns={{ base: '1 1fr', md: 'auto 1fr' }}
               templateAreas={{
-                base: `'. .'`,
+                base: `'.'`,
+                md: `'. .'`,
               }}
               gap={'20px'}
             >
@@ -502,7 +512,7 @@ const SoloMining = () => {
                     dataTableBoards.map((dataTable, index) => (
                       <Box mt="3" key={index}>
                         <PanelGrid
-                          title={`Worker ${boardNames[index]}`}
+                          title={`Worker`}
                           active={activeBoards}
                           total={totalBoards}
                           data={dataTable}

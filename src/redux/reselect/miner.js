@@ -78,6 +78,7 @@ export const minerSelector = createSelector(
           Users: ckUsersCount,
           Workers: ckWorkersCount,
           hashrate1d: ckPoolHashrate1d,
+          hashrate1hr: ckPoolHashrate1h,
           hashrate15m: ckPoolHashrate15m,
           hashrate5m: ckPoolHashrate5m,
           bestshare: ckPoolBestshare,
@@ -129,7 +130,10 @@ export const minerSelector = createSelector(
             ckPoolHashrate5m && convertHashrateStringToValue(ckPoolHashrate5m),
           ckPoolHashrate1d:
             ckPoolHashrate1d &&
-            convertHashrateStringToValue(ckPoolHashrate1d, 'H/s'),
+            convertHashrateStringToValue(ckPoolHashrate1d, 'GH/s'),
+          ckPoolHashrate1h:
+            ckPoolHashrate1h &&
+            convertHashrateStringToValue(ckPoolHashrate1h, 'GH/s'),
           ckPoolBestshare,
           ckDisconnected: (ckDisconnected && true) || false,
           ckIdle,
@@ -209,7 +213,7 @@ export const minerSelector = createSelector(
 
       const ckPoolGlobalAvgHashrate = displayHashrate(
         _.sumBy(boards, (hb) => {
-          if (!hb.ckDisconnected) return hb.ckPoolHashrate15m;
+          if (!hb.ckDisconnected) return hb.ckPoolHashrate1h;
           return null;
         }),
         'GH/s',
@@ -220,6 +224,11 @@ export const minerSelector = createSelector(
 
       const ckPoolGlobalHashrate1d = _.sumBy(boards, (hb) => {
         if (!hb.ckDisconnected) return hb.ckPoolHashrate1d;
+        return null;
+      });
+
+      const ckPoolGlobalHashrate1h = _.sumBy(boards, (hb) => {
+        if (!hb.ckDisconnected) return hb.ckPoolHashrate1h;
         return null;
       });
 
@@ -428,6 +437,7 @@ export const minerSelector = createSelector(
         ckPoolGlobalHashrate,
         ckPoolGlobalAvgHashrate,
         ckPoolGlobalHashrate1d,
+        ckPoolGlobalHashrate1h,
         ckPoolGlobalBestshare,
         ckPoolDisconnected,
         ckPoolTotalSharesAccepted,

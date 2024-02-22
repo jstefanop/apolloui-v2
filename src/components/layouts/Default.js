@@ -124,20 +124,21 @@ const Layout = ({ children, routes }, props) => {
     (state) => state.feedback
   );
 
-  const { status: minerStatus } = useSelector(
-    (state) => state.minerAction
-  );
+  const { status: minerStatus } = useSelector((state) => state.minerAction);
 
   // Miner online data releseted
   const {
-    data: { online: minerOnline, stats: { date }},
+    data: {
+      online: minerOnline,
+      stats: { date },
+    },
   } = useSelector(minerSelector);
 
   const timestamp = new Date(date).getTime();
 
   // Settings data reselected
   const {
-    data: { nodeEnableSoloMining }
+    data: { nodeEnableSoloMining },
   } = useSelector(settingsSelector);
 
   // Miner status diff time
@@ -231,7 +232,7 @@ const Layout = ({ children, routes }, props) => {
                   <AlertDescription>{feedbackMessage}</AlertDescription>
                 </Alert>
               )}
-              {minerStatus !== minerOnline && minerStatusDiffTime > 20 && (
+              {minerStatus !== minerOnline && minerStatusDiffTime > 30 && (
                 <Card
                   mb="5"
                   borderRadius={'10px'}
@@ -251,9 +252,8 @@ const Layout = ({ children, routes }, props) => {
                         </Text>
                       ) : (
                         <Text>
-                          Your desired miner status is still different from the
-                          current one, select to force an update, discard this
-                          message or keep waiting.
+                          Your miner is still not active, you can try to force
+                          restart, wait or dismiss this message
                         </Text>
                       )}
                     </Flex>
@@ -274,8 +274,11 @@ const Layout = ({ children, routes }, props) => {
                 <Card mb="5" borderRadius={'10px'} bg={'green.300'} p="4">
                   <Flex justifyContent={'space-between'} flexDirection={'row'}>
                     <Flex align={'center'} color="white">
-                      <Icon as={CheckIcon} mr='2' />
-                      <Text>Your miner is <strong>{minerOnline ? 'Online' : 'Offline'}</strong></Text>
+                      <Icon as={CheckIcon} mr="2" />
+                      <Text>
+                        Your miner is{' '}
+                        <strong>{minerOnline ? 'Online' : 'Offline'}</strong>
+                      </Text>
                     </Flex>
                   </Flex>
                 </Card>

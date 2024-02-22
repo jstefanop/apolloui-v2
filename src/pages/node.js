@@ -67,6 +67,7 @@ const Node = () => {
     peerInfo,
     timestamp,
     localaddresses,
+    subversion,
   } = dataNode;
 
   // Set Previous state for CountUp component
@@ -158,7 +159,12 @@ const Node = () => {
             backgroundSize: 'cover',
           }}
         >
-          <Flex justify="center" align="center" mt="3" direction={{ base: 'column', md: 'row' }}>
+          <Flex
+            justify="center"
+            align="center"
+            mt="3"
+            direction={{ base: 'column', md: 'row' }}
+          >
             <Text fontSize="2xl" fontWeight="bold" color="white">
               {blockHeader === blocksCount
                 ? `Current block`
@@ -292,7 +298,7 @@ const Node = () => {
                 </SimpleGrid>
 
                 {/* BOTTOM */}
-                    <SimpleGrid columns={{ base: 1, md: 3 }} spacing="20px">
+                <SimpleGrid columns={{ base: 1, md: 3 }} spacing="20px">
                   <MiniStatistics
                     bgColor={statisticColor}
                     startContent={
@@ -366,7 +372,7 @@ const Node = () => {
                     reversed={true}
                   />
                 </SimpleGrid>
-                <SimpleGrid columns={1} spacing="20px" mt="5">
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing="20px" mt="5">
                   <MiniStatistics
                     bgColor={statisticColor}
                     startContent={
@@ -389,6 +395,27 @@ const Node = () => {
                         ? `${localaddresses[0].address}:${localaddresses[0].port}`
                         : 'Looking at local node...'
                     }
+                    reversed={true}
+                    fontSize="md"
+                  />
+                  <MiniStatistics
+                    bgColor={statisticColor}
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        bg={'transparent'}
+                        icon={
+                          <BlocksIcon
+                            w="32px"
+                            h="32px"
+                            color={iconColorReversed}
+                          />
+                        }
+                      />
+                    }
+                    name="Bitcoin Node Version"
+                    value={subversion}
                     reversed={true}
                     fontSize="md"
                   />
