@@ -21,6 +21,7 @@ import {
 } from '../scrollbar/Scrollbar';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import PropTypes from 'prop-types';
+import FixedPlugin from '../fixedPlugin/FixedPlugin';
 
 // Assets
 import { IoMenuOutline } from 'react-icons/io5';
@@ -96,6 +97,7 @@ export function SidebarResponsive(props) {
       >
         <DrawerOverlay />
         <DrawerContent w='285px' maxW='285px' bg={sidebarBackgroundColor}>
+          <FixedPlugin type="medium" />
           <DrawerCloseButton
             zIndex='3'
             onClose={onClose}

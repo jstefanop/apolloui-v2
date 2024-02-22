@@ -185,6 +185,7 @@ export default function HeaderLinks({
               >
                 <Link href="/solo-mining">
                   <Icon
+                    mt="8px"
                     w="18px"
                     h="18px"
                     color={navbarIcon}
@@ -330,7 +331,7 @@ export default function HeaderLinks({
             </Text>
           </Flex>
 
-          <Flex p="0px" mx="4px">
+          <Flex p="0px" mx="4px" display={{ base: 'none', md: 'block' }}>
             <FixedPlugin type="small" />
           </Flex>
 

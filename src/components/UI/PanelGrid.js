@@ -21,7 +21,10 @@ const PanelGrid = ({
   badgeSecondaryText,
 }) => {
   const badgeBgColor = useColorModeValue('gray.200', 'gray.900');
-  const versionColors = { v1: 'blue', v2: 'teal' };
+  const versionsMap = {
+    v1: { color: 'blue', name: 'Apollo BTC' },
+    v2: { color: 'teal', name: 'Apollo II' },
+  };
   return (
     <Flex mt="4" mx="5" direction="column">
       <Flex justify="space-between">
@@ -29,8 +32,8 @@ const PanelGrid = ({
           <Text fontSize="md" fontWeight="600">
             {title}
             {version && (
-              <Tag size="md" ml="10px" colorScheme={versionColors[version]}>
-                {version}
+              <Tag size="md" ml="10px" colorScheme={versionsMap[version]?.color}>
+                {versionsMap[version]?.name}
               </Tag>
             )}
           </Text>
@@ -88,7 +91,7 @@ const PanelGrid = ({
         </Flex>
       </Flex>
       {data && data.length && (
-        <SimpleGrid columns={{ base: '2', md: '3' }} spacing={0} my="5" ml="2">
+        <SimpleGrid columns={{ base: '2', xl: '3' }} spacing={0} my="5" ml="2">
           {data.map((item, index) =>
             !item.value ? (
               <span key={index}></span>

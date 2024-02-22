@@ -135,7 +135,7 @@ export const minerSelector = createSelector(
             ckPoolHashrate1h &&
             convertHashrateStringToValue(ckPoolHashrate1h, 'GH/s'),
           ckPoolBestshare,
-          ckDisconnected: (ckDisconnected && true) || false,
+          ckDisconnected: moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90 ? true : false, // (ckDisconnected && true) || false,
           ckIdle,
           ckSharesAccepted,
           ckSharesRejected,

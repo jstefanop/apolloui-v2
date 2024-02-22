@@ -146,6 +146,8 @@ const Layout = ({ children, routes }, props) => {
 
   const [minerStatusDone, setMinerStatusDone] = useState(false);
 
+  // TODO Use start/stop time when user clicked to calculate the diff time
+
   // Reparsing routes
   routes = routes.filter((route) => {
     if (route.name === 'SOLO Mining' && !nodeEnableSoloMining) return false;
@@ -204,6 +206,7 @@ const Layout = ({ children, routes }, props) => {
           transitionProperty="top, bottom, width"
           transitionTimingFunction="linear, linear, ease"
         >
+          
           <Portal>
             <Box>
               <Navbar
@@ -244,7 +247,7 @@ const Layout = ({ children, routes }, props) => {
                   <Flex justifyContent={'space-between'} flexDirection={'row'}>
                     <Flex align={'center'} color="white">
                       <Spinner size="sm" mr="2" />
-                      {minerStatusDiffTime < 60 ? (
+                      {!timestamp ? (
                         <Text>
                           Waiting for the current miner status to match the
                           desired one ({minerStatus ? 'Online' : 'Offline'}
@@ -257,7 +260,7 @@ const Layout = ({ children, routes }, props) => {
                         </Text>
                       )}
                     </Flex>
-                    {minerStatusDiffTime >= 60 && (
+                    {timestamp > 0 && minerStatusDiffTime >= 60 && (
                       <Flex>
                         <Button size="xs" mr="3">
                           FORCE

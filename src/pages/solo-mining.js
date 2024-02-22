@@ -115,8 +115,6 @@ const SoloMining = () => {
   const bestShare = ckPoolGlobalBestshare / difficulty || 0;
   const prevBestShare = prevCkPoolGlobalBestshare / difficulty || 0;
 
-  console.log(ckPoolGlobalHashrate1d);
-
   const dailyChance =
     1 / (((ckPoolGlobalHashrate1d * 1e9) / networkhashps) * 144);
 
