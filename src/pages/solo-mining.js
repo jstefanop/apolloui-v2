@@ -112,8 +112,9 @@ const SoloMining = () => {
     boards,
   } = dataMiner;
 
-  const bestShare = ckPoolGlobalBestshare / difficulty || 0;
-  const prevBestShare = prevCkPoolGlobalBestshare / difficulty || 0;
+  // TODO
+  const bestSharePerc = 1 / (ckPoolGlobalBestshare * 1e11 / networkhashps * 144) || 0;
+  const prevBestSharePerc = 1 / (prevCkPoolGlobalBestshare * 1e11 / networkhashps * 144) || 0;
 
   const dailyChance =
     1 / (((ckPoolGlobalHashrate1d * 1e9) / networkhashps) * 144);
@@ -237,10 +238,10 @@ const SoloMining = () => {
               <BestShare
                 loading={loadingMiner && loadingNode}
                 errors={errorMiner}
-                data={bestShare}
-                avgData={bestShare * 100}
-                prevData={prevBestShare}
-                prevAvgData={prevBestShare * 100}
+                data={ckPoolGlobalBestshare}
+                avgData={null}
+                prevData={prevCkPoolGlobalBestshare}
+                prevAvgData={prevBestSharePerc}
                 shadow={shadow}
                 iconColor={iconColor}
               />

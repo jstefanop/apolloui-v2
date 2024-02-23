@@ -9,10 +9,6 @@ import {
   Button,
   Divider,
   Center,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
   useDisclosure,
 } from '@chakra-ui/react';
 import { useRef, useEffect } from 'react';
@@ -26,7 +22,6 @@ import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import MiniStatistics from '../components/UI/MiniStatistics';
 import { BugIcon } from '../components/UI/Icons/BugIcon';
-import { RejectedIcon } from '../components/UI/Icons/RejectedIcon';
 import { LastShareIcon } from '../components/UI/Icons/LastShareIcon';
 import { PowerOffSolidIcon } from '../components/UI/Icons/PowerOffSolidIcon';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
@@ -243,9 +238,9 @@ const Miner = () => {
                 loading={loadingMiner}
                 errors={errorMiner}
                 data={minerPower}
-                avgData={minerPowerPerGh}
+                avgData={minerPowerPerGh * 1000}
                 prevData={prevMinerPower}
-                prevAvgData={prevMinerPowerPerGh}
+                prevAvgData={prevMinerPowerPerGh * 1000}
                 shadow={shadow}
                 iconColor={iconColor}
               />
@@ -265,15 +260,16 @@ const Miner = () => {
 
             <Grid
               gridArea="Top"
-              templateRows={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)', '2xl': 'repeat(1, 1fr)' }}
+              templateRows={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)', '3xl': 'repeat(1, 1fr)' }}
               templateColumns={{
                 base: 'repeat(1, 1fr)',
                 md: 'repeat(2, 1fr)',
-                '2xl': 'repeat(4, 1fr)',
+                '3xl': 'repeat(4, 1fr)',
               }}
               templateAreas={{
                 base: `'.' '.'`,
-                '2xl': `'. .'`,
+                'md': `'. .'`,
+                '3xl': `'. .'`,
               }}
               gap={'20px'}
             >
@@ -640,7 +636,7 @@ const Miner = () => {
                       name="Chip speed"
                       value={avgChipSpeed}
                       rawValue={avgChipSpeed}
-                      total={100}
+                      total={240}
                       gauge={true}
                       loading={loadingMiner}
                     />
@@ -665,7 +661,7 @@ const Miner = () => {
                       name="Fan speed"
                       value={`${avgFanSpeed} rpm`}
                       rawValue={avgFanSpeed}
-                      total={4000}
+                      total={6000}
                       gauge={true}
                       loading={loadingMiner}
                     />

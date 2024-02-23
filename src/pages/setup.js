@@ -283,16 +283,18 @@ const Setup = () => {
               p={{ base: '10px', md: '50px' }}
               pt={{ base: '30px', md: '50px' }}
               pb={{ base: '20px', md: '20px' }}
-              bg="brand.600"
+              bg="brand.800"
               border="2px solid"
               borderColor="blue.900"
               onClick={onOpen}
+              opacity={'0.8'}
             >
               <Button
                 variant="outline"
                 size="lg"
                 textColor={textButtonColor}
                 onClick={onOpen}
+                colorScheme='white'
               >
                 Solo Mining
               </Button>
@@ -320,16 +322,18 @@ const Setup = () => {
               p={{ base: '10px', md: '50px' }}
               pt={{ base: '30px', md: '50px' }}
               pb={{ base: '20px', md: '20px' }}
-              bg="brand.400"
+              bg="brand.800"
               border="2px solid"
               borderColor="teal.900"
               onClick={() => setStep(2)}
+              opacity={'0.8'}
             >
               <Button
                 variant="outline"
                 size="lg"
                 textColor={textButtonColor}
                 onClick={() => setStep(2)}
+                colorScheme='white'
               >
                 Pooled Mining
               </Button>

@@ -156,19 +156,9 @@ export const isValidBitcoinAddress = (address) => {
 
 export const presetPools = [
   {
-    name: 'AntPool',
-    url: 'stratum+tcp://ss.antpool.com:3333',
-    webUrl: 'https://www.antpool.com/',
-  },
-  {
-    name: 'F2Pool',
-    url: 'stratum+tcp://btc.f2pool.com:1314',
-    webUrl: 'https://www.f2pool.com/',
-  },
-  {
-    name: 'ViaBTC',
-    url: 'stratum+tcp://btc.viabtc.io:3333',
-    webUrl: 'https://www.viabtc.com/',
+    name: 'Ocean.xyz',
+    url: 'stratum+tcp://mine.ocean.xyz:3334',
+    webUrl: 'https://www.ocean.xyz/',
   },
   {
     name: 'Braiins',
@@ -177,6 +167,6 @@ export const presetPools = [
   },
   {
     id: 'custom',
-    name: 'New custom pool',
+    name: 'Setup Custom Pool',
   },
 ];

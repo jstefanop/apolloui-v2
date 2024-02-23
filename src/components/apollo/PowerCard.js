@@ -34,7 +34,7 @@ const PowerCard = ({
       iconBgColor="linear-gradient(290.56deg, #455976 22.69%, #0B0F10 60.45%)"
       title="Power usage"
       secondaryTextColor={powerSecondaryColor}
-      secondaryText="Watt per GH/s"
+      secondaryText="Watts per TH/s"
       mainData={
         <CountUp
           start={prevData || 0}
@@ -50,8 +50,7 @@ const PowerCard = ({
             start={prevAvgData || 0}
             end={avgData}
             duration="1"
-            decimals="2"
-            suffix={` Watts`}
+            decimals="0"
           />
         )
       }

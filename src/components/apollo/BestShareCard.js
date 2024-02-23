@@ -37,7 +37,7 @@ const BestShare = ({
           start={prevData || 0}
           end={data}
           duration="1"
-          decimals="6"
+          decimals="0"
           suffix={``}
         />
       }
@@ -47,7 +47,7 @@ const BestShare = ({
             start={prevAvgData || 0}
             end={avgData}
             duration="1"
-            decimals="4"
+            decimals="6"
             suffix={`%`}
           />
         )

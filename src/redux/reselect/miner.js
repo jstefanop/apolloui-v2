@@ -41,7 +41,11 @@ export const minerSelector = createSelector(
             wattPerGHs,
             upTime,
             intervals: {
-              int_3600: { chipSpeed, bySol: avgHashrateInGh, byPool: avgPoolHashrateInGh },
+              int_3600: {
+                chipSpeed,
+                bySol: avgHashrateInGh,
+                byPool: avgPoolHashrateInGh,
+              },
               int_30: { bySol: hashrateInGh },
             },
           },
@@ -90,6 +94,8 @@ export const minerSelector = createSelector(
 
         const { worker: ckWorkers } = ckUsers || {};
 
+        console.log(avgHashrateInGh, wattTotal)
+
         return {
           date,
           status,
@@ -107,7 +113,7 @@ export const minerSelector = createSelector(
           wattTotal,
           hashrateInGh,
           avgHashrateInGh,
-          efficiency: avgHashrateInGh / wattTotal,
+          efficiency: wattTotal / avgHashrateInGh * 1000,
           fanSpeed: _.mean(fanRpm),
           temperature,
           errorRate,
@@ -135,7 +141,10 @@ export const minerSelector = createSelector(
             ckPoolHashrate1h &&
             convertHashrateStringToValue(ckPoolHashrate1h, 'GH/s'),
           ckPoolBestshare,
-          ckDisconnected: moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90 ? true : false, // (ckDisconnected && true) || false,
+          ckDisconnected:
+            moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90
+              ? true
+              : false,
           ckIdle,
           ckSharesAccepted,
           ckSharesRejected,
@@ -297,25 +306,15 @@ export const minerSelector = createSelector(
       );
 
       // Miner watt
-      const minerPower =
-        _.chain(boards)
-          .filter((hb) => {
-            return hb.status;
-          })
-          .meanBy((hb) => {
-            return hb.wattTotal;
-          })
-          .value() || 0;
+      const minerPower = _.sumBy(boards, (hb) => {
+        if (hb.status) return hb.wattTotal;
+        return 0;
+      });
 
-      const minerPowerPerGh =
-        _.chain(boards)
-          .filter((hb) => {
-            return hb.status;
-          })
-          .meanBy((hb) => {
-            return hb.wattPerGHs;
-          })
-          .value() || 0;
+      const minerPowerPerGh = _.sumBy(boards, (hb) => {
+        if (hb.status) return hb.wattPerGHs;
+        return 0;
+      });
 
       // Board sum/avg
       let avgBoardEfficiency = _.meanBy(boards, (hb) => {
