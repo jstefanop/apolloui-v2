@@ -41,7 +41,7 @@ export default function Footer() {
         {' '}
         &copy; {1900 + new Date().getYear()}
         <Text as='span' fontWeight='500' ms='4px'>
-          Apollo UI. All Rights Reserved. Made with love by
+          Apollo Web OS v2.0.0-BETA Made with love by
           <Link
             mx='3px'
             color={textColor}

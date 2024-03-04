@@ -197,7 +197,7 @@ const Miner = () => {
       {!minerOnline && !minerStatus && (
         <CustomAlert
           title="Miner is offline"
-          description="Try to start it from the top menu."
+          description="Try and restart from the top menu."
           status="info"
         />
       )}

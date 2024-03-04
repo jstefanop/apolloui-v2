@@ -66,11 +66,11 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
 export const numberToText = (number) => {
   let text = '';
   const units = [
-    'quadrillions',
-    'trillions',
-    'billions',
-    'millions',
-    'thousands',
+    'quadrillion',
+    'trillion',
+    'billion',
+    'million',
+    'thousand',
   ];
   const values = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000];
   for (let i = 0; i < units.length; i++) {
