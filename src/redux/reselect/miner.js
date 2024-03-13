@@ -85,6 +85,7 @@ export const minerSelector = createSelector(
           hashrate1hr: ckPoolHashrate1h,
           hashrate15m: ckPoolHashrate15m,
           hashrate5m: ckPoolHashrate5m,
+          hashrate1m: ckPoolHashrate1m,
           bestshare: ckPoolBestshare,
           Disconnected: ckDisconnected,
           Idle: ckIdle,
@@ -93,8 +94,6 @@ export const minerSelector = createSelector(
         } = ckPool || {};
 
         const { worker: ckWorkers } = ckUsers || {};
-
-        console.log(avgHashrateInGh, wattTotal)
 
         return {
           date,
@@ -113,7 +112,7 @@ export const minerSelector = createSelector(
           wattTotal,
           hashrateInGh,
           avgHashrateInGh,
-          efficiency: wattTotal / avgHashrateInGh * 1000,
+          efficiency: (wattTotal / avgHashrateInGh) * 1000,
           fanSpeed: _.mean(fanRpm),
           temperature,
           errorRate,
@@ -129,6 +128,9 @@ export const minerSelector = createSelector(
           ckLastUpdate,
           ckUsersCount,
           ckWorkersCount,
+          ckPoolHashrate1m:
+            ckPoolHashrate1m &&
+            convertHashrateStringToValue(ckPoolHashrate1m),
           ckPoolHashrate15m:
             ckPoolHashrate15m &&
             convertHashrateStringToValue(ckPoolHashrate15m),
@@ -211,7 +213,7 @@ export const minerSelector = createSelector(
 
       const ckPoolGlobalHashrate = displayHashrate(
         _.sumBy(boards, (hb) => {
-          if (!hb.ckDisconnected) return hb.ckPoolHashrate5m;
+          if (!hb.ckDisconnected) return hb.ckPoolHashrate1m;
           return null;
         }),
         'GH/s',
@@ -241,7 +243,7 @@ export const minerSelector = createSelector(
         return null;
       });
 
-      const ckPoolGlobalBestshare = _.sumBy(boards, (hb) => {
+      const ckPoolGlobalBestshare = _.meanBy(boards, (hb) => {
         if (!hb.ckDisconnected) return hb.ckPoolBestshare;
         return 0;
       });

@@ -22,6 +22,7 @@ export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 const ls = typeof window !== 'undefined' ? localStorage : {};
 
 const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
+const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
 
 let apolloClient;
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -38,7 +39,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: `http://${hostnameApi}:5000/api/graphql`,
+  uri: `http://${hostnameApi}:${portApi}/api/graphql`,
 });
 
 const authLink = new ApolloLink((operation, forward) => {

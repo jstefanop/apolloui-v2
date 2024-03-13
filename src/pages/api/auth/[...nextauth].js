@@ -18,9 +18,12 @@ export const authOptions = {
       async authorize(credentials, req) {
         try {
           let hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
+          const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
+
+          console.log(`http://${hostnameApi}:${portApi}/api/graphql`);
 
           const authData = await axios({
-            url: `http://${hostnameApi}:5000/api/graphql`,
+            url: `http://${hostnameApi}:${portApi}/api/graphql`,
             method: 'post',
             data: {
               query: `

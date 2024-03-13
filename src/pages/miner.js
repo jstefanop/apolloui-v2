@@ -143,11 +143,11 @@ const Miner = () => {
       icon: PowerIcon,
     },
     {
-      value: `${avgVoltage} A`,
+      value: `${avgVoltage.toFixed(2)} A`,
       icon: VoltageIcon,
     },
     {
-      value: `${avgBoardErrors}%`,
+      value: `${avgBoardErrors && avgBoardErrors.toFixed(2) || 0}%`,
       icon: BugIcon,
     },
   ];

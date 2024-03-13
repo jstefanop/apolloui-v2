@@ -372,7 +372,7 @@ const Node = () => {
                     reversed={true}
                   />
                 </SimpleGrid>
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing="20px" mt="5">
+                <SimpleGrid columns={{ base: 1 }} spacing="20px" mt="5">
                   <MiniStatistics
                     bgColor={statisticColor}
                     startContent={
