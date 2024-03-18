@@ -172,27 +172,27 @@ export const minerSelector = createSelector(
         : null;
 
       const ckPoolTotalUsers = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.ckUsersCount;
+        if (!hb.ckDisconnected) return hb.ckUsersCount;
         return 0;
       });
 
       const ckPoolTotalWorkers = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.ckWorkersCount;
+        if (!hb.ckDisconnected) return hb.ckWorkersCount;
         return 0;
       });
 
       const ckPoolTotalIdle = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.ckIdle;
+        if (!hb.ckDisconnected) return hb.ckIdle;
         return 0;
       });
 
       const ckPoolTotalSharesAccepted = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.ckSharesAccepted;
+        if (!hb.ckDisconnected) return hb.ckSharesAccepted;
         return 0;
       });
 
       const ckPoolTotalSharesRejected = _.sumBy(boards, (hb) => {
-        if (hb.status) return hb.ckSharesRejected;
+        if (!hb.ckDisconnected) return hb.ckSharesRejected;
         return 0;
       });
 

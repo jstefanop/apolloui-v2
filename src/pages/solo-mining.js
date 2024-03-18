@@ -35,6 +35,7 @@ import Head from 'next/head';
 import CustomAlert from '../components/UI/CustomAlert';
 import moment from 'moment';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
+import { shortenBitcoinAddress } from '../lib/utils';
 
 const SoloMining = () => {
   const router = useRouter();
@@ -165,7 +166,7 @@ const SoloMining = () => {
             icon = SharesSentIcon;
             break;
           case 'bestever':
-            value = `${((element[key] / difficulty) * 100).toFixed(4)}%`;
+            value = difficulty > 0 ? `${((element[key] / difficulty) * 100).toFixed(4)}%` : 'n.a.';
             icon = BlocksIcon;
             break;
         }
@@ -511,7 +512,7 @@ const SoloMining = () => {
                     dataTableBoards.map((dataTable, index) => (
                       <Box mt="3" key={index}>
                         <PanelGrid
-                          title={`Worker`}
+                          title={`Worker ${shortenBitcoinAddress(boardNames[index], 8)}`}
                           active={activeBoards}
                           total={totalBoards}
                           data={dataTable}
