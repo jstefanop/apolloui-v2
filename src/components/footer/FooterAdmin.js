@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 
 import config from '../../config.json';
+import { getVersionFromPackageJson } from '../../lib/utils';
 
 export default function Footer() {
   const textColor = useColorModeValue('gray.400', 'white');
@@ -41,7 +42,7 @@ export default function Footer() {
         {' '}
         &copy; {1900 + new Date().getYear()}
         <Text as='span' fontWeight='500' ms='4px'>
-          Apollo Web OS v2.0.0-BETA Made with love by
+          Apollo Web OS v{getVersionFromPackageJson()} Made with love by
           <Link
             mx='3px'
             color={textColor}

@@ -1,3 +1,5 @@
+import packageJson from '../../package.json';
+
 export const displayHashrate = (
   hashrate,
   unit = 'h',
@@ -65,13 +67,7 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
 
 export const numberToText = (number) => {
   let text = '';
-  const units = [
-    'quadrillion',
-    'trillion',
-    'billion',
-    'million',
-    'thousand',
-  ];
+  const units = ['quadrillion', 'trillion', 'billion', 'million', 'thousand'];
   const values = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000];
   for (let i = 0; i < units.length; i++) {
     if (number >= values[i]) {
@@ -178,5 +174,19 @@ export const shortenBitcoinAddress = (address, chars = 5) => {
     const prefix = address.substring(0, chars);
     const suffix = address.substring(address.length - chars);
     return prefix + '...' + suffix;
+  }
+};
+
+export const getVersionFromPackageJson  = () => {
+  try {
+    // Return the version
+    const version = packageJson.version;
+    return version;
+  } catch (error) {
+    console.error(
+      'Error reading the package.json file. Make sure the file exists and is valid JSON.',
+      error
+    );
+    return null;
   }
 }
