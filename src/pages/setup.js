@@ -581,10 +581,12 @@ const Setup = () => {
                   fontWeight="400"
                   fontSize="md"
                 >
-                  Welcome to your Apollo BTC miner setup. First of all your
-                  miner needs a Bitcoin pool to connect to, we are suggesting
-                  you some below or you can add your custom one. Please remember
-                  to add username and password pool too.
+                  Enter your pool information below, or get started quickly with one 
+                  of our suggested pools. If a pool only requires a payout address you 
+                  can enter your Bitcoin address in the username field (if your unit 
+                  came with a FutureBit Satscard, tap it, copy the address and enter it here!). 
+                  Some pools require you to setup an account first, so follow their instructions
+                  before setting it up here. Password field can be anything for most pools. 
                 </Text>
               </Box>
               <Flex direction="column">
@@ -997,7 +999,7 @@ const Setup = () => {
               color={'white'}
               mb="10"
             >
-              Congratulation the setup is complete.
+              Your Setup is complete!
               <br />
               Let&apos;s start mining some Bitcoin!
             </Text>
