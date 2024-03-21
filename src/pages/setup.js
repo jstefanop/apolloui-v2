@@ -456,9 +456,13 @@ const Setup = () => {
                 >
                   Enter your wallet address for solo mining payout. This is the
                   address the full block reward will go to if you find a block.
+                  Do NOT use an exchange address, and only use a Bitcoin address 
+                  you fully control. 
                   If your unit came with a FutureBit Satscard, you can tap the
                   card on an NFC enable phone to view the payout address, and
-                  copy and paste the address below.
+                  copy and paste the address below. Please note you will not 
+                  start solo mining until your node is fully synced, which can
+                  take several days. 
                 </Text>
               </Box>
               <Flex direction="column">
