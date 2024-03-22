@@ -118,7 +118,7 @@ const SoloMining = () => {
   const prevBestSharePerc = 1 / (prevCkPoolGlobalBestshare * 1e11 / networkhashps * 144) || 0;
 
   const dailyChance =
-    1 / (((ckPoolGlobalHashrate1d * 1e9) / networkhashps) * 144);
+    1 / (((ckPoolGlobalHashrate1h * 1e9) / networkhashps) * 144);
 
   const boardsWorkersData = boards
     ? boards

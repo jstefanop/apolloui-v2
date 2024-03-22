@@ -1,18 +1,18 @@
 {
   "name": "ApolloUI",
-  "version": "2.0.0-beta",
+  "version": "2.0.1-beta",
   "description": "Dashboard for Apollo miner from Futurebit",
   "author": "FutureBit LLC",
   "homepage": "https://www.futurebit.io",
-  "copyright": "Copyright 2022 FutureBit LLC",
+  "copyright": "Copyright 2024 FutureBit LLC",
   "license": "CC BY-NC-ND 4.0",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git@github.com:jstefanop/apolloui.git"
+    "url": "git@github.com:jstefanop/apolloui-v2.git"
   },
   "bugs": {
-    "url": "https://github.com/jstefanop/apolloui/issues"
+    "url": "https://github.com/jstefanop/apolloui-v2/issues"
   },
   "scripts": {
     "dev": "next lint && next dev",
