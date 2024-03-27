@@ -1052,7 +1052,7 @@ const Settings = () => {
                   textColor={textColor}
                   icon={GrUserWorker}
                 >
-                  {blockHeader && blockHeader === blocksCount ? (
+                  {(blockHeader && blockHeader === blocksCount) || soloMiningMode.selected ? (
                     <>
                       <SimpleSwitchSettingsItem
                         item={soloMiningMode}

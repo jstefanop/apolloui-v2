@@ -143,7 +143,7 @@ const Miner = () => {
       icon: PowerIcon,
     },
     {
-      value: `${avgVoltage.toFixed(2)} A`,
+      value: avgVoltage ? `${avgVoltage.toFixed(2)} A` : 'N/A',
       icon: VoltageIcon,
     },
     {

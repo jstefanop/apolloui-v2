@@ -216,7 +216,7 @@ const Setup = () => {
 
   const handleStartMining = () => {
     restartMiner();
-    router.push('/signin');
+    router.replace('/signin');
   };
 
   return (
@@ -1017,6 +1017,8 @@ const Setup = () => {
               h="50"
               mb="24px"
               onClick={() => handleStartMining()}
+              isDisabled={loadingMinerRestart}
+              isLoading={loadingMinerRestart}
             >
               Start mining
             </Button>

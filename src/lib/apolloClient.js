@@ -83,13 +83,16 @@ function createApolloClient() {
                 let poolStatus = true;
 
                 const sharesSent = board.pool.intervals.int_0.sharesSent;
-                const shareTime = board.date;
+                const shareTime = moment(board.date);
                 let storedBoard = ls.getItem(`board_${board.uuid}`);
                 if (storedBoard) storedBoard = JSON.parse(storedBoard);
 
                 const interval = moment.duration(moment().diff(shareTime));
+                const maxStatusInterval = process.env.NEXT_PUBLIC_ENV === 'development' ? 10 : 1;
 
-                if (interval.asMinutes() > 1) {
+                // console.log('interval', board.date, shareTime.format(), moment.utc().format(), interval.asMinutes());
+
+                if (interval.asMinutes() >  maxStatusInterval) {
                   boardStatus = false;
                   poolStatus = false;
                 }

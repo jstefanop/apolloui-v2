@@ -14,7 +14,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
@@ -33,10 +33,12 @@ import { settingsSelector } from '../../redux/reselect/settings';
 import { minerSelector } from '../../redux/reselect/miner';
 import { updateMinerAction } from '../../redux/actions/minerAction';
 import { CheckIcon } from '@chakra-ui/icons';
+import { useRouter } from 'next/router';
 
 const Layout = ({ children, routes }, props) => {
   const { onOpen } = useDisclosure();
   const dispatch = useDispatch();
+  const router = useRouter();
 
   // Miner data
   const {
@@ -155,6 +157,21 @@ const Layout = ({ children, routes }, props) => {
   });
 
   useEffect(() => {
+    if (!dataMcu) return;
+    const {
+      Mcu: {
+        stats: { error: mcuError },
+      },
+    } = dataMcu;
+
+    if (mcuError && mcuError?.type === 'authentication') {
+      signOut({ redirect: false });
+      localStorage.removeItem('token');
+      router.push('/signin');
+    }
+  }, [dataMcu]);
+
+  useEffect(() => {
     let timeoutId;
     if (minerOnline === minerStatus) setMinerStatusDone(true);
     timeoutId = setTimeout(() => {
@@ -206,7 +223,6 @@ const Layout = ({ children, routes }, props) => {
           transitionProperty="top, bottom, width"
           transitionTimingFunction="linear, linear, ease"
         >
-          
           <Portal>
             <Box>
               <Navbar

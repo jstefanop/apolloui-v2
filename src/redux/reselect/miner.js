@@ -313,7 +313,7 @@ export const minerSelector = createSelector(
         return 0;
       });
 
-      const minerPowerPerGh = _.sumBy(boards, (hb) => {
+      const minerPowerPerGh = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.wattPerGHs;
         return 0;
       });

@@ -19,7 +19,6 @@ import {
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useState } from 'react';
-import LoadingIcon from '../components/UI/LoadingIcon';
 
 const SignIn = () => {
   // Chakra color mode
