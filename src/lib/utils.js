@@ -168,6 +168,7 @@ export const presetPools = [
 ];
 
 export const shortenBitcoinAddress = (address, chars = 5) => {
+  if (!address) return null;
   if (address.length <= chars * 2) {
     return address; // Return the address unchanged if it's already shorter or equal to 10 characters
   } else {

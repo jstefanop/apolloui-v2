@@ -169,7 +169,7 @@ const Layout = ({ children, routes }, props) => {
       localStorage.removeItem('token');
       router.push('/signin');
     }
-  }, [dataMcu]);
+  }, [dataMcu, router]);
 
   useEffect(() => {
     let timeoutId;
