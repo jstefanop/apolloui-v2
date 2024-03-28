@@ -39,10 +39,12 @@ const NoCardStatisticsGauge = ({
   useEffect(() => {
     if (rawValue && total) {
       const percentage = (rawValue / total) * 100;
-      setRoundedPercentage(Math.round(percentage * 100) / 100);
+      const valuePerc = Math.round(percentage * 100) / 100;
+      setRoundedPercentage(valuePerc.toFixed(2));
     }
-    if (percent) setRoundedPercentage(percent);
+    if (percent) setRoundedPercentage(percent.toFixed(2));
   }, [rawValue, total, percent]);
+  
   const gaugeColor = percentColor(roundedPercentage);
 
   const chartOptions = {

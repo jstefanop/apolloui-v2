@@ -13,6 +13,7 @@ import {
   MenuGroup,
   MenuDivider,
   Spinner,
+  useDisclosure,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { signOut } from 'next-auth/react';
@@ -30,9 +31,15 @@ import { CheckIcon } from '@chakra-ui/icons';
 import { WarningIcon } from '../UI/Icons/WarningIcon';
 import { StartIcon } from '../UI/Icons/StartIcon';
 import { GrUserWorker } from 'react-icons/gr';
+import { GoVersions } from 'react-icons/go';
+import { TbAlertHexagonFilled } from 'react-icons/tb';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import { useSelector } from 'react-redux';
+import { getVersionFromPackageJson } from '../../lib/utils';
+import { useQuery } from '@apollo/client';
+import { MCU_VERSION_QUERY } from '../../graphql/mcu';
+import NavbarUpdateModal from './NavbarUpdateModal';
 
 export default function HeaderLinks({
   secondary,
@@ -57,6 +64,8 @@ export default function HeaderLinks({
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'
   );
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const { status: minerStatus, timestamp } = useSelector(
     (state) => state.minerAction
   );
@@ -66,6 +75,20 @@ export default function HeaderLinks({
     localStorage.removeItem('token');
   };
 
+  // Handle app update
+  const localVersion = getVersionFromPackageJson();
+
+  const { data: dataVersion, refetch: refetchVersion } =
+    useQuery(MCU_VERSION_QUERY);
+
+  const { result: remoteVersion } = dataVersion?.Mcu?.version || {};
+
+  const onOpenModalVersion = async () => {
+    await refetchVersion();
+    onOpen();
+  };
+
+  // Parse stats
   const { globalHashrate, avgBoardTemp, ckPoolDisconnected } = minerStats;
 
   const { nodeEnableSoloMining } = settings;
@@ -103,6 +126,8 @@ export default function HeaderLinks({
       borderRadius="30px"
       boxShadow={shadow}
     >
+      <NavbarUpdateModal isOpen={isOpen} onClose={onClose} localVersion={localVersion} remoteVersion={remoteVersion} />
+
       {!loading && (
         <Center>
           {/* NODE */}
@@ -342,7 +367,15 @@ export default function HeaderLinks({
               <MenuButton
                 as={IconButton}
                 aria-label="Options"
-                icon={<PowerOffIcon />}
+                icon={
+                  <PowerOffIcon
+                    className={
+                      localVersion !== remoteVersion &&
+                      'animate__animated animate__tada animate__infinite'
+                    }
+                  />
+                }
+                bg={localVersion !== remoteVersion && 'orange.500'}
               />
               <MenuList>
                 <MenuGroup title="Miner">
@@ -404,6 +437,20 @@ export default function HeaderLinks({
                   </MenuItem>
                 </MenuGroup>
                 <MenuDivider />
+                <MenuGroup title="Version">
+                  <MenuItem
+                    icon={
+                      localVersion !== remoteVersion ? (
+                        <TbAlertHexagonFilled color="red" />
+                      ) : (
+                        <GoVersions />
+                      )
+                    }
+                    onClick={() => onOpenModalVersion()}
+                  >
+                    v{localVersion}
+                  </MenuItem>
+                </MenuGroup>
               </MenuList>
             </Menu>
           </Flex>
