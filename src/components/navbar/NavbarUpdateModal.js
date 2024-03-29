@@ -54,7 +54,7 @@ const NavbarUpdateModal = ({
       setProgress(0);
       setDone(true);
     }
-  }, [remoteProgress, stopPollingProgress]);
+  }, [updateInProgress, remoteProgress, stopPollingProgress]);
 
   const handleReloadApp = () => {
     return () => {
