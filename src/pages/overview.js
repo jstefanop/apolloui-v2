@@ -170,7 +170,7 @@ const Overview = () => {
             <Grid
               gridArea="Top"
               templateRows="repeat(1, 1fr)"
-                templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+              templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
               templateAreas={{
                 base: `'.' '.'`,
                 md: `'. .'`,
@@ -290,10 +290,141 @@ const Overview = () => {
             </Grid>
 
             {/* MIDDLE */}
+            <Grid gridArea="Middle">
+              <GridItem>
+                <Card
+                  py="15px"
+                  pb="30px"
+                  bgColor={cardColor}
+                  boxShadow={shadow}
+                >
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      Node status
+                    </Text>
+                  </Flex>
+                  {loadingNode ? (
+                    <List />
+                  ) : errorNode.length ? (
+                    <Alert borderRadius={'10px'} status="warning">
+                      <AlertIcon />
+                      <AlertTitle>Warning</AlertTitle>
+                      <AlertDescription>
+                        {errorNode.map((error, index) => {
+                          return (
+                            <div key={index}>
+                              There was an error getting stats for Node:{' '}
+                              <Code>
+                                {error.message ||
+                                  error.code ||
+                                  error.toString()}
+                              </Code>
+                            </div>
+                          );
+                        })}
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <Flex
+                      my="auto"
+                      align={{ base: 'center', xl: 'start' }}
+                      justify={{ base: 'center', xl: 'center' }}
+                      direction={{ base: 'column', md: 'row' }}
+                    >
+                      <NoCardStatisticsGauge
+                        id="minerTemp"
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={ConnectionsIcons}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name="Connections"
+                        value={
+                          <Flex>
+                            <span
+                              className={
+                                prevConnectionCount !== connectionCount
+                                  ? 'animate__animated animate__flash'
+                                  : undefined
+                              }
+                            >
+                              {connectionCount}
+                            </span>
+                            <Text color="gray.400">/32</Text>
+                          </Flex>
+                        }
+                        align="start"
+                      />
+                      <NoCardStatisticsGauge
+                        id="minerTemp"
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={BlocksIcon}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name="Blocks"
+                        value={
+                          <span
+                            className={
+                              prevBlocksCount !== blocksCount
+                                ? 'animate__animated animate__flash'
+                                : undefined
+                            }
+                          >
+                            {blocksCount}
+                          </span>
+                        }
+                        align="start"
+                      />
+                      <NoCardStatisticsGauge
+                        id="minerTemp"
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={BlockchainIcon}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name="Blockchain size"
+                        value={bytesToSize(sizeOnDisk)}
+                        align="start"
+                      />
+                    </Flex>
+                  )}
+                </Card>
+              </GridItem>
+            </Grid>
+
+            {/* BOTTOM */}
             <Grid
-              gridArea="Middle"
+              gridArea="Bottom"
               templateRows="repeat(1, 1fr)"
-                templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+              templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
               templateAreas={{
                 base: `'.'`,
                 md: `'. . .'`,
@@ -384,137 +515,6 @@ const Overview = () => {
                   loading={loadingMcu}
                   error={errorMcu}
                 />
-              </GridItem>
-            </Grid>
-
-            {/* BOTTOM */}
-            <Grid gridArea="Bottom">
-              <GridItem>
-                <Card
-                  py="15px"
-                  pb="30px"
-                  bgColor={cardColor}
-                  boxShadow={shadow}
-                >
-                  <Flex m="2">
-                    <Text fontSize="lg" fontWeight="800">
-                      Node status
-                    </Text>
-                  </Flex>
-                  {loadingNode ? (
-                    <List />
-                  ) : errorNode.length ? (
-                    <Alert borderRadius={'10px'} status="warning">
-                      <AlertIcon />
-                      <AlertTitle>Warning</AlertTitle>
-                      <AlertDescription>
-                        {errorNode.map((error, index) => {
-                          return (
-                            <div key={index}>
-                              There was an error getting stats for Node:{' '}
-                              <Code>
-                                {error.message ||
-                                  error.code ||
-                                  error.toString()}
-                              </Code>
-                            </div>
-                          );
-                        })}
-                      </AlertDescription>
-                    </Alert>
-                  ) : (
-                    <Flex
-                      my="auto"
-                      align={{ base: 'center', xl: 'start' }}
-                      justify={{ base: 'center', xl: 'center' }}
-                            direction={{ base: 'column', md: 'row' }}
-                    >
-                      <NoCardStatisticsGauge
-                        id="minerTemp"
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={ConnectionsIcons}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name="Connections"
-                        value={
-                          <Flex>
-                            <span
-                              className={
-                                prevConnectionCount !== connectionCount
-                                  ? 'animate__animated animate__flash'
-                                  : undefined
-                              }
-                            >
-                              {connectionCount}
-                            </span>
-                            <Text color="gray.400">/32</Text>
-                          </Flex>
-                        }
-                        align="start"
-                      />
-                      <NoCardStatisticsGauge
-                        id="minerTemp"
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={BlocksIcon}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name="Blocks"
-                        value={
-                          <span
-                            className={
-                              prevBlocksCount !== blocksCount
-                                ? 'animate__animated animate__flash'
-                                : undefined
-                            }
-                          >
-                            {blocksCount}
-                          </span>
-                        }
-                        align="start"
-                      />
-                      <NoCardStatisticsGauge
-                        id="minerTemp"
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={BlockchainIcon}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name="Blockchain size"
-                        value={bytesToSize(sizeOnDisk)}
-                        align="start"
-                      />
-                    </Flex>
-                  )}
-                </Card>
               </GridItem>
             </Grid>
           </Grid>
