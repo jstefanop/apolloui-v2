@@ -46,7 +46,7 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
       temperature: `${board.temperature}°C`,
       fanSPeed: `${board.fanSpeed} rpm`,
       power: `${board.wattTotal} Watts`,
-      voltage: `${board.voltage} v`,
+      voltage: `${board.voltage} A`,
       errorRate: `${board.errorRate}%`,
     };
     return Object.entries(items).map(([key, value]) => {

@@ -87,6 +87,7 @@ export const minerSelector = createSelector(
           hashrate5m: ckPoolHashrate5m,
           hashrate1m: ckPoolHashrate1m,
           bestshare: ckPoolBestshare,
+          bestever: ckPoolBestever,
           Disconnected: ckDisconnected,
           Idle: ckIdle,
           accepted: ckSharesAccepted,
@@ -143,6 +144,7 @@ export const minerSelector = createSelector(
             ckPoolHashrate1h &&
             convertHashrateStringToValue(ckPoolHashrate1h, 'GH/s'),
           ckPoolBestshare,
+          ckPoolBestever,
           ckDisconnected:
             moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90
               ? true
@@ -171,17 +173,17 @@ export const minerSelector = createSelector(
         ? moment(maxCkPoolLastUpdate, 'X').fromNow()
         : null;
 
-      const ckPoolTotalUsers = _.sumBy(boards, (hb) => {
+      const ckPoolTotalUsers = _.meanBy(boards, (hb) => {
         if (!hb.ckDisconnected) return hb.ckUsersCount;
         return 0;
       });
 
-      const ckPoolTotalWorkers = _.sumBy(boards, (hb) => {
+      const ckPoolTotalWorkers = _.meanBy(boards, (hb) => {
         if (!hb.ckDisconnected) return hb.ckWorkersCount;
         return 0;
       });
 
-      const ckPoolTotalIdle = _.sumBy(boards, (hb) => {
+      const ckPoolTotalIdle = _.meanBy(boards, (hb) => {
         if (!hb.ckDisconnected) return hb.ckIdle;
         return 0;
       });
@@ -342,19 +344,19 @@ export const minerSelector = createSelector(
 
       if (isNaN(avgBoardErrors)) avgBoardErrors = 0;
 
-      let avgBoardRejected = _.meanBy(boards, (hb) => {
+      let totalBoardRejected = _.sumBy(boards, (hb) => {
         if (hb.status && hb.sharesRejected) return hb.sharesRejected;
         return 0;
       });
 
-      if (isNaN(avgBoardRejected)) avgBoardRejected = 0;
+      if (isNaN(totalBoardRejected)) totalBoardRejected = 0;
 
-      let avgBoardAccepted = _.meanBy(boards, (hb) => {
+      let totalBoardAccepted = _.sumBy(boards, (hb) => {
         if (hb.status && hb.sharesAccepted) return hb.sharesAccepted;
         return 0;
       });
 
-      if (isNaN(avgBoardAccepted)) avgBoardAccepted = 0;
+      if (isNaN(totalBoardAccepted)) totalBoardAccepted = 0;
 
       let avgChipSpeed = _.meanBy(boards, (hb) => {
         if (hb.status && hb.chipSpeed) return hb.chipSpeed;
@@ -415,8 +417,8 @@ export const minerSelector = createSelector(
         avgBoardEfficiency,
         avgBoardTemp,
         avgBoardErrors,
-        avgBoardRejected,
-        avgBoardAccepted,
+        totalBoardAccepted,
+        totalBoardRejected,
         avgChipSpeed,
         avgFanSpeed,
         avgVoltage,

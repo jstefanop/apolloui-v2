@@ -68,7 +68,9 @@ const SoloMining = () => {
     error: errorNode,
   } = useSelector(nodeSelector);
 
-  const { difficulty, networkhashps } = dataNode;
+  const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode;
+
+  console.log(blocksCount, blockHeader);
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
@@ -113,9 +115,8 @@ const SoloMining = () => {
     boards,
   } = dataMiner;
 
-  // TODO
-  const bestSharePerc = 1 / (ckPoolGlobalBestshare * 1e11 / networkhashps * 144) || 0;
-  const prevBestSharePerc = 1 / (prevCkPoolGlobalBestshare * 1e11 / networkhashps * 144) || 0;
+  const prevBestSharePerc =
+    1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
 
   const dailyChance =
     1 / (((ckPoolGlobalHashrate1h * 1e9) / networkhashps) * 144);
@@ -166,7 +167,7 @@ const SoloMining = () => {
             icon = SharesSentIcon;
             break;
           case 'bestever':
-            value = difficulty > 0 ? `${((element[key] / difficulty) * 100).toFixed(4)}%` : 'n.a.';
+            value = difficulty > 0 ? `${element[key].toFixed(0)}` : 'n.a.';
             icon = BlocksIcon;
             break;
         }
@@ -201,6 +202,12 @@ const SoloMining = () => {
         <CustomAlert
           title="CK Pool Disconnected"
           description="Please check your node connection and the CK Pool status."
+          status="warning"
+        />
+      ) : minerOnline && blocksCount !== blockHeader ? (
+        <CustomAlert
+          title="Node not synced"
+          description="Please wait until the node is synced."
           status="warning"
         />
       ) : (
@@ -502,7 +509,7 @@ const SoloMining = () => {
                   >
                     <Flex m="2">
                       <Text fontSize="lg" fontWeight="800">
-                        SOLO Mining Workers
+                        SOLO Mining Users
                       </Text>
                     </Flex>
                   </Flex>
@@ -512,7 +519,10 @@ const SoloMining = () => {
                     dataTableBoards.map((dataTable, index) => (
                       <Box mt="3" key={index}>
                         <PanelGrid
-                          title={`Worker ${shortenBitcoinAddress(boardNames[index], 8)}`}
+                          title={`${shortenBitcoinAddress(
+                            boardNames[index],
+                            10
+                          )}`}
                           active={activeBoards}
                           total={totalBoards}
                           data={dataTable}

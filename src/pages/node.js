@@ -238,7 +238,7 @@ const Node = () => {
                       <div key={index}>
                         There was an error getting stats for Node:{' '}
                         <Code>
-                          {error.message || error.code || error.toString()}
+                          {`${error.message || ''}  ${error.code || ''}`}
                         </Code>
                       </div>
                     );
@@ -265,12 +265,21 @@ const Node = () => {
                         }
                       />
                     }
-                    name="Minutes since last block"
+                    name={
+                      blockHeader === blocksCount
+                        ? 'Minutes since last block'
+                        : blockHeader > blocksCount
+                        ? `Percentage completed ${(
+                            (blocksCount * 100) /
+                            blockHeader
+                          ).toFixed(2)}%`
+                        : '...'
+                    }
                     value={
                       blockHeader === blocksCount
                         ? lastBlockTime
                         : blockHeader > blocksCount
-                        ? 'Processing queue...'
+                        ? `Processing queue...`
                         : '...'
                     }
                     reversed={true}

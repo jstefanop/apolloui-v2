@@ -65,6 +65,7 @@ import { isValidBitcoinAddress, presetPools } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { SystemIcon } from '../components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
+import { TbArtboardFilled } from 'react-icons/tb';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -219,6 +220,16 @@ const Settings = () => {
       'Enable solo mining mode to mine directly to your own Bitcoin wallet. Note: your node will be restarted to apply.',
   };
 
+  const minerPowerLedInitialMode = {
+    id: 'powerled',
+    color: 'green',
+    icon: MdShield,
+    title: 'Front power led',
+    selected: false,
+    description:
+      'Turn off/on the front power led. Note: your miner will be restarted to apply.',
+  };
+
   const extraSettingsActions = [
     {
       id: 'backup',
@@ -253,6 +264,9 @@ const Settings = () => {
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
   const [soloMiningMode, setSoloMiningMode] = useState(
     nodeSoloMiningInitialMode
+  );
+  const [minerPowerLedOff, setMinerPowerLedOff] = useState(
+    minerPowerLedInitialMode
   );
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
@@ -383,6 +397,13 @@ const Settings = () => {
         selected: settingsData.nodeEnableSoloMining,
       };
     });
+
+    setMinerPowerLedOff((el) => {
+      return {
+        ...el,
+        selected: !settingsData.powerLedOff,
+      };
+    });
   }, [
     loadingSettings,
     loadingPools,
@@ -402,6 +423,7 @@ const Settings = () => {
       'pool',
       'fan_low',
       'fan_high',
+      'powerLedOff',
     ];
     const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
     const isEqual = _.isEqual(settings, currentSettings);
@@ -589,6 +611,13 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableSoloMining: !v });
   };
 
+  const handleSwitchPowerLedOff = (e) => {
+    setErrorForm(null);
+    const v = e.target.value === 'true' ? true : false;
+    setMinerPowerLedOff({ ...minerPowerLedOff, selected: !v });
+    setSettings({ ...settings, powerLedOff: v });
+  };
+
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
     setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
@@ -706,6 +735,7 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        powerLedOff,
         pool,
       } = settings;
 
@@ -731,6 +761,7 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        powerLedOff,
       };
 
       const poolInput = {
@@ -982,13 +1013,11 @@ const Settings = () => {
                       ))}
                     </Select>
                     {pool && pool.webUrl && (
-                      <Flex flexDir="row" mt='2'>
-                        <a
-                          href={pool.webUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <Text fontSize={'sm'}>Learn more about this pool</Text>
+                      <Flex flexDir="row" mt="2">
+                        <a href={pool.webUrl} target="_blank" rel="noreferrer">
+                          <Text fontSize={'sm'}>
+                            Learn more about this pool
+                          </Text>
                         </a>
                       </Flex>
                     )}
@@ -1052,7 +1081,8 @@ const Settings = () => {
                   textColor={textColor}
                   icon={GrUserWorker}
                 >
-                  {(blockHeader && blockHeader === blocksCount) || soloMiningMode.selected ? (
+                  {(blockHeader && blockHeader === blocksCount) ||
+                  soloMiningMode.selected ? (
                     <>
                       <SimpleSwitchSettingsItem
                         item={soloMiningMode}
@@ -1095,52 +1125,81 @@ const Settings = () => {
             )}
           </TabPanel>
           <TabPanel>
-            <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
-              {/* MINER MODES */}
-              <PanelCard
-                title={'Miner modes settings'}
-                description={'Manage miner specific configurations'}
-                textColor={textColor}
-                badgeColor={currentMode.color}
-                badgeText={currentMode.id.toUpperCase()}
-                icon={MinerIcon}
-                mb={'20px'}
-              >
-                {minerModes.map((mode, index) => {
-                  return (
-                    <div key={mode.id}>
-                      <SimpleSwitchSettingsItem
-                        item={mode}
-                        textColor={textColor}
-                        sliderTextColor={sliderTextColor}
-                        handleSwitch={handleSwitchMinerMode}
-                        handleCustomModeChange={handleCustomModeChange}
-                        handleCustomModeReset={handleCustomModeReset}
-                      />
-                      {index !== minerModes.length - 1 && <Divider mb="10px" />}
-                    </div>
-                  );
-                })}
-              </PanelCard>
-              {/* MINER FAN */}
-              <PanelCard
-                title={'Miner fan settings'}
-                description={'Adjust the fan speed or set it to automatic'}
-                textColor={textColor}
-                icon={FanIcon}
-                mb="20px"
-              >
-                <SimpleSwitchSettingsItem
-                  item={fanMode}
+            <Grid
+              templateColumns={{
+                base: 'repeat(1, 1fr)',
+                md: 'repeat(2, 1fr)',
+              }}
+              gap="20px"
+              mb="20px"
+            >
+              <GridItem>
+                {/* MINER MODES */}
+                <PanelCard
+                  title={'Miner modes settings'}
+                  description={'Manage miner specific configurations'}
                   textColor={textColor}
-                  sliderTextColor={sliderTextColor}
-                  inverted={true}
-                  handleSwitch={handleSwitchFanMode}
-                  handleCustomModeChange={handleCustomFanModeChange}
-                  handleCustomModeReset={handleCustomFanModeReset}
-                />
-              </PanelCard>
-            </SimpleGrid>
+                  badgeColor={currentMode.color}
+                  badgeText={currentMode.id.toUpperCase()}
+                  icon={MinerIcon}
+                  mb={'20px'}
+                >
+                  {minerModes.map((mode, index) => {
+                    return (
+                      <div key={mode.id}>
+                        <SimpleSwitchSettingsItem
+                          item={mode}
+                          textColor={textColor}
+                          sliderTextColor={sliderTextColor}
+                          handleSwitch={handleSwitchMinerMode}
+                          handleCustomModeChange={handleCustomModeChange}
+                          handleCustomModeReset={handleCustomModeReset}
+                        />
+                        {index !== minerModes.length - 1 && (
+                          <Divider mb="10px" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </PanelCard>
+              </GridItem>
+              <GridItem>
+                {/* MINER FAN */}
+                <PanelCard
+                  title={'Miner fan settings'}
+                  description={'Adjust the fan speed or set it to automatic'}
+                  textColor={textColor}
+                  icon={FanIcon}
+                  mb="20px"
+                >
+                  <SimpleSwitchSettingsItem
+                    item={fanMode}
+                    textColor={textColor}
+                    sliderTextColor={sliderTextColor}
+                    inverted={true}
+                    handleSwitch={handleSwitchFanMode}
+                    handleCustomModeChange={handleCustomFanModeChange}
+                    handleCustomModeReset={handleCustomFanModeReset}
+                  />
+                </PanelCard>
+                {/* MINER POWER LED */}
+                <PanelCard
+                  title={'Miner power led'}
+                  description={'Turn off/on the front power led'}
+                  textColor={textColor}
+                  icon={TbArtboardFilled}
+                  mb="20px"
+                >
+                  <SimpleSwitchSettingsItem
+                    item={minerPowerLedOff}
+                    textColor={textColor}
+                    sliderTextColor={sliderTextColor}
+                    inverted={false}
+                    handleSwitch={handleSwitchPowerLedOff}
+                  />
+                </PanelCard>
+              </GridItem>
+            </Grid>
           </TabPanel>
           <TabPanel>
             <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">

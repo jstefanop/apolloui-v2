@@ -85,7 +85,7 @@ const Miner = () => {
   }, [dataMiner]);
 
   const {
-    avgBoardRejected: prevAvgBoardRejected,
+    totalBoardRejected: prevAvgBoardRejected,
     avgBoardErrors: prevAvgBoardErrors,
     avgBoardTemp: prevAvgBoardTemp,
     globalHashrate: prevGlobalHashrate,
@@ -102,8 +102,8 @@ const Miner = () => {
     avgBoardEfficiency,
     avgBoardTemp,
     avgBoardErrors,
-    avgBoardRejected,
-    avgBoardAccepted,
+    totalBoardRejected,
+    totalBoardAccepted,
     avgChipSpeed,
     avgFanSpeed,
     avgVoltage,
@@ -299,7 +299,7 @@ const Miner = () => {
                           : undefined
                       }
                     >
-                      {avgBoardAccepted}
+                      {totalBoardAccepted}
                     </span>
                   }
                   reversed={true}
@@ -326,12 +326,12 @@ const Miner = () => {
                   value={
                     <span
                       className={
-                        avgBoardRejected !== prevAvgBoardRejected
+                        totalBoardRejected !== prevAvgBoardRejected
                           ? 'animate__animated animate__flash'
                           : undefined
                       }
                     >
-                      {avgBoardRejected}
+                      {totalBoardRejected}
                     </span>
                   }
                   reversed={true}
@@ -530,7 +530,7 @@ const Miner = () => {
                   >
                     <Flex m="2">
                       <Text fontSize="lg" fontWeight="800">
-                        Average pools and hashboards
+                        Total pools and hashboards
                       </Text>
                     </Flex>
                     <Flex align-items="center">
