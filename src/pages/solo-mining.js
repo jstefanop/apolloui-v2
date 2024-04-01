@@ -70,8 +70,6 @@ const SoloMining = () => {
 
   const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode;
 
-  console.log(blocksCount, blockHeader);
-
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
 
@@ -196,6 +194,12 @@ const SoloMining = () => {
         <CustomAlert
           title="Miner is offline"
           description="Try to start it from the top menu."
+          status="info"
+        />
+      ) : minerOnline && !ckPoolLastUpdate ? (
+        <CustomAlert
+          title="Waiting for first share"
+          description="Please wait until the first share is received."
           status="info"
         />
       ) : minerOnline && ckPoolDisconnected ? (
