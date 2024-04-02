@@ -331,7 +331,7 @@ export const minerSelector = createSelector(
         ckPoolLastUpdate,
         ckUsersCount,
         ckWorkersCount,
-        ckPoolHashrateInGhs: convertHashrateStringToValue(ckHashrate1m),
+        ckPoolHashrateInGhs: ckHashrate1m && convertHashrateStringToValue(ckHashrate1m),
         ckPoolHashrate1m:
           ckHashrate1m &&
           displayHashrate(

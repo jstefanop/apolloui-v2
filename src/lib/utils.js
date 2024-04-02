@@ -31,6 +31,7 @@ export const displayHashrate = (
 };
 
 export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
+  if (!hashrateString) return 0;
   let hashValue = parseFloat(hashrateString);
   let multiplier = 1;
 
