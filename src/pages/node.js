@@ -32,6 +32,7 @@ import { useEffect, useRef, useState } from 'react';
 import { mcuSelector } from '../redux/reselect/mcu';
 import DynamicTable from '../components/UI/DynamicTable';
 import BannerNode from '../assets/img/node_banner.png';
+import { settingsSelector } from '../redux/reselect/settings';
 
 const Node = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
@@ -82,13 +83,19 @@ const Node = () => {
   }, [dataNode]);
 
   // Mcu data
-  const {
-    loading: loadingMcu,
-    data: dataMcu,
-    error: errorMcu,
-  } = useSelector(mcuSelector);
+  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector);
 
-  const { disks } = dataMcu;
+  const { disks, network } = dataMcu;
+
+  const eth0 = _.find(network, { name: 'eth0' });
+  const wlan0 = _.find(network, { name: 'wlan0' });
+
+  const localAddress = wlan0?.address || eth0?.address;
+
+  // Settings data
+  const { data: settings } = useSelector(settingsSelector);
+
+  const { nodeEnableTor } = settings || {};
 
   useEffect(() => {
     if (timestamp && !blockTime) return;
@@ -400,9 +407,9 @@ const Node = () => {
                     }
                     name="Local node address"
                     value={
-                      localaddresses?.length
+                      localaddresses?.length && nodeEnableTor
                         ? `${localaddresses[0].address}:${localaddresses[0].port}`
-                        : 'Looking at local node...'
+                        : localAddress
                     }
                     reversed={true}
                     fontSize="md"

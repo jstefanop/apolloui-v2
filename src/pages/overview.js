@@ -389,7 +389,9 @@ const Overview = () => {
                                 : undefined
                             }
                           >
-                            {blocksCount}
+                            {blocksCount.toLocaleString('en-US', {
+                              maximumFractionDigits: 0,
+                            })}
                           </span>
                         }
                         align="start"
