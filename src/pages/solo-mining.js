@@ -93,39 +93,29 @@ const SoloMining = () => {
     ckPoolGlobalBestshare: prevCkPoolGlobalBestshare,
   } = prevData.current || {};
 
+  console.log(dataMiner)
+
   const {
-    globalHashrate,
-    ckPoolGlobalHashrate,
-    ckPoolGlobalAvgHashrate,
-    ckPoolGlobalHashrate1d,
-    ckPoolGlobalHashrate1h,
-    ckPoolGlobalBestshare,
-    activeBoards,
-    totalBoards,
-    ckPoolTotalUsers,
-    ckPoolTotalWorkers,
-    ckPoolTotalIdle,
+    ckPoolHashrate1m: ckPoolGlobalHashrate,
+    ckPoolHashrate1h: ckPoolGlobalAvgHashrate,
+    ckPoolBestshare: ckPoolGlobalBestshare,
+    ckPoolHashrateInGhs,
+    ckUsersCount,
+    ckWorkersCount,
+    ckIdle,
     ckPoolLastUpdate,
-    ckPoolUptime,
-    ckPoolDisconnected,
-    ckPoolTotalSharesAccepted,
-    ckPoolTotalSharesRejected,
-    boards,
+    ckRuntime,
+    ckDisconnected,
+    ckSharesAccepted,
+    ckSharesRejected,
+    ckWorkers = [],
   } = dataMiner;
 
   const prevBestSharePerc =
     1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
 
   const dailyChance =
-    1 / (((ckPoolGlobalHashrate1h * 1e9) / networkhashps) * 144);
-
-  const boardsWorkersData = boards
-    ? boards
-        .map((board) => {
-          return board.ckWorkers;
-        })
-        .flat()
-    : [];
+    1 / (((ckPoolHashrateInGhs * 1e9) / networkhashps) * 144);
 
   const desiredKeys = [
     'hashrate5m',
@@ -138,7 +128,7 @@ const SoloMining = () => {
 
   const boardNames = [];
 
-  const dataTableBoards = boardsWorkersData.map((element) => {
+  const dataTableBoards = ckWorkers.map((element) => {
     if (!element) return;
     const mappedArray = [];
     desiredKeys.forEach((key) => {
@@ -179,8 +169,8 @@ const SoloMining = () => {
     <Box>
       <Head>
         <title>
-          {globalHashrate
-            ? `Apollo BTC Miner ${globalHashrate.value} ${globalHashrate.unit}`
+          {ckPoolGlobalHashrate
+            ? `Apollo BTC Miner ${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}`
             : 'Apollo BTC Miner'}
         </title>
       </Head>
@@ -188,7 +178,7 @@ const SoloMining = () => {
         isOpen={isOpen}
         onClose={onClose}
         placement="right"
-        data={boards}
+        data={ckWorkers}
       />
       {!minerOnline ? (
         <CustomAlert
@@ -202,7 +192,7 @@ const SoloMining = () => {
           description="Please wait until the first share is received."
           status="info"
         />
-      ) : minerOnline && ckPoolDisconnected ? (
+      ) : minerOnline && ckDisconnected ? (
         <CustomAlert
           title="CK Pool Disconnected"
           description="Please check your node connection and the CK Pool status."
@@ -308,9 +298,7 @@ const SoloMining = () => {
                   }
                   name="Accepted shares"
                   value={
-                    <span>
-                      {ckPoolTotalSharesAccepted?.toLocaleString('en-US')}
-                    </span>
+                    <span>{ckSharesAccepted?.toLocaleString('en-US')}</span>
                   }
                   reversed={true}
                 />
@@ -334,9 +322,7 @@ const SoloMining = () => {
                   }
                   name="Rejected shares"
                   value={
-                    <span>
-                      {ckPoolTotalSharesRejected?.toLocaleString('en-US')}
-                    </span>
+                    <span>{ckSharesRejected?.toLocaleString('en-US')}</span>
                   }
                   reversed={true}
                 />
@@ -359,7 +345,7 @@ const SoloMining = () => {
                   }
                   name="Last share"
                   value={
-                    !ckPoolDisconnected && ckPoolLastUpdate
+                    !ckDisconnected && ckPoolLastUpdate
                       ? ckPoolLastUpdate?.replace('a few', '')
                       : 'N/A'
                   }
@@ -383,7 +369,7 @@ const SoloMining = () => {
                     />
                   }
                   name="Uptime"
-                  value={(!ckPoolDisconnected && ckPoolUptime) || 'N/A'}
+                  value={(!ckDisconnected && ckRuntime) || 'N/A'}
                   reversed={true}
                 />
               </GridItem>
@@ -457,7 +443,7 @@ const SoloMining = () => {
                           />
                         }
                         name="Users"
-                        value={ckPoolTotalUsers}
+                        value={ckUsersCount}
                         reversed={true}
                       />
                       <NoCardStatistics
@@ -477,7 +463,7 @@ const SoloMining = () => {
                           />
                         }
                         name="Workers"
-                        value={ckPoolTotalWorkers}
+                        value={ckWorkersCount}
                         reversed={true}
                       />
                       <NoCardStatistics
@@ -498,7 +484,7 @@ const SoloMining = () => {
                           />
                         }
                         name="Idle"
-                        value={ckPoolTotalIdle}
+                        value={ckIdle}
                         reversed={true}
                       />
                     </Flex>
@@ -527,8 +513,6 @@ const SoloMining = () => {
                             boardNames[index],
                             10
                           )}`}
-                          active={activeBoards}
-                          total={totalBoards}
                           data={dataTable}
                         />
                       </Box>

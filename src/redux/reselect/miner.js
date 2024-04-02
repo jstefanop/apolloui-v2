@@ -18,7 +18,7 @@ export const minerSelector = createSelector(
       },
     } = minerData || initialState;
 
-    const { stats: minerStats } = resultStats || {};
+    const { stats: minerStats, ckpool: ckData } = resultStats || {};
 
     let minerOnline = false;
     if (result?.online && result?.online?.status)
@@ -70,31 +70,9 @@ export const minerSelector = createSelector(
           fans: {
             int_0: { rpm: fanRpm },
           },
-          ckpool: ckData,
         } = board;
 
         const poolHashrateInGh = avgPoolHashrateInGh;
-        const { pool: ckPool, users: ckUsers } = ckData || {};
-
-        const {
-          runtime: ckRuntime,
-          lastupdate: ckLastUpdate,
-          Users: ckUsersCount,
-          Workers: ckWorkersCount,
-          hashrate1d: ckPoolHashrate1d,
-          hashrate1hr: ckPoolHashrate1h,
-          hashrate15m: ckPoolHashrate15m,
-          hashrate5m: ckPoolHashrate5m,
-          hashrate1m: ckPoolHashrate1m,
-          bestshare: ckPoolBestshare,
-          bestever: ckPoolBestever,
-          Disconnected: ckDisconnected,
-          Idle: ckIdle,
-          accepted: ckSharesAccepted,
-          rejected: ckSharesRejected,
-        } = ckPool || {};
-
-        const { worker: ckWorkers } = ckUsers || {};
 
         return {
           date,
@@ -124,37 +102,33 @@ export const minerSelector = createSelector(
           sharesSent,
           diff,
           voltage,
-          soloMining: (ckData && true) || false,
-          ckRuntime,
-          ckLastUpdate,
-          ckUsersCount,
-          ckWorkersCount,
-          ckPoolHashrate1m:
-            ckPoolHashrate1m &&
-            convertHashrateStringToValue(ckPoolHashrate1m),
-          ckPoolHashrate15m:
-            ckPoolHashrate15m &&
-            convertHashrateStringToValue(ckPoolHashrate15m),
-          ckPoolHashrate5m:
-            ckPoolHashrate5m && convertHashrateStringToValue(ckPoolHashrate5m),
-          ckPoolHashrate1d:
-            ckPoolHashrate1d &&
-            convertHashrateStringToValue(ckPoolHashrate1d, 'GH/s'),
-          ckPoolHashrate1h:
-            ckPoolHashrate1h &&
-            convertHashrateStringToValue(ckPoolHashrate1h, 'GH/s'),
-          ckPoolBestshare,
-          ckPoolBestever,
-          ckDisconnected:
-            moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90
-              ? true
-              : false,
-          ckIdle,
-          ckSharesAccepted,
-          ckSharesRejected,
-          ckWorkers,
         };
       });
+
+      // ckPool data
+      const { pool: ckPool, users: ckUsers } = ckData || {};
+
+      const {
+        runtime: ckRuntime,
+        lastupdate: ckLastUpdate,
+        Users: ckUsersCount,
+        Workers: ckWorkersCount,
+        hashrate1d: ckHashrate1d,
+        hashrate1hr: ckHashrate1h,
+        hashrate1m: ckHashrate1m,
+        bestshare: ckPoolBestshare,
+        bestever: ckPoolBestever,
+        Disconnected: ckDisconnected,
+        Idle: ckIdle,
+        accepted: ckSharesAccepted,
+        rejected: ckSharesRejected,
+      } = ckPool || {};
+
+      const { worker: ckWorkers } = ckUsers || {};
+
+      const ckPoolLastUpdate = ckLastUpdate
+        ? moment(ckLastUpdate, 'X').fromNow()
+        : null;
 
       const maxBoardDate = _.maxBy(boards, 'date');
 
@@ -163,92 +137,6 @@ export const minerSelector = createSelector(
       const lastShareTime = maxLastShareTime
         ? moment(maxLastShareTime, 'X').fromNow()
         : null;
-
-      const ckPoolDisconnected = _.some(boards, ['ckDisconnected', true]);
-
-      const maxBoardsByCkPoolLastUpdate = _.maxBy(boards, 'ckLastUpdate');
-      const maxCkPoolLastUpdate =
-        maxBoardsByCkPoolLastUpdate?.ckLastUpdate || null;
-      const ckPoolLastUpdate = maxCkPoolLastUpdate
-        ? moment(maxCkPoolLastUpdate, 'X').fromNow()
-        : null;
-
-      const ckPoolTotalUsers = _.meanBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckUsersCount;
-        return 0;
-      });
-
-      const ckPoolTotalWorkers = _.meanBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckWorkersCount;
-        return 0;
-      });
-
-      const ckPoolTotalIdle = _.meanBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckIdle;
-        return 0;
-      });
-
-      const ckPoolTotalSharesAccepted = _.sumBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckSharesAccepted;
-        return 0;
-      });
-
-      const ckPoolTotalSharesRejected = _.sumBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckSharesRejected;
-        return 0;
-      });
-
-      const ckPoolUptime = moment().to(
-        moment().subtract(
-          _.chain(boards)
-            .filter((hb) => {
-              return !hb.ckDisconnected;
-            })
-            .meanBy((hb) => {
-              return hb.ckRuntime;
-            })
-            .value(),
-          'seconds'
-        ),
-        true
-      );
-
-      const ckPoolGlobalHashrate = displayHashrate(
-        _.sumBy(boards, (hb) => {
-          if (!hb.ckDisconnected) return hb.ckPoolHashrate1m;
-          return null;
-        }),
-        'GH/s',
-        false,
-        2,
-        true
-      );
-
-      const ckPoolGlobalAvgHashrate = displayHashrate(
-        _.sumBy(boards, (hb) => {
-          if (!hb.ckDisconnected) return hb.ckPoolHashrate1h;
-          return null;
-        }),
-        'GH/s',
-        false,
-        2,
-        true
-      );
-
-      const ckPoolGlobalHashrate1d = _.sumBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckPoolHashrate1d;
-        return null;
-      });
-
-      const ckPoolGlobalHashrate1h = _.sumBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckPoolHashrate1h;
-        return null;
-      });
-
-      const ckPoolGlobalBestshare = _.meanBy(boards, (hb) => {
-        if (!hb.ckDisconnected) return hb.ckPoolBestshare;
-        return 0;
-      });
 
       let minerUptime = moment().to(
         moment().subtract(
@@ -405,7 +293,7 @@ export const minerSelector = createSelector(
       const activeBoards = _.size(_.filter(boards, { status: true }));
       const totalBoards = _.size(boards);
       const activePools = _.size(_.filter(boards, { poolStatus: true }));
-
+      console.log(ckHashrate1m);
       stats = {
         date: maxBoardDate?.date || null,
         boards,
@@ -432,19 +320,55 @@ export const minerSelector = createSelector(
         activeBoards,
         totalBoards,
         activePools,
-        ckPoolUptime,
+        soloMining: (ckData && true) || false,
+        ckRuntime: moment().to(
+          moment().subtract(
+            ckRuntime,
+            'seconds'
+          ),
+          true
+        ),
         ckPoolLastUpdate,
-        ckPoolTotalUsers,
-        ckPoolTotalWorkers,
-        ckPoolTotalIdle,
-        ckPoolGlobalHashrate,
-        ckPoolGlobalAvgHashrate,
-        ckPoolGlobalHashrate1d,
-        ckPoolGlobalHashrate1h,
-        ckPoolGlobalBestshare,
-        ckPoolDisconnected,
-        ckPoolTotalSharesAccepted,
-        ckPoolTotalSharesRejected,
+        ckUsersCount,
+        ckWorkersCount,
+        ckPoolHashrateInGhs: convertHashrateStringToValue(ckHashrate1m),
+        ckPoolHashrate1m:
+          ckHashrate1m &&
+          displayHashrate(
+            convertHashrateStringToValue(ckHashrate1m),
+            'GH/s',
+            false,
+            2,
+            true
+          ),
+        ckPoolHashrate1h:
+          ckHashrate1h &&
+          displayHashrate(
+            convertHashrateStringToValue(ckHashrate1h),
+            'GH/s',
+            false,
+            2,
+            true
+          ),
+        ckPoolHashrate1d:
+          ckHashrate1d &&
+          displayHashrate(
+            convertHashrateStringToValue(ckHashrate1d),
+            'GH/s',
+            false,
+            2,
+            true
+          ),
+        ckPoolBestshare,
+        ckPoolBestever,
+        ckDisconnected:
+          moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90
+            ? true
+            : false,
+        ckIdle,
+        ckSharesAccepted,
+        ckSharesRejected,
+        ckWorkers,
       };
     }
 
