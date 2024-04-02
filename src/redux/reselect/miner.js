@@ -293,7 +293,7 @@ export const minerSelector = createSelector(
       const activeBoards = _.size(_.filter(boards, { status: true }));
       const totalBoards = _.size(boards);
       const activePools = _.size(_.filter(boards, { poolStatus: true }));
-      console.log(ckHashrate1m);
+
       stats = {
         date: maxBoardDate?.date || null,
         boards,

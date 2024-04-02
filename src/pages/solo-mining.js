@@ -93,8 +93,6 @@ const SoloMining = () => {
     ckPoolGlobalBestshare: prevCkPoolGlobalBestshare,
   } = prevData.current || {};
 
-  console.log(dataMiner)
-
   const {
     ckPoolHashrate1m: ckPoolGlobalHashrate,
     ckPoolHashrate1h: ckPoolGlobalAvgHashrate,
@@ -115,7 +113,9 @@ const SoloMining = () => {
     1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
 
   const dailyChance =
-    1 / (((ckPoolHashrateInGhs * 1e9) / networkhashps) * 144);
+    ckPoolHashrateInGhs && networkhashps
+      ? 1 / (((ckPoolHashrateInGhs * 1e9) / networkhashps) * 144)
+      : null;
 
   const desiredKeys = [
     'hashrate5m',
@@ -155,7 +155,12 @@ const SoloMining = () => {
             icon = SharesSentIcon;
             break;
           case 'bestever':
-            value = difficulty > 0 ? `${element[key].toFixed(0)}` : 'n.a.';
+            value =
+              difficulty > 0
+                ? `${element[key].toLocaleString('en-US', {
+                    maximumFractionDigits: 0,
+                  })}`
+                : 'n.a.';
             icon = BlocksIcon;
             break;
         }
@@ -419,11 +424,13 @@ const SoloMining = () => {
                           />
                         }
                         name="Daily Chance of Solving a Solo Block"
-                        value={`1 in ${
-                          dailyChance.toLocaleString('en-US', {
-                            maximumFractionDigits: 0,
-                          }) || 'N/A'
-                        }`}
+                        value={
+                          dailyChance
+                            ? `1 in ${dailyChance.toLocaleString('en-US', {
+                                maximumFractionDigits: 0,
+                              })}`
+                            : 'N/A'
+                        }
                         reversed={true}
                       />
                       <NoCardStatistics
