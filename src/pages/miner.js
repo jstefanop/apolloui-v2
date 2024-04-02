@@ -427,8 +427,8 @@ const Miner = () => {
                               }
                             />
                           }
-                          name="Miner mode"
-                          value={minerMode?.toUpperCase()}
+                          name="SOLO Mining"
+                          value={'ENABLED'}
                           reversed={true}
                         />
                       )}
