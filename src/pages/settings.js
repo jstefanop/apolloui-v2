@@ -59,12 +59,13 @@ import moment from 'moment';
 import ModalRestore from '../components/apollo/ModalRestore';
 import { sendFeedback } from '../redux/actions/feedback';
 import ModalFormat from '../components/apollo/ModalFormat';
-import { NODE_FORMAT_QUERY } from '../graphql/node';
+import { NODE_FORMAT_QUERY, NODE_START_QUERY } from '../graphql/node';
 import { NODE_STOP_QUERY } from '../graphql/node';
 import { isValidBitcoinAddress, presetPools } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { SystemIcon } from '../components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
+import { TbArtboardFilled } from 'react-icons/tb';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -216,7 +217,17 @@ const Settings = () => {
     title: 'SOLO Mining mode',
     selected: false,
     description:
-      'Enable solo mining mode to mine directly to your own Bitcoin wallet. Note: your node will be restarted to apply.',
+      'Enable solo mining mode to mine directly to your own Bitcoin Node. Note: your node will be restarted to apply.',
+  };
+
+  const minerPowerLedInitialMode = {
+    id: 'powerled',
+    color: 'green',
+    icon: MdShield,
+    title: 'Front Status Light',
+    selected: false,
+    description:
+      'Turn off/on the front status led. Note: your miner will be restarted to apply.',
   };
 
   const extraSettingsActions = [
@@ -253,6 +264,9 @@ const Settings = () => {
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
   const [soloMiningMode, setSoloMiningMode] = useState(
     nodeSoloMiningInitialMode
+  );
+  const [minerPowerLedOff, setMinerPowerLedOff] = useState(
+    minerPowerLedInitialMode
   );
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
@@ -312,8 +326,11 @@ const Settings = () => {
     { loading: loadingMinerRestart, error: errorMinerRestart },
   ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [stopNode, { loading: loadingNodeRestart, error: errorNodeRestart }] =
+  const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
     useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [startNode, { loading: loadingNodeStart, error: errorNodeStart }] =
+    useLazyQuery(NODE_START_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     if (
@@ -383,6 +400,13 @@ const Settings = () => {
         selected: settingsData.nodeEnableSoloMining,
       };
     });
+
+    setMinerPowerLedOff((el) => {
+      return {
+        ...el,
+        selected: !settingsData.powerLedOff,
+      };
+    });
   }, [
     loadingSettings,
     loadingPools,
@@ -402,6 +426,8 @@ const Settings = () => {
       'pool',
       'fan_low',
       'fan_high',
+      'powerLedOff',
+      'nodeEnableSoloMining',
     ];
     const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
     const isEqual = _.isEqual(settings, currentSettings);
@@ -589,6 +615,13 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableSoloMining: !v });
   };
 
+  const handleSwitchPowerLedOff = (e) => {
+    setErrorForm(null);
+    const v = e.target.value === 'true' ? true : false;
+    setMinerPowerLedOff({ ...minerPowerLedOff, selected: !v });
+    setSettings({ ...settings, powerLedOff: v });
+  };
+
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
     setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
@@ -706,6 +739,7 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        powerLedOff,
         pool,
       } = settings;
 
@@ -731,6 +765,7 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        powerLedOff,
       };
 
       const poolInput = {
@@ -764,23 +799,27 @@ const Settings = () => {
           sendFeedback({ message: 'Restarting miner...', type: 'info' })
         );
       } else if (type === 'node') {
+        await stopNode();
         dispatch(
           sendFeedback({
-            message: 'You will need to restart your node manually.',
-            type: 'orange',
+            message: 'Restarting Bitcoin node...',
+            type: 'info',
           })
         );
+        await startNode();
       } else if (type === 'both') {
         await restartMiner();
         dispatch(
           sendFeedback({ message: 'Restarting miner...', type: 'info' })
         );
+        await stopNode();
         dispatch(
           sendFeedback({
-            message: 'You will need to restart your node manually.',
-            type: 'orange',
+            message: 'Restarting Bitcoin node...',
+            type: 'info',
           })
         );
+        await startNode();
       } else {
         dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
@@ -862,15 +901,17 @@ const Settings = () => {
                   Save & Restart
                 </Button>
               )}
-              <Button
-                colorScheme="green"
-                variant={'solid'}
-                size={'md'}
-                disabled={errorForm}
-                onClick={() => handlesSaveSettings()}
-              >
-                Save
-              </Button>
+              {!restartNeeded && (
+                <Button
+                  colorScheme="green"
+                  variant={'solid'}
+                  size={'md'}
+                  disabled={errorForm}
+                  onClick={() => handlesSaveSettings()}
+                >
+                  Save
+                </Button>
+              )}
             </Flex>
           </Flex>
         </Box>
@@ -982,13 +1023,11 @@ const Settings = () => {
                       ))}
                     </Select>
                     {pool && pool.webUrl && (
-                      <Flex flexDir="row" mt='2'>
-                        <a
-                          href={pool.webUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <Text fontSize={'sm'}>Learn more about this pool</Text>
+                      <Flex flexDir="row" mt="2">
+                        <a href={pool.webUrl} target="_blank" rel="noreferrer">
+                          <Text fontSize={'sm'}>
+                            Learn more about this pool
+                          </Text>
                         </a>
                       </Flex>
                     )}
@@ -1052,7 +1091,8 @@ const Settings = () => {
                   textColor={textColor}
                   icon={GrUserWorker}
                 >
-                  {(blockHeader && blockHeader === blocksCount) || soloMiningMode.selected ? (
+                  {(blockHeader && blockHeader === blocksCount) ||
+                  soloMiningMode.selected ? (
                     <>
                       <SimpleSwitchSettingsItem
                         item={soloMiningMode}
@@ -1095,52 +1135,81 @@ const Settings = () => {
             )}
           </TabPanel>
           <TabPanel>
-            <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
-              {/* MINER MODES */}
-              <PanelCard
-                title={'Miner modes settings'}
-                description={'Manage miner specific configurations'}
-                textColor={textColor}
-                badgeColor={currentMode.color}
-                badgeText={currentMode.id.toUpperCase()}
-                icon={MinerIcon}
-                mb={'20px'}
-              >
-                {minerModes.map((mode, index) => {
-                  return (
-                    <div key={mode.id}>
-                      <SimpleSwitchSettingsItem
-                        item={mode}
-                        textColor={textColor}
-                        sliderTextColor={sliderTextColor}
-                        handleSwitch={handleSwitchMinerMode}
-                        handleCustomModeChange={handleCustomModeChange}
-                        handleCustomModeReset={handleCustomModeReset}
-                      />
-                      {index !== minerModes.length - 1 && <Divider mb="10px" />}
-                    </div>
-                  );
-                })}
-              </PanelCard>
-              {/* MINER FAN */}
-              <PanelCard
-                title={'Miner fan settings'}
-                description={'Adjust the fan speed or set it to automatic'}
-                textColor={textColor}
-                icon={FanIcon}
-                mb="20px"
-              >
-                <SimpleSwitchSettingsItem
-                  item={fanMode}
+            <Grid
+              templateColumns={{
+                base: 'repeat(1, 1fr)',
+                md: 'repeat(2, 1fr)',
+              }}
+              gap="20px"
+              mb="20px"
+            >
+              <GridItem>
+                {/* MINER MODES */}
+                <PanelCard
+                  title={'Miner modes settings'}
+                  description={'Manage miner specific configurations'}
                   textColor={textColor}
-                  sliderTextColor={sliderTextColor}
-                  inverted={true}
-                  handleSwitch={handleSwitchFanMode}
-                  handleCustomModeChange={handleCustomFanModeChange}
-                  handleCustomModeReset={handleCustomFanModeReset}
-                />
-              </PanelCard>
-            </SimpleGrid>
+                  badgeColor={currentMode.color}
+                  badgeText={currentMode.id.toUpperCase()}
+                  icon={MinerIcon}
+                  mb={'20px'}
+                >
+                  {minerModes.map((mode, index) => {
+                    return (
+                      <div key={mode.id}>
+                        <SimpleSwitchSettingsItem
+                          item={mode}
+                          textColor={textColor}
+                          sliderTextColor={sliderTextColor}
+                          handleSwitch={handleSwitchMinerMode}
+                          handleCustomModeChange={handleCustomModeChange}
+                          handleCustomModeReset={handleCustomModeReset}
+                        />
+                        {index !== minerModes.length - 1 && (
+                          <Divider mb="10px" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </PanelCard>
+              </GridItem>
+              <GridItem>
+                {/* MINER FAN */}
+                <PanelCard
+                  title={'Miner fan settings'}
+                  description={'Adjust the fan speed or set it to automatic'}
+                  textColor={textColor}
+                  icon={FanIcon}
+                  mb="20px"
+                >
+                  <SimpleSwitchSettingsItem
+                    item={fanMode}
+                    textColor={textColor}
+                    sliderTextColor={sliderTextColor}
+                    inverted={true}
+                    handleSwitch={handleSwitchFanMode}
+                    handleCustomModeChange={handleCustomFanModeChange}
+                    handleCustomModeReset={handleCustomFanModeReset}
+                  />
+                </PanelCard>
+                {/* MINER POWER LED */}
+                <PanelCard
+                  title={'Miner Status Light'}
+                  description={'Turn off/on the front status led'}
+                  textColor={textColor}
+                  icon={TbArtboardFilled}
+                  mb="20px"
+                >
+                  <SimpleSwitchSettingsItem
+                    item={minerPowerLedOff}
+                    textColor={textColor}
+                    sliderTextColor={sliderTextColor}
+                    inverted={false}
+                    handleSwitch={handleSwitchPowerLedOff}
+                  />
+                </PanelCard>
+              </GridItem>
+            </Grid>
           </TabPanel>
           <TabPanel>
             <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
@@ -1171,7 +1240,7 @@ const Settings = () => {
                   icon={MdSettings}
                 >
                   <Textarea
-                    value={settings.nodeUserConf}
+                    value={settings.nodeUserConf || ''}
                     onChange={(v) =>
                       setSettings({ ...settings, nodeUserConf: v.target.value })
                     }

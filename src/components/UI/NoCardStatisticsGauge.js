@@ -44,7 +44,7 @@ const NoCardStatisticsGauge = ({
     }
     if (percent) setRoundedPercentage(percent.toFixed(2));
   }, [rawValue, total, percent]);
-  
+
   const gaugeColor = percentColor(roundedPercentage);
 
   const chartOptions = {
@@ -118,7 +118,11 @@ const NoCardStatisticsGauge = ({
                       }}
                       noOfLines={1}
                     >
-                      {value || `${roundedPercentage}%` || 'N.a.'}
+                      {value
+                        ? value
+                        : roundedPercentage
+                        ? `${roundedPercentage}%`
+                        : 'N.a.'}
                     </StatNumber>
                   ) : (
                     <Text color={textColor} fontSize={'xs'}>
