@@ -14,7 +14,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
@@ -155,21 +155,6 @@ const Layout = ({ children, routes }, props) => {
     if (route.name === 'SOLO Mining' && !nodeEnableSoloMining) return false;
     return true;
   });
-
-  useEffect(() => {
-    if (!dataMcu) return;
-    const {
-      Mcu: {
-        stats: { error: mcuError },
-      },
-    } = dataMcu;
-
-    if (mcuError && mcuError?.type === 'authentication') {
-      signOut({ redirect: false });
-      localStorage.removeItem('token');
-      router.push('/signin');
-    }
-  }, [dataMcu, router]);
 
   useEffect(() => {
     let timeoutId;

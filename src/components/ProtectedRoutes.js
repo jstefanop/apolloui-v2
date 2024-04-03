@@ -26,7 +26,6 @@ const ProtectedRoute = ({ router, children }) => {
 
     // Check if status has changed to prevent infinite loop
     if (status !== prevStatus) {
-      setPrevStatus(status); // Update prevStatus
       // Redirect unsetup users
       if (setupDone !== 'done') router.push('/setup');
       // Redirect unauthenticated users
@@ -36,6 +35,8 @@ const ProtectedRoute = ({ router, children }) => {
         router.push('/signin');
       else if (router.pathname === '/signin' && status === 'authenticated')
         router.push('/overview');
+
+      setPrevStatus(status); // Update prevStatus
     }
   }, [status, data, setup, router, prevStatus]); // Include prevStatus in dependencies
 
