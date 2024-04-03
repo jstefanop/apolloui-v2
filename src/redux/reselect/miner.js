@@ -91,7 +91,7 @@ export const minerSelector = createSelector(
           wattTotal,
           hashrateInGh,
           avgHashrateInGh,
-          efficiency: (wattTotal / avgHashrateInGh) * 1000,
+          efficiency: avgHashrateInGh ? (wattTotal / avgHashrateInGh) * 1000 : 0,
           fanSpeed: _.mean(fanRpm),
           temperature,
           errorRate,
@@ -166,11 +166,13 @@ export const minerSelector = createSelector(
         true
       );
 
+      const globalAvgHashrateInGh = _.sumBy(boards, (hb) => {
+        if (hb.status) return hb.avgHashrateInGh;
+        return null;
+      });
+
       const globalAvgHashrate = displayHashrate(
-        _.sumBy(boards, (hb) => {
-          if (hb.status) return hb.avgHashrateInGh;
-          return null;
-        }),
+        globalAvgHashrateInGh,
         'GH/s',
         false,
         2,
@@ -203,16 +205,13 @@ export const minerSelector = createSelector(
         return 0;
       });
 
-      const minerPowerPerGh = _.meanBy(boards, (hb) => {
+      const minerPowerPerGh = _.sumBy(boards, (hb) => {
         if (hb.status) return hb.wattPerGHs;
         return 0;
       });
 
       // Board sum/avg
-      let avgBoardEfficiency = _.meanBy(boards, (hb) => {
-        if (hb.status) return hb.efficiency;
-        return null;
-      });
+      let avgBoardEfficiency = (minerPower / globalAvgHashrateInGh) * 1000
 
       let avgBoardTemp = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.temperature;
