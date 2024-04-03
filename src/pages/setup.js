@@ -276,7 +276,7 @@ const Setup = () => {
             flexDirection="row"
           >
             <Card
-              h={{base: 'auto', md: '400px' }}
+              h={{base: 'auto', md: '440px' }}
               mx={{ base: '10px', md: '20px' }}
               mt={{ base: '40px' }}
               mb={{ base: '50px', lg: 'auto' }}
@@ -305,7 +305,7 @@ const Setup = () => {
                 fontSize="md"
               >
                 You are competing with the entire network for a full Bitcoin
-                Block (the whole 6.25 BTC reward). You gain zero rewards while
+                Block (the whole BTC reward). You gain zero rewards while
                 mining, in hopes of hitting the entire block. This is also
                 called &quot;lottery&quot; mining because the chances are low,
                 but this produces the maximum decentralization of the bitcoin
@@ -315,7 +315,7 @@ const Setup = () => {
               </Text>
             </Card>
             <Card
-              h={{ base: 'auto', md: '400px' }}
+              h={{ base: 'auto', md: '440px' }}
               mx={{ base: '10px', md: '20px' }}
               mt={{ base: '40px' }}
               mb={{ base: '50px', lg: 'auto' }}

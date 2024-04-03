@@ -389,7 +389,11 @@ const Overview = () => {
                                 : undefined
                             }
                           >
-                            {blocksCount}
+                            {blocksCount
+                              ? blocksCount.toLocaleString('en-US', {
+                                  maximumFractionDigits: 0,
+                                })
+                              : 'N/A'}
                           </span>
                         }
                         align="start"
@@ -449,7 +453,7 @@ const Overview = () => {
                     />
                   }
                   name="CPU usage"
-                  value={`${cpuUsage}%`}
+                  value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
                   legendValue={`${cpuCores} cores`}
                   percent={cpuUsage}
                   gauge={true}

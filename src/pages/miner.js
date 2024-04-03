@@ -85,25 +85,24 @@ const Miner = () => {
   }, [dataMiner]);
 
   const {
-    avgBoardRejected: prevAvgBoardRejected,
+    totalBoardRejected: prevAvgBoardRejected,
     avgBoardErrors: prevAvgBoardErrors,
     avgBoardTemp: prevAvgBoardTemp,
     globalHashrate: prevGlobalHashrate,
     globalAvgHashrate: prevGlobalAvgHashrate,
     minerPower: prevMinerPower,
-    minerPowerPerGh: prevMinerPowerPerGh,
+    avgBoardEfficiency: prevAvgBoardEfficiency,
   } = prevData.current || {};
 
   const {
     globalHashrate,
     globalAvgHashrate,
     minerPower,
-    minerPowerPerGh,
     avgBoardEfficiency,
     avgBoardTemp,
     avgBoardErrors,
-    avgBoardRejected,
-    avgBoardAccepted,
+    totalBoardRejected,
+    totalBoardAccepted,
     avgChipSpeed,
     avgFanSpeed,
     avgVoltage,
@@ -147,7 +146,7 @@ const Miner = () => {
       icon: VoltageIcon,
     },
     {
-      value: `${avgBoardErrors && avgBoardErrors.toFixed(2) || 0}%`,
+      value: `${(avgBoardErrors && avgBoardErrors.toFixed(2)) || 0}%`,
       icon: BugIcon,
     },
   ];
@@ -238,9 +237,9 @@ const Miner = () => {
                 loading={loadingMiner}
                 errors={errorMiner}
                 data={minerPower}
-                avgData={minerPowerPerGh * 1000}
+                avgData={avgBoardEfficiency}
                 prevData={prevMinerPower}
-                prevAvgData={prevMinerPowerPerGh * 1000}
+                prevAvgData={prevAvgBoardEfficiency}
                 shadow={shadow}
                 iconColor={iconColor}
               />
@@ -260,7 +259,11 @@ const Miner = () => {
 
             <Grid
               gridArea="Top"
-              templateRows={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)', '3xl': 'repeat(1, 1fr)' }}
+              templateRows={{
+                base: 'repeat(1, 1fr)',
+                md: 'repeat(2, 1fr)',
+                '3xl': 'repeat(1, 1fr)',
+              }}
               templateColumns={{
                 base: 'repeat(1, 1fr)',
                 md: 'repeat(2, 1fr)',
@@ -268,7 +271,7 @@ const Miner = () => {
               }}
               templateAreas={{
                 base: `'.' '.'`,
-                'md': `'. .'`,
+                md: `'. .'`,
                 '3xl': `'. .'`,
               }}
               gap={'20px'}
@@ -299,7 +302,7 @@ const Miner = () => {
                           : undefined
                       }
                     >
-                      {avgBoardAccepted}
+                      {totalBoardAccepted}
                     </span>
                   }
                   reversed={true}
@@ -326,12 +329,12 @@ const Miner = () => {
                   value={
                     <span
                       className={
-                        avgBoardRejected !== prevAvgBoardRejected
+                        totalBoardRejected !== prevAvgBoardRejected
                           ? 'animate__animated animate__flash'
                           : undefined
                       }
                     >
-                      {avgBoardRejected}
+                      {totalBoardRejected}
                     </span>
                   }
                   reversed={true}
@@ -427,8 +430,8 @@ const Miner = () => {
                               }
                             />
                           }
-                          name="Miner mode"
-                          value={minerMode?.toUpperCase()}
+                          name="SOLO Mining"
+                          value={'ENABLED'}
                           reversed={true}
                         />
                       )}
@@ -530,7 +533,7 @@ const Miner = () => {
                   >
                     <Flex m="2">
                       <Text fontSize="lg" fontWeight="800">
-                        Average pools and hashboards
+                        Total pools and hashboards
                       </Text>
                     </Flex>
                     <Flex align-items="center">
@@ -583,7 +586,10 @@ const Miner = () => {
                 <Grid
                   gridArea="Bottom"
                   templateRows="repeat(1, 1fr)"
-                    templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+                  templateColumns={{
+                    base: 'repeat(1, 1fr)',
+                    md: 'repeat(3, 1fr)',
+                  }}
                   templateAreas={{
                     base: `'.'`,
                     md: `'. . .'`,
@@ -608,7 +614,9 @@ const Miner = () => {
                         />
                       }
                       name="Miner temperature"
-                      value={`${avgBoardTemp}°C`}
+                      value={
+                        avgBoardTemp ? `${avgBoardTemp.toFixed(0)}°C` : 'N/A'
+                      }
                       rawValue={avgBoardTemp}
                       legendValue={'On the average'}
                       total="100"
@@ -634,7 +642,7 @@ const Miner = () => {
                         />
                       }
                       name="Chip speed"
-                      value={avgChipSpeed}
+                      value={avgChipSpeed ? avgChipSpeed.toFixed(2) : 'N/A'}
                       rawValue={avgChipSpeed}
                       total={240}
                       gauge={true}
@@ -659,7 +667,9 @@ const Miner = () => {
                         />
                       }
                       name="Fan speed"
-                      value={`${avgFanSpeed} rpm`}
+                      value={
+                        avgFanSpeed ? `${avgFanSpeed.toFixed(0)} rpm` : 'N/A'
+                      }
                       rawValue={avgFanSpeed}
                       total={6000}
                       gauge={true}

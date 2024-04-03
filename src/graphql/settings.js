@@ -25,6 +25,7 @@ export const GET_SETTINGS_QUERY = gql`
             nodeEnableTor
             nodeUserConf
             nodeEnableSoloMining
+            powerLedOff
           }
         }
         error {
@@ -59,6 +60,7 @@ export const SET_SETTINGS_QUERY = gql`
             nodeEnableTor
             nodeUserConf
             nodeEnableSoloMining
+            powerLedOff
           }
         }
         error {
@@ -91,6 +93,7 @@ export const initialState = {
           nodeEnableTor: null,
           nodeUserConf: null,
           nodeEnableSoloMining: null,
+          powerLedOff: null,
         },
       },
     },
