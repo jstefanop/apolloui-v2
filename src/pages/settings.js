@@ -59,7 +59,7 @@ import moment from 'moment';
 import ModalRestore from '../components/apollo/ModalRestore';
 import { sendFeedback } from '../redux/actions/feedback';
 import ModalFormat from '../components/apollo/ModalFormat';
-import { NODE_FORMAT_QUERY } from '../graphql/node';
+import { NODE_FORMAT_QUERY, NODE_START_QUERY } from '../graphql/node';
 import { NODE_STOP_QUERY } from '../graphql/node';
 import { isValidBitcoinAddress, presetPools } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
@@ -326,8 +326,11 @@ const Settings = () => {
     { loading: loadingMinerRestart, error: errorMinerRestart },
   ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [stopNode, { loading: loadingNodeRestart, error: errorNodeRestart }] =
+  const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
     useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [startNode, { loading: loadingNodeStart, error: errorNodeStart }] =
+    useLazyQuery(NODE_START_QUERY, { fetchPolicy: 'no-cache' });
 
   useEffect(() => {
     if (
@@ -424,6 +427,7 @@ const Settings = () => {
       'fan_low',
       'fan_high',
       'powerLedOff',
+      'nodeEnableSoloMining',
     ];
     const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
     const isEqual = _.isEqual(settings, currentSettings);
@@ -795,23 +799,27 @@ const Settings = () => {
           sendFeedback({ message: 'Restarting miner...', type: 'info' })
         );
       } else if (type === 'node') {
+        await stopNode();
         dispatch(
           sendFeedback({
-            message: 'You will need to restart your node manually.',
-            type: 'orange',
+            message: 'Restarting Bitcoin node...',
+            type: 'info',
           })
         );
+        await startNode();
       } else if (type === 'both') {
         await restartMiner();
         dispatch(
           sendFeedback({ message: 'Restarting miner...', type: 'info' })
         );
+        await stopNode();
         dispatch(
           sendFeedback({
-            message: 'You will need to restart your node manually.',
-            type: 'orange',
+            message: 'Restarting Bitcoin node...',
+            type: 'info',
           })
         );
+        await startNode();
       } else {
         dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
@@ -893,15 +901,17 @@ const Settings = () => {
                   Save & Restart
                 </Button>
               )}
-              <Button
-                colorScheme="green"
-                variant={'solid'}
-                size={'md'}
-                disabled={errorForm}
-                onClick={() => handlesSaveSettings()}
-              >
-                Save
-              </Button>
+              {!restartNeeded && (
+                <Button
+                  colorScheme="green"
+                  variant={'solid'}
+                  size={'md'}
+                  disabled={errorForm}
+                  onClick={() => handlesSaveSettings()}
+                >
+                  Save
+                </Button>
+              )}
             </Flex>
           </Flex>
         </Box>
@@ -1230,7 +1240,7 @@ const Settings = () => {
                   icon={MdSettings}
                 >
                   <Textarea
-                    value={settings.nodeUserConf}
+                    value={settings.nodeUserConf || ''}
                     onChange={(v) =>
                       setSettings({ ...settings, nodeUserConf: v.target.value })
                     }

@@ -18,8 +18,8 @@ const ProtectedRoute = ({ router, children }) => {
 
   useEffect(() => {
     let setupDone = 'done';
-
-    if (setup) setupDone = setup?.Auth?.status?.result?.status;
+    if (!setup) return;
+    setupDone = setup?.Auth?.status?.result?.status;
 
     // Set Graphql token to localstorage
     if (data?.user?.name) localStorage.setItem('token', data.user.name);
