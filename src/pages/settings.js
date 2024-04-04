@@ -847,7 +847,7 @@ const Settings = () => {
   return (
     <Box>
       <Head>
-        <title>Apollo BTC Settings</title>
+        <title>Apollo Settings</title>
       </Head>
 
       <ModalRestore

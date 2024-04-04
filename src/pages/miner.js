@@ -183,8 +183,8 @@ const Miner = () => {
       <Head>
         <title>
           {globalHashrate
-            ? `Apollo BTC Miner ${globalHashrate.value} ${globalHashrate.unit}`
-            : 'Apollo BTC Miner'}
+            ? `Apollo Miner ${globalHashrate.value} ${globalHashrate.unit}`
+            : 'Apollo Miner'}
         </title>
       </Head>
       <MinerDrawer

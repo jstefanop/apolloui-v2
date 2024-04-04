@@ -123,7 +123,7 @@ const Overview = () => {
   return (
     <Box>
       <Head>
-        <title>Apollo BTC Overview</title>
+        <title>Apollo Overview</title>
       </Head>
       {errorNode && errorMcu && !errorMiner ? (
         <Alert borderRadius={'10px'} status="warning">

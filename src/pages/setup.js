@@ -222,7 +222,7 @@ const Setup = () => {
   return (
     <>
       <Head>
-        <title>Setup your Apollo BTC</title>
+        <title>Setup your Apollo miner</title>
       </Head>
       {step === 1 && (
         <Box mx="auto" py="150px">
