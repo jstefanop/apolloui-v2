@@ -217,17 +217,17 @@ const Settings = () => {
     title: 'SOLO Mining mode',
     selected: false,
     description:
-      'Enable solo mining mode to mine directly to your own Bitcoin wallet. Note: your node will be restarted to apply.',
+      'Enable solo mining mode to mine directly to your own Bitcoin Node. Note: your node will be restarted to apply.',
   };
 
   const minerPowerLedInitialMode = {
     id: 'powerled',
     color: 'green',
     icon: MdShield,
-    title: 'Front power led',
+    title: 'Front Status Light',
     selected: false,
     description:
-      'Turn off/on the front power led. Note: your miner will be restarted to apply.',
+      'Turn off/on the front status led. Note: your miner will be restarted to apply.',
   };
 
   const extraSettingsActions = [
@@ -1194,8 +1194,8 @@ const Settings = () => {
                 </PanelCard>
                 {/* MINER POWER LED */}
                 <PanelCard
-                  title={'Miner power led'}
-                  description={'Turn off/on the front power led'}
+                  title={'Miner Status Light'}
+                  description={'Turn off/on the front status led'}
                   textColor={textColor}
                   icon={TbArtboardFilled}
                   mb="20px"
