@@ -102,7 +102,7 @@ const NavbarUpdateModal = ({
           <Text>
             {localVersion === remoteVersion
               ? 'You are using the latest version of the app.'
-              : 'Please update to the latest version of the app to get the latest features and bug fixes.'}
+              : 'Please update to the latest version of the app to get the latest features and bug fixes. Note: your system will be rebooted after update is completed.'}
           </Text>
           {updateInProgress && <Text>Updating... {progress}%</Text>}
           {done && !updateInProgress && <Text>Done!</Text>}
