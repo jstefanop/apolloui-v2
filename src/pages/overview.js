@@ -315,9 +315,11 @@ const Overview = () => {
                             <div key={index}>
                               There was an error getting stats for Node:{' '}
                               <Code>
-                                {error.message ||
-                                  error.code ||
-                                  error.toString()}
+                                {error.type === 'authentication'
+                                  ? 'Waiting for node response...'
+                                  : error.message ||
+                                    error.code ||
+                                    error.toString()}
                               </Code>
                             </div>
                           );
