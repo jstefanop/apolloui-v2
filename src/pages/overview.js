@@ -123,7 +123,7 @@ const Overview = () => {
   return (
     <Box>
       <Head>
-        <title>Apollo BTC Overview</title>
+        <title>Apollo Overview</title>
       </Head>
       {errorNode && errorMcu && !errorMiner ? (
         <Alert borderRadius={'10px'} status="warning">
@@ -315,9 +315,11 @@ const Overview = () => {
                             <div key={index}>
                               There was an error getting stats for Node:{' '}
                               <Code>
-                                {error.message ||
-                                  error.code ||
-                                  error.toString()}
+                                {error.type === 'authentication'
+                                  ? 'Waiting for node response...'
+                                  : error.message ||
+                                    error.code ||
+                                    error.toString()}
                               </Code>
                             </div>
                           );

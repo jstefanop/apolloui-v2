@@ -13,6 +13,9 @@ import {
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { MCU_UPDATE_PROGRESS_QUERY, MCU_UPDATE_QUERY } from '../../graphql/mcu';
 import { useEffect, useState } from 'react';
+import { updateMinerAction } from '../../redux/actions/minerAction';
+import { MCU_REBOOT_QUERY } from '../../graphql/mcu';
+import { useDispatch } from 'react-redux';
 
 const NavbarUpdateModal = ({
   isOpen,
@@ -20,6 +23,7 @@ const NavbarUpdateModal = ({
   localVersion,
   remoteVersion,
 }) => {
+  const dispatch = useDispatch();
   const [updateInProgress, setUpdateInProgress] = useState(false);
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
@@ -56,17 +60,31 @@ const NavbarUpdateModal = ({
     }
   }, [updateInProgress, remoteProgress, stopPollingProgress]);
 
+  const [rebootMcu, { loading: loadingRebootMcu, error: errorRebootMcu }] =
+    useLazyQuery(MCU_REBOOT_QUERY, { fetchPolicy: 'no-cache' });
+
   const handleReloadApp = () => {
+    dispatch(
+      updateMinerAction({
+        loading: loadingRebootMcu,
+        error: errorRebootMcu,
+        data: rebootMcu,
+        status: false,
+        timestamp: Date.now(),
+      })
+    );
+    /*
     return () => {
       window.location.reload();
     };
+    */
   };
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size={{base: 'sm', md: '4xl'}}
+      size={{ base: 'sm', md: '4xl' }}
       closeOnOverlayClick={false}
       closeOnEsc={false}
       onCloseComplete={() => {
@@ -84,7 +102,7 @@ const NavbarUpdateModal = ({
           <Text>
             {localVersion === remoteVersion
               ? 'You are using the latest version of the app.'
-              : 'Please update to the latest version of the app to get the latest features and bug fixes.'}
+              : 'Please update to the latest version of the app to get the latest features and bug fixes. Note: your system will be rebooted after update is completed.'}
           </Text>
           {updateInProgress && <Text>Updating... {progress}%</Text>}
           {done && !updateInProgress && <Text>Done!</Text>}
@@ -108,8 +126,8 @@ const NavbarUpdateModal = ({
             </Button>
           )}
           {done && (
-            <Button colorScheme='orange' onClick={handleReloadApp()}>
-              Reload app
+            <Button colorScheme="orange" onClick={handleReloadApp()}>
+              Reboot system
             </Button>
           )}
         </ModalFooter>

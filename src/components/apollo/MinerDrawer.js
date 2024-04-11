@@ -75,37 +75,40 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
     });
   });
 
-  const dataTablePools = _.map(data, (board) => {
-    const items = {
-      hashrate: displayHashrate(board.poolHashrateInGh, 'GH/s', true, 2),
-      diff: board.diff,
-      empty: null,
-      sharesSent: board.sharesSent,
-      sharesAccepted: board.sharesAccepted,
-      sharesRejected: board.sharesRejected,
-    };
-    return Object.entries(items).map(([key, value]) => {
-      let icon;
-      switch (key) {
-        case 'hashrate':
-          icon = MinerIcon;
-          break;
-        case 'diff':
-          icon = DifficultyIcon;
-          break;
-        case 'sharesSent':
-          icon = SharesSentIcon;
-          break;
-        case 'sharesAccepted':
-          icon = SharesAcceptedIcon;
-          break;
-        case 'sharesRejected':
-          icon = SharesRejectedIcon;
-          break;
-      }
-      return { value, icon };
-    });
-  });
+  const dataTablePools = _.chain(data)
+    .sortBy('version')
+    .map((board) => {
+      const items = {
+        hashrate: displayHashrate(board.poolHashrateInGh, 'GH/s', true, 2),
+        diff: board.diff,
+        empty: null,
+        sharesSent: board.sharesSent,
+        sharesAccepted: board.sharesAccepted,
+        sharesRejected: board.sharesRejected,
+      };
+      return Object.entries(items).map(([key, value]) => {
+        let icon;
+        switch (key) {
+          case 'hashrate':
+            icon = MinerIcon;
+            break;
+          case 'diff':
+            icon = DifficultyIcon;
+            break;
+          case 'sharesSent':
+            icon = SharesSentIcon;
+            break;
+          case 'sharesAccepted':
+            icon = SharesAcceptedIcon;
+            break;
+          case 'sharesRejected':
+            icon = SharesRejectedIcon;
+            break;
+        }
+        return { value, icon };
+      });
+    })
+    .value();
 
   return (
     <Drawer placement={placement} onClose={onClose} isOpen={isOpen} size="xl">

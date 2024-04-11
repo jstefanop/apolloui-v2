@@ -57,7 +57,7 @@ const SignIn = () => {
       flexDirection='column'
     >
       <Head>
-        <title>Welcome to Apollo BTC</title>
+        <title>Welcome to Apollo Web OS 2</title>
       </Head>
       <Box me='auto'>
         <Heading color={textColor} fontSize='36px' mb='10px'>
