@@ -261,7 +261,7 @@ const Setup = () => {
           alignItems="center"
           my="0"
           mx="auto"
-          maxW={{ base: '80%', xl: '60%' }}
+          maxW={{ base: '100%', xl: '60%' }}
         >
           <Box alignSelf={'flex-start'}>
             <Heading color={'white'} fontSize="42px" mt="10">
@@ -273,13 +273,13 @@ const Setup = () => {
             mx={{ base: '0px', lg: '0px' }}
             justifyContent="center"
             px={{ base: '0px', md: '0px' }}
-            flexDirection="row"
+            flexDirection={{ base: 'column', md: 'row' }}
           >
             <Card
               h={{base: 'auto', md: '440px' }}
-              mx={{ base: '10px', md: '20px' }}
+              mx={{ base: '0px', md: '20px' }}
               mt={{ base: '40px' }}
-              mb={{ base: '50px', lg: 'auto' }}
+              mb={{ base: '20px', lg: 'auto' }}
               p={{ base: '10px', md: '50px' }}
               pt={{ base: '30px', md: '50px' }}
               pb={{ base: '20px', md: '20px' }}
@@ -316,8 +316,8 @@ const Setup = () => {
             </Card>
             <Card
               h={{ base: 'auto', md: '440px' }}
-              mx={{ base: '10px', md: '20px' }}
-              mt={{ base: '40px' }}
+              mx={{ base: '0px', md: '20px' }}
+              mt={{ base: '0px', md: '40px'}}
               mb={{ base: '50px', lg: 'auto' }}
               p={{ base: '10px', md: '50px' }}
               pt={{ base: '30px', md: '50px' }}
