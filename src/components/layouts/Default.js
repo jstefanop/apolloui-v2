@@ -29,6 +29,8 @@ import { MCU_STATS_QUERY } from '../../graphql/mcu';
 import { updateMcuStats } from '../../redux/actions/mcu';
 import { GET_SETTINGS_QUERY } from '../../graphql/settings';
 import { updateSettings } from '../../redux/actions/settings';
+import { GET_ANALYTICS_QUERY } from '../../graphql/analytics';
+import { updateAnalytics } from '../../redux/actions/analytics';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { minerSelector } from '../../redux/reselect/miner';
 import { updateMinerAction } from '../../redux/actions/minerAction';
@@ -120,6 +122,35 @@ const Layout = ({ children, routes }, props) => {
     loadingSettings,
     errorSettings,
     dataSettings,
+  ]);
+
+  // Analytics data
+  const {
+    loading: loadingAnalytics,
+    error: errorAnalytics,
+    data: dataAnalytics,
+    startPolling: startPollingAnalytics,
+  } = useQuery(GET_ANALYTICS_QUERY, {
+    variables: {
+      input: { interval: 'hour' },
+    },
+  });
+
+  useEffect(() => {
+    startPollingAnalytics(process.env.NEXT_PUBLIC_POLLING_TIME_NODE);
+    dispatch(
+      updateAnalytics({
+        loading: loadingAnalytics,
+        error: errorAnalytics,
+        data: dataAnalytics,
+      })
+    );
+  }, [
+    startPollingAnalytics,
+    dispatch,
+    loadingAnalytics,
+    errorAnalytics,
+    dataAnalytics,
   ]);
 
   const { message: feedbackMessage, type: feedbackType } = useSelector(

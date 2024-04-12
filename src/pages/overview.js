@@ -13,6 +13,19 @@ import {
   Code,
 } from '@chakra-ui/react';
 import _ from 'lodash';
+import Head from 'next/head';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import moment from 'moment';
 
 import React, { useEffect, useRef } from 'react';
 import { BulletList, List } from 'react-content-loader';
@@ -21,9 +34,10 @@ import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
-import { bytesToSize } from '../lib/utils';
+import { bytesToSize, displayHashrate } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
+import { analyticsSelector } from '../redux/reselect/analytics';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
 import { McuTempIcon } from '../components/UI/Icons/McuTempIcon';
@@ -36,7 +50,16 @@ import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
-import Head from 'next/head';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Overview = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
@@ -88,6 +111,13 @@ const Overview = () => {
 
   const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
 
+  // Analytics data
+  const {
+    loading: loadingAnalytics,
+    data: dataAnalytics,
+    error: errorAnalytics,
+  } = useSelector(analyticsSelector);
+
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
 
@@ -120,6 +150,63 @@ const Overview = () => {
   const { connectionCount: prevConnectionCount, blocksCount: prevBlocksCount } =
     prevData.current || {};
 
+  const labels = dataAnalytics
+    ? dataAnalytics.map((item) => moment(item.date).format('HH:mm'))
+    : [];
+  const hashrates = dataAnalytics
+    ? dataAnalytics.map((item) => item.hashrate)
+    : [];
+  const poolhashrates = dataAnalytics
+    ? dataAnalytics.map((item) => item.poolHashrate)
+    : [];
+
+  // Crea un oggetto data per Chart.js con le etichette e i dati estratti
+  const chartData = {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Hashrate',
+        data: hashrates,
+        fill: false,
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 6
+      },
+      {
+        label: 'Pool Hashrate',
+        data: poolhashrates,
+        fill: false,
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.4,
+        pointRadius: 3,
+        pointHoverRadius: 6
+      },
+    ],
+  };
+
+  // Opzioni del grafico (opzionale)
+  const options = {
+    maintainAspectRatio: false,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => displayHashrate(value, 'GH/s', true, 2),
+        },
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            return displayHashrate(context.parsed.y, 'GH/s', true, 2);
+          },
+        },
+      },
+    },
+  };
+
   return (
     <Box>
       <Head>
@@ -135,15 +222,25 @@ const Overview = () => {
         </Alert>
       ) : (
         <Grid
-          templateRows={{ base: 'repeat(9, 1fr)', md: 'repeat(3, 1fr)' }}
+          templateRows={{ base: 'repeat(10, 1fr)', md: 'repeat(4, 1fr)' }}
           templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }}
           templateAreas={{
-            base: `'Hashrate' 'Hashrate' 'Hashrate' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData'`,
-            md: `'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`,
+            base: `'Chart' 'Hashrate' 'Hashrate' 'Hashrate' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData'`,
+            md: `'Chart Chart Chart Chart Chart Chart' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`,
           }}
           gap={'20px'}
           mb={'10px'}
         >
+          <GridItem gridArea="Chart">
+            <Card bgColor={cardColor} boxShadow={shadow} p="5">
+              <Line
+                data={chartData}
+                options={options}
+                style={{ height: '300px', width: '100%' }}
+              />
+            </Card>
+          </GridItem>
+
           <GridItem gridArea="Hashrate">
             <HashrateCard
               loading={loadingMiner}

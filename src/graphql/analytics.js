@@ -3,9 +3,9 @@ import { ERROR_FRAGMENT } from './fragments/error';
 
 export const GET_ANALYTICS_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query GET_ANALYTICS {
+  query GET_ANALYTICS ($input: TimeSeriesInput!) {
     TimeSeries {
-      stats($input: TimeSeriesInput!) {
+      stats (input: $input) {
         result {
           data {
             date
@@ -35,21 +35,7 @@ export const initialState = {
   TimeSeries: {
     stats: {
       result: {
-        data: {
-          date: null,
-          hashrate: null,
-          accepted: null,
-          poolHashrate: null,
-          accepted: null,
-          rejected: null,
-          sent: null,
-          errors: null,
-          watts: null,
-          temperature: null,
-          voltage: null,
-          chipSpeed: null,
-          fanRpm: null,
-        },
+        data: [],
       },
       error: null,
     },

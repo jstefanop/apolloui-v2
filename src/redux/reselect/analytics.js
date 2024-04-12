@@ -9,21 +9,19 @@ export const analyticsSelector = createSelector(
   [analyticsDataSelector, analyticsErrorSelector, analyticsLoadingSelector],
   (analyticsData, analyticsError, analyticsLoading) => {
     const {
-      analytics: {
+      TimeSeries: {
         stats: { error: errorStats, result },
       },
     } = analyticsData || initialState;
 
-    const { data: analyticsData = {} } = result || {};
+    const { data = [] } = result || [];
 
-    const { error } = analyticsData;
-
-    const errors = [...[analyticsError, error, errorStats].filter(Boolean)];
+    const errors = [...[analyticsError, errorStats].filter(Boolean)];
 
     return {
       loading: analyticsLoading,
       error: errors,
-      data: !errors.length && analyticsData,
+      data: !errors.length && data,
     };
   }
 );
