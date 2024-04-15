@@ -95,7 +95,7 @@ const Node = () => {
   // Settings data
   const { data: settings } = useSelector(settingsSelector);
 
-  const { nodeEnableTor } = settings || {};
+  const { nodeEnableTor, nodeMaxConnections } = settings || {};
 
   useEffect(() => {
     if (timestamp && !blockTime) return;
@@ -357,7 +357,7 @@ const Node = () => {
                     value={
                       <Flex>
                         {connectionCount}
-                        <Text color="gray.400">/32</Text>
+                        <Text color="gray.400">/{nodeMaxConnections || 32}</Text>
                       </Flex>
                     }
                     progress={true}
