@@ -31,7 +31,7 @@ import {
 
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
@@ -270,11 +270,22 @@ const Settings = () => {
     },
   ];
 
+  const disallowedNodeConf = [
+    'server',
+    'rpcuser',
+    'rpcpassword',
+    'daemon',
+    'upnp',
+    'uacomment',
+    'maxconnections',
+  ];
+
   const [minerModes, setMinerModes] = useState(minerInitialModes);
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
   const [nodeMaxConnections, setNodeMaxConnections] = useState(32);
   const [nodeAllowLan, setNodeAllowLan] = useState(nodeAllowLanInitialMode);
+  const [errorDisallowedNodeConf, setErrorDisallowedNodeConf] = useState(false);
   const [soloMiningMode, setSoloMiningMode] = useState(
     nodeSoloMiningInitialMode
   );
@@ -494,6 +505,34 @@ const Settings = () => {
       setIsChanged(false);
     }
   }, [lockPassword, verifyLockpassword]);
+
+  const logDisallowedNodeConf = (userConf, disallowedVariables) => {
+    // Split userConf into an array of lines
+    const userConfLines = userConf.split('\n');
+
+    // Extract variable names from non-empty lines using regex and filter out empty lines
+    const userConfVariables = userConfLines
+      .filter((line) => line.trim() !== '') // Filter out empty lines
+      .map((line) => line.match(/^[^=\r\n]+/)[0]); // Extract variable names from non-empty lines
+
+    // Find variables from userConfVariables that are present in disallowedVariables
+    const disallowedVarsFound = userConfVariables.filter((variable) =>
+      disallowedVariables.includes(variable)
+    );
+
+    // If at least one disallowed variable is found, log a message
+    if (disallowedVarsFound.length > 0) {
+      setErrorDisallowedNodeConf(disallowedVarsFound);
+    } else {
+      setErrorDisallowedNodeConf(false);
+    }
+  };
+
+  const handleUserConfChange = (e) => {
+    const newUserConf = e.target.value;
+    logDisallowedNodeConf(newUserConf, disallowedNodeConf);
+    setSettings({ ...settings, nodeUserConf: newUserConf });
+  };
 
   const handlePoolPreset = (e) => {
     const preset = presetPools[e.target.value];
@@ -1318,12 +1357,18 @@ const Settings = () => {
                 >
                   <Textarea
                     value={settings.nodeUserConf || ''}
-                    onChange={(v) =>
-                      setSettings({ ...settings, nodeUserConf: v.target.value })
-                    }
+                    onChange={handleUserConfChange}
                     mt="4"
                   />
                 </SimpleCard>
+                {errorDisallowedNodeConf && (
+                  <SimpleCard
+                    secondaryTextColor={'orange.500'}
+                    description={`You inserted disallowed options which will be overwritten by the app: ${JSON.stringify(
+                      errorDisallowedNodeConf
+                    )}`}
+                  />
+                )}
               </PanelCard>
             </SimpleGrid>
           </TabPanel>
