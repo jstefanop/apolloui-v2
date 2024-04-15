@@ -13,6 +13,7 @@ import {
   MenuGroup,
   MenuDivider,
   Spinner,
+  Box,
   useDisclosure,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
@@ -125,8 +126,14 @@ export default function HeaderLinks({
       px="14px"
       borderRadius="30px"
       boxShadow={shadow}
+      mt={{base: 4, md: 0}}
     >
-      <NavbarUpdateModal isOpen={isOpen} onClose={onClose} localVersion={localVersion} remoteVersion={remoteVersion} />
+      <NavbarUpdateModal
+        isOpen={isOpen}
+        onClose={onClose}
+        localVersion={localVersion}
+        remoteVersion={remoteVersion}
+      />
 
       {!loading && (
         <Center>
@@ -281,7 +288,7 @@ export default function HeaderLinks({
                 fontWeight="700"
                 me="6px"
                 minW="70px"
-                display={{ base: 'none', md: 'block' }}
+                display={{ base: nodeEnableSoloMining ? 'none' : 'block', md: 'block' }}
               >
                 {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
               </Text>
@@ -360,7 +367,9 @@ export default function HeaderLinks({
             <FixedPlugin type="small" />
           </Flex>
 
-          <SidebarResponsive routes={routes} />
+          <Box display={{ base: 'none', md: 'block' }}>
+            <SidebarResponsive routes={routes} />
+          </Box>
 
           <Flex p="0px" mx="4px" justify="flex-end">
             <Menu isLazy>

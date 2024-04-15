@@ -233,7 +233,7 @@ const Settings = () => {
   const extraSettingsActions = [
     {
       id: 'backup',
-      color: 'blue',
+      color: 'teal',
       icon: DownloadIcon,
       title: 'Backup settings',
       buttonTitle: 'BACKUP',
@@ -250,7 +250,7 @@ const Settings = () => {
     },
     {
       id: 'format',
-      color: 'red',
+      color: 'purple',
       icon: FormatIcon,
       title: 'Format Node SSD',
       buttonTitle: 'FORMAT',

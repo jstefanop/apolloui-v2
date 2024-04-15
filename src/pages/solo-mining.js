@@ -41,7 +41,6 @@ import moment from 'moment';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { shortenBitcoinAddress } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
-import { act } from 'react-dom/test-utils';
 
 const SoloMining = () => {
   const router = useRouter();
@@ -77,14 +76,9 @@ const SoloMining = () => {
   const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode;
 
   // Mcu data
-  const {
-    data: dataMcu,
-    error: errorMcu,
-  } = useSelector(mcuSelector);
+  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector);
 
-  const {
-    network,
-  } = dataMcu;
+  const { network } = dataMcu;
 
   const eth0 = _.find(network, { name: 'eth0' });
   const wlan0 = _.find(network, { name: 'wlan0' });
@@ -232,15 +226,9 @@ const SoloMining = () => {
         />
       ) : (
         <>
-          <Alert
-            mb="5"
-            borderRadius={'10px'}
-            status={'info'}
-          >
+          <Alert mb="5" borderRadius={'10px'} status={'info'}>
             <AlertIcon mr={4} />
-            <AlertTitle>
-              SOLO LAN Mining
-            </AlertTitle>
+            <AlertTitle>SOLO LAN Mining</AlertTitle>
             <AlertDescription>{`Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: ${localAddress}:3333 Username: <bitcoin address>`}</AlertDescription>
           </Alert>
 
@@ -552,17 +540,32 @@ const SoloMining = () => {
                     {loadingMiner ? (
                       <BulletList />
                     ) : (
-                      dataTableBoards.map((dataTable, index) => (
-                        <Box mt="3" key={index}>
-                          <PanelGrid
-                            title={`${shortenBitcoinAddress(
-                              boardNames[index],
-                              10
-                            )}`}
-                            data={dataTable}
-                          />
-                        </Box>
-                      ))
+                      <Box
+                        overflowY={'auto'}
+                        maxH="400px"
+                        sx={{
+                          '&::-webkit-scrollbar': {
+                            width: '16px',
+                            borderRadius: '8px',
+                            backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                          },
+                          '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                          },
+                        }}
+                      >
+                        {dataTableBoards.map((dataTable, index) => (
+                          <Box mt="3" key={index}>
+                            <PanelGrid
+                              title={`${shortenBitcoinAddress(
+                                boardNames[index],
+                                10
+                              )}`}
+                              data={dataTable}
+                            />
+                          </Box>
+                        ))}
+                      </Box>
                     )}
                   </Card>
                 </GridItem>
