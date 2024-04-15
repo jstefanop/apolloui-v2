@@ -21,11 +21,13 @@ export const GET_SETTINGS_QUERY = gql`
             leftSidebarExtended
             rightSidebarVisibility
             temperatureUnit
+            powerLedOff
             nodeRpcPassword
             nodeEnableTor
             nodeUserConf
             nodeEnableSoloMining
-            powerLedOff
+            nodeMaxConnections
+            nodeAllowLan
           }
         }
         error {
@@ -56,11 +58,13 @@ export const SET_SETTINGS_QUERY = gql`
             leftSidebarExtended
             rightSidebarVisibility
             temperatureUnit
+            powerLedOff
             nodeRpcPassword
             nodeEnableTor
             nodeUserConf
             nodeEnableSoloMining
-            powerLedOff
+            nodeMaxConnections
+            nodeAllowLan
           }
         }
         error {
@@ -89,11 +93,13 @@ export const initialState = {
           leftSidebarExtended: null,
           rightSidebarVisibility: null,
           temperatureUnit: null,
+          powerLedOff: null,
           nodeRpcPassword: null,
           nodeEnableTor: null,
           nodeUserConf: null,
           nodeEnableSoloMining: null,
-          powerLedOff: null,
+          nodeMaxConnections: null,
+          nodeAllowLan: null,
         },
       },
     },

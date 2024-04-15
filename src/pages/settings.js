@@ -25,6 +25,7 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  InputLeftAddon,
   useDisclosure,
 } from '@chakra-ui/react';
 
@@ -210,6 +211,16 @@ const Settings = () => {
       'Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply.',
   };
 
+  const nodeAllowLanInitialMode = {
+    id: 'allowLan',
+    color: 'green',
+    icon: MdShield,
+    title: 'Allow LAN connections',
+    selected: false,
+    description:
+      'Allow LAN connections to your Bitcoin Node. Note: your node will be restarted to apply.',
+  };
+
   const nodeSoloMiningInitialMode = {
     id: 'solo',
     color: 'green',
@@ -262,6 +273,8 @@ const Settings = () => {
   const [minerModes, setMinerModes] = useState(minerInitialModes);
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
+  const [nodeMaxConnections, setNodeMaxConnections] = useState(32);
+  const [nodeAllowLan, setNodeAllowLan] = useState(nodeAllowLanInitialMode);
   const [soloMiningMode, setSoloMiningMode] = useState(
     nodeSoloMiningInitialMode
   );
@@ -394,6 +407,15 @@ const Settings = () => {
       };
     });
 
+    setNodeMaxConnections(settingsData.nodeMaxConnections);
+
+    setNodeAllowLan((el) => {
+      return {
+        ...el,
+        selected: settingsData.nodeAllowLan,
+      };
+    });
+
     setSoloMiningMode((el) => {
       return {
         ...el,
@@ -429,7 +451,12 @@ const Settings = () => {
       'powerLedOff',
       'nodeEnableSoloMining',
     ];
-    const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
+    const restartNodeFields = [
+      'nodeEnableTor',
+      'nodeUserConf',
+      'nodeMaxConnections',
+      'nodeAllowLan',
+    ];
     const isEqual = _.isEqual(settings, currentSettings);
     const restartMinerNeeded = !_.isEqual(
       _.pick(settings, restartMinerFields),
@@ -608,6 +635,21 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableTor: !v });
   };
 
+  const handleNodeMaxConnections = (e) => {
+    setErrorForm(null);
+    const v = parseInt(e.target.value);
+    console.log(v);
+    setNodeMaxConnections(parseInt(v));
+    setSettings({ ...settings, nodeMaxConnections: v });
+  };
+
+  const handleNodeAllowLan = (e) => {
+    setErrorForm(null);
+    const v = e.target.value === 'true' ? true : false;
+    setNodeAllowLan({ ...nodeAllowLan, selected: !v });
+    setSettings({ ...settings, nodeAllowLan: !v });
+  };
+
   const handleSwitchSoloMiningMode = (e) => {
     setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
@@ -625,6 +667,14 @@ const Settings = () => {
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
     setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
+    setNodeMaxConnections({
+      ...nodeMaxConnections,
+      selected: currentSettings.nodeMaxConnections,
+    });
+    setNodeAllowLan({
+      ...nodeAllowLan,
+      selected: currentSettings.nodeAllowLan,
+    });
     setSoloMiningMode({
       ...soloMiningMode,
       selected: currentSettings.nodeEnableSoloMining,
@@ -739,6 +789,8 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        nodeMaxConnections,
+        nodeAllowLan,
         powerLedOff,
         pool,
       } = settings;
@@ -765,6 +817,8 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        nodeMaxConnections,
+        nodeAllowLan,
         powerLedOff,
       };
 
@@ -1231,6 +1285,29 @@ const Settings = () => {
                   handleSwitch={handleSwitchNodeTorMode}
                 />
                 <Divider mb="10px" />
+                <SimpleSwitchSettingsItem
+                  item={nodeAllowLan}
+                  textColor={textColor}
+                  sliderTextColor={sliderTextColor}
+                  handleSwitch={handleNodeAllowLan}
+                />
+                <Divider mb="10px" />
+                <SimpleCard title={'Extra options'} textColor={textColor}>
+                  <InputGroup mt={4}>
+                    <InputLeftAddon>Max connections</InputLeftAddon>
+                    <Input
+                      color={inputTextColor}
+                      name="nodeMaxConnections"
+                      type="number"
+                      placeholder={32}
+                      value={settings.nodeMaxConnections}
+                      onChange={handleNodeMaxConnections}
+                      width="90px"
+                    />
+                  </InputGroup>
+                </SimpleCard>
+                <Divider mb="10px" />
+
                 <SimpleCard
                   title={'Bitcoin node configuration'}
                   description={
