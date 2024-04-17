@@ -50,7 +50,6 @@ import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
-import Head from 'next/head';
 import { settingsSelector } from '../redux/reselect/settings';
 
 ChartJS.register(
