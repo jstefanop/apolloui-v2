@@ -25,12 +25,13 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  InputLeftAddon,
   useDisclosure,
 } from '@chakra-ui/react';
 
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import _ from 'lodash';
+import _, { set } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
@@ -210,6 +211,16 @@ const Settings = () => {
       'Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply.',
   };
 
+  const nodeAllowLanInitialMode = {
+    id: 'allowLan',
+    color: 'green',
+    icon: MdShield,
+    title: 'Allow LAN connections',
+    selected: false,
+    description:
+      'Allow LAN connections to your Bitcoin Node. Note: your node will be restarted to apply.',
+  };
+
   const nodeSoloMiningInitialMode = {
     id: 'solo',
     color: 'green',
@@ -259,9 +270,22 @@ const Settings = () => {
     },
   ];
 
+  const disallowedNodeConf = [
+    'server',
+    'rpcuser',
+    'rpcpassword',
+    'daemon',
+    'upnp',
+    'uacomment',
+    'maxconnections',
+  ];
+
   const [minerModes, setMinerModes] = useState(minerInitialModes);
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
+  const [nodeMaxConnections, setNodeMaxConnections] = useState(32);
+  const [nodeAllowLan, setNodeAllowLan] = useState(nodeAllowLanInitialMode);
+  const [errorDisallowedNodeConf, setErrorDisallowedNodeConf] = useState(false);
   const [soloMiningMode, setSoloMiningMode] = useState(
     nodeSoloMiningInitialMode
   );
@@ -394,6 +418,15 @@ const Settings = () => {
       };
     });
 
+    setNodeMaxConnections(settingsData.nodeMaxConnections);
+
+    setNodeAllowLan((el) => {
+      return {
+        ...el,
+        selected: settingsData.nodeAllowLan,
+      };
+    });
+
     setSoloMiningMode((el) => {
       return {
         ...el,
@@ -429,7 +462,12 @@ const Settings = () => {
       'powerLedOff',
       'nodeEnableSoloMining',
     ];
-    const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
+    const restartNodeFields = [
+      'nodeEnableTor',
+      'nodeUserConf',
+      'nodeMaxConnections',
+      'nodeAllowLan',
+    ];
     const isEqual = _.isEqual(settings, currentSettings);
     const restartMinerNeeded = !_.isEqual(
       _.pick(settings, restartMinerFields),
@@ -467,6 +505,34 @@ const Settings = () => {
       setIsChanged(false);
     }
   }, [lockPassword, verifyLockpassword]);
+
+  const logDisallowedNodeConf = (userConf, disallowedVariables) => {
+    // Split userConf into an array of lines
+    const userConfLines = userConf.split('\n');
+
+    // Extract variable names from non-empty lines using regex and filter out empty lines
+    const userConfVariables = userConfLines
+      .filter((line) => line.trim() !== '') // Filter out empty lines
+      .map((line) => line.match(/^[^=\r\n]+/)[0]); // Extract variable names from non-empty lines
+
+    // Find variables from userConfVariables that are present in disallowedVariables
+    const disallowedVarsFound = userConfVariables.filter((variable) =>
+      disallowedVariables.includes(variable)
+    );
+
+    // If at least one disallowed variable is found, log a message
+    if (disallowedVarsFound.length > 0) {
+      setErrorDisallowedNodeConf(disallowedVarsFound);
+    } else {
+      setErrorDisallowedNodeConf(false);
+    }
+  };
+
+  const handleUserConfChange = (e) => {
+    const newUserConf = e.target.value;
+    logDisallowedNodeConf(newUserConf, disallowedNodeConf);
+    setSettings({ ...settings, nodeUserConf: newUserConf });
+  };
 
   const handlePoolPreset = (e) => {
     const preset = presetPools[e.target.value];
@@ -608,6 +674,21 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableTor: !v });
   };
 
+  const handleNodeMaxConnections = (e) => {
+    setErrorForm(null);
+    const v = parseInt(e.target.value);
+    console.log(v);
+    setNodeMaxConnections(parseInt(v));
+    setSettings({ ...settings, nodeMaxConnections: v });
+  };
+
+  const handleNodeAllowLan = (e) => {
+    setErrorForm(null);
+    const v = e.target.value === 'true' ? true : false;
+    setNodeAllowLan({ ...nodeAllowLan, selected: !v });
+    setSettings({ ...settings, nodeAllowLan: !v });
+  };
+
   const handleSwitchSoloMiningMode = (e) => {
     setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
@@ -625,6 +706,14 @@ const Settings = () => {
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
     setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
+    setNodeMaxConnections({
+      ...nodeMaxConnections,
+      selected: currentSettings.nodeMaxConnections,
+    });
+    setNodeAllowLan({
+      ...nodeAllowLan,
+      selected: currentSettings.nodeAllowLan,
+    });
     setSoloMiningMode({
       ...soloMiningMode,
       selected: currentSettings.nodeEnableSoloMining,
@@ -739,6 +828,8 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        nodeMaxConnections,
+        nodeAllowLan,
         powerLedOff,
         pool,
       } = settings;
@@ -765,6 +856,8 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        nodeMaxConnections,
+        nodeAllowLan,
         powerLedOff,
       };
 
@@ -1231,6 +1324,29 @@ const Settings = () => {
                   handleSwitch={handleSwitchNodeTorMode}
                 />
                 <Divider mb="10px" />
+                <SimpleSwitchSettingsItem
+                  item={nodeAllowLan}
+                  textColor={textColor}
+                  sliderTextColor={sliderTextColor}
+                  handleSwitch={handleNodeAllowLan}
+                />
+                <Divider mb="10px" />
+                <SimpleCard title={'Extra options'} textColor={textColor}>
+                  <InputGroup mt={4}>
+                    <InputLeftAddon>Max connections</InputLeftAddon>
+                    <Input
+                      color={inputTextColor}
+                      name="nodeMaxConnections"
+                      type="number"
+                      placeholder={32}
+                      value={settings.nodeMaxConnections}
+                      onChange={handleNodeMaxConnections}
+                      width="90px"
+                    />
+                  </InputGroup>
+                </SimpleCard>
+                <Divider mb="10px" />
+
                 <SimpleCard
                   title={'Bitcoin node configuration'}
                   description={
@@ -1241,12 +1357,18 @@ const Settings = () => {
                 >
                   <Textarea
                     value={settings.nodeUserConf || ''}
-                    onChange={(v) =>
-                      setSettings({ ...settings, nodeUserConf: v.target.value })
-                    }
+                    onChange={handleUserConfChange}
                     mt="4"
                   />
                 </SimpleCard>
+                {errorDisallowedNodeConf && (
+                  <SimpleCard
+                    secondaryTextColor={'orange.500'}
+                    description={`You inserted disallowed options which will be overwritten by the app: ${JSON.stringify(
+                      errorDisallowedNodeConf
+                    )}`}
+                  />
+                )}
               </PanelCard>
             </SimpleGrid>
           </TabPanel>

@@ -50,6 +50,8 @@ import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
+import Head from 'next/head';
+import { settingsSelector } from '../redux/reselect/settings';
 
 ChartJS.register(
   CategoryScale,
@@ -117,6 +119,11 @@ const Overview = () => {
     data: dataAnalytics,
     error: errorAnalytics,
   } = useSelector(analyticsSelector);
+
+  // Settings data
+  const { data: settings } = useSelector(settingsSelector);
+
+  const { nodeMaxConnections } = settings || {};
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
@@ -458,7 +465,7 @@ const Overview = () => {
                             >
                               {connectionCount}
                             </span>
-                            <Text color="gray.400">/32</Text>
+                            <Text color="gray.400">/{nodeMaxConnections}</Text>
                           </Flex>
                         }
                         align="start"
