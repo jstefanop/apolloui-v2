@@ -124,8 +124,6 @@ export const minerSelector = createSelector(
         rejected: ckSharesRejected,
       } = ckPool || {};
 
-      const { worker: ckWorkers } = ckUsers || {};
-
       const ckPoolLastUpdate = ckLastUpdate
         ? moment(ckLastUpdate, 'X').fromNow()
         : null;
@@ -367,7 +365,7 @@ export const minerSelector = createSelector(
         ckIdle,
         ckSharesAccepted,
         ckSharesRejected,
-        ckWorkers,
+        ckUsers,
       };
     }
 

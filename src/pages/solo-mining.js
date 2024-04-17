@@ -121,7 +121,7 @@ const SoloMining = () => {
     ckDisconnected,
     ckSharesAccepted,
     ckSharesRejected,
-    ckWorkers = [],
+    ckUsers = [],
   } = dataMiner;
 
   const prevBestSharePerc =
@@ -135,7 +135,7 @@ const SoloMining = () => {
   const desiredKeys = [
     'hashrate5m',
     'hashrate1d',
-    'workername',
+    'worker',
     'lastshare',
     'shares',
     'bestever',
@@ -143,7 +143,7 @@ const SoloMining = () => {
 
   const boardNames = [];
 
-  const dataTableBoards = ckWorkers.map((element) => {
+  const dataTableBoards = ckUsers.map((element) => {
     if (!element) return;
     const mappedArray = [];
     desiredKeys.forEach((key) => {
@@ -158,8 +158,8 @@ const SoloMining = () => {
             value = `${element[key]} (1d)`;
             icon = MinerIcon;
             break;
-          case 'workername':
-            boardNames.push(element[key]);
+          case 'worker':
+            boardNames.push(element[key][0]?.workername);
             break;
           case 'lastshare':
             value = `${moment(element[key], 'X').fromNow()}`;
@@ -198,7 +198,7 @@ const SoloMining = () => {
         isOpen={isOpen}
         onClose={onClose}
         placement="right"
-        data={ckWorkers}
+        data={ckUsers}
       />
       {!minerOnline ? (
         <CustomAlert
