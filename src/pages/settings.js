@@ -1103,6 +1103,7 @@ const Settings = () => {
                       fontSize="sm"
                       label="Select a pool *"
                       onChange={handlePoolPreset}
+                      disabled={soloMiningMode.selected}
                     >
                       <option></option>
                       {presetPools.map((item, index) => (
