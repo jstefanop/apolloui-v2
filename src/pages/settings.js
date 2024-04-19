@@ -693,7 +693,29 @@ const Settings = () => {
     setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
     setSoloMiningMode({ ...soloMiningMode, selected: !v });
-    setSettings({ ...settings, nodeEnableSoloMining: !v });
+    let poolChanged;
+
+    if (!v) {
+      poolChanged = {
+        ...settings.pool,
+        url: 'stratum+tcp://127.0.0.1:3333',
+        password: 'x',
+      };
+    } else {
+      poolChanged = {
+        ...settings.pool,
+        url: '',
+        password: 'x',
+      };
+    }
+
+    console.log(pool);
+
+    const preset = presetPools[2];
+
+    setPool(preset);
+    
+    setSettings({ ...settings, nodeEnableSoloMining: !v, pool: poolChanged });
   };
 
   const handleSwitchPowerLedOff = (e) => {
