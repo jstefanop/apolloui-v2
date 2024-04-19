@@ -709,12 +709,10 @@ const Settings = () => {
       };
     }
 
-    console.log(pool);
-
     const preset = presetPools[2];
 
     setPool(preset);
-    
+
     setSettings({ ...settings, nodeEnableSoloMining: !v, pool: poolChanged });
   };
 

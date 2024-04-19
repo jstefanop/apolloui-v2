@@ -35,6 +35,7 @@ const HashrateCard = ({
       secondaryTextColor={hashSecondaryColor}
       secondaryText="1 hour average"
       title="Current hashrate"
+      bigFont={true}
       loading={loading}
       errors={errors}
       mainData={
