@@ -237,7 +237,7 @@ const Miner = () => {
                 loading={loadingMiner}
                 errors={errorMiner}
                 data={minerPower}
-                avgData={avgBoardEfficiency}
+                avgData={avgBoardEfficiency || 0}
                 prevData={prevMinerPower}
                 prevAvgData={prevAvgBoardEfficiency}
                 shadow={shadow}
