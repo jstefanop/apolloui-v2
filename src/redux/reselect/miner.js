@@ -108,6 +108,10 @@ export const minerSelector = createSelector(
       // ckPool data
       const { pool: ckPool, users: ckUsers } = ckData || {};
 
+      const filteredCkUsers = _.filter(ckUsers, (user) => {
+        return user.lastshare && user.lastshare > moment().subtract(1, 'days').format('X');
+      });
+
       const {
         runtime: ckRuntime,
         lastupdate: ckLastUpdate,
@@ -365,7 +369,7 @@ export const minerSelector = createSelector(
         ckIdle,
         ckSharesAccepted,
         ckSharesRejected,
-        ckUsers,
+        ckUsers: filteredCkUsers,
       };
     }
 
