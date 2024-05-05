@@ -539,6 +539,8 @@ const SoloMining = () => {
                     </Flex>
                     {loadingMiner ? (
                       <BulletList />
+                    ) : !dataTableBoards.length ? (
+                      <Text m="3">Waiting for stats to refresh...</Text>
                     ) : (
                       <Box
                         overflowY={'auto'}
