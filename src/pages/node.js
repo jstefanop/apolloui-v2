@@ -9,6 +9,7 @@ import {
   AlertDescription,
   SimpleGrid,
   Code,
+  useDisclosure,
 } from '@chakra-ui/react';
 import moment from 'moment';
 import CountUp from 'react-countup';
@@ -33,8 +34,10 @@ import { mcuSelector } from '../redux/reselect/mcu';
 import DynamicTable from '../components/UI/DynamicTable';
 import BannerNode from '../assets/img/node_banner.png';
 import { settingsSelector } from '../redux/reselect/settings';
+import ModalConnectNode from '../components/apollo/ModalConnectNode';
 
 const Node = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const cardColor = useColorModeValue('white', 'brand.800');
   const statisticColor = useColorModeValue('transparent', 'brand.500');
   const bgMainIcon = useColorModeValue(
@@ -95,7 +98,7 @@ const Node = () => {
   // Settings data
   const { data: settings } = useSelector(settingsSelector);
 
-  const { nodeEnableTor, nodeMaxConnections } = settings || {};
+  const { nodeRpcPassword, nodeEnableTor, nodeMaxConnections } = settings || {};
 
   useEffect(() => {
     if (timestamp && !blockTime) return;
@@ -146,6 +149,11 @@ const Node = () => {
     },
   ];
 
+  const nodeAddress =
+    localaddresses?.length && nodeEnableTor
+      ? `${localaddresses[0].address}:${localaddresses[0].port}`
+      : `${localAddress}:8332`;
+
   return (
     <Box mx="5">
       <Head>
@@ -157,6 +165,12 @@ const Node = () => {
             : '...'}
         </title>
       </Head>
+      <ModalConnectNode
+        isOpen={isOpen}
+        onClose={onClose}
+        pass={nodeRpcPassword}
+        address={nodeAddress}
+      />
       <Flex direction="column">
         <Card
           h={{ base: '470px', md: '370px' }}
@@ -357,7 +371,9 @@ const Node = () => {
                     value={
                       <Flex>
                         {connectionCount}
-                        <Text color="gray.400">/{nodeMaxConnections || 32}</Text>
+                        <Text color="gray.400">
+                          /{nodeMaxConnections || 32}
+                        </Text>
                       </Flex>
                     }
                     progress={true}
@@ -406,13 +422,11 @@ const Node = () => {
                       />
                     }
                     name="Local node address"
-                    value={
-                      localaddresses?.length && nodeEnableTor
-                        ? `${localaddresses[0].address}:${localaddresses[0].port}`
-                        : localAddress
-                    }
+                    value={nodeAddress}
                     reversed={true}
                     fontSize="md"
+                    button={'Connect'}
+                    buttonHandler={onOpen}
                   />
                   <MiniStatistics
                     bgColor={statisticColor}

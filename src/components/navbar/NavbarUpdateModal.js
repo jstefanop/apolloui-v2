@@ -13,7 +13,6 @@ import {
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { MCU_UPDATE_PROGRESS_QUERY, MCU_UPDATE_QUERY } from '../../graphql/mcu';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 const NavbarUpdateModal = ({
   isOpen,
@@ -21,7 +20,6 @@ const NavbarUpdateModal = ({
   localVersion,
   remoteVersion,
 }) => {
-  const dispatch = useDispatch();
   const [updateInProgress, setUpdateInProgress] = useState(false);
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);

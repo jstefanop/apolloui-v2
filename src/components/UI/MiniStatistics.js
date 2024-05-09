@@ -9,6 +9,7 @@ import {
   Text,
   Progress,
   Tooltip,
+  Button,
 } from '@chakra-ui/react';
 // Custom components
 import Card from '../card/Card';
@@ -30,6 +31,8 @@ const MiniStatistics = ({
   progressPercent,
   fontSize,
   value,
+  button,
+  buttonHandler,
   ...props
 }) => {
   const textColor = useColorModeValue('brand.800', 'white');
@@ -112,9 +115,16 @@ const MiniStatistics = ({
             ) : null}
           </Stat>
         </Tooltip>
-        <Flex ms="auto" w="max-content">
-          {endContent}
-        </Flex>
+        {button && (
+          <Flex align="center" ms="18px" >
+            <Button onClick={buttonHandler} size="sm">{button}</Button>
+          </Flex>
+        )}
+        {endContent && (
+          <Flex ms="auto" w="max-content">
+            {endContent}
+          </Flex>
+        )}
       </Flex>
       {progress && (
         <Flex align="center" mt="5">
