@@ -1229,6 +1229,17 @@ const Settings = () => {
                           />
                         </SimpleCard>
                       )}
+                      {soloMiningMode.selected && nodeTorMode.selected && (
+                        <Alert mt="5" borderRadius={'10px'} status={'error'}>
+                          <AlertIcon />
+                          <AlertDescription>
+                            You have tor enabled, it is suggested to turn off
+                            tor for solo mining. Bitcoin nodes over the tor
+                            network propagate blocks slower, and there is a
+                            higher chance of orphaning a block
+                          </AlertDescription>
+                        </Alert>
+                      )}
                     </>
                   ) : (
                     <SimpleCard
@@ -1344,6 +1355,17 @@ const Settings = () => {
                   sliderTextColor={sliderTextColor}
                   handleSwitch={handleSwitchNodeTorMode}
                 />
+                {soloMiningMode.selected && nodeTorMode.selected && (
+                  <Alert mt="5" borderRadius={'10px'} status={'error'}>
+                    <AlertIcon />
+                    <AlertDescription>
+                      You have solo mining enabled, it is suggested to turn off
+                      tor for solo mining. Bitcoin nodes over the tor
+                      network propagate blocks slower, and there is a
+                      higher chance of orphaning a block
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <Divider mb="10px" />
                 <SimpleSwitchSettingsItem
                   item={nodeAllowLan}

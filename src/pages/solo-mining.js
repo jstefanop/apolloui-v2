@@ -11,8 +11,10 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  CloseButton,
+  Button,
 } from '@chakra-ui/react';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -38,19 +40,29 @@ import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import CustomAlert from '../components/UI/CustomAlert';
 import moment from 'moment';
+import Cookies from 'js-cookie';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { shortenBitcoinAddress } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
+import { InfoIcon } from '@chakra-ui/icons';
 
 const SoloMining = () => {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isVisibleBanner,
+    onClose: onCLoseBanner,
+    onOpen: onOpenBanner,
+  } = useDisclosure();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white', 'white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
+  
+  const isBannerDisabled = Cookies.get('solo-mining-banner-disabled');
+  const [showBanner, setShowBanner] = useState(!isBannerDisabled);
 
   // Settings data
   const {
@@ -185,6 +197,17 @@ const SoloMining = () => {
     return mappedArray;
   });
 
+  const handleCloseBanner = () => {
+    onCLoseBanner();
+    setShowBanner(false);
+    Cookies.set('solo-mining-banner-disabled', true);
+  };
+  const handleOpenBanner = () => {
+    onOpenBanner();
+    setShowBanner(true);
+    Cookies.remove('solo-mining-banner-disabled');
+  };
+
   return (
     <Box>
       <Head>
@@ -226,11 +249,30 @@ const SoloMining = () => {
         />
       ) : (
         <>
-          <Alert mb="5" borderRadius={'10px'} status={'info'}>
-            <AlertIcon mr={4} />
-            <AlertTitle>SOLO LAN Mining</AlertTitle>
-            <AlertDescription>{`Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: ${localAddress}:3333 Username: <bitcoin address>`}</AlertDescription>
-          </Alert>
+          {showBanner || isVisibleBanner ? (
+            <Alert mb="5" borderRadius={'10px'} status={'info'}>
+              <AlertIcon mr={4} />
+              <AlertTitle>SOLO LAN Mining</AlertTitle>
+              <AlertDescription>{`Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: ${localAddress}:3333 Username: <bitcoin address>`}</AlertDescription>
+              <CloseButton
+                alignSelf="flex-start"
+                position="relative"
+                right={-1}
+                top={-1}
+                onClick={handleCloseBanner}
+              />
+            </Alert>
+          ) : (
+            <Button
+              mb={4}
+              rightIcon={<InfoIcon />}
+              onClick={handleOpenBanner}
+              variant="lightBrand"
+              size={'sm'}
+            >
+              {'Connect'}
+            </Button>
+          )}
 
           <Grid
             templateRows={{ base: 'repeat(6, 1fr)', md: 'repeat(3, 1fr)' }}
