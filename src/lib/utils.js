@@ -151,6 +151,13 @@ export const isValidBitcoinAddress = (address) => {
   return addressRegex.test(address);
 };
 
+export const isTaprootAddress = (address) => {
+  // Pattern for Bitcoin Taproot address
+  const taprootPattern = /^bc1p[0-9a-zA-Z]{38}$/;
+
+  return taprootPattern.test(address);
+};
+
 export const presetPools = [
   {
     name: 'Ocean.xyz',

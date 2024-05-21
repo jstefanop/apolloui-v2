@@ -62,7 +62,7 @@ import { sendFeedback } from '../redux/actions/feedback';
 import ModalFormat from '../components/apollo/ModalFormat';
 import { NODE_FORMAT_QUERY, NODE_START_QUERY } from '../graphql/node';
 import { NODE_STOP_QUERY } from '../graphql/node';
-import { isValidBitcoinAddress, presetPools } from '../lib/utils';
+import { isValidBitcoinAddress, isTaprootAddress, presetPools } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { SystemIcon } from '../components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
@@ -580,6 +580,9 @@ const Settings = () => {
     if (!isValidBitcoinAddress(e.target.value))
       setErrorForm('Please add a valid Bitcoin address');
 
+    if (isTaprootAddress(e.target.value))
+      setErrorForm('Warning: Taproot Bitcoin address is not valid for SOLO mining. Please add a different Bitcoin address');
+
     const poolChanged = {
       ...settings.pool,
       url: 'stratum+tcp://127.0.0.1:3333',
@@ -861,6 +864,9 @@ const Settings = () => {
 
       if (nodeEnableSoloMining && !isValidBitcoinAddress(username))
         return setErrorForm('Invalid Bitcoin wallet address');
+
+      if (nodeEnableSoloMining && isTaprootAddress(username))
+        return setErrorForm('Warning: Taproot Bitcoin address is not valid for SOLO mining. Please add a different Bitcoin address');
 
       const input = {
         agree,
