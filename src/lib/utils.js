@@ -158,6 +158,23 @@ export const isTaprootAddress = (address) => {
   return taprootPattern.test(address);
 };
 
+export const isCompatibleBitcoinAddress = (address) => {
+  if (address.startsWith('bc1q')) {
+    // P2WPKH
+    if (address.length === 42) {
+      return false;
+      // P2WSH
+    } else if (address.length === 62) {
+      return false;
+    }
+    // P2TR
+  } else if (address.startsWith('bc1p') && address.length === 62) {
+    return false;
+  }
+
+  return true;
+};
+
 export const presetPools = [
   {
     name: 'Ocean.xyz',
@@ -186,7 +203,7 @@ export const shortenBitcoinAddress = (address, chars = 5) => {
   }
 };
 
-export const getVersionFromPackageJson  = () => {
+export const getVersionFromPackageJson = () => {
   try {
     // Return the version
     const version = packageJson.version;
@@ -198,4 +215,4 @@ export const getVersionFromPackageJson  = () => {
     );
     return null;
   }
-}
+};
