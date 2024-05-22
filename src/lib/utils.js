@@ -162,7 +162,7 @@ export const isCompatibleBitcoinAddress = (address) => {
   if (address.startsWith('bc1q')) {
     // P2WPKH
     if (address.length === 42) {
-      return false;
+      return true;
       // P2WSH
     } else if (address.length === 62) {
       return false;
