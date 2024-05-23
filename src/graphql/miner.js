@@ -75,6 +75,7 @@ export const MINER_STATS_QUERY = gql`
             lastsharetime @client
             status @client
             statVersion
+            comport
             versions {
               miner
               minerDate
@@ -380,6 +381,7 @@ export const initialState = {
             version: null,
             date: null,
             statVersion: null,
+            comport: null,
             versions: {
               miner: null,
               minerDate: null,

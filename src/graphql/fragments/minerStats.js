@@ -12,6 +12,7 @@ export const MINER_STATS_FRAGMENT = gql`
         lastsharetime @client
         status @client
         statVersion
+        comport
         versions {
           miner
           minerDate

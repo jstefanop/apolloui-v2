@@ -1,4 +1,7 @@
 import packageJson from '../../package.json';
+import { MdOutlineUsb } from 'react-icons/md';
+import { CgServer } from 'react-icons/cg';
+import { Icon } from '@chakra-ui/react';
 
 export const displayHashrate = (
   hashrate,
@@ -215,4 +218,41 @@ export const getVersionFromPackageJson = () => {
     );
     return null;
   }
+};
+
+export const getNodeErrorMessage = (error) => {
+  let parsedError;
+  let sentence = null;
+  let type = 'warning';
+  if (!error.length) return { sentence, type };
+
+  parsedError = error[0].message || error[0].code || 'Unknown error';
+  sentence = `There was an error getting stats for Node: ${parsedError}`;
+
+  if (error[0].type === 'authentication') {
+    sentence = 'Waiting for node response...';
+    type = 'info';
+  }
+
+  if (parsedError.match(/ˆLoading block index.*/)) {
+    sentence = 'Your node is starting up...';
+    type = 'info';
+  }
+
+  return { sentence, type };
+};
+
+export const getMinerHashboardType = (comport) => {
+  if (comport && comport.includes('ttyS1')) {
+    return (
+      <>
+        Internal <Icon as={CgServer} ml="2" />
+      </>
+    );
+  }
+  return (
+    <>
+      External <Icon as={MdOutlineUsb} ml="2" />
+    </>
+  );
 };

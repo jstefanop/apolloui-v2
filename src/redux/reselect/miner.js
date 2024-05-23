@@ -35,6 +35,7 @@ export const minerSelector = createSelector(
           lastsharetime,
           date,
           version,
+          comport,
           master: {
             boardsI: voltage,
             boardsW: wattTotal,
@@ -77,6 +78,7 @@ export const minerSelector = createSelector(
         return {
           date,
           status,
+          comport,
           poolStatus,
           poolUsername,
           poolHost,

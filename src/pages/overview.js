@@ -21,7 +21,7 @@ import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
-import { bytesToSize } from '../lib/utils';
+import { bytesToSize, getNodeErrorMessage } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
 import { mcuSelector } from '../redux/reselect/mcu';
@@ -88,6 +88,9 @@ const Overview = () => {
   } = useSelector(nodeSelector);
 
   const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
+
+  const { sentence: errorNodeSentence, type: errorNodeType } =
+    getNodeErrorMessage(errorNode);
 
   // Settings data
   const { data: settings } = useSelector(settingsSelector);
@@ -311,26 +314,11 @@ const Overview = () => {
                   </Flex>
                   {loadingNode ? (
                     <List />
-                  ) : errorNode.length ? (
-                    <Alert borderRadius={'10px'} status="warning">
+                  ) : errorNodeSentence ? (
+                    <Alert borderRadius={'10px'} status={errorNodeType}>
                       <AlertIcon />
-                      <AlertTitle>Warning</AlertTitle>
-                      <AlertDescription>
-                        {errorNode.map((error, index) => {
-                          return (
-                            <div key={index}>
-                              There was an error getting stats for Node:{' '}
-                              <Code>
-                                {error.type === 'authentication'
-                                  ? 'Waiting for node response...'
-                                  : error.message ||
-                                    error.code ||
-                                    error.toString()}
-                              </Code>
-                            </div>
-                          );
-                        })}
-                      </AlertDescription>
+                      <AlertTitle>{errorNodeType}</AlertTitle>
+                      <AlertDescription>{errorNodeSentence}</AlertDescription>
                     </Alert>
                   ) : (
                     <Flex

@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import ActiveBadge from '../apollo/ActiveBadge';
 import { ErrorIcon } from './Icons/ErrorIcon';
+import { getMinerHashboardType } from '../../lib/utils';
 
 const PanelGrid = ({
   title,
@@ -17,10 +18,13 @@ const PanelGrid = ({
   data,
   status,
   version,
+  comport,
   badgeText,
   badgeSecondaryText,
 }) => {
   const badgeBgColor = useColorModeValue('gray.200', 'gray.900');
+  const tagColor = useColorModeValue('gray.800', 'gray.200');
+  const tagBgColor = useColorModeValue('gray.200', 'gray.600');
   const versionsMap = {
     v1: { color: 'blue', name: 'Apollo BTC' },
     v2: { color: 'teal', name: 'Apollo II' },
@@ -34,6 +38,11 @@ const PanelGrid = ({
             {version && (
               <Tag size="md" ml="10px" colorScheme={versionsMap[version]?.color}>
                 {versionsMap[version]?.name}
+              </Tag>
+            )}
+            {comport && (
+              <Tag size="md" ml="10px" color={tagColor} bg={tagBgColor}>
+                {getMinerHashboardType(comport)}
               </Tag>
             )}
           </Text>

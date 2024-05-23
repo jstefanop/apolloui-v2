@@ -39,44 +39,46 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
   const activeBoards = _.size(_.filter(data, { status: true }));
   const totalBoards = _.size(data);
   const activePools = _.size(_.filter(data, { poolStatus: true }));
+  const dataSorted = _.orderBy(data, ['version'], ['desc']);
 
-  const dataTableBoards = _.map(data, (board) => {
-    const items = {
-      hashrate: displayHashrate(board.hashrateInGh, 'GH/s', true, 2),
-      temperature: `${board.temperature}°C`,
-      fanSPeed: `${board.fanSpeed} rpm`,
-      power: `${board.wattTotal} Watts`,
-      voltage: `${board.voltage} A`,
-      errorRate: `${board.errorRate}%`,
-    };
-    return Object.entries(items).map(([key, value]) => {
-      let icon;
-      switch (key) {
-        case 'hashrate':
-          icon = MinerIcon;
-          break;
-        case 'temperature':
-          icon = MinerTempIcon;
-          break;
-        case 'fanSPeed':
-          icon = FanIcon;
-          break;
-        case 'power':
-          icon = PowerIcon;
-          break;
-        case 'voltage':
-          icon = VoltageIcon;
-          break;
-        case 'errorRate':
-          icon = BugIcon;
-          break;
-      }
-      return { value, icon };
-    });
-  });
+  const dataTableBoards = _.chain(dataSorted)
+    .map((board) => {
+      const items = {
+        hashrate: displayHashrate(board.hashrateInGh, 'GH/s', true, 2),
+        temperature: `${board.temperature}°C`,
+        fanSPeed: `${board.fanSpeed} rpm`,
+        power: `${board.wattTotal} Watts`,
+        voltage: `${board.voltage} A`,
+        errorRate: `${board.errorRate}%`,
+      };
+      return Object.entries(items).map(([key, value]) => {
+        let icon;
+        switch (key) {
+          case 'hashrate':
+            icon = MinerIcon;
+            break;
+          case 'temperature':
+            icon = MinerTempIcon;
+            break;
+          case 'fanSPeed':
+            icon = FanIcon;
+            break;
+          case 'power':
+            icon = PowerIcon;
+            break;
+          case 'voltage':
+            icon = VoltageIcon;
+            break;
+          case 'errorRate':
+            icon = BugIcon;
+            break;
+        }
+        return { value, icon };
+      });
+    })
+    .value();
 
-  const dataTablePools = _.chain(data)
-    .sortBy('version')
+  const dataTablePools = _.chain(dataSorted)
     .map((board) => {
       const items = {
         hashrate: displayHashrate(board.poolHashrateInGh, 'GH/s', true, 2),
@@ -166,10 +168,11 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                     <PanelGrid
                       title={`Hashboard #${index}`}
                       data={board}
-                      status={data[index].status}
-                      badgeText={data[index].chips}
-                      version={data[index].version}
+                      status={dataSorted[index].status}
+                      badgeText={dataSorted[index].chips}
+                      version={dataSorted[index].version}
                       badgeSecondaryText="Active ASICs"
+                      comport={dataSorted[index].comport}
                     />
                   </Card>
                 ))}
@@ -185,11 +188,12 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                     my="15px"
                   >
                     <PanelGrid
-                      title={`${data[index].poolHost}:${data[index].poolPort}`}
+                      title={`${dataSorted[index].poolHost}:${dataSorted[index].poolPort}`}
                       data={board}
-                      status={data[index].poolStatus}
-                      badgeSecondaryText={data[index].poolUsername}
-                      version={data[index].version}
+                      status={dataSorted[index].poolStatus}
+                      badgeSecondaryText={dataSorted[index].poolUsername}
+                      version={dataSorted[index].version}
+                      comport={dataSorted[index].comport}
                     />
                   </Card>
                 ))}

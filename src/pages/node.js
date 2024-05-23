@@ -35,6 +35,8 @@ import DynamicTable from '../components/UI/DynamicTable';
 import BannerNode from '../assets/img/node_banner.png';
 import { settingsSelector } from '../redux/reselect/settings';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
+import { getNodeErrorMessage } from '../lib/utils';
+
 
 const Node = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -73,6 +75,8 @@ const Node = () => {
     localaddresses,
     subversion,
   } = dataNode;
+
+  const { sentence: errorNodeSentence, type: errorNodeType } = getNodeErrorMessage(errorNode);
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataNode);
@@ -249,22 +253,11 @@ const Node = () => {
             </Flex>
             {loadingNode ? (
               <List />
-            ) : errorNode.length ? (
-              <Alert borderRadius={'10px'} status="warning">
+            ) : errorNodeSentence ? (
+              <Alert borderRadius={'10px'} status={errorNodeType || 'info'}>
                 <AlertIcon />
-                <AlertTitle>Warning</AlertTitle>
-                <AlertDescription>
-                  {errorNode.map((error, index) => {
-                    return (
-                      <div key={index}>
-                        There was an error getting stats for Node:{' '}
-                        <Code>
-                          {`${error.message || ''}  ${error.code || ''}`}
-                        </Code>
-                      </div>
-                    );
-                  })}
-                </AlertDescription>
+                <AlertTitle>{errorNodeType || 'info'}</AlertTitle>
+                <AlertDescription>{errorNodeSentence}</AlertDescription>
               </Alert>
             ) : (
               <Box>
