@@ -238,7 +238,7 @@ export const getNodeErrorMessage = (error) => {
     type = 'info';
   }
 
-  if (error[0].message.match(/ˆLoading block index.*/i)) {
+  if (error[0].code === '-28') {
     sentence = 'Your node is starting up...';
     type = 'info';
   }
