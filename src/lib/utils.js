@@ -229,12 +229,16 @@ export const getNodeErrorMessage = (error) => {
   parsedError = error[0].message || error[0].code || 'Unknown error';
   sentence = `There was an error getting stats for Node: ${parsedError}`;
 
+  if (error[0].code === 'ECONNREFUSED') {
+    sentence = 'Connection refused. Probably the node is not running.';
+  }
+
   if (error[0].type === 'authentication') {
     sentence = 'Waiting for node response...';
     type = 'info';
   }
 
-  if (parsedError.match(/ˆLoading block index.*/)) {
+  if (error[0].message.match(/ˆLoading block index.*/i)) {
     sentence = 'Your node is starting up...';
     type = 'info';
   }
