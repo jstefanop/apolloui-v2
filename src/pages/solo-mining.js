@@ -60,7 +60,7 @@ const SoloMining = () => {
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
-  
+
   const isBannerDisabled = Cookies.get('solo-mining-banner-disabled');
   const [showBanner, setShowBanner] = useState(!isBannerDisabled);
 
@@ -255,10 +255,9 @@ const SoloMining = () => {
               <AlertTitle>SOLO LAN Mining</AlertTitle>
               <AlertDescription>{`Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: ${localAddress}:3333 Username: <bitcoin address>`}</AlertDescription>
               <CloseButton
-                alignSelf="flex-start"
-                position="relative"
-                right={-1}
-                top={-1}
+                position="absolute"
+                right={2}
+                top={2}
                 onClick={handleCloseBanner}
               />
             </Alert>
