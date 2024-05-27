@@ -98,7 +98,7 @@ const PanelCard = ({
                   hasArrow
                   bg={'gray.600'}
                   color='white'
-                  placement='top'
+                placement='top'
                   isOpen={showTooltip}
                   label={`${tooltip}`}
                 >

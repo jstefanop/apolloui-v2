@@ -31,7 +31,7 @@ import {
 
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import _, { set } from 'lodash';
+import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
@@ -40,6 +40,7 @@ import { RiUserSettingsFill } from 'react-icons/ri';
 import { MdHdrAuto, MdShield, MdSettings, MdOutlineWifi } from 'react-icons/md';
 import SimpleSwitchSettingsItem from '../components/UI/SimpleSwitchSettingsItem';
 import PanelCard from '../components/UI/PanelCard';
+import PanelCardNode from '../components/UI/PanelCardNode';
 import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
@@ -62,11 +63,18 @@ import { sendFeedback } from '../redux/actions/feedback';
 import ModalFormat from '../components/apollo/ModalFormat';
 import { NODE_FORMAT_QUERY, NODE_START_QUERY } from '../graphql/node';
 import { NODE_STOP_QUERY } from '../graphql/node';
-import { isValidBitcoinAddress, isCompatibleBitcoinAddress, presetPools } from '../lib/utils';
+import {
+  isValidBitcoinAddress,
+  isCompatibleBitcoinAddress,
+  presetPools,
+  getNodeErrorMessage,
+} from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { SystemIcon } from '../components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
 import { TbArtboardFilled } from 'react-icons/tb';
+import ModalConnectNode from '../components/apollo/ModalConnectNode';
+import { mcuSelector } from '../redux/reselect/mcu';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -74,10 +82,17 @@ const Settings = () => {
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const {
     isOpen: isOpenFormat,
     onOpen: onOpenFormat,
     onClose: onCloseFormat,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenConnect,
+    onOpen: onOpenConnect,
+    onClose: onCloseConnect,
   } = useDisclosure();
 
   const { current: minerInitialModes } = useRef([
@@ -308,9 +323,31 @@ const Settings = () => {
   const [pool, setPool] = useState();
 
   // Node data
-  const { data: dataNode, error: errorNode } = useSelector(nodeSelector);
+  const {
+    data: dataNode,
+    error: errorNode,
+    loading: loadingNode,
+  } = useSelector(nodeSelector);
 
-  const { blocksCount, blockHeader } = dataNode;
+  const { blocksCount, blockHeader, localaddresses } = dataNode;
+
+  const { sentence: errorNodeSentence } =
+    getNodeErrorMessage(errorNode);
+
+  // Mcu data
+  const { data: dataMcu } = useSelector(mcuSelector);
+
+  const { network } = dataMcu;
+
+  const eth0 = _.find(network, { name: 'eth0' });
+  const wlan0 = _.find(network, { name: 'wlan0' });
+
+  const localAddress = wlan0?.address || eth0?.address;
+
+  const nodeAddress =
+    localaddresses?.length && currentSettings?.nodeEnableTor
+      ? `${localaddresses[0].address}:${localaddresses[0].port}`
+      : `${localAddress}:8332`;
 
   const {
     loading: loadingSettings,
@@ -581,7 +618,9 @@ const Settings = () => {
       setErrorForm('Please add a valid Bitcoin address');
 
     if (!isCompatibleBitcoinAddress(e.target.value))
-      setErrorForm('Warning: P2WPKH, P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address');
+      setErrorForm(
+        'Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address'
+      );
 
     const poolChanged = {
       ...settings.pool,
@@ -866,7 +905,9 @@ const Settings = () => {
         return setErrorForm('Invalid Bitcoin wallet address');
 
       if (nodeEnableSoloMining && !isCompatibleBitcoinAddress(username))
-        return setErrorForm('Warning: Taproot Bitcoin address is not valid for SOLO mining. Please add a different Bitcoin address');
+        return setErrorForm(
+          'Warning: Taproot Bitcoin address is not valid for SOLO mining. Please add a different Bitcoin address'
+        );
 
       const input = {
         agree,
@@ -982,6 +1023,13 @@ const Settings = () => {
         onFormat={handleFormatDisk}
       />
 
+      <ModalConnectNode
+        isOpen={isOpenConnect}
+        onClose={onCloseConnect}
+        pass={settings?.nodeRpcPassword}
+        address={nodeAddress}
+      />
+
       {isChanged && (
         <Box
           position="fixed"
@@ -1052,7 +1100,7 @@ const Settings = () => {
             >
               Pools
             </Text>
-            <PoolIcon display={{ base: 'block', md: 'none' }} />
+            <PoolIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -1062,7 +1110,7 @@ const Settings = () => {
             >
               Miner
             </Text>
-            <MinerIcon display={{ base: 'block', md: 'none' }} />
+            <MinerIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -1072,7 +1120,7 @@ const Settings = () => {
             >
               Node
             </Text>
-            <NodeIcon display={{ base: 'block', md: 'none' }} />
+            <NodeIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -1082,7 +1130,7 @@ const Settings = () => {
             >
               System
             </Text>
-            <SystemIcon display={{ base: 'block', md: 'none' }} />
+            <SystemIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -1092,7 +1140,7 @@ const Settings = () => {
             >
               Extra
             </Text>
-            <MdSettings display={{ base: 'block', md: 'none' }} />
+            <MdSettings display={{ base: 'block' }} />
           </Tab>
         </TabList>
 
@@ -1345,14 +1393,14 @@ const Settings = () => {
           <TabPanel>
             <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
               {/* NODE SETTINGS */}
-              <PanelCard
+              <PanelCardNode
                 title={'Bitcoin node settings'}
                 description={'Manage Bitcoin Node Configuration'}
                 textColor={textColor}
                 icon={NodeIcon}
-                badgeColor={'orange'}
-                badgeText={settings.nodeRpcPassword}
-                showHide={true}
+                handleButtonClick={onOpenConnect}
+                buttonText="Connect"
+                buttonLoading={!currentSettings?.nodeAllowLan || errorNodeSentence || loadingNode}
                 mb={'20px'}
               >
                 <SimpleSwitchSettingsItem
@@ -1366,9 +1414,9 @@ const Settings = () => {
                     <AlertIcon />
                     <AlertDescription>
                       You have solo mining enabled, it is suggested to turn off
-                      tor for solo mining. Bitcoin nodes over the tor
-                      network propagate blocks slower, and there is a
-                      higher chance of orphaning a block
+                      tor for solo mining. Bitcoin nodes over the tor network
+                      propagate blocks slower, and there is a higher chance of
+                      orphaning a block
                     </AlertDescription>
                   </Alert>
                 )}
@@ -1418,7 +1466,7 @@ const Settings = () => {
                     )}`}
                   />
                 )}
-              </PanelCard>
+              </PanelCardNode>
             </SimpleGrid>
           </TabPanel>
           <TabPanel>

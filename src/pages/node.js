@@ -36,7 +36,7 @@ import BannerNode from '../assets/img/node_banner.png';
 import { settingsSelector } from '../redux/reselect/settings';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
 import { getNodeErrorMessage } from '../lib/utils';
-
+import { MdCastConnected } from 'react-icons/md';
 
 const Node = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -76,7 +76,8 @@ const Node = () => {
     subversion,
   } = dataNode;
 
-  const { sentence: errorNodeSentence, type: errorNodeType } = getNodeErrorMessage(errorNode);
+  const { sentence: errorNodeSentence, type: errorNodeType } =
+    getNodeErrorMessage(errorNode);
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataNode);
@@ -103,6 +104,11 @@ const Node = () => {
   const { data: settings } = useSelector(settingsSelector);
 
   const { nodeRpcPassword, nodeEnableTor, nodeMaxConnections } = settings || {};
+
+  const nodeAddress =
+    localaddresses?.length && nodeEnableTor
+      ? `${localaddresses[0].address}:${localaddresses[0].port}`
+      : `${localAddress}:8332`;
 
   useEffect(() => {
     if (timestamp && !blockTime) return;
@@ -152,11 +158,6 @@ const Node = () => {
       type: 'status',
     },
   ];
-
-  const nodeAddress =
-    localaddresses?.length && nodeEnableTor
-      ? `${localaddresses[0].address}:${localaddresses[0].port}`
-      : `${localAddress}:8332`;
 
   return (
     <Box mx="5">
@@ -420,6 +421,7 @@ const Node = () => {
                     fontSize="md"
                     button={'Connect'}
                     buttonHandler={onOpen}
+                    buttonIcon={<MdCastConnected />}
                   />
                   <MiniStatistics
                     bgColor={statisticColor}

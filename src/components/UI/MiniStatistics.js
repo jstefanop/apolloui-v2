@@ -33,6 +33,7 @@ const MiniStatistics = ({
   value,
   button,
   buttonHandler,
+  buttonIcon,
   ...props
 }) => {
   const textColor = useColorModeValue('brand.800', 'white');
@@ -117,7 +118,7 @@ const MiniStatistics = ({
         </Tooltip>
         {button && (
           <Flex align="center" ms="18px" >
-            <Button onClick={buttonHandler} size="sm">{button}</Button>
+            <Button leftIcon={buttonIcon} onClick={buttonHandler} size="sm">{button}</Button>
           </Flex>
         )}
         {endContent && (

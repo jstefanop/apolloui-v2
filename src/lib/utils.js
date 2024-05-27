@@ -149,8 +149,8 @@ export const convertTemp = (celsius, unit, addUnit) => {
 
 export const isValidBitcoinAddress = (address) => {
   // Bitcoin addresses are alphanumeric and start with either '1', '3', or 'bc1'
-  const addressRegex = /^(1|3|bc1)[a-zA-HJ-NP-Z0-9]{25,62}$/;
-
+  const addressRegex = /^(1|3)[a-zA-HJ-NP-Z0-9]{25,34}$|^(bc1)[a-zA-HJ-NP-Z0-9]{39}$/;
+  
   return addressRegex.test(address);
 };
 
