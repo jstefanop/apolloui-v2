@@ -21,7 +21,7 @@ import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
-import { bytesToSize } from '../lib/utils';
+import { bytesToSize, getNodeErrorMessage } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
 import { mcuSelector } from '../redux/reselect/mcu';
@@ -37,6 +37,7 @@ import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import Head from 'next/head';
+import { settingsSelector } from '../redux/reselect/settings';
 
 const Overview = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
@@ -87,6 +88,14 @@ const Overview = () => {
   } = useSelector(nodeSelector);
 
   const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
+
+  const { sentence: errorNodeSentence, type: errorNodeType } =
+    getNodeErrorMessage(errorNode);
+
+  // Settings data
+  const { data: settings } = useSelector(settingsSelector);
+
+  const { nodeMaxConnections } = settings || {};
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
@@ -305,26 +314,11 @@ const Overview = () => {
                   </Flex>
                   {loadingNode ? (
                     <List />
-                  ) : errorNode.length ? (
-                    <Alert borderRadius={'10px'} status="warning">
+                  ) : errorNodeSentence ? (
+                    <Alert borderRadius={'10px'} status={errorNodeType}>
                       <AlertIcon />
-                      <AlertTitle>Warning</AlertTitle>
-                      <AlertDescription>
-                        {errorNode.map((error, index) => {
-                          return (
-                            <div key={index}>
-                              There was an error getting stats for Node:{' '}
-                              <Code>
-                                {error.type === 'authentication'
-                                  ? 'Waiting for node response...'
-                                  : error.message ||
-                                    error.code ||
-                                    error.toString()}
-                              </Code>
-                            </div>
-                          );
-                        })}
-                      </AlertDescription>
+                      <AlertTitle>{errorNodeType}</AlertTitle>
+                      <AlertDescription>{errorNodeSentence}</AlertDescription>
                     </Alert>
                   ) : (
                     <Flex
@@ -361,7 +355,7 @@ const Overview = () => {
                             >
                               {connectionCount}
                             </span>
-                            <Text color="gray.400">/32</Text>
+                            <Text color="gray.400">/{nodeMaxConnections}</Text>
                           </Flex>
                         }
                         align="start"

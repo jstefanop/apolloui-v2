@@ -35,6 +35,7 @@ export const minerSelector = createSelector(
           lastsharetime,
           date,
           version,
+          comport,
           master: {
             boardsI: voltage,
             boardsW: wattTotal,
@@ -77,6 +78,7 @@ export const minerSelector = createSelector(
         return {
           date,
           status,
+          comport,
           poolStatus,
           poolUsername,
           poolHost,
@@ -108,6 +110,10 @@ export const minerSelector = createSelector(
       // ckPool data
       const { pool: ckPool, users: ckUsers } = ckData || {};
 
+      const filteredCkUsers = _.filter(ckUsers, (user) => {
+        return user.lastshare && user.lastshare > moment().subtract(1, 'days').format('X');
+      });
+
       const {
         runtime: ckRuntime,
         lastupdate: ckLastUpdate,
@@ -123,8 +129,6 @@ export const minerSelector = createSelector(
         accepted: ckSharesAccepted,
         rejected: ckSharesRejected,
       } = ckPool || {};
-
-      const { worker: ckWorkers } = ckUsers || {};
 
       const ckPoolLastUpdate = ckLastUpdate
         ? moment(ckLastUpdate, 'X').fromNow()
@@ -367,7 +371,7 @@ export const minerSelector = createSelector(
         ckIdle,
         ckSharesAccepted,
         ckSharesRejected,
-        ckWorkers,
+        ckUsers: filteredCkUsers,
       };
     }
 

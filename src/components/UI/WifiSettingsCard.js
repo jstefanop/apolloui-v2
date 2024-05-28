@@ -158,8 +158,8 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
           Click the scan button and your system will scan for available wifi
           networks. Click one of the available SSIDs, and enter your WiFi
           passphrase. Clicking the disconnect button will delete all saved WiFi
-          connections, if you are having issues connecting, click the disconnect
-          button before trying anything else.
+          connections. If you are having issues connecting, set your wifi router
+          to a seperate 2.4GHz SSID with WPA2 only security.
         </Text>
       </Flex>
 

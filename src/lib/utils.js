@@ -1,4 +1,7 @@
 import packageJson from '../../package.json';
+import { MdOutlineUsb } from 'react-icons/md';
+import { CgServer } from 'react-icons/cg';
+import { Icon } from '@chakra-ui/react';
 
 export const displayHashrate = (
   hashrate,
@@ -146,9 +149,33 @@ export const convertTemp = (celsius, unit, addUnit) => {
 
 export const isValidBitcoinAddress = (address) => {
   // Bitcoin addresses are alphanumeric and start with either '1', '3', or 'bc1'
-  const addressRegex = /^(1|3|bc1)[a-zA-HJ-NP-Z0-9]{25,62}$/;
-
+  const addressRegex = /^(1|3)[a-zA-HJ-NP-Z0-9]{25,34}$|^(bc1)[a-zA-HJ-NP-Z0-9]{39}$/;
+  
   return addressRegex.test(address);
+};
+
+export const isTaprootAddress = (address) => {
+  // Pattern for Bitcoin Taproot address
+  const taprootPattern = /^bc1p[0-9a-zA-Z]{38}$/;
+
+  return taprootPattern.test(address);
+};
+
+export const isCompatibleBitcoinAddress = (address) => {
+  if (address.startsWith('bc1q')) {
+    // P2WPKH
+    if (address.length === 42) {
+      return true;
+      // P2WSH
+    } else if (address.length === 62) {
+      return false;
+    }
+    // P2TR
+  } else if (address.startsWith('bc1p') && address.length === 62) {
+    return false;
+  }
+
+  return true;
 };
 
 export const presetPools = [
@@ -179,7 +206,7 @@ export const shortenBitcoinAddress = (address, chars = 5) => {
   }
 };
 
-export const getVersionFromPackageJson  = () => {
+export const getVersionFromPackageJson = () => {
   try {
     // Return the version
     const version = packageJson.version;
@@ -191,4 +218,45 @@ export const getVersionFromPackageJson  = () => {
     );
     return null;
   }
-}
+};
+
+export const getNodeErrorMessage = (error) => {
+  let parsedError;
+  let sentence = null;
+  let type = 'warning';
+  if (!error.length) return { sentence, type };
+
+  parsedError = error[0].message || error[0].code || 'Unknown error';
+  sentence = `There was an error getting stats for Node: ${parsedError}`;
+
+  if (error[0].code === 'ECONNREFUSED') {
+    sentence = 'Connection refused. Your node is not running.';
+  }
+
+  if (error[0].type === 'authentication') {
+    sentence = 'Waiting for node response...';
+    type = 'info';
+  }
+
+  if (error[0].code === '-28') {
+    sentence = 'Your node is starting up...';
+    type = 'info';
+  }
+
+  return { sentence, type };
+};
+
+export const getMinerHashboardType = (comport) => {
+  if (comport && comport.includes('ttyS1')) {
+    return (
+      <>
+        Internal <Icon as={CgServer} ml="2" />
+      </>
+    );
+  }
+  return (
+    <>
+      External <Icon as={MdOutlineUsb} ml="2" />
+    </>
+  );
+};

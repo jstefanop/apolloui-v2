@@ -11,8 +11,10 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  CloseButton,
+  Button,
 } from '@chakra-ui/react';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -38,20 +40,29 @@ import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import CustomAlert from '../components/UI/CustomAlert';
 import moment from 'moment';
+import Cookies from 'js-cookie';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { shortenBitcoinAddress } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
-import { act } from 'react-dom/test-utils';
+import { InfoIcon } from '@chakra-ui/icons';
 
 const SoloMining = () => {
   const router = useRouter();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isVisibleBanner,
+    onClose: onCLoseBanner,
+    onOpen: onOpenBanner,
+  } = useDisclosure();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white', 'white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
+
+  const isBannerDisabled = Cookies.get('solo-mining-banner-disabled');
+  const [showBanner, setShowBanner] = useState(!isBannerDisabled);
 
   // Settings data
   const {
@@ -77,14 +88,9 @@ const SoloMining = () => {
   const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode;
 
   // Mcu data
-  const {
-    data: dataMcu,
-    error: errorMcu,
-  } = useSelector(mcuSelector);
+  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector);
 
-  const {
-    network,
-  } = dataMcu;
+  const { network } = dataMcu;
 
   const eth0 = _.find(network, { name: 'eth0' });
   const wlan0 = _.find(network, { name: 'wlan0' });
@@ -127,7 +133,7 @@ const SoloMining = () => {
     ckDisconnected,
     ckSharesAccepted,
     ckSharesRejected,
-    ckWorkers = [],
+    ckUsers = [],
   } = dataMiner;
 
   const prevBestSharePerc =
@@ -141,7 +147,7 @@ const SoloMining = () => {
   const desiredKeys = [
     'hashrate5m',
     'hashrate1d',
-    'workername',
+    'worker',
     'lastshare',
     'shares',
     'bestever',
@@ -149,7 +155,7 @@ const SoloMining = () => {
 
   const boardNames = [];
 
-  const dataTableBoards = ckWorkers.map((element) => {
+  const dataTableBoards = ckUsers.map((element) => {
     if (!element) return;
     const mappedArray = [];
     desiredKeys.forEach((key) => {
@@ -164,8 +170,8 @@ const SoloMining = () => {
             value = `${element[key]} (1d)`;
             icon = MinerIcon;
             break;
-          case 'workername':
-            boardNames.push(element[key]);
+          case 'worker':
+            boardNames.push(element[key][0]?.workername);
             break;
           case 'lastshare':
             value = `${moment(element[key], 'X').fromNow()}`;
@@ -191,6 +197,17 @@ const SoloMining = () => {
     return mappedArray;
   });
 
+  const handleCloseBanner = () => {
+    onCLoseBanner();
+    setShowBanner(false);
+    Cookies.set('solo-mining-banner-disabled', true);
+  };
+  const handleOpenBanner = () => {
+    onOpenBanner();
+    setShowBanner(true);
+    Cookies.remove('solo-mining-banner-disabled');
+  };
+
   return (
     <Box>
       <Head>
@@ -204,7 +221,7 @@ const SoloMining = () => {
         isOpen={isOpen}
         onClose={onClose}
         placement="right"
-        data={ckWorkers}
+        data={ckUsers}
       />
       {!minerOnline ? (
         <CustomAlert
@@ -232,17 +249,29 @@ const SoloMining = () => {
         />
       ) : (
         <>
-          <Alert
-            mb="5"
-            borderRadius={'10px'}
-            status={'info'}
-          >
-            <AlertIcon mr={4} />
-            <AlertTitle>
-              SOLO LAN Mining
-            </AlertTitle>
-            <AlertDescription>{`Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: ${localAddress}:3333 Username: <bitcoin address>`}</AlertDescription>
-          </Alert>
+          {showBanner || isVisibleBanner ? (
+            <Alert mb="5" borderRadius={'10px'} status={'info'}>
+              <AlertIcon mr={4} />
+              <AlertTitle>SOLO LAN Mining</AlertTitle>
+              <AlertDescription>{`Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: ${localAddress}:3333 Username: <bitcoin address>`}</AlertDescription>
+              <CloseButton
+                position="absolute"
+                right={2}
+                top={2}
+                onClick={handleCloseBanner}
+              />
+            </Alert>
+          ) : (
+            <Button
+              mb={4}
+              rightIcon={<InfoIcon />}
+              onClick={handleOpenBanner}
+              variant="lightBrand"
+              size={'sm'}
+            >
+              {'Connect'}
+            </Button>
+          )}
 
           <Grid
             templateRows={{ base: 'repeat(6, 1fr)', md: 'repeat(3, 1fr)' }}
@@ -551,18 +580,35 @@ const SoloMining = () => {
                     </Flex>
                     {loadingMiner ? (
                       <BulletList />
+                    ) : !dataTableBoards.length ? (
+                      <Text m="3">Waiting for stats to refresh...</Text>
                     ) : (
-                      dataTableBoards.map((dataTable, index) => (
-                        <Box mt="3" key={index}>
-                          <PanelGrid
-                            title={`${shortenBitcoinAddress(
-                              boardNames[index],
-                              10
-                            )}`}
-                            data={dataTable}
-                          />
-                        </Box>
-                      ))
+                      <Box
+                        overflowY={'auto'}
+                        maxH="400px"
+                        sx={{
+                          '&::-webkit-scrollbar': {
+                            width: '16px',
+                            borderRadius: '8px',
+                            backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                          },
+                          '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                          },
+                        }}
+                      >
+                        {dataTableBoards.map((dataTable, index) => (
+                          <Box mt="3" key={index}>
+                            <PanelGrid
+                              title={`${shortenBitcoinAddress(
+                                boardNames[index],
+                                10
+                              )}`}
+                              data={dataTable}
+                            />
+                          </Box>
+                        ))}
+                      </Box>
                     )}
                   </Card>
                 </GridItem>

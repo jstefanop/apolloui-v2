@@ -18,7 +18,7 @@ export const mcuSelector = createSelector(
     } = mcuData || initialState;
 
     const {
-      stats: mcuStats,
+      stats: mcuStats = {},
     } = result || {};
 
     const errors = [...[mcuError, errorStats].filter(Boolean)];

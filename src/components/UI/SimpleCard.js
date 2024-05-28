@@ -6,6 +6,7 @@ const SimpleCard = ({
   title,
   description,
   textColor,
+  secondaryTextColor,
   icon,
   ...rest
 }) => {
@@ -49,7 +50,7 @@ const SimpleCard = ({
               )}
               {description && (
                 <Text
-                  color='secondaryGray.600'
+                  color={secondaryTextColor || 'secondaryGray.600'}
                   fontSize={{ base: 'xs', lg: 'sm' }}
                   fontWeight='400'
                   me='14px'

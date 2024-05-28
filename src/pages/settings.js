@@ -25,6 +25,7 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  InputLeftAddon,
   useDisclosure,
 } from '@chakra-ui/react';
 
@@ -39,6 +40,7 @@ import { RiUserSettingsFill } from 'react-icons/ri';
 import { MdHdrAuto, MdShield, MdSettings, MdOutlineWifi } from 'react-icons/md';
 import SimpleSwitchSettingsItem from '../components/UI/SimpleSwitchSettingsItem';
 import PanelCard from '../components/UI/PanelCard';
+import PanelCardNode from '../components/UI/PanelCardNode';
 import SimpleCard from '../components/UI/SimpleCard';
 import WifiSettingsCard from '../components/UI/WifiSettingsCard';
 import { MCU_WIFI_SCAN_QUERY } from '../graphql/mcu';
@@ -61,11 +63,18 @@ import { sendFeedback } from '../redux/actions/feedback';
 import ModalFormat from '../components/apollo/ModalFormat';
 import { NODE_FORMAT_QUERY, NODE_START_QUERY } from '../graphql/node';
 import { NODE_STOP_QUERY } from '../graphql/node';
-import { isValidBitcoinAddress, presetPools } from '../lib/utils';
+import {
+  isValidBitcoinAddress,
+  isCompatibleBitcoinAddress,
+  presetPools,
+  getNodeErrorMessage,
+} from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { SystemIcon } from '../components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
 import { TbArtboardFilled } from 'react-icons/tb';
+import ModalConnectNode from '../components/apollo/ModalConnectNode';
+import { mcuSelector } from '../redux/reselect/mcu';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -73,10 +82,17 @@ const Settings = () => {
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const {
     isOpen: isOpenFormat,
     onOpen: onOpenFormat,
     onClose: onCloseFormat,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenConnect,
+    onOpen: onOpenConnect,
+    onClose: onCloseConnect,
   } = useDisclosure();
 
   const { current: minerInitialModes } = useRef([
@@ -210,6 +226,16 @@ const Settings = () => {
       'Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply.',
   };
 
+  const nodeAllowLanInitialMode = {
+    id: 'allowLan',
+    color: 'green',
+    icon: MdShield,
+    title: 'Allow LAN connections',
+    selected: false,
+    description:
+      'Allow LAN connections to your Bitcoin Node to connect external wallets and services. Note: your node will be restarted to apply.',
+  };
+
   const nodeSoloMiningInitialMode = {
     id: 'solo',
     color: 'green',
@@ -233,7 +259,7 @@ const Settings = () => {
   const extraSettingsActions = [
     {
       id: 'backup',
-      color: 'blue',
+      color: 'teal',
       icon: DownloadIcon,
       title: 'Backup settings',
       buttonTitle: 'BACKUP',
@@ -250,7 +276,7 @@ const Settings = () => {
     },
     {
       id: 'format',
-      color: 'red',
+      color: 'purple',
       icon: FormatIcon,
       title: 'Format Node SSD',
       buttonTitle: 'FORMAT',
@@ -259,9 +285,22 @@ const Settings = () => {
     },
   ];
 
+  const disallowedNodeConf = [
+    'server',
+    'rpcuser',
+    'rpcpassword',
+    'daemon',
+    'upnp',
+    'uacomment',
+    'maxconnections',
+  ];
+
   const [minerModes, setMinerModes] = useState(minerInitialModes);
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [nodeTorMode, setNodeTorMode] = useState(nodeTorInitialMode);
+  const [nodeMaxConnections, setNodeMaxConnections] = useState(32);
+  const [nodeAllowLan, setNodeAllowLan] = useState(nodeAllowLanInitialMode);
+  const [errorDisallowedNodeConf, setErrorDisallowedNodeConf] = useState(false);
   const [soloMiningMode, setSoloMiningMode] = useState(
     nodeSoloMiningInitialMode
   );
@@ -284,9 +323,31 @@ const Settings = () => {
   const [pool, setPool] = useState();
 
   // Node data
-  const { data: dataNode, error: errorNode } = useSelector(nodeSelector);
+  const {
+    data: dataNode,
+    error: errorNode,
+    loading: loadingNode,
+  } = useSelector(nodeSelector);
 
-  const { blocksCount, blockHeader } = dataNode;
+  const { blocksCount, blockHeader, localaddresses } = dataNode;
+
+  const { sentence: errorNodeSentence } =
+    getNodeErrorMessage(errorNode);
+
+  // Mcu data
+  const { data: dataMcu } = useSelector(mcuSelector);
+
+  const { network } = dataMcu;
+
+  const eth0 = _.find(network, { name: 'eth0' });
+  const wlan0 = _.find(network, { name: 'wlan0' });
+
+  const localAddress = wlan0?.address || eth0?.address;
+
+  const nodeAddress =
+    localaddresses?.length && currentSettings?.nodeEnableTor
+      ? `${localaddresses[0].address}:${localaddresses[0].port}`
+      : `${localAddress}:8332`;
 
   const {
     loading: loadingSettings,
@@ -394,6 +455,15 @@ const Settings = () => {
       };
     });
 
+    setNodeMaxConnections(settingsData.nodeMaxConnections);
+
+    setNodeAllowLan((el) => {
+      return {
+        ...el,
+        selected: settingsData.nodeAllowLan,
+      };
+    });
+
     setSoloMiningMode((el) => {
       return {
         ...el,
@@ -429,7 +499,12 @@ const Settings = () => {
       'powerLedOff',
       'nodeEnableSoloMining',
     ];
-    const restartNodeFields = ['nodeEnableTor', 'nodeUserConf'];
+    const restartNodeFields = [
+      'nodeEnableTor',
+      'nodeUserConf',
+      'nodeMaxConnections',
+      'nodeAllowLan',
+    ];
     const isEqual = _.isEqual(settings, currentSettings);
     const restartMinerNeeded = !_.isEqual(
       _.pick(settings, restartMinerFields),
@@ -467,6 +542,34 @@ const Settings = () => {
       setIsChanged(false);
     }
   }, [lockPassword, verifyLockpassword]);
+
+  const logDisallowedNodeConf = (userConf, disallowedVariables) => {
+    // Split userConf into an array of lines
+    const userConfLines = userConf.split('\n');
+
+    // Extract variable names from non-empty lines using regex and filter out empty lines
+    const userConfVariables = userConfLines
+      .filter((line) => line.trim() !== '') // Filter out empty lines
+      .map((line) => line.match(/^[^=\r\n]+/)[0]); // Extract variable names from non-empty lines
+
+    // Find variables from userConfVariables that are present in disallowedVariables
+    const disallowedVarsFound = userConfVariables.filter((variable) =>
+      disallowedVariables.includes(variable)
+    );
+
+    // If at least one disallowed variable is found, log a message
+    if (disallowedVarsFound.length > 0) {
+      setErrorDisallowedNodeConf(disallowedVarsFound);
+    } else {
+      setErrorDisallowedNodeConf(false);
+    }
+  };
+
+  const handleUserConfChange = (e) => {
+    const newUserConf = e.target.value;
+    logDisallowedNodeConf(newUserConf, disallowedNodeConf);
+    setSettings({ ...settings, nodeUserConf: newUserConf });
+  };
 
   const handlePoolPreset = (e) => {
     const preset = presetPools[e.target.value];
@@ -513,6 +616,11 @@ const Settings = () => {
 
     if (!isValidBitcoinAddress(e.target.value))
       setErrorForm('Please add a valid Bitcoin address');
+
+    if (!isCompatibleBitcoinAddress(e.target.value))
+      setErrorForm(
+        'Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address'
+      );
 
     const poolChanged = {
       ...settings.pool,
@@ -608,11 +716,46 @@ const Settings = () => {
     setSettings({ ...settings, nodeEnableTor: !v });
   };
 
+  const handleNodeMaxConnections = (e) => {
+    setErrorForm(null);
+    const v = parseInt(e.target.value);
+    console.log(v);
+    setNodeMaxConnections(parseInt(v));
+    setSettings({ ...settings, nodeMaxConnections: v });
+  };
+
+  const handleNodeAllowLan = (e) => {
+    setErrorForm(null);
+    const v = e.target.value === 'true' ? true : false;
+    setNodeAllowLan({ ...nodeAllowLan, selected: !v });
+    setSettings({ ...settings, nodeAllowLan: !v });
+  };
+
   const handleSwitchSoloMiningMode = (e) => {
     setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
     setSoloMiningMode({ ...soloMiningMode, selected: !v });
-    setSettings({ ...settings, nodeEnableSoloMining: !v });
+    let poolChanged;
+
+    if (!v) {
+      poolChanged = {
+        ...settings.pool,
+        url: 'stratum+tcp://127.0.0.1:3333',
+        password: 'x',
+      };
+    } else {
+      poolChanged = {
+        ...settings.pool,
+        url: '',
+        password: 'x',
+      };
+    }
+
+    const preset = presetPools[2];
+
+    setPool(preset);
+
+    setSettings({ ...settings, nodeEnableSoloMining: !v, pool: poolChanged });
   };
 
   const handleSwitchPowerLedOff = (e) => {
@@ -625,6 +768,14 @@ const Settings = () => {
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
     setNodeTorMode({ ...nodeTorMode, selected: currentSettings.nodeEnableTor });
+    setNodeMaxConnections({
+      ...nodeMaxConnections,
+      selected: currentSettings.nodeMaxConnections,
+    });
+    setNodeAllowLan({
+      ...nodeAllowLan,
+      selected: currentSettings.nodeAllowLan,
+    });
     setSoloMiningMode({
       ...soloMiningMode,
       selected: currentSettings.nodeEnableSoloMining,
@@ -739,6 +890,8 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        nodeMaxConnections,
+        nodeAllowLan,
         powerLedOff,
         pool,
       } = settings;
@@ -750,6 +903,11 @@ const Settings = () => {
 
       if (nodeEnableSoloMining && !isValidBitcoinAddress(username))
         return setErrorForm('Invalid Bitcoin wallet address');
+
+      if (nodeEnableSoloMining && !isCompatibleBitcoinAddress(username))
+        return setErrorForm(
+          'Warning: Taproot Bitcoin address is not valid for SOLO mining. Please add a different Bitcoin address'
+        );
 
       const input = {
         agree,
@@ -765,6 +923,8 @@ const Settings = () => {
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
+        nodeMaxConnections,
+        nodeAllowLan,
         powerLedOff,
       };
 
@@ -863,6 +1023,13 @@ const Settings = () => {
         onFormat={handleFormatDisk}
       />
 
+      <ModalConnectNode
+        isOpen={isOpenConnect}
+        onClose={onCloseConnect}
+        pass={settings?.nodeRpcPassword}
+        address={nodeAddress}
+      />
+
       {isChanged && (
         <Box
           position="fixed"
@@ -933,7 +1100,7 @@ const Settings = () => {
             >
               Pools
             </Text>
-            <PoolIcon display={{ base: 'block', md: 'none' }} />
+            <PoolIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -943,7 +1110,7 @@ const Settings = () => {
             >
               Miner
             </Text>
-            <MinerIcon display={{ base: 'block', md: 'none' }} />
+            <MinerIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -953,7 +1120,7 @@ const Settings = () => {
             >
               Node
             </Text>
-            <NodeIcon display={{ base: 'block', md: 'none' }} />
+            <NodeIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -963,7 +1130,7 @@ const Settings = () => {
             >
               System
             </Text>
-            <SystemIcon display={{ base: 'block', md: 'none' }} />
+            <SystemIcon display={{ base: 'block' }} />
           </Tab>
           <Tab>
             <Text
@@ -973,7 +1140,7 @@ const Settings = () => {
             >
               Extra
             </Text>
-            <MdSettings display={{ base: 'block', md: 'none' }} />
+            <MdSettings display={{ base: 'block' }} />
           </Tab>
         </TabList>
 
@@ -1010,6 +1177,7 @@ const Settings = () => {
                       fontSize="sm"
                       label="Select a pool *"
                       onChange={handlePoolPreset}
+                      disabled={soloMiningMode.selected}
                     >
                       <option></option>
                       {presetPools.map((item, index) => (
@@ -1115,6 +1283,17 @@ const Settings = () => {
                           />
                         </SimpleCard>
                       )}
+                      {soloMiningMode.selected && nodeTorMode.selected && (
+                        <Alert mt="5" borderRadius={'10px'} status={'error'}>
+                          <AlertIcon />
+                          <AlertDescription>
+                            You have tor enabled, it is suggested to turn off
+                            tor for solo mining. Bitcoin nodes over the tor
+                            network propagate blocks slower, and there is a
+                            higher chance of orphaning a block
+                          </AlertDescription>
+                        </Alert>
+                      )}
                     </>
                   ) : (
                     <SimpleCard
@@ -1214,14 +1393,14 @@ const Settings = () => {
           <TabPanel>
             <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
               {/* NODE SETTINGS */}
-              <PanelCard
+              <PanelCardNode
                 title={'Bitcoin node settings'}
                 description={'Manage Bitcoin Node Configuration'}
                 textColor={textColor}
                 icon={NodeIcon}
-                badgeColor={'orange'}
-                badgeText={settings.nodeRpcPassword}
-                showHide={true}
+                handleButtonClick={onOpenConnect}
+                buttonText="Connect"
+                buttonLoading={!currentSettings?.nodeAllowLan || errorNodeSentence || loadingNode}
                 mb={'20px'}
               >
                 <SimpleSwitchSettingsItem
@@ -1230,24 +1409,64 @@ const Settings = () => {
                   sliderTextColor={sliderTextColor}
                   handleSwitch={handleSwitchNodeTorMode}
                 />
+                {soloMiningMode.selected && nodeTorMode.selected && (
+                  <Alert mt="5" borderRadius={'10px'} status={'error'}>
+                    <AlertIcon />
+                    <AlertDescription>
+                      You have solo mining enabled, it is suggested to turn off
+                      tor for solo mining. Bitcoin nodes over the tor network
+                      propagate blocks slower, and there is a higher chance of
+                      orphaning a block
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <Divider mb="10px" />
+                <SimpleSwitchSettingsItem
+                  item={nodeAllowLan}
+                  textColor={textColor}
+                  sliderTextColor={sliderTextColor}
+                  handleSwitch={handleNodeAllowLan}
+                />
+                <Divider mb="10px" />
+                <SimpleCard title={'Extra options'} textColor={textColor}>
+                  <InputGroup mt={4}>
+                    <InputLeftAddon>Max connections</InputLeftAddon>
+                    <Input
+                      color={inputTextColor}
+                      name="nodeMaxConnections"
+                      type="number"
+                      placeholder={32}
+                      value={settings.nodeMaxConnections}
+                      onChange={handleNodeMaxConnections}
+                      width="90px"
+                    />
+                  </InputGroup>
+                </SimpleCard>
+                <Divider mb="10px" />
+
                 <SimpleCard
                   title={'Bitcoin node configuration'}
                   description={
-                    'Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. You can add things like ipallow to allow external devices that host wallets etc to connect directly to your node for broadcasting transactions etc.)'
+                    'Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. Please check Bitcoin Core documentation for valid options.)'
                   }
                   textColor={textColor}
                   icon={MdSettings}
                 >
                   <Textarea
                     value={settings.nodeUserConf || ''}
-                    onChange={(v) =>
-                      setSettings({ ...settings, nodeUserConf: v.target.value })
-                    }
+                    onChange={handleUserConfChange}
                     mt="4"
                   />
                 </SimpleCard>
-              </PanelCard>
+                {errorDisallowedNodeConf && (
+                  <SimpleCard
+                    secondaryTextColor={'orange.500'}
+                    description={`You inserted disallowed options which will be overwritten by the app: ${JSON.stringify(
+                      errorDisallowedNodeConf
+                    )}`}
+                  />
+                )}
+              </PanelCardNode>
             </SimpleGrid>
           </TabPanel>
           <TabPanel>

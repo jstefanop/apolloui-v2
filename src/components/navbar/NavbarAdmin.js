@@ -29,6 +29,7 @@ import { nodeSelector } from '../../redux/reselect/node';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
 import { sendFeedback } from '../../redux/actions/feedback';
+import { SidebarResponsive } from '../sidebar/Sidebar';
 
 const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
@@ -203,8 +204,6 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     }
   };
 
-  // console.log(minerOnline, minerStats)
-
   return (
     <>
       <Box
@@ -286,6 +285,10 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
             >
               {currentRoute && currentRoute.name}
             </Text>
+          </Box>
+
+          <Box position={'absolute'} right={2} display={{ base: 'block', md: 'none' }}>
+            <SidebarResponsive routes={routes} />
           </Box>
 
           {currentRoute && currentRoute.name === 'Miner' && (

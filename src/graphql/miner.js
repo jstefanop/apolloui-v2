@@ -75,6 +75,7 @@ export const MINER_STATS_QUERY = gql`
             lastsharetime @client
             status @client
             statVersion
+            comport
             versions {
               miner
               minerDate
@@ -344,33 +345,35 @@ export const initialState = {
             SPS15m: null,
             SPS1h: null,
           },
-          users: {
-            hashrate1m: null,
-            hashrate5m: null,
-            hashrate1hr: null,
-            hashrate1d: null,
-            hashrate7d: null,
-            lastshare: null,
-            workers: null,
-            shares: null,
-            bestshare: null,
-            bestever: null,
-            authorised: null,
-            worker: [
-              {
-                workername: null,
-                hashrate1m: null,
-                hashrate5m: null,
-                hashrate1hr: null,
-                hashrate1d: null,
-                hashrate7d: null,
-                lastshare: null,
-                shares: null,
-                bestshare: null,
-                bestever: null,
-              },
-            ],
-          },
+          users: [
+            {
+              hashrate1m: null,
+              hashrate5m: null,
+              hashrate1hr: null,
+              hashrate1d: null,
+              hashrate7d: null,
+              lastshare: null,
+              workers: null,
+              shares: null,
+              bestshare: null,
+              bestever: null,
+              authorised: null,
+              worker: [
+                {
+                  workername: null,
+                  hashrate1m: null,
+                  hashrate5m: null,
+                  hashrate1hr: null,
+                  hashrate1d: null,
+                  hashrate7d: null,
+                  lastshare: null,
+                  shares: null,
+                  bestshare: null,
+                  bestever: null,
+                },
+              ],
+            },
+          ],
         },
         stats: [
           {
@@ -378,6 +381,7 @@ export const initialState = {
             version: null,
             date: null,
             statVersion: null,
+            comport: null,
             versions: {
               miner: null,
               minerDate: null,
