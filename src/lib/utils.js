@@ -230,7 +230,7 @@ export const getNodeErrorMessage = (error) => {
   sentence = `There was an error getting stats for Node: ${parsedError}`;
 
   if (error[0].code === 'ECONNREFUSED') {
-    sentence = 'Connection refused. Probably the node is not running.';
+    sentence = 'Connection refused. Your node is not running.';
   }
 
   if (error[0].type === 'authentication') {

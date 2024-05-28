@@ -233,7 +233,7 @@ const Settings = () => {
     title: 'Allow LAN connections',
     selected: false,
     description:
-      'Allow LAN connections to your Bitcoin Node. Note: your node will be restarted to apply.',
+      'Allow LAN connections to your Bitcoin Node to connect external wallets and services. Note: your node will be restarted to apply.',
   };
 
   const nodeSoloMiningInitialMode = {
@@ -1447,7 +1447,7 @@ const Settings = () => {
                 <SimpleCard
                   title={'Bitcoin node configuration'}
                   description={
-                    'Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. You can add things like ipallow to allow external devices that host wallets etc to connect directly to your node for broadcasting transactions etc.)'
+                    'Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. Please check Bitcoin Core documentation for valid options.)'
                   }
                   textColor={textColor}
                   icon={MdSettings}
