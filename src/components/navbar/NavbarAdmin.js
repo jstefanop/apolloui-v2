@@ -262,7 +262,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
                 {currentRoute && currentRoute.name !== 'Overview' ? (
                   <Link href="/overview">Overview</Link>
                 ) : (
-                  <Text>Apollo BTC</Text>
+                  <Text>Apollo System</Text>
                 )}
               </BreadcrumbItem>
             </Breadcrumb>
