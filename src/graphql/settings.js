@@ -28,6 +28,7 @@ export const GET_SETTINGS_QUERY = gql`
             nodeEnableSoloMining
             nodeMaxConnections
             nodeAllowLan
+            btcsig
           }
         }
         error {
@@ -65,6 +66,7 @@ export const SET_SETTINGS_QUERY = gql`
             nodeEnableSoloMining
             nodeMaxConnections
             nodeAllowLan
+            btcsig
           }
         }
         error {
@@ -100,6 +102,7 @@ export const initialState = {
           nodeEnableSoloMining: null,
           nodeMaxConnections: null,
           nodeAllowLan: null,
+          btcsig: null,
         },
       },
     },

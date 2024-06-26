@@ -71,6 +71,8 @@ const SoloMining = () => {
     error: errorSettings,
   } = useSelector(settingsSelector);
 
+  const { nodeEnableSoloMining } = dataSettings;
+
   // Miner data
   const {
     loading: loadingMiner,
@@ -111,8 +113,6 @@ const SoloMining = () => {
   useEffect(() => {
     if (!loadingSettings && !nodeEnableSoloMining) router.push('/miner');
   }, [nodeEnableSoloMining, loadingSettings, router]);
-
-  const { nodeEnableSoloMining } = dataSettings;
 
   const {
     ckPoolGlobalHashrate: prevCkPoolGlobalHashrate,
