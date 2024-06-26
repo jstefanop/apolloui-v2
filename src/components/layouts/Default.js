@@ -225,7 +225,6 @@ const Layout = ({ children, routes }, props) => {
         <Sidebar routes={routes} display="none" />
         <Box
           float="right"
-          minHeight="100vh"
           height="100%"
           overflow="auto"
           position="relative"
@@ -251,7 +250,7 @@ const Layout = ({ children, routes }, props) => {
             mx="auto"
             p={{ base: '20px', md: '30px' }}
             pe="20px"
-            minH="100vh"
+            minH="90vh"
             pt="50px"
           >
             <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
