@@ -17,6 +17,7 @@ const TileCard = ({
   loading,
   errors,
   bannerImage,
+  bigFont,
   ...props
 }) => {
   return (
@@ -24,10 +25,12 @@ const TileCard = ({
       py="15px"
       h="100%"
       {...props}
-      style={bannerImage && {
-        backgroundImage: `url(${bannerImage.src})`,
-        backgroundSize: 'cover',
-      }}
+      style={
+        bannerImage && {
+          backgroundImage: `url(${bannerImage.src})`,
+          backgroundSize: 'cover',
+        }
+      }
     >
       <>
         <Flex marginBottom={'auto'}>
@@ -41,11 +44,9 @@ const TileCard = ({
         >
           {errors.length ? (
             <>
-              <Text
-                color="white"
-                fontSize={{ base: '4xl' }}
-                fontWeight="800"
-              >Error</Text>
+              <Text color="white" fontSize={{ base: '4xl' }} fontWeight="800">
+                Error
+              </Text>
               {errors.map((error, index) => {
                 <Text
                   key={index}
@@ -67,10 +68,12 @@ const TileCard = ({
               />
               <Text
                 color="white"
-                fontSize={{ base: '4xl' }}
+                fontSize={{ base: '4xl', lg: bigFont ? '6xl' : '4xl' }}
                 fontWeight="800"
                 minW="180px"
                 my="auto"
+                maxWidth={{ lg: '150px', xl: '300px'}}
+                noOfLines={1}
               >
                 {loading ? <LoadingIcon /> : mainData}
               </Text>

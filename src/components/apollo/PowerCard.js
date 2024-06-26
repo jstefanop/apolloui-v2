@@ -48,7 +48,7 @@ const PowerCard = ({
         avgData && (
           <CountUp
             start={prevAvgData || 0}
-            end={avgData}
+            end={avgData || 0}
             duration="1"
             decimals="0"
           />

@@ -35,12 +35,10 @@ import { settingsSelector } from '../../redux/reselect/settings';
 import { minerSelector } from '../../redux/reselect/miner';
 import { updateMinerAction } from '../../redux/actions/minerAction';
 import { CheckIcon } from '@chakra-ui/icons';
-import { useRouter } from 'next/router';
 
 const Layout = ({ children, routes }, props) => {
   const { onOpen } = useDisclosure();
   const dispatch = useDispatch();
-  const router = useRouter();
 
   // Miner data
   const {

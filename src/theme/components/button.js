@@ -32,16 +32,16 @@ export const buttonStyles = {
           },
         }),
         darkBrand: (props) => ({
-          bg: mode('brand.900', 'brand.400')(props),
+          bg: mode('brand.900', 'brand.500')(props),
           color: 'white',
           _focus: {
-            bg: mode('brand.900', 'brand.400')(props),
+            bg: mode('brand.900', 'brand.500')(props),
           },
           _active: {
-            bg: mode('brand.900', 'brand.400')(props),
+            bg: mode('brand.900', 'brand.500')(props),
           },
           _hover: {
-            bg: mode('brand.800', 'brand.400')(props),
+            bg: mode('brand.800', 'brand.500')(props),
           },
         }),
         lightBrand: (props) => ({

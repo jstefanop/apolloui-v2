@@ -65,6 +65,7 @@ const initialState = {
             version: null,
             date: null,
             statVersion: null,
+            comport: null,
             versions: {
               miner: null,
               minerDate: null,

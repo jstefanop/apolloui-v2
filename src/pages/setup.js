@@ -216,7 +216,7 @@ const Setup = () => {
 
   const handleStartMining = () => {
     restartMiner();
-    router.replace('/signin');
+    router.reload();
   };
 
   return (
