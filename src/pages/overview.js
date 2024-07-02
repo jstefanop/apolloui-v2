@@ -145,10 +145,15 @@ const Overview = () => {
       ) : (
         <Grid
           templateRows={{ base: 'repeat(9, 1fr)', md: 'repeat(3, 1fr)' }}
-          templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }}
+          templateColumns={{
+            base: '1fr',
+            md: 'repeat(4, 1fr)',
+            md: 'repeat(6, 1fr)',
+          }}
           templateAreas={{
             base: `'Hashrate' 'Hashrate' 'Hashrate' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData'`,
-            md: `'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`,
+            md: `'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData'`,
+            lg: `'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`,
           }}
           gap={'20px'}
           mb={'10px'}
