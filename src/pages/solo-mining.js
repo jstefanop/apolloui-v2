@@ -45,6 +45,7 @@ import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { shortenBitcoinAddress } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
+import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
 
 const SoloMining = () => {
   const router = useRouter();
@@ -70,6 +71,8 @@ const SoloMining = () => {
     data: dataSettings,
     error: errorSettings,
   } = useSelector(settingsSelector);
+
+  const { nodeEnableSoloMining } = dataSettings;
 
   // Miner data
   const {
@@ -111,8 +114,6 @@ const SoloMining = () => {
   useEffect(() => {
     if (!loadingSettings && !nodeEnableSoloMining) router.push('/miner');
   }, [nodeEnableSoloMining, loadingSettings, router]);
-
-  const { nodeEnableSoloMining } = dataSettings;
 
   const {
     ckPoolGlobalHashrate: prevCkPoolGlobalHashrate,
@@ -171,7 +172,7 @@ const SoloMining = () => {
             icon = MinerIcon;
             break;
           case 'worker':
-            boardNames.push(element[key][0]?.workername);
+            boardNames.push(element[key][0] ? element[key][0]?.workername.split('.')[0] : '');
             break;
           case 'lastshare':
             value = `${moment(element[key], 'X').fromNow()}`;
@@ -217,11 +218,12 @@ const SoloMining = () => {
             : 'Apollo BTC Miner'}
         </title>
       </Head>
-      <MinerDrawer
+      <SoloMiningDrawer
         isOpen={isOpen}
         onClose={onClose}
         placement="right"
         data={ckUsers}
+        difficulty={difficulty}
       />
       {!minerOnline ? (
         <CustomAlert
@@ -576,6 +578,17 @@ const SoloMining = () => {
                         <Text fontSize="lg" fontWeight="800">
                           SOLO Mining Users
                         </Text>
+                      </Flex>
+                      <Flex align-items="center">
+                        <Button
+                          bgColor="brand.800"
+                          color="white"
+                          variant="solid"
+                          size="md"
+                          onClick={onOpen}
+                        >
+                          Show all data
+                        </Button>
                       </Flex>
                     </Flex>
                     {loadingMiner ? (
