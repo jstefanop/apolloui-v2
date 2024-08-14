@@ -34,6 +34,7 @@
     "@tsparticles/react": "^3.0.0",
     "animate.css": "^4.1.1",
     "apexcharts": "^3.49.1",
+    "apollo-link-timeout": "^4.0.0",
     "axios": "^1.7.2",
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",

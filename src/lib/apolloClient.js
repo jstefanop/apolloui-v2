@@ -11,10 +11,7 @@ import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from 'moment';
-import {
-  sendFeedback,
-  resetFeedback,
-} from '../redux/actions/feedback';
+import { sendFeedback, resetFeedback } from '../redux/actions/feedback';
 import { store } from '../redux/store';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
@@ -25,15 +22,21 @@ const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
 const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
 
 let apolloClient;
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message }) => {
-      const err = `[GraphQL error]: Message: ${message}`;
+      const err = `[GraphQL error]: Message: ${message}, Operation: ${operation.operationName}`;
       store.dispatch(sendFeedback({ message: err, type: 'error' }));
       console.log(err);
     });
   if (networkError) {
-    const err = `[Network error]: ${networkError}`;
+    let err;
+    if (networkError.message === 'Timeout exceeded') {
+      err = `[Timeout error]: Operation: ${operation.operationName}`;
+    } else {
+      err = `[Network error]: ${networkError.message}, Operation: ${operation.operationName}`;
+    }
+    //store.dispatch(sendFeedback({ message: err, type: 'error' }));
     console.log(err);
   }
 });
@@ -63,11 +66,11 @@ function createApolloClient() {
       NodeStats: {
         fields: {
           stats: {
-            read (data) {
+            read(data) {
               return data;
-            }
-          }
-        }
+            },
+          },
+        },
       },
       MinerActions: {
         merge: true,
@@ -88,11 +91,10 @@ function createApolloClient() {
                 if (storedBoard) storedBoard = JSON.parse(storedBoard);
 
                 const interval = moment.duration(moment().diff(shareTime));
-                const maxStatusInterval = process.env.NEXT_PUBLIC_ENV === 'development' ? 10 : 1;
+                const maxStatusInterval =
+                  process.env.NEXT_PUBLIC_ENV === 'development' ? 10 : 1;
 
-                // console.log('interval', board.date, shareTime.format(), moment.utc().format(), interval.asMinutes());
-
-                if (interval.asMinutes() >  maxStatusInterval) {
+                if (interval.asMinutes() > maxStatusInterval) {
                   boardStatus = false;
                   poolStatus = false;
                 }
@@ -121,6 +123,18 @@ function createApolloClient() {
                   },
                 };
               });
+            },
+          },
+        },
+      },
+      Query: {
+        fields: {
+          Mcu: {
+            merge(existing, incoming) {
+              return {
+                ...existing,
+                ...incoming,
+              };
             },
           },
         },

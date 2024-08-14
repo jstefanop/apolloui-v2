@@ -598,9 +598,6 @@ const Settings = () => {
   const handlePoolChange = (e) => {
     setErrorForm(null);
 
-    if (!e.target.value)
-      return setErrorForm(`Field ${e.target.name} can't be empty`);
-
     const poolChanged = {
       ...settings.pool,
     };
@@ -616,8 +613,6 @@ const Settings = () => {
 
   const handleSoloMiningChange = (e) => {
     setErrorForm(null);
-
-    if (!e.target.value) setErrorForm(`Field ${e.target.name} can't be empty`);
 
     if (!isValidBitcoinAddress(e.target.value))
       setErrorForm('Please add a valid Bitcoin address');
@@ -913,6 +908,12 @@ const Settings = () => {
         return setErrorForm(
           'Warning: Taproot Bitcoin address is not valid for SOLO mining. Please add a different Bitcoin address'
         );
+
+      if (!nodeEnableSoloMining && !username)
+        return setErrorForm(`Field username can't be empty`);
+
+      if (!nodeEnableSoloMining && !password)
+        return setErrorForm(`Field password can't be empty`);
 
       const input = {
         agree,
