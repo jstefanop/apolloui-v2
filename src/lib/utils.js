@@ -148,30 +148,67 @@ export const convertTemp = (celsius, unit, addUnit) => {
 };
 
 export const isValidBitcoinAddress = (address) => {
-  // Bitcoin addresses are alphanumeric and start with either '1', '3', or 'bc1'
-  const addressRegex = /^(1|3)[a-zA-HJ-NP-Z0-9]{25,34}$|^(bc1)[a-zA-HJ-NP-Z0-9]{39}$/;
-  
-  return addressRegex.test(address);
+  // Separate the main address from the additional string if it exists
+  const [mainAddress, additionalString] = address.split('.');
+
+  // Regex for valid Bitcoin addresses:
+  // - '1' or '3': legacy and segwit (P2PKH, P2SH)
+  // - 'bc1': bech32 (P2WPKH, P2WSH, P2TR)
+  const addressRegex = /^(1|3)[a-zA-HJ-NP-Z0-9]{25,34}$|^(bc1)[a-zA-HJ-NP-Z0-9]{39,60}$/;
+
+  // Validate the main address
+  if (!addressRegex.test(mainAddress)) {
+    return false;
+  }
+
+  // If there's an additional string, ensure it contains only alphanumeric characters
+  if (additionalString && !/^[a-zA-Z0-9]+$/.test(additionalString)) {
+    return false;
+  }
+
+  return true;
 };
 
 export const isTaprootAddress = (address) => {
-  // Pattern for Bitcoin Taproot address
+  // Separate the main address from the additional string if it exists
+  const [mainAddress, additionalString] = address.split('.');
+
+  // Pattern for Bitcoin Taproot address (bc1p with 38 additional characters)
   const taprootPattern = /^bc1p[0-9a-zA-Z]{38}$/;
 
-  return taprootPattern.test(address);
+  // Validate the main address
+  if (!taprootPattern.test(mainAddress)) {
+    return false;
+  }
+
+  // If there's an additional string, ensure it contains only alphanumeric characters
+  if (additionalString && !/^[a-zA-Z0-9]+$/.test(additionalString)) {
+    return false;
+  }
+
+  return true;
 };
 
 export const isCompatibleBitcoinAddress = (address) => {
-  if (address.startsWith('bc1q')) {
-    // P2WPKH
-    if (address.length === 42) {
+  // Separate the main address from the additional string if it exists
+  const [mainAddress, additionalString] = address.split('.');
+
+  // Validate the main address
+  if (mainAddress.startsWith('bc1q')) {
+    // P2WPKH (Bech32)
+    if (mainAddress.length === 42) {
       return true;
-      // P2WSH
-    } else if (address.length === 62) {
+      // P2WSH (Bech32)
+    } else if (mainAddress.length === 62) {
       return false;
     }
-    // P2TR
-  } else if (address.startsWith('bc1p') && address.length === 62) {
+    // P2TR (Taproot)
+  } else if (mainAddress.startsWith('bc1p') && mainAddress.length === 62) {
+    return false;
+  }
+
+  // If there's an additional string, ensure it contains only alphanumeric characters
+  if (additionalString && !/^[a-zA-Z0-9]+$/.test(additionalString)) {
     return false;
   }
 

@@ -68,11 +68,14 @@ const TileCard = ({
               />
               <Text
                 color="white"
-                fontSize={{ base: '4xl', lg: bigFont ? '6xl' : '4xl' }}
+                fontSize={{
+                  base: '4xl',
+                  xl: bigFont ? '6xl' : '4xl',
+                }}
                 fontWeight="800"
                 minW="180px"
                 my="auto"
-                maxWidth={{ lg: '150px', xl: '300px'}}
+                maxWidth={{ base: '150px', xl: '300px' }}
                 noOfLines={1}
               >
                 {loading ? <LoadingIcon /> : mainData}
