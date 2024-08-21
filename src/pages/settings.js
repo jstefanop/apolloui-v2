@@ -619,7 +619,7 @@ const Settings = () => {
 
     const poolChanged = {
       ...settings.pool,
-      url: 'stratum+tcp://127.0.0.1:3333',
+      url: '127.0.0.1:3333',
       username: e.target.value,
       password: 'x',
     };
@@ -735,7 +735,7 @@ const Settings = () => {
     if (!v) {
       poolChanged = {
         ...settings.pool,
-        url: 'stratum+tcp://127.0.0.1:3333',
+        url: '127.0.0.1:3333',
         password: 'x',
       };
     } else {
@@ -893,7 +893,7 @@ const Settings = () => {
 
       const { enabled, url, username, password, index } = pool;
 
-      if (!url.match(/stratum\+tcp:\/\/(.*):\d+$/))
+      if (!url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/))
         return setErrorForm('Invalid pool URL');
 
       if (nodeEnableSoloMining && !isValidBitcoinAddress(username))
@@ -1216,7 +1216,7 @@ const Settings = () => {
                           name="url"
                           type="text"
                           placeholder={
-                            'stratum+tcp://stratum.slushpool.com:3333'
+                            'stratum.slushpool.com:3333'
                           }
                           value={settings.pool.url}
                           onChange={handlePoolChange}
