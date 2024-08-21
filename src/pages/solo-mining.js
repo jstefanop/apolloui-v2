@@ -49,7 +49,7 @@ import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
 
 const SoloMining = () => {
   const router = useRouter();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  
   const {
     isOpen: isVisibleBanner,
     onClose: onCLoseBanner,
@@ -200,6 +200,22 @@ const SoloMining = () => {
     return mappedArray;
   });
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(
+    Array(dataTableBoards.length).fill(false)
+  );
+
+  const handleOpen = (index) => {
+    const newDrawerState = [...isDrawerOpen];
+    newDrawerState[index] = true; // Apre solo il drawer corrispondente all'indice
+    setIsDrawerOpen(newDrawerState);
+  };
+
+  const handleClose = (index) => {
+    const newDrawerState = [...isDrawerOpen];
+    newDrawerState[index] = false; // Chiude solo il drawer corrispondente all'indice
+    setIsDrawerOpen(newDrawerState);
+  };
+
   const handleCloseBanner = () => {
     onCLoseBanner();
     setShowBanner(false);
@@ -220,13 +236,7 @@ const SoloMining = () => {
             : 'Apollo BTC Miner'}
         </title>
       </Head>
-      <SoloMiningDrawer
-        isOpen={isOpen}
-        onClose={onClose}
-        placement="right"
-        data={ckUsers}
-        difficulty={difficulty}
-      />
+
       {!minerOnline ? (
         <CustomAlert
           title="Miner is offline"
@@ -357,7 +367,7 @@ const SoloMining = () => {
                 }}
                 templateAreas={{
                   base: `'.' '.'`,
-                  'md': `'. .'`,
+                  md: `'. .'`,
                 }}
                 gap={'20px'}
               >
@@ -591,17 +601,6 @@ const SoloMining = () => {
                           SOLO Mining Users
                         </Text>
                       </Flex>
-                      <Flex align-items="center">
-                        <Button
-                          bgColor="brand.800"
-                          color="white"
-                          variant="solid"
-                          size="md"
-                          onClick={onOpen}
-                        >
-                          Show all data
-                        </Button>
-                      </Flex>
                     </Flex>
                     {loadingMiner ? (
                       <BulletList />
@@ -624,13 +623,35 @@ const SoloMining = () => {
                       >
                         {dataTableBoards.map((dataTable, index) => (
                           <Box mt="3" key={index}>
-                            <PanelGrid
-                              title={`${shortenBitcoinAddress(
-                                boardNames[index],
-                                10
-                              )}`}
-                              data={dataTable}
+                            <SoloMiningDrawer
+                              isOpen={isDrawerOpen[index]}
+                              onClose={() => handleClose(index)}
+                              placement="right"
+                              data={ckUsers[index].worker}
+                              user={boardNames[index]}
+                              difficulty={difficulty}
                             />
+                            <Flex direction={{base: 'column', md: 'row'}} justify="space-between" align="flex-start">
+                              <PanelGrid
+                                title={`${shortenBitcoinAddress(
+                                  boardNames[index],
+                                  10
+                                )}`}
+                                data={dataTable}
+                              />
+                              <Flex align="flex-start" mt={{base: '0', md: '4'}}>
+                                <Button
+                                  bgColor="brand.700"
+                                  color="white"
+                                  variant="solid"
+                                  size="xs"
+                                  onClick={() => handleOpen(index)}
+                                  mr='4'
+                                >
+                                  Show all data
+                                </Button>
+                              </Flex>
+                            </Flex>
                           </Box>
                         ))}
                       </Box>
