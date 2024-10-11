@@ -1,4 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap');
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DM-Sans/DMSans-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900; /* Definisce il range di pesi supportati */
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DM-Sans/DMSans-Italic-VariableFont_opsz,wght.ttf') format('truetype');
+  font-weight: 100 900; /* Il range di pesi supportati */
+  font-style: italic;
+}
+
 body {
   font-family: 'DM Sans', sans-serif;
 }
