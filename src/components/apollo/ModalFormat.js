@@ -47,7 +47,7 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
       startPollingProgress(1000);
     }
 
-    if (progress >= 90 || !isOpen) {
+    if (progress >= 90) {
       stopPollingProgress();
       setUpdateInProgress(false);
       setProgress(0);

@@ -128,7 +128,7 @@ const Miner = () => {
       icon: MinerIcon,
     },
     {
-      value: `${avgBoardTemp}°C`,
+      value: `${avgBoardTemp.toFixed(2)}°C`,
       icon: MinerTempIcon,
     },
     {
