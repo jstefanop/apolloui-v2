@@ -7,14 +7,16 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   Flex,
   Text,
 } from '@chakra-ui/react';
 import { NODE_FORMAT_PROGRESS_QUERY } from '../../graphql/node';
 import { useQuery } from '@apollo/client';
+import { sendFeedback } from '../../redux/actions/feedback';
+import { useDispatch } from 'react-redux';
 
 const ModalFormat = ({ isOpen, onClose, onFormat }) => {
+  const dispatch = useDispatch();
   const [updateInProgress, setUpdateInProgress] = useState(false);
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
@@ -46,6 +48,18 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
       setDone(true);
     }
   }, [updateInProgress, remoteProgress, isOpen, stopPollingProgress]);
+
+  useEffect(() => {
+    if (done) {
+      onClose();
+      dispatch(
+        sendFeedback({
+          message: 'Format done! Your system is ready.',
+          type: 'success',
+        })
+      );
+    }
+  }, [done, onClose]);
 
   return (
     <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>

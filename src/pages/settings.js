@@ -857,12 +857,7 @@ const Settings = () => {
       await stopNode();
       await formatDisk();
       onCloseFormat();
-      dispatch(
-        sendFeedback({
-          message: 'Format done! Your system is ready.',
-          type: 'success',
-        })
-      );
+      await startNode();
     } catch (error) {
       dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
