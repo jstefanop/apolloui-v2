@@ -331,8 +331,7 @@ const Settings = () => {
 
   const { blocksCount, blockHeader, localaddresses } = dataNode;
 
-  const { sentence: errorNodeSentence } =
-    getNodeErrorMessage(errorNode);
+  const { sentence: errorNodeSentence } = getNodeErrorMessage(errorNode);
 
   // Mcu data
   const { data: dataMcu } = useSelector(mcuSelector);
@@ -856,14 +855,6 @@ const Settings = () => {
     try {
       await stopNode();
       await formatDisk();
-      onCloseFormat();
-      await startNode();
-      dispatch(
-        sendFeedback({
-          message: 'Format done! Your system is ready.',
-          type: 'success',
-        })
-      );
     } catch (error) {
       dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
@@ -1216,9 +1207,7 @@ const Settings = () => {
                           color={inputTextColor}
                           name="url"
                           type="text"
-                          placeholder={
-                            'stratum.slushpool.com:3333'
-                          }
+                          placeholder={'stratum.slushpool.com:3333'}
                           value={settings.pool.url}
                           onChange={handlePoolChange}
                           disabled={
@@ -1402,7 +1391,11 @@ const Settings = () => {
                 icon={NodeIcon}
                 handleButtonClick={onOpenConnect}
                 buttonText="Connect"
-                buttonLoading={!currentSettings?.nodeAllowLan || errorNodeSentence || loadingNode}
+                buttonLoading={
+                  !currentSettings?.nodeAllowLan ||
+                  errorNodeSentence ||
+                  loadingNode
+                }
                 mb={'20px'}
               >
                 <SimpleSwitchSettingsItem

@@ -12,8 +12,11 @@ import {
 } from '@chakra-ui/react';
 import { NODE_FORMAT_PROGRESS_QUERY } from '../../graphql/node';
 import { useQuery } from '@apollo/client';
+import { sendFeedback } from '../../redux/actions/feedback';
+import { useDispatch } from 'react-redux';
 
 const ModalFormat = ({ isOpen, onClose, onFormat }) => {
+  const dispatch = useDispatch();
   const [updateInProgress, setUpdateInProgress] = useState(false);
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
@@ -50,6 +53,13 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
       setProgress(0);
       setDone(true);
       onClose();
+
+      dispatch(
+        sendFeedback({
+          message: 'Format done! Your system is ready.',
+          type: 'success',
+        })
+      );
     }
   }, [progress, stopPollingProgress, onClose, isOpen]);
 
