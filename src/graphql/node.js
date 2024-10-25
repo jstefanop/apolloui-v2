@@ -102,6 +102,22 @@ export const NODE_FORMAT_QUERY = gql`
   }
 `;
 
+export const NODE_FORMAT_PROGRESS_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query NODE_FORMAT_PROGRESS {
+    Node {
+      formatProgress {
+        result {
+          value
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
 export const initialState = {
   Node: {
     stats: {

@@ -31,21 +31,32 @@ const PanelGrid = ({
   };
   return (
     <Flex mt="4" mx="5" direction="column">
-      <Flex justify="space-between">
-        <Flex m="1">
+      <Flex justify="space-between" direction={{ base: 'column', md: 'row' }}>
+        <Flex direction={{ base: 'column', md: 'row' }}>
           <Text fontSize="md" fontWeight="600">
             {title}
-            {version && (
-              <Tag size="md" ml="10px" colorScheme={versionsMap[version]?.color}>
-                {versionsMap[version]?.name}
-              </Tag>
-            )}
-            {comport && (
-              <Tag size="md" ml="10px" color={tagColor} bg={tagBgColor}>
-                {getMinerHashboardType(comport)}
-              </Tag>
-            )}
           </Text>
+          {version && (
+            <Tag
+              size="md"
+              colorScheme={versionsMap[version]?.color}
+              my={{ base: '1', md: '0' }}
+              ml={{ base: '0', md: '2' }}
+            >
+              {versionsMap[version]?.name}
+            </Tag>
+          )}
+          {comport && (
+            <Tag
+              size="md"
+              color={tagColor}
+              bg={tagBgColor}
+              my={{ base: '1', md: '0' }}
+              ml={{ base: '0', md: '2' }}
+            >
+              {getMinerHashboardType(comport)}
+            </Tag>
+          )}
         </Flex>
         {typeof active !== 'undefined' &&
           active !== null &&
@@ -53,7 +64,7 @@ const PanelGrid = ({
           total !== null && (
             <ActiveBadge active={active} total={total} title="Active" />
           )}
-        <Flex>
+        <Flex my={{ base: '3', md: '0' }}>
           {status && (
             <Flex align="center">
               <Flex
@@ -100,7 +111,7 @@ const PanelGrid = ({
         </Flex>
       </Flex>
       {data && data.length && (
-        <SimpleGrid columns={{ base: '2', xl: '3' }} spacing={0} my="5" ml="2">
+        <SimpleGrid columns={{ base: '1', xl: '2' }} spacing={0} my="5" ml="2">
           {data.map((item, index) =>
             !item.value ? (
               <span key={index}></span>

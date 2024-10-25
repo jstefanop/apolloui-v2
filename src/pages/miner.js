@@ -128,7 +128,7 @@ const Miner = () => {
       icon: MinerIcon,
     },
     {
-      value: `${avgBoardTemp}°C`,
+      value: `${avgBoardTemp.toFixed(2)}°C`,
       icon: MinerTempIcon,
     },
     {
@@ -202,11 +202,12 @@ const Miner = () => {
       )}
       {minerOnline && (
         <Grid
-          templateRows={{ base: 'repeat(6, 1fr)', md: 'repeat(3, 1fr)' }}
-          templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }}
+          templateRows={{ base: 'repeat(6, 1fr)', md: 'repeat(4, 1fr)', lg: 'repeat(3, 1fr)' }}
+          templateColumns={{ base: '1fr', md: 'repeat(4, 1fr)', lg: 'repeat(6, 1fr)' }}
           templateAreas={{
             base: `'Main' 'Main' 'Data' 'Data' 'Data' 'Data'`,
-            md: `'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`,
+            md: `'Main Main Main Main' 'Data Data Data Data' 'Data Data Data Data' 'Data Data Data Data'`,
+            lg: `'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`,
           }}
           gap={'20px'}
           mb={'10px'}

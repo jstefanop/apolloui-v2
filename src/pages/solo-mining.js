@@ -45,10 +45,11 @@ import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { shortenBitcoinAddress } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
+import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
 
 const SoloMining = () => {
   const router = useRouter();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  
   const {
     isOpen: isVisibleBanner,
     onClose: onCLoseBanner,
@@ -70,6 +71,8 @@ const SoloMining = () => {
     data: dataSettings,
     error: errorSettings,
   } = useSelector(settingsSelector);
+
+  const { nodeEnableSoloMining } = dataSettings;
 
   // Miner data
   const {
@@ -112,8 +115,6 @@ const SoloMining = () => {
     if (!loadingSettings && !nodeEnableSoloMining) router.push('/miner');
   }, [nodeEnableSoloMining, loadingSettings, router]);
 
-  const { nodeEnableSoloMining } = dataSettings;
-
   const {
     ckPoolGlobalHashrate: prevCkPoolGlobalHashrate,
     ckPoolGlobalAvgHashrate: prevCkPoolGlobalAvgHashrate,
@@ -147,10 +148,10 @@ const SoloMining = () => {
   const desiredKeys = [
     'hashrate5m',
     'hashrate1d',
-    'worker',
     'lastshare',
     'shares',
     'bestever',
+    'worker',
   ];
 
   const boardNames = [];
@@ -171,7 +172,9 @@ const SoloMining = () => {
             icon = MinerIcon;
             break;
           case 'worker':
-            boardNames.push(element[key][0]?.workername);
+            boardNames.push(
+              element[key][0] ? element[key][0]?.workername.split('.')[0] : ''
+            );
             break;
           case 'lastshare':
             value = `${moment(element[key], 'X').fromNow()}`;
@@ -197,6 +200,22 @@ const SoloMining = () => {
     return mappedArray;
   });
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(
+    Array(dataTableBoards.length).fill(false)
+  );
+
+  const handleOpen = (index) => {
+    const newDrawerState = [...isDrawerOpen];
+    newDrawerState[index] = true; // Apre solo il drawer corrispondente all'indice
+    setIsDrawerOpen(newDrawerState);
+  };
+
+  const handleClose = (index) => {
+    const newDrawerState = [...isDrawerOpen];
+    newDrawerState[index] = false; // Chiude solo il drawer corrispondente all'indice
+    setIsDrawerOpen(newDrawerState);
+  };
+
   const handleCloseBanner = () => {
     onCLoseBanner();
     setShowBanner(false);
@@ -217,12 +236,7 @@ const SoloMining = () => {
             : 'Apollo BTC Miner'}
         </title>
       </Head>
-      <MinerDrawer
-        isOpen={isOpen}
-        onClose={onClose}
-        placement="right"
-        data={ckUsers}
-      />
+
       {!minerOnline ? (
         <CustomAlert
           title="Miner is offline"
@@ -241,14 +255,15 @@ const SoloMining = () => {
           description="Please check your node connection and the CK Pool status."
           status="warning"
         />
-      ) : minerOnline && blocksCount !== blockHeader ? (
-        <CustomAlert
-          title="Node not synced"
-          description="Please wait until the node is synced."
-          status="warning"
-        />
       ) : (
         <>
+          {minerOnline && blocksCount !== blockHeader && (
+            <Alert mb="5" borderRadius={'10px'} status={'warning'}>
+              <AlertIcon mr={4} />
+              <AlertTitle>Node not synced</AlertTitle>
+              <AlertDescription>{`Node needs to be synced to correctly mine on SOLO mode. Please check your node for problems.`}</AlertDescription>
+            </Alert>
+          )}
           {showBanner || isVisibleBanner ? (
             <Alert mb="5" borderRadius={'10px'} status={'info'}>
               <AlertIcon mr={4} />
@@ -274,11 +289,20 @@ const SoloMining = () => {
           )}
 
           <Grid
-            templateRows={{ base: 'repeat(6, 1fr)', md: 'repeat(3, 1fr)' }}
-            templateColumns={{ base: '1fr', md: 'repeat(6, 1fr)' }}
+            templateRows={{
+              base: 'repeat(6, 1fr)',
+              md: 'repeat(4, 1fr)',
+              lg: 'repeat(3, 1fr)',
+            }}
+            templateColumns={{
+              base: '1fr',
+              md: 'repeat(4, 1fr)',
+              lg: 'repeat(6, 1fr)',
+            }}
             templateAreas={{
               base: `'Main' 'Main' 'Data' 'Data' 'Data' 'Data'`,
-              md: `'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`,
+              md: `'Main Main Main Main' 'Data Data Data Data' 'Data Data Data Data' 'Data Data Data Data'`,
+              lg: `'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`,
             }}
             gap={'20px'}
             mb={'10px'}
@@ -343,7 +367,7 @@ const SoloMining = () => {
                 }}
                 templateAreas={{
                   base: `'.' '.'`,
-                  '2xl': `'. .'`,
+                  md: `'. .'`,
                 }}
                 gap={'20px'}
               >
@@ -599,13 +623,35 @@ const SoloMining = () => {
                       >
                         {dataTableBoards.map((dataTable, index) => (
                           <Box mt="3" key={index}>
-                            <PanelGrid
-                              title={`${shortenBitcoinAddress(
-                                boardNames[index],
-                                10
-                              )}`}
-                              data={dataTable}
+                            <SoloMiningDrawer
+                              isOpen={isDrawerOpen[index]}
+                              onClose={() => handleClose(index)}
+                              placement="right"
+                              data={ckUsers[index].worker}
+                              user={boardNames[index]}
+                              difficulty={difficulty}
                             />
+                            <Flex direction={{base: 'column', md: 'row'}} justify="space-between" align="flex-start">
+                              <PanelGrid
+                                title={`${shortenBitcoinAddress(
+                                  boardNames[index],
+                                  10
+                                )}`}
+                                data={dataTable}
+                              />
+                              <Flex align="flex-start" mt={{base: '0', md: '4'}}>
+                                <Button
+                                  bgColor="brand.700"
+                                  color="white"
+                                  variant="solid"
+                                  size="xs"
+                                  onClick={() => handleOpen(index)}
+                                  mr='4'
+                                >
+                                  Show all data
+                                </Button>
+                              </Flex>
+                            </Flex>
                           </Box>
                         ))}
                       </Box>

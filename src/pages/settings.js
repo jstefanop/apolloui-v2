@@ -331,8 +331,7 @@ const Settings = () => {
 
   const { blocksCount, blockHeader, localaddresses } = dataNode;
 
-  const { sentence: errorNodeSentence } =
-    getNodeErrorMessage(errorNode);
+  const { sentence: errorNodeSentence } = getNodeErrorMessage(errorNode);
 
   // Mcu data
   const { data: dataMcu } = useSelector(mcuSelector);
@@ -593,9 +592,6 @@ const Settings = () => {
   const handlePoolChange = (e) => {
     setErrorForm(null);
 
-    if (!e.target.value)
-      return setErrorForm(`Field ${e.target.name} can't be empty`);
-
     const poolChanged = {
       ...settings.pool,
     };
@@ -612,8 +608,6 @@ const Settings = () => {
   const handleSoloMiningChange = (e) => {
     setErrorForm(null);
 
-    if (!e.target.value) setErrorForm(`Field ${e.target.name} can't be empty`);
-
     if (!isValidBitcoinAddress(e.target.value))
       setErrorForm('Please add a valid Bitcoin address');
 
@@ -624,7 +618,7 @@ const Settings = () => {
 
     const poolChanged = {
       ...settings.pool,
-      url: 'stratum+tcp://127.0.0.1:3333',
+      url: '127.0.0.1:3333',
       username: e.target.value,
       password: 'x',
     };
@@ -740,7 +734,7 @@ const Settings = () => {
     if (!v) {
       poolChanged = {
         ...settings.pool,
-        url: 'stratum+tcp://127.0.0.1:3333',
+        url: '127.0.0.1:3333',
         password: 'x',
       };
     } else {
@@ -861,13 +855,6 @@ const Settings = () => {
     try {
       await stopNode();
       await formatDisk();
-      onCloseFormat();
-      dispatch(
-        sendFeedback({
-          message: 'Format done! Your system is ready.',
-          type: 'success',
-        })
-      );
     } catch (error) {
       dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
@@ -898,7 +885,7 @@ const Settings = () => {
 
       const { enabled, url, username, password, index } = pool;
 
-      if (!url.match(/stratum\+tcp:\/\/(.*):\d+$/))
+      if (!url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/))
         return setErrorForm('Invalid pool URL');
 
       if (nodeEnableSoloMining && !isValidBitcoinAddress(username))
@@ -908,6 +895,12 @@ const Settings = () => {
         return setErrorForm(
           'Warning: Taproot Bitcoin address is not valid for SOLO mining. Please add a different Bitcoin address'
         );
+
+      if (!nodeEnableSoloMining && !username)
+        return setErrorForm(`Field username can't be empty`);
+
+      if (!nodeEnableSoloMining && !password)
+        return setErrorForm(`Field password can't be empty`);
 
       const input = {
         agree,
@@ -1214,9 +1207,7 @@ const Settings = () => {
                           color={inputTextColor}
                           name="url"
                           type="text"
-                          placeholder={
-                            'stratum+tcp://stratum.slushpool.com:3333'
-                          }
+                          placeholder={'stratum.slushpool.com:3333'}
                           value={settings.pool.url}
                           onChange={handlePoolChange}
                           disabled={
@@ -1400,7 +1391,11 @@ const Settings = () => {
                 icon={NodeIcon}
                 handleButtonClick={onOpenConnect}
                 buttonText="Connect"
-                buttonLoading={!currentSettings?.nodeAllowLan || errorNodeSentence || loadingNode}
+                buttonLoading={
+                  !currentSettings?.nodeAllowLan ||
+                  errorNodeSentence ||
+                  loadingNode
+                }
                 mb={'20px'}
               >
                 <SimpleSwitchSettingsItem
