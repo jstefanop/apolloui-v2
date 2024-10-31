@@ -1430,7 +1430,7 @@ const Settings = () => {
                       color={inputTextColor}
                       name="nodeMaxConnections"
                       type="number"
-                      placeholder={32}
+                      placeholder={64}
                       value={settings.nodeMaxConnections}
                       onChange={handleNodeMaxConnections}
                       width="90px"

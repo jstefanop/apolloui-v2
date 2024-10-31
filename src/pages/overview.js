@@ -144,15 +144,19 @@ const Overview = () => {
         </Alert>
       ) : (
         <Grid
-          templateRows={{ base: 'repeat(9, 1fr)', md: 'repeat(3, 1fr)' }}
+          templateRows={{
+            base: 'repeat(9, 1fr)',
+            md: 'repeat(4, 1fr)',
+            lg: 'repeat(3, 1fr)',
+          }}
           templateColumns={{
             base: '1fr',
             md: 'repeat(4, 1fr)',
-            md: 'repeat(6, 1fr)',
+            lg: 'repeat(6, 1fr)',
           }}
           templateAreas={{
             base: `'Hashrate' 'Hashrate' 'Hashrate' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData'`,
-            md: `'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData'`,
+            md: `'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData'`,
             lg: `'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`,
           }}
           gap={'20px'}
@@ -174,9 +178,11 @@ const Overview = () => {
           <Grid
             gridArea="MainData"
             templateRows={{ base: 'repeat(3, auto)', md: 'auto' }}
-            templateColumns={{ base: '1fr', md: 'repeat(1, 1fr)' }}
+              templateColumns={{ base: '1fr', md: 'repeat(1, 1fr)', lg: 'repeat(1, 1fr)' }}
             templateAreas={{
               base: `'Top' 'Middle' 'Bottom'`,
+              md: `'Top Top Top' 'Middle Middle Middle' 'Bottom Bottom Bottom'`,
+              lg: `'Top Top Top' 'Middle Middle Middle' 'Bottom Bottom Bottom'`,
             }}
             gap={'20px'}
           >
@@ -184,10 +190,10 @@ const Overview = () => {
             <Grid
               gridArea="Top"
               templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
+              templateColumns={{ base: 'repeat(1, 1fr)', lg: 'repeat(2, 1fr)' }}
               templateAreas={{
                 base: `'.' '.'`,
-                md: `'. .'`,
+                lg: `'. .'`,
               }}
               gap={'20px'}
             >
@@ -330,7 +336,7 @@ const Overview = () => {
                       my="auto"
                       align={{ base: 'center', xl: 'start' }}
                       justify={{ base: 'center', xl: 'center' }}
-                      direction={{ base: 'column', md: 'row' }}
+                      direction={{ base: 'column', lg: 'row' }}
                     >
                       <NoCardStatisticsGauge
                         id="minerTemp"
@@ -360,7 +366,7 @@ const Overview = () => {
                             >
                               {connectionCount}
                             </span>
-                            <Text color="gray.400">/{nodeMaxConnections}</Text>
+                            <Text color="gray.400">/{nodeMaxConnections || 64}</Text>
                           </Flex>
                         }
                         align="start"
@@ -429,10 +435,10 @@ const Overview = () => {
             <Grid
               gridArea="Bottom"
               templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
+              templateColumns={{ base: 'repeat(1, 1fr)', lg: 'repeat(3, 1fr)' }}
               templateAreas={{
                 base: `'.'`,
-                md: `'. . .'`,
+                lg: `'. . .'`,
               }}
               gap={'20px'}
             >
