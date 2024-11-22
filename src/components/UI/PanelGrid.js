@@ -33,9 +33,11 @@ const PanelGrid = ({
     <Flex mt="4" mx="5" direction="column">
       <Flex justify="space-between" direction={{ base: 'column', md: 'row' }}>
         <Flex direction={{ base: 'column', md: 'row' }}>
-          <Text fontSize="md" fontWeight="600">
-            {title}
-          </Text>
+          {title && (
+            <Text fontSize="md" fontWeight="600">
+              {title}
+            </Text>
+          )}
           {version && (
             <Tag
               size="md"

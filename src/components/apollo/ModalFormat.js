@@ -61,7 +61,7 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
         })
       );
     }
-  }, [progress, stopPollingProgress, onClose, isOpen]);
+  }, [progress, stopPollingProgress, onClose, isOpen, startPollingProgress, dispatch]);
 
   return (
     <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>

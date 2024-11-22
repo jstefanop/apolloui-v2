@@ -366,13 +366,13 @@ const Node = () => {
                       <Flex>
                         {connectionCount}
                         <Text color="gray.400">
-                          /{nodeMaxConnections || 32}
+                          /{nodeMaxConnections || 64}
                         </Text>
                       </Flex>
                     }
                     progress={true}
                     progressValue={connectionCount}
-                    progressTotal={32}
+                    progressTotal={nodeMaxConnections || 64}
                     reversed={true}
                   />
                   <MiniStatistics

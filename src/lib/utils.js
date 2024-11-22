@@ -297,3 +297,10 @@ export const getMinerHashboardType = (comport) => {
     </>
   );
 };
+
+export const filterRecentShares = (dataArray, intervalInSeconds) => {
+  const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+  const cutoffTimeInSeconds = currentTimeInSeconds - intervalInSeconds;
+
+  return _.filter(dataArray, item => item.lastshare >= cutoffTimeInSeconds);
+};

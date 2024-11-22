@@ -45,11 +45,11 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
     .map((board) => {
       const items = {
         hashrate: displayHashrate(board.hashrateInGh, 'GH/s', true, 2),
-        temperature: `${board.temperature.toFixed(0)}°C`,
-        fanSPeed: `${board.fanSpeed} rpm`,
-        power: `${board.wattTotal} Watts`,
-        voltage: `${board.voltage} A`,
-        errorRate: `${board.errorRate}%`,
+        temperature: `${(board?.temperature) ? board.temperature.toFixed(0) : 'n.a.'}°C`,
+        fanSPeed: `${(board?.fanSpeed) ? board.fanSpeed.toFixed(0) : 'n.a.'} rpm`,
+        power: `${(board?.wattTotal) ? board.wattTotal.toFixed(0) : 'n.a.'} Watts`,
+        voltage: `${(board?.voltage) ? board.voltage.toFixed(1) : 'n.a.'} A`,
+        errorRate: `${(board?.errorRate > 0) ? board.errorRate.toFixed(1) : '0'}%`,
       };
       return Object.entries(items).map(([key, value]) => {
         let icon;

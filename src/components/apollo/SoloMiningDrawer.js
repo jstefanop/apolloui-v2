@@ -22,6 +22,7 @@ import { SharesSentIcon } from '../UI/Icons/SharesSentIcon';
 import { BlocksIcon } from '../UI/Icons/BlocksIcon';
 import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
+import { filterRecentShares } from '../../lib/utils';
 
 const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }) => {
   const drawerBgColor = useColorModeValue('gray.200', 'brand.700');
@@ -29,13 +30,6 @@ const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.2)'
   );
-
-  const filterRecentShares = (dataArray, intervalInSeconds) => {
-    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-    const cutoffTimeInSeconds = currentTimeInSeconds - intervalInSeconds;
-
-    return _.filter(dataArray, item => item.lastshare >= cutoffTimeInSeconds);
-  };
 
   const desiredKeys = [
     'hashrate5m',

@@ -128,11 +128,11 @@ const Miner = () => {
       icon: MinerIcon,
     },
     {
-      value: `${avgBoardTemp.toFixed(2)}°C`,
+      value: `${avgBoardTemp ? avgBoardTemp.toFixed(2) : 'n.a.'}°C`,
       icon: MinerTempIcon,
     },
     {
-      value: `${avgFanSpeed} rpm`,
+      value: `${(avgFanSpeed) ? avgFanSpeed.toFixed(1) : 'n.a.'} rpm`,
       icon: FanIcon,
     },
     {
@@ -157,7 +157,7 @@ const Miner = () => {
       icon: MinerIcon,
     },
     {
-      value: avgDiff,
+      value: (avgDiff) ? avgDiff.toFixed(1) : 'n.a.',
       icon: DifficultyIcon,
     },
     {

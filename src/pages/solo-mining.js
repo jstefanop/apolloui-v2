@@ -35,21 +35,21 @@ import { SharesAcceptedIcon } from '../components/UI/Icons/SharesAcceptedIcon';
 import { SharesRejectedIcon } from '../components/UI/Icons/SharesRejectedIcon';
 import { FaUserCog, FaUserFriends } from 'react-icons/fa';
 import { GiDiamondTrophy } from 'react-icons/gi';
-import MinerDrawer from '../components/apollo/MinerDrawer';
+import ActiveBadge from '../components/apollo/ActiveBadge';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import CustomAlert from '../components/UI/CustomAlert';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
-import { shortenBitcoinAddress } from '../lib/utils';
+import { filterRecentShares, shortenBitcoinAddress } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
 import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
 
 const SoloMining = () => {
   const router = useRouter();
-  
+
   const {
     isOpen: isVisibleBanner,
     onClose: onCLoseBanner,
@@ -200,6 +200,12 @@ const SoloMining = () => {
     return mappedArray;
   });
 
+  const ckWorkers = ckUsers.map((element) => {
+    const totalWorkers = _.size(element.worker);
+    const activeWorkers = _.size(filterRecentShares(element.worker, 180));
+    return { ...element.worker, totalWorkers, activeWorkers };
+  });
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(
     Array(dataTableBoards.length).fill(false)
   );
@@ -297,12 +303,12 @@ const SoloMining = () => {
             templateColumns={{
               base: '1fr',
               md: 'repeat(4, 1fr)',
-              lg: 'repeat(6, 1fr)',
+              lg: 'repeat(4, 1fr)',
             }}
             templateAreas={{
               base: `'Main' 'Main' 'Data' 'Data' 'Data' 'Data'`,
               md: `'Main Main Main Main' 'Data Data Data Data' 'Data Data Data Data' 'Data Data Data Data'`,
-              lg: `'Main Main Data Data Data Data' 'Main Main Data Data Data Data' 'Main Main Data Data Data Data'`,
+              lg: `'Main Data Data Data' 'Main Data Data Data' 'Main Data Data Data'`,
             }}
             gap={'20px'}
             mb={'10px'}
@@ -368,6 +374,7 @@ const SoloMining = () => {
                 templateAreas={{
                   base: `'.' '.'`,
                   md: `'. .'`,
+                  '2xl': `'.' '.' '.' '.'`,
                 }}
                 gap={'20px'}
               >
@@ -631,26 +638,44 @@ const SoloMining = () => {
                               user={boardNames[index]}
                               difficulty={difficulty}
                             />
-                            <Flex direction={{base: 'column', md: 'row'}} justify="space-between" align="flex-start">
-                              <PanelGrid
-                                title={`${shortenBitcoinAddress(
-                                  boardNames[index],
-                                  10
-                                )}`}
-                                data={dataTable}
-                              />
-                              <Flex align="flex-start" mt={{base: '0', md: '4'}}>
-                                <Button
-                                  bgColor="brand.700"
-                                  color="white"
-                                  variant="solid"
-                                  size="xs"
-                                  onClick={() => handleOpen(index)}
-                                  mr='4'
-                                >
-                                  Show all data
-                                </Button>
-                              </Flex>
+                            <Flex justifyContent={{ base: 'flex-end' }} mr="4">
+                              <Button
+                                bgColor="brand.800"
+                                color="white"
+                                variant="solid"
+                                size="md"
+                                onClick={() => handleOpen(index)}
+                              >
+                                Show all data
+                              </Button>
+                              {typeof ckWorkers[index].activeWorkers !==
+                                'undefined' &&
+                                ckWorkers[index].activeWorkers !== null &&
+                                typeof ckWorkers[index].totalWorkers !==
+                                  'undefined' &&
+                                ckWorkers[index].totalWorkers !== null && (
+                                  <ActiveBadge
+                                    active={ckWorkers[index].activeWorkers}
+                                    total={ckWorkers[index].totalWorkers}
+                                    title="Active"
+                                  />
+                                )}
+                            </Flex>
+                            <Flex
+                              align="flex-start"
+                              mt={{ base: '0', md: '4' }}
+                              mr={{ base: '4' }}
+                            >
+                              <Text fontSize="lg" fontWeight="800">
+                                {shortenBitcoinAddress(boardNames[index], 10)}
+                              </Text>
+                            </Flex>
+                            <Flex
+                              direction={{ base: 'column', md: 'row' }}
+                              justify="space-between"
+                              align="flex-start"
+                            >
+                              <PanelGrid data={dataTable} />
                             </Flex>
                           </Box>
                         ))}
