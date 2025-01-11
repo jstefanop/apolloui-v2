@@ -10,9 +10,9 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Code,
 } from '@chakra-ui/react';
 import _ from 'lodash';
+import Head from 'next/head';
 
 import React, { useEffect, useRef } from 'react';
 import { BulletList, List } from 'react-content-loader';
@@ -24,6 +24,7 @@ import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
 import { bytesToSize, getNodeErrorMessage } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
+import { analyticsSelector } from '../redux/reselect/analytics';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
 import { McuTempIcon } from '../components/UI/Icons/McuTempIcon';
@@ -36,8 +37,8 @@ import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
-import Head from 'next/head';
 import { settingsSelector } from '../redux/reselect/settings';
+import HashrateChart from '../components/apollo/HashrateChart';
 
 const Overview = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
@@ -88,6 +89,13 @@ const Overview = () => {
   } = useSelector(nodeSelector);
 
   const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
+
+  // Analytics data
+  const {
+    loading: loadingAnalytics,
+    data: dataAnalytics,
+    error: errorAnalytics,
+  } = useSelector(analyticsSelector);
 
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode);
@@ -163,16 +171,38 @@ const Overview = () => {
           mb={'10px'}
         >
           <GridItem gridArea="Hashrate">
-            <HashrateCard
-              loading={loadingMiner}
-              errors={errorMiner}
-              data={globalHashrate}
-              avgData={globalAvgHashrate}
-              prevData={prevGlobalHashrate}
-              prevAvgData={prevGlobalAvgHashrate}
-              shadow={shadow}
-              iconColor={iconColor}
-            />
+              <Flex mb="20px">
+              <HashrateCard
+                loading={loadingMiner}
+                errors={errorMiner}
+                data={globalHashrate}
+                avgData={globalAvgHashrate}
+                prevData={prevGlobalHashrate}
+                prevAvgData={prevGlobalAvgHashrate}
+                shadow={shadow}
+                iconColor={iconColor}
+              />
+            </Flex>
+            <Card
+              bgColor={cardColor}
+              boxShadow={shadow}
+              py="15px"
+              pb="30px"
+            >
+              <Flex m="2">
+                <Text fontSize="lg" fontWeight="800">
+                  Last 24h Hashrate
+                </Text>
+              </Flex>
+              <Flex
+                my="auto"
+                align={{ base: 'center', xl: 'start' }}
+                justify={{ base: 'center', xl: 'center' }}
+                direction={{ base: 'column', md: 'row' }}
+              >
+                <HashrateChart dataAnalytics={dataAnalytics} />
+              </Flex>
+            </Card>
           </GridItem>
 
           <Grid

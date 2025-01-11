@@ -570,6 +570,11 @@ const Settings = () => {
     setSettings({ ...settings, nodeUserConf: newUserConf });
   };
 
+  const handleBtcsigChange = (e) => {
+    const newBtcsig = e.target.value;
+    setSettings({ ...settings, btcsig: newBtcsig });
+  };
+
   const handlePoolPreset = (e) => {
     const preset = presetPools[e.target.value];
     if (preset && preset.id !== 'custom') {
@@ -1300,6 +1305,20 @@ const Settings = () => {
                       </Text>
                     </SimpleCard>
                   )}
+
+                  <SimpleCard
+                    title={'BTC Signature'}
+                    textColor={textColor}
+                  >
+                    <Input
+                      color={inputTextColor}
+                      name="btcsig"
+                      type="text"
+                      placeholder={'/Your preferred string/'}
+                      value={settings.btcsig}
+                      onChange={handleBtcsigChange}
+                    />
+                  </SimpleCard>
                 </PanelCard>
               </SimpleGrid>
             )}
