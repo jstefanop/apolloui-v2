@@ -5,6 +5,7 @@ import {
   GridItem,
   Text,
   Flex,
+  Stack,
   Icon,
   Alert,
   AlertIcon,
@@ -152,43 +153,42 @@ const Overview = () => {
         </Alert>
       ) : (
         <Grid
-          templateRows={{
-            base: 'repeat(9, 1fr)',
-            md: 'repeat(4, 1fr)',
-            lg: 'repeat(3, 1fr)',
+          templateAreas={{
+              base: `'hashrate' 'chart' 'temperatures' 'power' 'node' 'gauges'`,
+              'lg': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'gauges gauges gauges gauges' 'chart chart chart chart'`,
+              '3xl': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'hashrate hashrate gauges gauges' 'chart chart chart chart'`,
           }}
+
+          templateRows={{
+            base: 'auto auto auto auto auto auto',
+            'lg': 'auto auto auto auto',
+            '3xl': 'auto auto auto auto',
+          }}
+          
           templateColumns={{
             base: '1fr',
-            md: 'repeat(4, 1fr)',
-            lg: 'repeat(6, 1fr)',
+            'lg': '1fr 1fr 1fr 1fr',
+            '3xl': '1fr 1fr 1fr 1fr',
           }}
-          templateAreas={{
-            base: `'Hashrate' 'Hashrate' 'Hashrate' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData' 'MainData'`,
-            md: `'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData' 'Hashrate MainData MainData MainData'`,
-            lg: `'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData' 'Hashrate Hashrate Hashrate MainData MainData MainData'`,
-          }}
+          
           gap={'20px'}
           mb={'10px'}
         >
-          <GridItem gridArea="Hashrate">
-              <Flex mb="20px">
-              <HashrateCard
-                loading={loadingMiner}
-                errors={errorMiner}
-                data={globalHashrate}
-                avgData={globalAvgHashrate}
-                prevData={prevGlobalHashrate}
-                prevAvgData={prevGlobalAvgHashrate}
-                shadow={shadow}
-                iconColor={iconColor}
-              />
-            </Flex>
-            <Card
-              bgColor={cardColor}
-              boxShadow={shadow}
-              py="15px"
-              pb="30px"
-            >
+          <GridItem gridArea="hashrate">
+            <HashrateCard
+              loading={loadingMiner}
+              errors={errorMiner}
+              data={globalHashrate}
+              avgData={globalAvgHashrate}
+              prevData={prevGlobalHashrate}
+              prevAvgData={prevGlobalAvgHashrate}
+              shadow={shadow}
+              iconColor={iconColor}
+            />
+          </GridItem>
+
+          <GridItem gridArea="chart">
+            <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
               <Flex m="2">
                 <Text fontSize="lg" fontWeight="800">
                   Last 24h Hashrate
@@ -205,360 +205,325 @@ const Overview = () => {
             </Card>
           </GridItem>
 
-          <Grid
-            gridArea="MainData"
-            templateRows={{ base: 'repeat(3, auto)', md: 'auto' }}
-              templateColumns={{ base: '1fr', md: 'repeat(1, 1fr)', lg: 'repeat(1, 1fr)' }}
-            templateAreas={{
-              base: `'Top' 'Middle' 'Bottom'`,
-              md: `'Top Top Top' 'Middle Middle Middle' 'Bottom Bottom Bottom'`,
-              lg: `'Top Top Top' 'Middle Middle Middle' 'Bottom Bottom Bottom'`,
-            }}
-            gap={'20px'}
-          >
-            {/* TOP */}
-            <Grid
-              gridArea="Top"
-              templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'repeat(1, 1fr)', lg: 'repeat(2, 1fr)' }}
-              templateAreas={{
-                base: `'.' '.'`,
-                lg: `'. .'`,
-              }}
-              gap={'20px'}
-            >
-              <GridItem>
-                <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow}>
-                  <Flex direction="column" my="auto">
-                    {loadingMiner ? (
-                      <BulletList />
-                    ) : (
-                      <>
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={MinerTempIcon}
-                                  color={iconColorReversed}
-                                />
-                              }
+          <GridItem gridArea="temperatures">
+            <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow}>
+              <Flex direction="column" my="auto">
+                {loadingMiner ? (
+                  <BulletList />
+                ) : (
+                  <>
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={MinerTempIcon}
+                              color={iconColorReversed}
                             />
                           }
-                          name="Miner temperature"
-                          value={
-                            <span
-                              className={
-                                avgBoardTemp !== prevAvgBoardTemp
-                                  ? 'animate__animated animate__flash'
-                                  : undefined
-                              }
-                            >
-                              {typeof avgBoardTemp !== 'undefined' &&
-                              avgBoardTemp !== null
-                                ? `${avgBoardTemp}°C`
-                                : 'N/A'}
-                            </span>
-                          }
                         />
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={McuTempIcon}
-                                  color={iconColorReversed}
-                                />
-                              }
+                      }
+                      name="Miner temperature"
+                      value={
+                        <span
+                          className={
+                            avgBoardTemp !== prevAvgBoardTemp
+                              ? 'animate__animated animate__flash'
+                              : undefined
+                          }
+                        >
+                          {typeof avgBoardTemp !== 'undefined' &&
+                          avgBoardTemp !== null
+                            ? `${avgBoardTemp}°C`
+                            : 'N/A'}
+                        </span>
+                      }
+                    />
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={McuTempIcon}
+                              color={iconColorReversed}
                             />
                           }
-                          name="System temperature"
-                          value={
-                            typeof mcuTemperature !== 'undefined' &&
-                            mcuTemperature !== null
-                              ? `${Math.round(mcuTemperature / 1000)}°C `
-                              : 'N/A'
-                          }
                         />
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={BugIcon}
-                                  color={iconColorReversed}
-                                />
-                              }
+                      }
+                      name="System temperature"
+                      value={
+                        typeof mcuTemperature !== 'undefined' &&
+                        mcuTemperature !== null
+                          ? `${Math.round(mcuTemperature / 1000)}°C `
+                          : 'N/A'
+                      }
+                    />
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={BugIcon}
+                              color={iconColorReversed}
                             />
                           }
-                          name="Hardware errors"
-                          value={
-                            <span
-                              className={
-                                avgBoardErrors !== prevAvgBoardErrors
-                                  ? 'animate__animated animate__flash'
-                                  : undefined
-                              }
-                            >
-                              {typeof avgBoardErrors !== 'undefined' &&
-                              avgBoardErrors !== null
-                                ? `${avgBoardErrors}%`
-                                : 'N/A'}
-                            </span>
-                          }
                         />
-                      </>
-                    )}
-                  </Flex>
-                </Card>
-              </GridItem>
-              <GridItem>
-                <PowerCard
-                  loading={loadingMiner}
-                  errors={errorMiner}
-                  data={minerPower}
-                  prevData={prevMinerPower}
-                  shadow={shadow}
-                  iconColor={iconColor}
-                />
-              </GridItem>
-            </Grid>
+                      }
+                      name="Hardware errors"
+                      value={
+                        <span
+                          className={
+                            avgBoardErrors !== prevAvgBoardErrors
+                              ? 'animate__animated animate__flash'
+                              : undefined
+                          }
+                        >
+                          {typeof avgBoardErrors !== 'undefined' &&
+                          avgBoardErrors !== null
+                            ? `${avgBoardErrors}%`
+                            : 'N/A'}
+                        </span>
+                      }
+                    />
+                  </>
+                )}
+              </Flex>
+            </Card>
+          </GridItem>
 
-            {/* MIDDLE */}
-            <Grid gridArea="Middle">
-              <GridItem>
-                <Card
-                  py="15px"
-                  pb="30px"
-                  bgColor={cardColor}
-                  boxShadow={shadow}
+          <GridItem gridArea="power">
+            <PowerCard
+              loading={loadingMiner}
+              errors={errorMiner}
+              data={minerPower}
+              prevData={prevMinerPower}
+              shadow={shadow}
+              iconColor={iconColor}
+            />
+          </GridItem>
+
+          <GridItem gridArea="node">
+            <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow}>
+              <Flex m="2">
+                <Text fontSize="lg" fontWeight="800">
+                  Node status
+                </Text>
+              </Flex>
+              {loadingNode ? (
+                <List />
+              ) : errorNodeSentence ? (
+                <Alert borderRadius={'10px'} status={errorNodeType}>
+                  <AlertIcon />
+                  <AlertTitle>{errorNodeType}</AlertTitle>
+                  <AlertDescription>{errorNodeSentence}</AlertDescription>
+                </Alert>
+              ) : (
+                <Flex
+                  my="auto"
+                  align={{ base: 'center', xl: 'start' }}
+                  justify={{ base: 'center', xl: 'center' }}
+                  direction={{ base: 'column', lg: 'row' }}
                 >
-                  <Flex m="2">
-                    <Text fontSize="lg" fontWeight="800">
-                      Node status
-                    </Text>
-                  </Flex>
-                  {loadingNode ? (
-                    <List />
-                  ) : errorNodeSentence ? (
-                    <Alert borderRadius={'10px'} status={errorNodeType}>
-                      <AlertIcon />
-                      <AlertTitle>{errorNodeType}</AlertTitle>
-                      <AlertDescription>{errorNodeSentence}</AlertDescription>
-                    </Alert>
-                  ) : (
-                    <Flex
-                      my="auto"
-                      align={{ base: 'center', xl: 'start' }}
-                      justify={{ base: 'center', xl: 'center' }}
-                      direction={{ base: 'column', lg: 'row' }}
-                    >
-                      <NoCardStatisticsGauge
-                        id="minerTemp"
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={ConnectionsIcons}
-                                color={iconColorReversed}
-                              />
-                            }
+                  <NoCardStatisticsGauge
+                    id="minerTemp"
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        icon={
+                          <Icon
+                            w="32px"
+                            h="32px"
+                            as={ConnectionsIcons}
+                            color={iconColorReversed}
                           />
                         }
-                        name="Connections"
-                        value={
-                          <Flex>
-                            <span
-                              className={
-                                prevConnectionCount !== connectionCount
-                                  ? 'animate__animated animate__flash'
-                                  : undefined
-                              }
-                            >
-                              {connectionCount}
-                            </span>
-                            <Text color="gray.400">/{nodeMaxConnections || 64}</Text>
-                          </Flex>
-                        }
-                        align="start"
                       />
-                      <NoCardStatisticsGauge
-                        id="minerTemp"
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={BlocksIcon}
-                                color={iconColorReversed}
-                              />
-                            }
+                    }
+                    name="Connections"
+                    value={
+                      <Flex>
+                        <span
+                          className={
+                            prevConnectionCount !== connectionCount
+                              ? 'animate__animated animate__flash'
+                              : undefined
+                          }
+                        >
+                          {connectionCount}
+                        </span>
+                        <Text color="gray.400">
+                          /{nodeMaxConnections || 64}
+                        </Text>
+                      </Flex>
+                    }
+                    align="start"
+                  />
+                  <NoCardStatisticsGauge
+                    id="minerTemp"
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        icon={
+                          <Icon
+                            w="32px"
+                            h="32px"
+                            as={BlocksIcon}
+                            color={iconColorReversed}
                           />
                         }
-                        name="Blocks"
-                        value={
-                          <span
-                            className={
-                              prevBlocksCount !== blocksCount
-                                ? 'animate__animated animate__flash'
-                                : undefined
-                            }
-                          >
-                            {blocksCount
-                              ? blocksCount.toLocaleString('en-US', {
-                                  maximumFractionDigits: 0,
-                                })
-                              : 'N/A'}
-                          </span>
-                        }
-                        align="start"
                       />
-                      <NoCardStatisticsGauge
-                        id="minerTemp"
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={BlockchainIcon}
-                                color={iconColorReversed}
-                              />
-                            }
+                    }
+                    name="Blocks"
+                    value={
+                      <span
+                        className={
+                          prevBlocksCount !== blocksCount
+                            ? 'animate__animated animate__flash'
+                            : undefined
+                        }
+                      >
+                        {blocksCount
+                          ? blocksCount.toLocaleString('en-US', {
+                              maximumFractionDigits: 0,
+                            })
+                          : 'N/A'}
+                      </span>
+                    }
+                    align="start"
+                  />
+                  <NoCardStatisticsGauge
+                    id="minerTemp"
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        icon={
+                          <Icon
+                            w="32px"
+                            h="32px"
+                            as={BlockchainIcon}
+                            color={iconColorReversed}
                           />
                         }
-                        name="Blockchain size"
-                        value={bytesToSize(sizeOnDisk)}
-                        align="start"
                       />
-                    </Flex>
-                  )}
-                </Card>
-              </GridItem>
-            </Grid>
+                    }
+                    name="Blockchain size"
+                    value={bytesToSize(sizeOnDisk)}
+                    align="start"
+                  />
+                </Flex>
+              )}
+            </Card>
+          </GridItem>
 
-            {/* BOTTOM */}
-            <Grid
-              gridArea="Bottom"
-              templateRows="repeat(1, 1fr)"
-              templateColumns={{ base: 'repeat(1, 1fr)', lg: 'repeat(3, 1fr)' }}
-              templateAreas={{
-                base: `'.'`,
-                lg: `'. . .'`,
-              }}
-              gap={'20px'}
-            >
-              <GridItem>
-                <NoCardStatisticsGauge
-                  id="minerTemp"
-                  startContent={
-                    <IconBox
-                      w="56px"
-                      h="56px"
-                      icon={
-                        <Icon
-                          w="32px"
-                          h="32px"
-                          as={CpuIcon}
-                          color={iconColorReversed}
-                        />
-                      }
+          <GridItem gridArea="gauges">
+              <Stack
+                direction={{ base: "column", md: "row" }}
+                spacing="20px"
+                p="20px"
+                bg="gray.800"
+                borderRadius="2xl"
+              >
+            <NoCardStatisticsGauge
+              id="minerTemp"
+              startContent={
+                <IconBox
+                  w="56px"
+                  h="56px"
+                  icon={
+                    <Icon
+                      w="32px"
+                      h="32px"
+                      as={CpuIcon}
+                      color={iconColorReversed}
                     />
                   }
-                  name="CPU usage"
-                  value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
-                  legendValue={`${cpuCores} cores`}
-                  percent={cpuUsage}
-                  gauge={true}
-                  loading={loadingMcu}
-                  error={errorMcu}
                 />
-              </GridItem>
-              <GridItem>
-                <NoCardStatisticsGauge
-                  id="hwErr"
-                  startContent={
-                    <IconBox
-                      w="56px"
-                      h="56px"
-                      icon={
-                        <Icon
-                          w="32px"
-                          h="32px"
-                          as={MemoryIcon}
-                          color={iconColorReversed}
-                        />
-                      }
+              }
+              name="CPU usage"
+              value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
+              legendValue={`${cpuCores} cores`}
+              percent={cpuUsage}
+              gauge={true}
+              loading={loadingMcu}
+              error={errorMcu}
+            />
+
+            <NoCardStatisticsGauge
+              id="hwErr"
+              startContent={
+                <IconBox
+                  w="56px"
+                  h="56px"
+                  icon={
+                    <Icon
+                      w="32px"
+                      h="32px"
+                      as={MemoryIcon}
+                      color={iconColorReversed}
                     />
                   }
-                  name="Memory usage"
-                  legendValue={`${bytesToSize(
-                    memoryUsed * 1024,
-                    0
-                  )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
-                  rawValue={memoryUsed}
-                  total={memoryTotal}
-                  gauge={true}
-                  loading={loadingMcu}
-                  error={errorMcu}
                 />
-              </GridItem>
-              <GridItem>
-                <NoCardStatisticsGauge
-                  id="systemTemp"
-                  startContent={
-                    <IconBox
-                      w="56px"
-                      h="56px"
-                      icon={
-                        <Icon
-                          w="32px"
-                          h="32px"
-                          as={DatabaseIcon}
-                          color={iconColorReversed}
-                        />
-                      }
+              }
+              name="Memory usage"
+              legendValue={`${bytesToSize(
+                memoryUsed * 1024,
+                0
+              )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
+              rawValue={memoryUsed}
+              total={memoryTotal}
+              gauge={true}
+              loading={loadingMcu}
+              error={errorMcu}
+            />
+
+            <NoCardStatisticsGauge
+              id="systemTemp"
+              startContent={
+                <IconBox
+                  w="56px"
+                  h="56px"
+                  icon={
+                    <Icon
+                      w="32px"
+                      h="32px"
+                      as={DatabaseIcon}
+                      color={iconColorReversed}
                     />
                   }
-                  name="System disk usage"
-                  legendValue={`${bytesToSize(
-                    diskUsed * 1024,
-                    0,
-                    false
-                  )} / ${bytesToSize(diskTotal * 1024, 0)}`}
-                  rawValue={diskUsed}
-                  total={diskTotal}
-                  gauge={true}
-                  loading={loadingMcu}
-                  error={errorMcu}
                 />
-              </GridItem>
-            </Grid>
-          </Grid>
+              }
+              name="System disk usage"
+              legendValue={`${bytesToSize(
+                diskUsed * 1024,
+                0,
+                false
+              )} / ${bytesToSize(diskTotal * 1024, 0)}`}
+              rawValue={diskUsed}
+              total={diskTotal}
+              gauge={true}
+              loading={loadingMcu}
+              error={errorMcu}
+            />
+              </Stack>
+          </GridItem>
         </Grid>
       )}
     </Box>

@@ -98,7 +98,7 @@ const NoCardStatisticsGauge = ({
   return (
     <Flex
       align={align || 'center'}
-      direction={{ base: 'row', md: 'column' }}
+      direction={{ base: 'column' }}
       w="100%"
     >
       {loading ? (

@@ -11,7 +11,8 @@ import {
 import { Line } from 'react-chartjs-2';
 import moment from 'moment';
 import { displayHashrate } from '../../lib/utils';
-import { useTheme, useColorModeValue } from '@chakra-ui/react';
+import { useTheme, useColorModeValue, Box } from '@chakra-ui/react';
+
 
 ChartJS.register(
   CategoryScale,
@@ -68,6 +69,7 @@ const HashrateChart = ({ dataAnalytics }) => {
 
   // Chart options
   const chartOptions = {
+    responsive: true,
     maintainAspectRatio: false,
     scales: {
       x: {
@@ -111,11 +113,12 @@ const HashrateChart = ({ dataAnalytics }) => {
   };
 
   return (
+    <Box w="100%" h="300px" p="20px" >
     <Line
       data={chartData}
       options={chartOptions}
-      style={{ height: '300px', width: '100%' }}
     />
+    </Box>
   );
 };
 
