@@ -24,7 +24,14 @@ import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
 import { filterRecentShares } from '../../lib/utils';
 
-const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }) => {
+const SoloMiningDrawer = ({
+  isOpen,
+  onClose,
+  placement,
+  data,
+  user,
+  difficulty,
+}) => {
   const drawerBgColor = useColorModeValue('gray.200', 'brand.700');
   const cardColor = useColorModeValue('white', 'brand.800');
   const shadow = useColorModeValue(
@@ -44,47 +51,59 @@ const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }
   const totalWorkers = _.size(data);
   const activeWorkers = _.size(filterRecentShares(data, 180));
 
-  const dataTableWorkers = data.map((element) => {
-    if (!element) return;
-    const mappedArray = [];
-    desiredKeys.forEach((key) => {
-      if (key in element) {
-        let value, icon;
-        switch (key) {
-          case 'hashrate5m':
-            value = `${element[key]} (5m)`;
-            icon = MinerIcon;
-            break;
-          case 'hashrate1d':
-            value = `${element[key]} (1d)`;
-            icon = MinerIcon;
-            break;
-          case 'workername':
-            workerNames.push(element[key]);
-            break;
-          case 'lastshare':
-            value = `${moment(element[key], 'X').fromNow()}`;
-            icon = LastShareIcon;
-            break;
-          case 'shares':
-            value = `${element[key]?.toLocaleString('en-US')}`;
-            icon = SharesSentIcon;
-            break;
-          case 'bestever':
-            value =
-              difficulty > 0
-                ? `${element[key].toLocaleString('en-US', {
-                    maximumFractionDigits: 0,
-                  })}`
-                : 'n.a.';
-            icon = BlocksIcon;
-            break;
+  const dataTableWorkers = data
+    .map((element) => {
+      if (!element) return null;
+      const mappedArray = [];
+      let workerName = ''; // Per memorizzare il workername
+
+      desiredKeys.forEach((key) => {
+        if (key in element) {
+          let value, icon;
+          switch (key) {
+            case 'hashrate5m':
+              value = `${element[key]} (5m)`;
+              icon = MinerIcon;
+              break;
+            case 'hashrate1d':
+              value = `${element[key]} (1d)`;
+              icon = MinerIcon;
+              break;
+            case 'workername':
+              workerName = element[key]; // Salva il workername
+              break;
+            case 'lastshare':
+              value = `${moment(element[key], 'X').fromNow()}`;
+              icon = LastShareIcon;
+              break;
+            case 'shares':
+              value = `${element[key]?.toLocaleString('en-US')}`;
+              icon = SharesSentIcon;
+              break;
+            case 'bestever':
+              value =
+                difficulty > 0
+                  ? `${element[key].toLocaleString('en-US', {
+                      maximumFractionDigits: 0,
+                    })}`
+                  : 'n.a.';
+              icon = BlocksIcon;
+              break;
+          }
+          if (value || icon) {
+            mappedArray.push({ value, icon });
+          }
         }
-        mappedArray.push({ value, icon });
-      }
+      });
+
+      // Aggiungi il workername al risultato mappato
+      return { workername: workerName, data: mappedArray };
+    })
+    .filter(Boolean) // Rimuovi valori null/undefined
+    .sort((a, b) => {
+      // Ordina per workername in ordine alfabetico
+      return a.workername.localeCompare(b.workername);
     });
-    return mappedArray;
-  });
 
   return (
     <Drawer placement={placement} onClose={onClose} isOpen={isOpen} size="xl">
@@ -125,8 +144,8 @@ const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }
                     my="15px"
                   >
                     <PanelGrid
-                      title={`Worker ${workerNames[index]}`}
-                      data={worker}
+                      title={`Worker ${worker.workername}`}
+                      data={worker.data} // Passa i dati mappati
                     />
                   </Card>
                 ))}

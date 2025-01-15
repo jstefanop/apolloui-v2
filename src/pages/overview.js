@@ -154,23 +154,18 @@ const Overview = () => {
       ) : (
         <Grid
           templateAreas={{
-              base: `'hashrate' 'chart' 'temperatures' 'power' 'node' 'gauges'`,
-              'lg': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'gauges gauges gauges gauges' 'chart chart chart chart'`,
-              '3xl': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'hashrate hashrate gauges gauges' 'chart chart chart chart'`,
+            base: `'hashrate' 'chart' 'temperatures' 'power' 'node' 'gauges'`,
+            lg: `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'gauges gauges gauges gauges' 'chart chart chart chart'`,
+            '3xl': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'hashrate hashrate gauges gauges' 'chart chart chart chart'`,
           }}
-
           templateRows={{
             base: 'auto auto auto auto auto auto',
-            'lg': 'auto auto auto auto',
-            '3xl': 'auto auto auto auto',
+            lg: 'auto auto auto auto',
           }}
-          
           templateColumns={{
             base: '1fr',
-            'lg': '1fr 1fr 1fr 1fr',
-            '3xl': '1fr 1fr 1fr 1fr',
+            lg: '1fr 1fr 1fr 1fr',
           }}
-          
           gap={'20px'}
           mb={'10px'}
         >
@@ -434,95 +429,94 @@ const Overview = () => {
           </GridItem>
 
           <GridItem gridArea="gauges">
-              <Stack
-                direction={{ base: "column", md: "row" }}
-                spacing="20px"
-                p="20px"
-                bg="gray.800"
-                borderRadius="2xl"
-              >
-            <NoCardStatisticsGauge
-              id="minerTemp"
-              startContent={
-                <IconBox
-                  w="56px"
-                  h="56px"
-                  icon={
-                    <Icon
-                      w="32px"
-                      h="32px"
-                      as={CpuIcon}
-                      color={iconColorReversed}
-                    />
-                  }
-                />
-              }
-              name="CPU usage"
-              value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
-              legendValue={`${cpuCores} cores`}
-              percent={cpuUsage}
-              gauge={true}
-              loading={loadingMcu}
-              error={errorMcu}
-            />
+            <Stack
+              direction={{ base: 'column', md: 'row' }}
+              spacing="20px"
+              p="20px"
+              borderRadius="2xl"
+            >
+              <NoCardStatisticsGauge
+                id="minerTemp"
+                startContent={
+                  <IconBox
+                    w="56px"
+                    h="56px"
+                    icon={
+                      <Icon
+                        w="32px"
+                        h="32px"
+                        as={CpuIcon}
+                        color={iconColorReversed}
+                      />
+                    }
+                  />
+                }
+                name="CPU usage"
+                value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
+                legendValue={`${cpuCores} cores`}
+                percent={cpuUsage}
+                gauge={true}
+                loading={loadingMcu}
+                error={errorMcu}
+              />
 
-            <NoCardStatisticsGauge
-              id="hwErr"
-              startContent={
-                <IconBox
-                  w="56px"
-                  h="56px"
-                  icon={
-                    <Icon
-                      w="32px"
-                      h="32px"
-                      as={MemoryIcon}
-                      color={iconColorReversed}
-                    />
-                  }
-                />
-              }
-              name="Memory usage"
-              legendValue={`${bytesToSize(
-                memoryUsed * 1024,
-                0
-              )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
-              rawValue={memoryUsed}
-              total={memoryTotal}
-              gauge={true}
-              loading={loadingMcu}
-              error={errorMcu}
-            />
+              <NoCardStatisticsGauge
+                id="hwErr"
+                startContent={
+                  <IconBox
+                    w="56px"
+                    h="56px"
+                    icon={
+                      <Icon
+                        w="32px"
+                        h="32px"
+                        as={MemoryIcon}
+                        color={iconColorReversed}
+                      />
+                    }
+                  />
+                }
+                name="Memory usage"
+                legendValue={`${bytesToSize(
+                  memoryUsed * 1024,
+                  0
+                )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
+                rawValue={memoryUsed}
+                total={memoryTotal}
+                gauge={true}
+                loading={loadingMcu}
+                error={errorMcu}
+              />
 
-            <NoCardStatisticsGauge
-              id="systemTemp"
-              startContent={
-                <IconBox
-                  w="56px"
-                  h="56px"
-                  icon={
-                    <Icon
-                      w="32px"
-                      h="32px"
-                      as={DatabaseIcon}
-                      color={iconColorReversed}
-                    />
-                  }
-                />
-              }
-              name="System disk usage"
-              legendValue={`${bytesToSize(
-                diskUsed * 1024,
-                0,
-                false
-              )} / ${bytesToSize(diskTotal * 1024, 0)}`}
-              rawValue={diskUsed}
-              total={diskTotal}
-              gauge={true}
-              loading={loadingMcu}
-              error={errorMcu}
-            />
-              </Stack>
+              <NoCardStatisticsGauge
+                id="systemTemp"
+                startContent={
+                  <IconBox
+                    w="56px"
+                    h="56px"
+                    icon={
+                      <Icon
+                        w="32px"
+                        h="32px"
+                        as={DatabaseIcon}
+                        color={iconColorReversed}
+                      />
+                    }
+                  />
+                }
+                name="System disk usage"
+                legendValue={`${bytesToSize(
+                  diskUsed * 1024,
+                  0,
+                  false
+                )} / ${bytesToSize(diskTotal * 1024, 0)}`}
+                rawValue={diskUsed}
+                total={diskTotal}
+                gauge={true}
+                loading={loadingMcu}
+                error={errorMcu}
+              />
+            </Stack>
           </GridItem>
         </Grid>
       )}

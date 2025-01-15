@@ -63,7 +63,7 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
                       locales={locales}
                       locale={locale}
                     >
-                      <Component {...props.pageProps} />
+                      <Component {...pageProps} />
                     </AuthLayout>
                   ) : router.route === '/404' ? (
                     <Error statusCode={404} />
@@ -74,7 +74,7 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
                       locale={locale}
                       routes={routes}
                     >
-                      <Component {...props.pageProps} />
+                      <Component {...pageProps} />
                     </DefaultLayout>
                   )}
                 </AnimatePresence>
