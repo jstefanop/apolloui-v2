@@ -75,13 +75,25 @@ const System = () => {
       </Head>
       <Card py="15px" bgColor={cardColor}>
         <Grid
-          templateRows="auto auto"
-          templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)' }}
-          templateAreas={{ base: `'Illustration' 'MainData' 'Bottom' 'Bottom'`, md: `'Illustration MainData' 'Bottom Bottom'` }}
+          templateAreas={{
+            base: `'Illustration' 'MainData' 'Bottom'`,
+            lg: `'Illustration MainData MainData' 'Bottom Bottom Bottom'`,
+          }}
+          templateRows={{
+            base: 'auto auto auto',
+            lg: 'auto auto',
+          }}
+          templateColumns={{
+            base: '1fr',
+            lg: '1fr 1fr',
+          }}
           gap={'20px'}
           mb={'10px'}
         >
-          <GridItem gridArea="Illustration" display={{ base: 'none', md: 'block'}}>
+          <GridItem
+            gridArea="Illustration"
+            display={{ base: 'none', md: 'block' }}
+          >
             <ParticlesCard />
           </GridItem>
 
@@ -185,18 +197,11 @@ const System = () => {
             </Flex>
           </GridItem>
 
-          <Grid
-            gridArea="Bottom"
-            templateRows="auto"
-            templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(4, 1fr)' }}
-            templateAreas={{
-              base: `.`,
-              md: `. . . .`,
-            }}
-            gap={'20px'}
-            mt="5"
-          >
-            <GridItem>
+          <GridItem gridArea="Bottom">
+            <SimpleGrid
+              columns={{ base: 1, md: 3 }}
+              gap="20px"
+            >
               <NoCardStatisticsGauge
                 id="minerTemp"
                 startContent={
@@ -220,8 +225,7 @@ const System = () => {
                 gauge={true}
                 loading={loadingMcu}
               />
-            </GridItem>
-            <GridItem>
+
               <NoCardStatisticsGauge
                 id="hwErr"
                 startContent={
@@ -248,8 +252,7 @@ const System = () => {
                 gauge={true}
                 loading={loadingMcu}
               />
-            </GridItem>
-            <GridItem>
+
               <NoCardStatisticsGauge
                 id="systemTemp"
                 startContent={
@@ -277,9 +280,8 @@ const System = () => {
                 gauge={true}
                 loading={loadingMcu}
               />
-            </GridItem>
-            {mcuNoderyDisk && (
-              <GridItem>
+
+              {mcuNoderyDisk && (
                 <NoCardStatisticsGauge
                   id="systemTemp"
                   startContent={
@@ -307,9 +309,9 @@ const System = () => {
                   gauge={true}
                   loading={loadingMcu}
                 />
-              </GridItem>
-            )}
-          </Grid>
+              )}
+            </SimpleGrid>
+          </GridItem>
         </Grid>
       </Card>
     </Box>

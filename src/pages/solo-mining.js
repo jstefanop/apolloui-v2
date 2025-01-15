@@ -5,6 +5,7 @@ import {
   Text,
   Grid,
   GridItem,
+  SimpleGrid,
   useColorModeValue,
   useDisclosure,
   Alert,
@@ -295,396 +296,333 @@ const SoloMining = () => {
           )}
 
           <Grid
+            templateAreas={{
+                    base: `'hashrate' 'bestshare' 'summary' 'info' 'users'`,
+                    lg: `'hashrate hashrate summary summary' 'bestshare info users users'`,
+                    '3xl': `'hashrate hashrate summary summary' 'bestshare bestshare info users'`,
+            }}
             templateRows={{
-              base: 'repeat(6, 1fr)',
-              md: 'repeat(4, 1fr)',
-              lg: 'repeat(3, 1fr)',
+              base: 'auto auto auto auto auto',
+              lg: 'auto auto auto auto',
             }}
             templateColumns={{
               base: '1fr',
-              md: 'repeat(4, 1fr)',
-              lg: 'repeat(4, 1fr)',
-            }}
-            templateAreas={{
-              base: `'Main' 'Main' 'Data' 'Data' 'Data' 'Data'`,
-              md: `'Main Main Main Main' 'Data Data Data Data' 'Data Data Data Data' 'Data Data Data Data'`,
-              lg: `'Main Data Data Data' 'Main Data Data Data' 'Main Data Data Data'`,
+              lg: '1fr 1fr 1fr 1fr',
             }}
             gap={'20px'}
             mb={'10px'}
           >
-            <Grid
-              gridArea="Main"
-              templateRows="repeat(2, 1fr)"
-              templateColumns={{ base: 'repeat(1, 1fr)' }}
-              templateAreas={`'Hashrate' 'Power'`}
-              gap={'20px'}
-              mb={'10px'}
-            >
-              <GridItem gridArea="Hashrate">
-                <HashrateCard
-                  loading={loadingMiner}
-                  errors={errorMiner}
-                  data={ckPoolGlobalHashrate}
-                  avgData={ckPoolGlobalAvgHashrate}
-                  prevData={prevCkPoolGlobalHashrate}
-                  prevAvgData={prevCkPoolGlobalAvgHashrate}
-                  shadow={shadow}
-                  iconColor={iconColor}
-                />
-              </GridItem>
+            <GridItem gridArea="hashrate">
+              <HashrateCard
+                loading={loadingMiner}
+                errors={errorMiner}
+                data={ckPoolGlobalHashrate}
+                avgData={ckPoolGlobalAvgHashrate}
+                prevData={prevCkPoolGlobalHashrate}
+                prevAvgData={prevCkPoolGlobalAvgHashrate}
+                shadow={shadow}
+                iconColor={iconColor}
+              />
+            </GridItem>
 
-              <GridItem gridArea="Power">
-                <BestShare
-                  loading={loadingMiner && loadingNode}
-                  errors={errorMiner}
-                  data={ckPoolGlobalBestshare}
-                  avgData={null}
-                  prevData={prevCkPoolGlobalBestshare}
-                  prevAvgData={prevBestSharePerc}
-                  shadow={shadow}
-                  iconColor={iconColor}
-                />
-              </GridItem>
-            </Grid>
+            <GridItem gridArea="bestshare">
+              <BestShare
+                loading={loadingMiner && loadingNode}
+                errors={errorMiner}
+                data={ckPoolGlobalBestshare}
+                avgData={null}
+                prevData={prevCkPoolGlobalBestshare}
+                prevAvgData={prevBestSharePerc}
+                shadow={shadow}
+                iconColor={iconColor}
+              />
+            </GridItem>
 
-            <Grid
-              gridArea="Data"
-              templateRows="auto auto auto"
-              templateColumns={{ base: 'repeat(1, 1fr)' }}
-              templateAreas={{
-                base: `'Top' 'Middle' 'Bottom'`,
-              }}
-              gap={'20px'}
-            >
-              {/* TOP */}
-
-              <Grid
-                gridArea="Top"
-                templateRows={{
-                  base: 'repeat(1, 1fr)',
-                  md: 'repeat(2, 1fr)',
-                  '2xl': 'repeat(1, 1fr)',
-                }}
-                templateColumns={{
-                  base: 'repeat(1, 1fr)',
-                  md: 'repeat(2, 1fr)',
-                  '2xl': 'repeat(4, 1fr)',
-                }}
-                templateAreas={{
-                  base: `'.' '.'`,
-                  md: `'. .'`,
-                  '2xl': `'.' '.' '.' '.'`,
-                }}
-                gap={'20px'}
+            <GridItem gridArea="summary">
+              <SimpleGrid
+                columns={{ base: 1, md: 2, lg: 1, '3xl': 2 }}
+                gap="20px"
               >
-                <GridItem>
-                  <MiniStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <Icon
-                            as={SharesAcceptedIcon}
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Accepted shares"
-                    value={
-                      <span>{ckSharesAccepted?.toLocaleString('en-US')}</span>
-                    }
-                    reversed={true}
-                  />
-                </GridItem>
-                <GridItem>
-                  <MiniStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <Icon
-                            as={SharesRejectedIcon}
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Rejected shares"
-                    value={
-                      <span>{ckSharesRejected?.toLocaleString('en-US')}</span>
-                    }
-                    reversed={true}
-                  />
-                </GridItem>
-                <GridItem>
-                  <MiniStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <LastShareIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Last share"
-                    value={
-                      !ckDisconnected && ckPoolLastUpdate
-                        ? ckPoolLastUpdate?.replace('a few', '')
-                        : 'N/A'
-                    }
-                    reversed={true}
-                  />
-                </GridItem>
-                <GridItem>
-                  <MiniStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <PowerOffSolidIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Uptime"
-                    value={(!ckDisconnected && ckRuntime) || 'N/A'}
-                    reversed={true}
-                  />
-                </GridItem>
-              </Grid>
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <Icon
+                          as={SharesAcceptedIcon}
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name="Accepted shares"
+                  value={
+                    <span>{ckSharesAccepted?.toLocaleString('en-US')}</span>
+                  }
+                  reversed={true}
+                />
 
-              {/* MIDDLE */}
-              <Grid
-                gridArea="Middle"
-                templateRows="repeat(1, 1fr)"
-                templateColumns={{ base: '1 1fr', md: 'auto 1fr' }}
-                templateAreas={{
-                  base: `'.'`,
-                  md: `'. .'`,
-                }}
-                gap={'20px'}
-              >
-                <GridItem>
-                  <Card
-                    py="15px"
-                    pr="40px"
-                    bgColor={cardColor}
-                    boxShadow={shadow}
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <Icon
+                          as={SharesRejectedIcon}
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name="Rejected shares"
+                  value={
+                    <span>{ckSharesRejected?.toLocaleString('en-US')}</span>
+                  }
+                  reversed={true}
+                />
+
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <LastShareIcon
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name="Last share"
+                  value={
+                    !ckDisconnected && ckPoolLastUpdate
+                      ? ckPoolLastUpdate?.replace('a few', '')
+                      : 'N/A'
+                  }
+                  reversed={true}
+                />
+
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <PowerOffSolidIcon
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name="Uptime"
+                  value={(!ckDisconnected && ckRuntime) || 'N/A'}
+                  reversed={true}
+                />
+              </SimpleGrid>
+            </GridItem>
+
+            <GridItem gridArea="info">
+              <Card py="15px" pr="40px" bgColor={cardColor} boxShadow={shadow}>
+                <Flex m="2">
+                  <Text fontSize="lg" fontWeight="800">
+                    Solo Info
+                  </Text>
+                </Flex>
+                {loadingMiner ? (
+                  <BulletList />
+                ) : (
+                  <Flex my="auto" direction="column">
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={GiDiamondTrophy}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Daily Chance of Solving a Solo Block"
+                      value={
+                        dailyChance
+                          ? `1 in ${dailyChance.toLocaleString('en-US', {
+                              maximumFractionDigits: 0,
+                            })}`
+                          : 'N/A'
+                      }
+                      reversed={true}
+                    />
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={FaUserFriends}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Users"
+                      value={ckUsersCount}
+                      reversed={true}
+                    />
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={FaUserCog}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Workers"
+                      value={ckWorkersCount}
+                      reversed={true}
+                    />
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={FaUserCog}
+                              color={iconColorReversed}
+                              opacity={'30%'}
+                            />
+                          }
+                        />
+                      }
+                      name="Idle"
+                      value={ckIdle}
+                      reversed={true}
+                    />
+                  </Flex>
+                )}
+              </Card>
+            </GridItem>
+            <GridItem gridArea="users">
+              <Card py="15px" bgColor={cardColor} boxShadow={shadow} h="100%">
+                <Flex
+                  align={{ sm: 'flex-start', lg: 'center' }}
+                  justify="space-between"
+                >
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      SOLO Mining Users
+                    </Text>
+                  </Flex>
+                </Flex>
+                {loadingMiner ? (
+                  <BulletList />
+                ) : !dataTableBoards.length ? (
+                  <Text m="3">Waiting for stats to refresh...</Text>
+                ) : (
+                  <Box
+                    overflowY={'auto'}
+                    maxH="400px"
+                    sx={{
+                      '&::-webkit-scrollbar': {
+                        width: '16px',
+                        borderRadius: '8px',
+                        backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        backgroundColor: `rgba(0, 0, 0, 0.05)`,
+                      },
+                    }}
                   >
-                    <Flex m="2">
-                      <Text fontSize="lg" fontWeight="800">
-                        Solo Info
-                      </Text>
-                    </Flex>
-                    {loadingMiner ? (
-                      <BulletList />
-                    ) : (
-                      <Flex my="auto" direction="column">
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={GiDiamondTrophy}
-                                  color={iconColorReversed}
-                                />
-                              }
-                            />
-                          }
-                          name="Daily Chance of Solving a Solo Block"
-                          value={
-                            dailyChance
-                              ? `1 in ${dailyChance.toLocaleString('en-US', {
-                                  maximumFractionDigits: 0,
-                                })}`
-                              : 'N/A'
-                          }
-                          reversed={true}
+                    {dataTableBoards.map((dataTable, index) => (
+                      <Box mt="3" key={index}>
+                        <SoloMiningDrawer
+                          isOpen={isDrawerOpen[index]}
+                          onClose={() => handleClose(index)}
+                          placement="right"
+                          data={ckUsers[index].worker}
+                          user={boardNames[index]}
+                          difficulty={difficulty}
                         />
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={FaUserFriends}
-                                  color={iconColorReversed}
-                                />
-                              }
-                            />
-                          }
-                          name="Users"
-                          value={ckUsersCount}
-                          reversed={true}
-                        />
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={FaUserCog}
-                                  color={iconColorReversed}
-                                />
-                              }
-                            />
-                          }
-                          name="Workers"
-                          value={ckWorkersCount}
-                          reversed={true}
-                        />
-                        <NoCardStatistics
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <Icon
-                                  w="32px"
-                                  h="32px"
-                                  as={FaUserCog}
-                                  color={iconColorReversed}
-                                  opacity={'30%'}
-                                />
-                              }
-                            />
-                          }
-                          name="Idle"
-                          value={ckIdle}
-                          reversed={true}
-                        />
-                      </Flex>
-                    )}
-                  </Card>
-                </GridItem>
-                <GridItem>
-                  <Card
-                    py="15px"
-                    bgColor={cardColor}
-                    boxShadow={shadow}
-                    h="100%"
-                  >
-                    <Flex
-                      align={{ sm: 'flex-start', lg: 'center' }}
-                      justify="space-between"
-                    >
-                      <Flex m="2">
-                        <Text fontSize="lg" fontWeight="800">
-                          SOLO Mining Users
-                        </Text>
-                      </Flex>
-                    </Flex>
-                    {loadingMiner ? (
-                      <BulletList />
-                    ) : !dataTableBoards.length ? (
-                      <Text m="3">Waiting for stats to refresh...</Text>
-                    ) : (
-                      <Box
-                        overflowY={'auto'}
-                        maxH="400px"
-                        sx={{
-                          '&::-webkit-scrollbar': {
-                            width: '16px',
-                            borderRadius: '8px',
-                            backgroundColor: `rgba(0, 0, 0, 0.05)`,
-                          },
-                          '&::-webkit-scrollbar-thumb': {
-                            backgroundColor: `rgba(0, 0, 0, 0.05)`,
-                          },
-                        }}
-                      >
-                        {dataTableBoards.map((dataTable, index) => (
-                          <Box mt="3" key={index}>
-                            <SoloMiningDrawer
-                              isOpen={isDrawerOpen[index]}
-                              onClose={() => handleClose(index)}
-                              placement="right"
-                              data={ckUsers[index].worker}
-                              user={boardNames[index]}
-                              difficulty={difficulty}
-                            />
-                            <Flex justifyContent={{ base: 'flex-end' }} mr="4">
-                              <Button
-                                bgColor="brand.800"
-                                color="white"
-                                variant="solid"
-                                size="md"
-                                onClick={() => handleOpen(index)}
-                              >
-                                Show all data
-                              </Button>
-                              {typeof ckWorkers[index].activeWorkers !==
-                                'undefined' &&
-                                ckWorkers[index].activeWorkers !== null &&
-                                typeof ckWorkers[index].totalWorkers !==
-                                  'undefined' &&
-                                ckWorkers[index].totalWorkers !== null && (
-                                  <ActiveBadge
-                                    active={ckWorkers[index].activeWorkers}
-                                    total={ckWorkers[index].totalWorkers}
-                                    title="Active"
-                                  />
-                                )}
-                            </Flex>
-                            <Flex
-                              align="flex-start"
-                              mt={{ base: '0', md: '4' }}
-                              mr={{ base: '4' }}
-                            >
-                              <Text fontSize="lg" fontWeight="800">
-                                {shortenBitcoinAddress(boardNames[index], 10)}
-                              </Text>
-                            </Flex>
-                            <Flex
-                              direction={{ base: 'column', md: 'row' }}
-                              justify="space-between"
-                              align="flex-start"
-                            >
-                              <PanelGrid data={dataTable} />
-                            </Flex>
-                          </Box>
-                        ))}
+                        <Flex justifyContent={{ base: 'flex-end' }} mr="4">
+                          <Button
+                            bgColor="brand.800"
+                            color="white"
+                            variant="solid"
+                            size="md"
+                            onClick={() => handleOpen(index)}
+                          >
+                            Show all data
+                          </Button>
+                          {typeof ckWorkers[index].activeWorkers !==
+                            'undefined' &&
+                            ckWorkers[index].activeWorkers !== null &&
+                            typeof ckWorkers[index].totalWorkers !==
+                              'undefined' &&
+                            ckWorkers[index].totalWorkers !== null && (
+                              <ActiveBadge
+                                active={ckWorkers[index].activeWorkers}
+                                total={ckWorkers[index].totalWorkers}
+                                title="Active"
+                              />
+                            )}
+                        </Flex>
+                        <Flex
+                          align="flex-start"
+                          mt={{ base: '0', md: '4' }}
+                          mr={{ base: '4' }}
+                        >
+                          <Text fontSize="lg" fontWeight="800">
+                            {shortenBitcoinAddress(boardNames[index], 10)}
+                          </Text>
+                        </Flex>
+                        <Flex
+                          direction={{ base: 'column', md: 'row' }}
+                          justify="space-between"
+                          align="flex-start"
+                        >
+                          <PanelGrid data={dataTable} />
+                        </Flex>
                       </Box>
-                    )}
-                  </Card>
-                </GridItem>
-              </Grid>
-            </Grid>
+                    ))}
+                  </Box>
+                )}
+              </Card>
+            </GridItem>
           </Grid>
         </>
       )}
