@@ -35,6 +35,9 @@ import { settingsSelector } from '../../redux/reselect/settings';
 import { minerSelector } from '../../redux/reselect/miner';
 import { updateMinerAction } from '../../redux/actions/minerAction';
 import { CheckIcon } from '@chakra-ui/icons';
+import { SERVICES_STATUS_QUERY } from '../../graphql/services';
+import { updateServicesStatus } from '../../redux/actions/services';
+import { servicesSelector } from '../../redux/reselect/services';
 
 const Layout = ({ children, routes }, props) => {
   const { onOpen } = useDisclosure();
@@ -151,6 +154,31 @@ const Layout = ({ children, routes }, props) => {
     dataAnalytics,
   ]);
 
+  // Services data
+  const {
+    loading: loadingServices,
+    error: errorServices,
+    data: dataServices,
+    startPolling: startPollingServices,
+  } = useQuery(SERVICES_STATUS_QUERY);
+
+  useEffect(() => {
+    startPollingServices(3000);
+    dispatch(
+      updateServicesStatus({
+        loading: loadingServices,
+        error: errorServices,
+        data: dataServices,
+      })
+    );
+  }, [
+    startPollingServices,
+    dispatch,
+    loadingServices,
+    errorServices,
+    dataServices,
+  ]);
+
   const { message: feedbackMessage, type: feedbackType } = useSelector(
     (state) => state.feedback
   );
@@ -171,6 +199,11 @@ const Layout = ({ children, routes }, props) => {
   const {
     data: { nodeEnableSoloMining },
   } = useSelector(settingsSelector);
+
+  // Services data reselected
+  const {
+    data: servicesStatus,
+  } = useSelector(servicesSelector);
 
   // Miner status diff time
   const minerStatusDiffTime = Math.round((Date.now() - timestamp) / 1000);

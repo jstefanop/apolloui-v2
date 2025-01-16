@@ -69,21 +69,23 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
   }
 };
 
-export const numberToText = (number) => {
-  let text = '';
-  const units = ['quadrillion', 'trillion', 'billion', 'million', 'thousand'];
-  const values = [1000000000000000, 1000000000000, 1000000000, 1000000, 1000];
-  for (let i = 0; i < units.length; i++) {
-    if (number >= values[i]) {
-      text = `${Math.floor(number / values[i])} ${units[i]}`;
-      break;
+export const numberToText = (num) => {
+  if (num < 1e6) return `${Math.ceil(num)} units`; // Less than 1 million
+
+  const units = [
+    { value: 1e12, name: 'trillions' },
+    { value: 1e9, name: 'billions' },
+    { value: 1e6, name: 'millions' }
+  ];
+
+  for (const unit of units) {
+    if (num >= unit.value) {
+      return `About ${Math.ceil(num / unit.value)} ${unit.name}`;
     }
   }
-  if (!text) {
-    text = `${number}`;
-  }
-  return `About ${text}`;
-};
+
+  return `${Math.ceil(num)}`; // Fallback for very small numbers
+}
 
 export const percentColor = (value) => {
   return value <= 40

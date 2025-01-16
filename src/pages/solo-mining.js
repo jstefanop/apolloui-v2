@@ -330,9 +330,7 @@ const SoloMining = () => {
                 loading={loadingMiner && loadingNode}
                 errors={errorMiner}
                 data={ckPoolGlobalBestshare}
-                avgData={null}
                 prevData={prevCkPoolGlobalBestshare}
-                prevAvgData={prevBestSharePerc}
                 shadow={shadow}
                 iconColor={iconColor}
               />

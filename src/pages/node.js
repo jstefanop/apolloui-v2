@@ -237,7 +237,7 @@ const Node = () => {
 
         <Flex
           direction="column"
-          px={{ base: '10px', md: '100px', xl: '240px' }}
+          px={{ lg: '10px', xl: '70px', '2xl': '200px' }}
         >
           <Card
             py="15px"

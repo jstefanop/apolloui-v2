@@ -2,6 +2,7 @@ import { useColorModeValue } from '@chakra-ui/system';
 import CountUp from 'react-countup';
 import { BlocksIcon } from '../UI/Icons/BlocksIcon';
 import TileCard from '../UI/TileCard';
+import { numberToText } from '../../lib/utils';
 
 const BestShare = ({
   shadow,
@@ -9,9 +10,7 @@ const BestShare = ({
   loading,
   errors,
   data,
-  avgData,
   prevData,
-  prevAvgData,
 }) => {
   const cardColor = useColorModeValue(
     'linear-gradient(135deg, #EE1C26 0%, #080C0C 100%)',
@@ -31,7 +30,7 @@ const BestShare = ({
       iconBgColor="linear-gradient(290.56deg, #70191c 28.69%, #9b2226 60.45%)"
       title="Best share"
       secondaryTextColor={secondaryColor}
-      secondaryText="Best Share % to solve block"
+      secondaryText=""
       mainData={
         <CountUp
           start={prevData || 0}
@@ -42,15 +41,7 @@ const BestShare = ({
         />
       }
       secondaryData={
-        avgData && (
-          <CountUp
-            start={prevAvgData || 0}
-            end={avgData}
-            duration="1"
-            decimals="2"
-            suffix={`%`}
-          />
-        )
+        numberToText(data)
       }
       loading={loading}
       errors={errors}

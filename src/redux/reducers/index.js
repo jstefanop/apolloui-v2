@@ -6,6 +6,7 @@ import mcu from './mcu';
 import settings from './settings';
 import wifi from './wifi';
 import analytics from './analytics';
+import services from './services';
 
 export {
   minerAction,
@@ -16,4 +17,5 @@ export {
   settings,
   wifi,
   analytics,
+  services,
 };
