@@ -36,8 +36,7 @@ import { GoVersions } from 'react-icons/go';
 import { TbAlertHexagonFilled } from 'react-icons/tb';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
-import { useSelector } from 'react-redux';
-import { getVersionFromPackageJson } from '../../lib/utils';
+import { getVersionFromPackageJson, capitalizeFirstLetter } from '../../lib/utils';
 import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
 import NavbarUpdateModal from './NavbarUpdateModal';
@@ -48,8 +47,7 @@ export default function HeaderLinks({
   minerStats,
   minerOnline,
   settings,
-  blocksCount,
-  errorNode,
+  nodeOnline,
   error,
   loading,
   handleSystemAction,
@@ -66,10 +64,6 @@ export default function HeaderLinks({
   );
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const { status: minerStatus, timestamp } = useSelector(
-    (state) => state.minerAction
-  );
 
   const handleSignout = async () => {
     await signOut({ redirect: false });
@@ -95,24 +89,10 @@ export default function HeaderLinks({
   const { nodeEnableSoloMining } = settings;
 
   const nodeStatusLabel =
-    blocksCount && !errorNode.length
-      ? 'Online'
-      : !blocksCount && !errorNode.length
-      ? 'Offline'
-      : errorNode.length
-      ? 'Error'
-      : 'Unknown';
+    nodeOnline ? capitalizeFirstLetter(nodeOnline) : 'Error';
 
   const minerStatusLabel =
-    minerOnline && !error.length
-      ? 'Online'
-      : minerOnline !== minerStatus
-      ? 'Pending'
-      : !minerOnline && !error.length
-      ? 'Offline'
-      : error
-      ? 'Error'
-      : 'Unknown';
+    minerOnline && !error.length ? capitalizeFirstLetter(minerOnline) : 'Error';
 
   return (
     <Flex
@@ -126,7 +106,7 @@ export default function HeaderLinks({
       px="14px"
       borderRadius="30px"
       boxShadow={shadow}
-      mt={{base: 4, md: 0}}
+      mt={{ base: 4, md: 0 }}
     >
       <NavbarUpdateModal
         isOpen={isOpen}
@@ -288,7 +268,10 @@ export default function HeaderLinks({
                 fontWeight="700"
                 me="6px"
                 minW="70px"
-                display={{ base: nodeEnableSoloMining ? 'none' : 'block', md: 'block' }}
+                display={{
+                  base: nodeEnableSoloMining ? 'none' : 'block',
+                  md: 'block',
+                }}
               >
                 {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
               </Text>
@@ -390,21 +373,21 @@ export default function HeaderLinks({
                 <MenuGroup title="Miner">
                   <MenuItem
                     icon={<StartIcon />}
-                    isDisabled={minerOnline}
+                    isDisabled={minerOnline === 'online'}
                     onClick={() => handleSystemAction('startMiner')}
                   >
                     Start
                   </MenuItem>
                   <MenuItem
                     icon={<StopIcon />}
-                    isDisabled={!minerOnline}
+                    isDisabled={minerOnline === 'offline'}
                     onClick={() => handleSystemAction('stopMiner')}
                   >
                     Stop
                   </MenuItem>
                   <MenuItem
                     icon={<RestartIcon />}
-                    isDisabled={!minerOnline}
+                    isDisabled={minerOnline === 'offline'}
                     onClick={() => handleSystemAction('restartMiner')}
                   >
                     Restart
@@ -414,14 +397,14 @@ export default function HeaderLinks({
                 <MenuGroup title="Node">
                   <MenuItem
                     icon={<StartIcon />}
-                    isDisabled={blocksCount}
+                    isDisabled={nodeOnline !== 'offline'}
                     onClick={() => handleSystemAction('startNode')}
                   >
                     Start
                   </MenuItem>
                   <MenuItem
                     icon={<StopIcon />}
-                    isDisabled={!blocksCount}
+                    isDisabled={nodeOnline !== 'online'}
                     onClick={() => handleSystemAction('stopNode')}
                   >
                     Stop

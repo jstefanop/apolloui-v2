@@ -312,7 +312,7 @@ const Layout = ({ children, routes }, props) => {
                       {!timestamp ? (
                         <Text>
                           Waiting for the current miner status to match the
-                          desired one ({minerStatus ? 'Online' : 'Offline'}
+                          desired one ({minerStatus}
                           ).
                         </Text>
                       ) : (
@@ -342,7 +342,7 @@ const Layout = ({ children, routes }, props) => {
                       <Icon as={CheckIcon} mr="2" />
                       <Text>
                         Your miner is{' '}
-                        <strong>{minerOnline ? 'Online' : 'Offline'}</strong>
+                        <strong>{minerOnline}</strong>
                       </Text>
                     </Flex>
                   </Flex>

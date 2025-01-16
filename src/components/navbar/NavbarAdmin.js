@@ -25,11 +25,11 @@ import {
 import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
 import { updateMinerAction } from '../../redux/actions/minerAction';
 import { minerSelector } from '../../redux/reselect/miner';
-import { nodeSelector } from '../../redux/reselect/node';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
 import { sendFeedback } from '../../redux/actions/feedback';
 import { SidebarResponsive } from '../sidebar/Sidebar';
+import { servicesSelector } from '../../redux/reselect/services';
 
 const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
@@ -39,21 +39,15 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   // Miner data
   const {
     loading,
-    data: { online, stats },
+    data: { stats },
     error,
   } = useSelector(minerSelector);
-
-  // Node data
-  const {
-    data: dataNode,
-    error: errorNode,
-    loading: loadingNode,
-  } = useSelector(nodeSelector);
 
   // Settings data
   const { data: settings } = useSelector(settingsSelector);
 
-  const { blocksCount } = dataNode;
+  // Services data reselected
+  const { data: servicesStatus } = useSelector(servicesSelector);
 
   // Miner actions
   const [startMiner, { loading: loadingMinerStart, error: errorMinerStart }] =
@@ -165,7 +159,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         loading: loadingAction,
         error: errorAction,
         data: dataAction,
-        status: action.match(/start/i) ? true : false,
+        status: action.match(/start/i) ? 'online' : 'offline',
         timestamp: Date.now(),
       })
     );
@@ -287,7 +281,11 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
             </Text>
           </Box>
 
-          <Box position={'absolute'} right={2} display={{ base: 'block', md: 'none' }}>
+          <Box
+            position={'absolute'}
+            right={2}
+            display={{ base: 'block', md: 'none' }}
+          >
             <SidebarResponsive routes={routes} />
           </Box>
 
@@ -296,7 +294,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               <NavbarSeconday
                 type={'miner'}
                 handleSystemAction={handleSystemAction}
-                minerOnline={online}
+                minerOnline={servicesStatus?.miner?.status}
               />
             </Box>
           )}
@@ -306,7 +304,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               <NavbarSeconday
                 type={'node'}
                 handleSystemAction={handleSystemAction}
-                blocksCount={blocksCount}
+                nodeOnline={servicesStatus?.node?.status}
               />
             </Box>
           )}
@@ -319,10 +317,9 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               scrolled={scrolled}
               routes={routes}
               handleSystemAction={handleSystemAction}
-              minerOnline={online}
+              minerOnline={servicesStatus?.miner?.status}
               minerStats={stats}
-              errorNode={errorNode}
-              blocksCount={blocksCount}
+              nodeOnline={servicesStatus?.node?.status}
               settings={settings}
               error={error}
               loading={loading}

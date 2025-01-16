@@ -32,8 +32,6 @@ export const servicesSelector = createSelector(
 
     const errors = [...[servicesError, errorStats].filter(Boolean)];
 
-    console.log('Transformed Data:', transformedData);
-
     return {
       loading: servicesLoading,
       error: errors,

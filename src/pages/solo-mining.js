@@ -578,10 +578,10 @@ const SoloMining = () => {
                         />
                         <Flex justifyContent={{ base: 'flex-end' }} mr="4">
                           <Button
-                            bgColor="brand.800"
+                            bgColor="brand.700"
                             color="white"
                             variant="solid"
-                            size="md"
+                            size="sm"
                             onClick={() => handleOpen(index)}
                           >
                             Show all data

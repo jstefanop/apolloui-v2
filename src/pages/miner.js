@@ -492,10 +492,10 @@ const Miner = () => {
                 </Flex>
                 <Flex align-items="center">
                   <Button
-                    bgColor="brand.800"
+                    bgColor="brand.700"
                     color="white"
                     variant="solid"
-                    size="md"
+                    size="sm"
                     onClick={onOpen}
                   >
                     Show all data

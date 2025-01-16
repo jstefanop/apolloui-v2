@@ -75,7 +75,7 @@ export const numberToText = (num) => {
   const units = [
     { value: 1e12, name: 'trillions' },
     { value: 1e9, name: 'billions' },
-    { value: 1e6, name: 'millions' }
+    { value: 1e6, name: 'millions' },
   ];
 
   for (const unit of units) {
@@ -85,7 +85,7 @@ export const numberToText = (num) => {
   }
 
   return `${Math.ceil(num)}`; // Fallback for very small numbers
-}
+};
 
 export const percentColor = (value) => {
   return value <= 40
@@ -156,7 +156,8 @@ export const isValidBitcoinAddress = (address) => {
   // Regex for valid Bitcoin addresses:
   // - '1' or '3': legacy and segwit (P2PKH, P2SH)
   // - 'bc1': bech32 (P2WPKH, P2WSH, P2TR)
-  const addressRegex = /^(1|3)[a-zA-HJ-NP-Z0-9]{25,34}$|^(bc1)[a-zA-HJ-NP-Z0-9]{39,60}$/;
+  const addressRegex =
+    /^(1|3)[a-zA-HJ-NP-Z0-9]{25,34}$|^(bc1)[a-zA-HJ-NP-Z0-9]{39,60}$/;
 
   // Validate the main address
   if (!addressRegex.test(mainAddress)) {
@@ -304,5 +305,9 @@ export const filterRecentShares = (dataArray, intervalInSeconds) => {
   const currentTimeInSeconds = Math.floor(Date.now() / 1000);
   const cutoffTimeInSeconds = currentTimeInSeconds - intervalInSeconds;
 
-  return _.filter(dataArray, item => item.lastshare >= cutoffTimeInSeconds);
+  return _.filter(dataArray, (item) => item.lastshare >= cutoffTimeInSeconds);
+};
+
+export const capitalizeFirstLetter = (val) => {
+  return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 };

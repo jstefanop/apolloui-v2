@@ -13,7 +13,7 @@ import { StopIcon } from '../UI/Icons/StopIcon';
 const NavbarSeconday = ({
   type,
   handleSystemAction,
-  blocksCount,
+  nodeOnline,
   minerOnline,
 }) => {
   // Chakra Color Mode
@@ -40,7 +40,7 @@ const NavbarSeconday = ({
     >
       {type === 'miner' && (
         <Center>
-          {minerOnline && (
+          {(minerOnline === 'online' || minerOnline === 'pending') && (
             <>
               <Button
                 ms="auto"
@@ -49,6 +49,7 @@ const NavbarSeconday = ({
                 me="6px"
                 bgColor={badgeBox}
                 onClick={() => handleSystemAction('stopMiner')}
+                isDisabled={minerOnline === 'pending'}
               >
                 <Flex
                   align="center"
@@ -79,6 +80,7 @@ const NavbarSeconday = ({
                 me="6px"
                 bgColor={badgeBox}
                 onClick={() => handleSystemAction('restartMiner')}
+                isDisabled={minerOnline === 'pending'}
               >
                 <Flex
                   align="center"
@@ -104,7 +106,7 @@ const NavbarSeconday = ({
             </>
           )}
 
-          {!minerOnline && (
+          {minerOnline === 'offline' && (
             <Button
               ms="auto"
               p="6px"
@@ -112,6 +114,7 @@ const NavbarSeconday = ({
               me="6px"
               bgColor={badgeBox}
               onClick={() => handleSystemAction('startMiner')}
+              isDisabled={minerOnline === 'pending'}
             >
               <Flex
                 align="center"
@@ -140,7 +143,7 @@ const NavbarSeconday = ({
 
       {type === 'node' && (
         <Center>
-          {blocksCount && (
+          {(nodeOnline === 'online' || nodeOnline === 'pending') && (
             <Button
               ms="auto"
               p="6px"
@@ -148,6 +151,7 @@ const NavbarSeconday = ({
               me="6px"
               bgColor={badgeBox}
               onClick={() => handleSystemAction('stopNode')}
+              isDisabled={nodeOnline === 'pending'}
             >
               <Flex
                 align="center"
@@ -172,7 +176,7 @@ const NavbarSeconday = ({
             </Button>
           )}
 
-          {!blocksCount && (
+          {nodeOnline === 'offline' && (
             <Button
               ms="auto"
               p="6px"
@@ -180,6 +184,7 @@ const NavbarSeconday = ({
               me="6px"
               bgColor={badgeBox}
               onClick={() => handleSystemAction('startNode')}
+              isDisabled={nodeOnline === 'pending'}
             >
               <Flex
                 align="center"
