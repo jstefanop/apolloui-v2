@@ -175,7 +175,7 @@ const Layout = ({ children, routes }) => {
   } = useQuery(SERVICES_STATUS_QUERY);
 
   useEffect(() => {
-    startPollingServices(3000);
+    startPollingServices(2000);
     dispatch(
       updateServicesStatus({
         loading: loadingServices,
