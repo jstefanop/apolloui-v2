@@ -23,6 +23,7 @@ import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
 import { minerSelector } from '../redux/reselect/miner';
 import { nodeSelector } from '../redux/reselect/node';
+import { servicesSelector } from '../redux/reselect/services';
 import HashrateCard from '../components/apollo/HashrateCard';
 import BestShare from '../components/apollo/BestShareCard';
 import MiniStatistics from '../components/UI/MiniStatistics';
@@ -47,6 +48,7 @@ import { filterRecentShares, shortenBitcoinAddress } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
 import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
+import SoloMiningStatus from '../components/UI/SoloMiningStatus';
 
 const SoloMining = () => {
   const router = useRouter();
@@ -65,6 +67,8 @@ const SoloMining = () => {
 
   const isBannerDisabled = Cookies.get('solo-mining-banner-disabled');
   const [showBanner, setShowBanner] = useState(!isBannerDisabled);
+
+  const { data: servicesStatus } = useSelector(servicesSelector);
 
   // Settings data
   const {
@@ -244,33 +248,15 @@ const SoloMining = () => {
         </title>
       </Head>
 
-      {!minerOnline ? (
-        <CustomAlert
-          title="Miner is offline"
-          description="Try to start it from the top menu."
-          status="info"
-        />
-      ) : minerOnline && !ckPoolLastUpdate ? (
-        <CustomAlert
-          title="Waiting for first share"
-          description="Please wait until the first share is received."
-          status="info"
-        />
-      ) : minerOnline && ckDisconnected ? (
-        <CustomAlert
-          title="CK Pool Disconnected"
-          description="Please check your node connection and the CK Pool status."
-          status="warning"
-        />
-      ) : (
+      <SoloMiningStatus
+        serviceStatus={servicesStatus}
+        ckPoolLastUpdate={ckPoolLastUpdate}
+        ckDisconnected={ckDisconnected}
+        blocksCount={blocksCount}
+        blockHeader={blockHeader}
+      />
+      {servicesStatus?.miner?.status === 'online' && (
         <>
-          {minerOnline && blocksCount !== blockHeader && (
-            <Alert mb="5" borderRadius={'10px'} status={'warning'}>
-              <AlertIcon mr={4} />
-              <AlertTitle>Node not synced</AlertTitle>
-              <AlertDescription>{`Node needs to be synced to correctly mine on SOLO mode. Please check your node for problems.`}</AlertDescription>
-            </Alert>
-          )}
           {showBanner || isVisibleBanner ? (
             <Alert mb="5" borderRadius={'10px'} status={'info'}>
               <AlertIcon mr={4} />
@@ -297,9 +283,9 @@ const SoloMining = () => {
 
           <Grid
             templateAreas={{
-                    base: `'hashrate' 'bestshare' 'summary' 'info' 'users'`,
-                    lg: `'hashrate hashrate summary summary' 'bestshare info users users'`,
-                    '3xl': `'hashrate hashrate summary summary' 'bestshare bestshare info users'`,
+              base: `'hashrate' 'bestshare' 'summary' 'info' 'users'`,
+              lg: `'hashrate hashrate summary summary' 'bestshare info users users'`,
+              '3xl': `'hashrate hashrate summary summary' 'bestshare bestshare info users'`,
             }}
             templateRows={{
               base: 'auto auto auto auto auto',
@@ -322,6 +308,7 @@ const SoloMining = () => {
                 prevAvgData={prevCkPoolGlobalAvgHashrate}
                 shadow={shadow}
                 iconColor={iconColor}
+                serviceStatus={servicesStatus}
               />
             </GridItem>
 

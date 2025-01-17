@@ -1,5 +1,7 @@
 import { useColorModeValue } from '@chakra-ui/system';
+import { Text } from '@chakra-ui/react';
 import CountUp from 'react-countup';
+import { MdOfflineBolt, MdPending } from 'react-icons/md';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import TileCard from '../UI/TileCard';
 import BannerPower from '../../assets/img/powerusage_banner.png';
@@ -13,6 +15,7 @@ const PowerCard = ({
   avgData,
   prevData,
   prevAvgData,
+  serviceStatus,
 }) => {
   const powerCardColor = useColorModeValue(
     'linear-gradient(135deg, #485C7B 0%, #080C0C 100%)',
@@ -22,36 +25,59 @@ const PowerCard = ({
     'secondaryGray.600',
     'secondaryGray.200'
   );
-  const powerIconBgColor = useColorModeValue('gray.600', 'white');
+
+  const { status } = serviceStatus?.miner || {};
+
+  // Determine the appropriate icon for the TileCard
+  const tileCardIcon = (() => {
+    if (status === 'offline') return MdOfflineBolt;
+    if (status === 'pending') return MdPending;
+    return PowerIcon;
+  })();
+
+  // Determine what to display in the main data section
+  const mainDataContent = (() => {
+    if (status === 'online') {
+      return (
+        <Text>
+          <CountUp
+            start={prevData || 0}
+            end={data}
+            duration="1"
+            decimals="0"
+            suffix={` Watts`}
+          />
+        </Text>
+      );
+    } else if (status === 'offline') {
+      return <span>Offline</span>;
+    } else if (status === 'pending') {
+      return <span>Pending</span>;
+    }
+    return null;
+  })();
 
   return (
     <TileCard
       bannerImage={BannerPower}
       boxShadow={shadow}
       bgGradient={powerCardColor}
-      icon={PowerIcon}
+      icon={tileCardIcon}
       iconColor={iconColor}
       iconBgColor="linear-gradient(290.56deg, #455976 22.69%, #0B0F10 60.45%)"
       title="Power usage"
       secondaryTextColor={powerSecondaryColor}
       secondaryText="Watts per TH/s"
-      mainData={
-        <CountUp
-          start={prevData || 0}
-          end={data}
-          duration="1"
-          decimals="0"
-          suffix={` Watts`}
-        />
-      }
+      mainData={mainDataContent}
       secondaryData={
+        status === 'online' &&
         avgData && (
-          <CountUp
-            start={prevAvgData || 0}
-            end={avgData || 0}
-            duration="1"
-            decimals="0"
-          />
+            <CountUp
+              start={prevAvgData || 0}
+              end={avgData || 0}
+              duration="1"
+              decimals="0"
+            />
         )
       }
       loading={loading}

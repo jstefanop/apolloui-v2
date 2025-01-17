@@ -30,6 +30,7 @@ import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
 import { sendFeedback } from '../../redux/actions/feedback';
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import { servicesSelector } from '../../redux/reselect/services';
+import MinerStatusTransitionFeedback from '../UI/MinerStatusTransitionFeedback';
 
 const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
@@ -241,6 +242,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           xl: 'calc(100vw - 300px)',
         }}
       >
+        <MinerStatusTransitionFeedback serviceStatus={servicesStatus} />
         <Flex
           w="100%"
           flexDirection={{

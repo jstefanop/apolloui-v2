@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
 import { minerSelector } from '../redux/reselect/miner';
+import { servicesSelector } from '../redux/reselect/services';
 import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import MiniStatistics from '../components/UI/MiniStatistics';
@@ -45,7 +46,7 @@ import { GrUserWorker } from 'react-icons/gr';
 import MinerDrawer from '../components/apollo/MinerDrawer';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
-import CustomAlert from '../components/UI/CustomAlert';
+import MinerStatus from '../components/UI/MinerStatus';
 
 const Miner = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -66,13 +67,12 @@ const Miner = () => {
   // Miner data
   const {
     loading: loadingMiner,
-    data: { online: minerOnline, stats: dataMiner },
+    data: { stats: dataMiner },
     error: errorMiner,
   } = useSelector(minerSelector);
 
-  const { status: minerStatus, timestamp } = useSelector(
-    (state) => state.minerAction
-  );
+  // Services data reselected
+  const { data: servicesStatus } = useSelector(servicesSelector);
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
@@ -194,14 +194,8 @@ const Miner = () => {
         placement="right"
         data={boards}
       />
-      {!minerOnline && !minerStatus && (
-        <CustomAlert
-          title="Miner is offline"
-          description="Try and restart from the top menu."
-          status="info"
-        />
-      )}
-      {minerOnline && (
+      <MinerStatus serviceStatus={servicesStatus} />
+      {servicesStatus?.miner?.status === 'online' && (
         <Grid
           templateAreas={{
             base: `'hashrate' 'power' 'summary' 'device' 'totals' 'gauges'`,
@@ -229,6 +223,7 @@ const Miner = () => {
               prevAvgData={prevGlobalAvgHashrate}
               shadow={shadow}
               iconColor={iconColor}
+              serviceStatus={servicesStatus}
             />
           </GridItem>
 
@@ -242,6 +237,7 @@ const Miner = () => {
               prevAvgData={prevAvgBoardEfficiency}
               shadow={shadow}
               iconColor={iconColor}
+              serviceStatus={servicesStatus}
             />
           </GridItem>
           {/* TOP */}

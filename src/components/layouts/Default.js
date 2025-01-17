@@ -1,17 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Portal,
   Box,
   useDisclosure,
-  Alert,
-  AlertIcon,
-  AlertDescription,
-  Flex,
-  Text,
-  Spinner,
-  Button,
-  Card,
-  Icon,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
@@ -32,16 +23,14 @@ import { updateSettings } from '../../redux/actions/settings';
 import { GET_ANALYTICS_QUERY } from '../../graphql/analytics';
 import { updateAnalytics } from '../../redux/actions/analytics';
 import { settingsSelector } from '../../redux/reselect/settings';
-import { minerSelector } from '../../redux/reselect/miner';
-import { updateMinerAction } from '../../redux/actions/minerAction';
-import { CheckIcon } from '@chakra-ui/icons';
 import { SERVICES_STATUS_QUERY } from '../../graphql/services';
 import { updateServicesStatus } from '../../redux/actions/services';
-import { servicesSelector } from '../../redux/reselect/services';
 
-const Layout = ({ children, routes }, props) => {
+const Layout = ({ children, routes }) => {
   const { onOpen } = useDisclosure();
   const dispatch = useDispatch();
+  const minerPollingTime = process.env.NEXT_PUBLIC_POLLING_TIME;
+  const nodePollingTime = process.env.NEXT_PUBLIC_POLLING_TIME_NODE;
 
   // Miner data
   const {
@@ -52,7 +41,7 @@ const Layout = ({ children, routes }, props) => {
   } = useQuery(MINER_STATS_QUERY);
 
   useEffect(() => {
-    startPollingMiner(process.env.NEXT_PUBLIC_POLLING_TIME);
+    startPollingMiner(minerPollingTime);
     dispatch(
       updateMinerStats({
         loading: loadingMiner,
@@ -60,7 +49,14 @@ const Layout = ({ children, routes }, props) => {
         data: dataMiner,
       })
     );
-  }, [startPollingMiner, dispatch, loadingMiner, errorMiner, dataMiner]);
+  }, [
+    startPollingMiner,
+    dispatch,
+    loadingMiner,
+    errorMiner,
+    dataMiner,
+    minerPollingTime,
+  ]);
 
   // Mcu data
   const {
@@ -71,7 +67,7 @@ const Layout = ({ children, routes }, props) => {
   } = useQuery(MCU_STATS_QUERY);
 
   useEffect(() => {
-    startPollingMcu(process.env.NEXT_PUBLIC_POLLING_TIME);
+    startPollingMcu(minerPollingTime);
     dispatch(
       updateMcuStats({
         loading: loadingMcu,
@@ -79,7 +75,14 @@ const Layout = ({ children, routes }, props) => {
         data: dataMcu,
       })
     );
-  }, [startPollingMcu, dispatch, loadingMcu, errorMcu, dataMcu]);
+  }, [
+    startPollingMcu,
+    dispatch,
+    loadingMcu,
+    errorMcu,
+    dataMcu,
+    minerPollingTime,
+  ]);
 
   // Node data
   const {
@@ -90,7 +93,7 @@ const Layout = ({ children, routes }, props) => {
   } = useQuery(NODE_STATS_QUERY);
 
   useEffect(() => {
-    startPollingNode(process.env.NEXT_PUBLIC_POLLING_TIME_NODE);
+    startPollingNode(nodePollingTime);
     dispatch(
       updateNodeStats({
         loading: loadingNode,
@@ -98,7 +101,14 @@ const Layout = ({ children, routes }, props) => {
         data: dataNode,
       })
     );
-  }, [startPollingNode, dispatch, loadingNode, errorNode, dataNode]);
+  }, [
+    startPollingNode,
+    dispatch,
+    loadingNode,
+    errorNode,
+    dataNode,
+    nodePollingTime,
+  ]);
 
   // Settings data
   const {
@@ -109,7 +119,7 @@ const Layout = ({ children, routes }, props) => {
   } = useQuery(GET_SETTINGS_QUERY);
 
   useEffect(() => {
-    startPollingSettings(process.env.NEXT_PUBLIC_POLLING_TIME);
+    startPollingSettings(minerPollingTime);
     dispatch(
       updateSettings({
         loading: loadingSettings,
@@ -123,6 +133,7 @@ const Layout = ({ children, routes }, props) => {
     loadingSettings,
     errorSettings,
     dataSettings,
+    minerPollingTime,
   ]);
 
   // Analytics data
@@ -138,7 +149,7 @@ const Layout = ({ children, routes }, props) => {
   });
 
   useEffect(() => {
-    startPollingAnalytics(process.env.NEXT_PUBLIC_POLLING_TIME_NODE);
+    startPollingAnalytics(nodePollingTime);
     dispatch(
       updateAnalytics({
         loading: loadingAnalytics,
@@ -152,6 +163,7 @@ const Layout = ({ children, routes }, props) => {
     loadingAnalytics,
     errorAnalytics,
     dataAnalytics,
+    nodePollingTime,
   ]);
 
   // Services data
@@ -179,66 +191,16 @@ const Layout = ({ children, routes }, props) => {
     dataServices,
   ]);
 
-  const { message: feedbackMessage, type: feedbackType } = useSelector(
-    (state) => state.feedback
-  );
-
-  const { status: minerStatus } = useSelector((state) => state.minerAction);
-
-  // Miner online data releseted
-  const {
-    data: {
-      online: minerOnline,
-      stats: { date },
-    },
-  } = useSelector(minerSelector);
-
-  const timestamp = new Date(date).getTime();
-
   // Settings data reselected
   const {
     data: { nodeEnableSoloMining },
   } = useSelector(settingsSelector);
-
-  // Services data reselected
-  const {
-    data: servicesStatus,
-  } = useSelector(servicesSelector);
-
-  // Miner status diff time
-  const minerStatusDiffTime = Math.round((Date.now() - timestamp) / 1000);
-
-  const [minerStatusDone, setMinerStatusDone] = useState(false);
-
-  // TODO Use start/stop time when user clicked to calculate the diff time
 
   // Reparsing routes
   routes = routes.filter((route) => {
     if (route.name === 'SOLO Mining' && !nodeEnableSoloMining) return false;
     return true;
   });
-
-  useEffect(() => {
-    let timeoutId;
-    if (minerOnline === minerStatus) setMinerStatusDone(true);
-    timeoutId = setTimeout(() => {
-      setMinerStatusDone(false);
-    }, 5000);
-
-    return () => clearInterval(timeoutId);
-  }, [minerOnline, minerStatus]);
-
-  const handleDiscardMinerStatus = () => {
-    dispatch(
-      updateMinerAction({
-        loading: false,
-        error: false,
-        data: null,
-        status: minerOnline,
-        timestamp: Date.now(),
-      })
-    );
-  };
 
   const { status } = useSession();
   if (status === 'loading' || status === 'unauthenticated') return <></>;
@@ -287,67 +249,6 @@ const Layout = ({ children, routes }, props) => {
             pt="50px"
           >
             <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
-              {feedbackMessage && (
-                <Alert
-                  mb="5"
-                  borderRadius={'10px'}
-                  status={feedbackType || 'info'}
-                >
-                  <AlertIcon />
-                  <AlertDescription>{feedbackMessage}</AlertDescription>
-                </Alert>
-              )}
-              {minerStatus !== minerOnline && minerStatusDiffTime > 30 && (
-                <Card
-                  mb="5"
-                  borderRadius={'10px'}
-                  bg={
-                    minerStatusDiffTime < 60 ? 'secondaryGray.800' : 'brand.800'
-                  }
-                  p="4"
-                >
-                  <Flex justifyContent={'space-between'} flexDirection={'row'}>
-                    <Flex align={'center'} color="white">
-                      <Spinner size="sm" mr="2" />
-                      {!timestamp ? (
-                        <Text>
-                          Waiting for the current miner status to match the
-                          desired one ({minerStatus}
-                          ).
-                        </Text>
-                      ) : (
-                        <Text>
-                          Your miner is still not active, you can try to force
-                          restart, wait or dismiss this message
-                        </Text>
-                      )}
-                    </Flex>
-                    {timestamp > 0 && minerStatusDiffTime >= 60 && (
-                      <Flex>
-                        <Button size="xs" mr="3">
-                          FORCE
-                        </Button>
-                        <Button size="xs" onClick={handleDiscardMinerStatus}>
-                          DISCARD
-                        </Button>
-                      </Flex>
-                    )}
-                  </Flex>
-                </Card>
-              )}
-              {minerStatusDone && (
-                <Card mb="5" borderRadius={'10px'} bg={'green.300'} p="4">
-                  <Flex justifyContent={'space-between'} flexDirection={'row'}>
-                    <Flex align={'center'} color="white">
-                      <Icon as={CheckIcon} mr="2" />
-                      <Text>
-                        Your miner is{' '}
-                        <strong>{minerOnline}</strong>
-                      </Text>
-                    </Flex>
-                  </Flex>
-                </Card>
-              )}
               {React.cloneElement(children)}
             </Box>
           </Box>

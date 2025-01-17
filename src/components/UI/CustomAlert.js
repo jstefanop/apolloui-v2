@@ -4,6 +4,8 @@ import {
   AlertTitle,
   AlertDescription,
   Center,
+  Spinner,
+  Box,
 } from '@chakra-ui/react';
 
 const CustomAlert = ({ ...props }) => {
@@ -21,7 +23,17 @@ const CustomAlert = ({ ...props }) => {
         height="200px"
         maxWidth="xl"
       >
-        <AlertIcon boxSize="40px" mr={0} />
+        <Box position="relative" display="flex" justifyContent="center" alignItems="center">
+          {props.extraStatus === 'pending' && (
+            <Spinner
+              size="xl"
+              thickness="4px"
+              color="yellow.500"
+              position="absolute"
+            />
+          )}
+          <AlertIcon boxSize="40px" mr={0} zIndex="1" />
+        </Box>
         <AlertTitle mt={4} mb={1} fontSize="xl">
           {props.title}
         </AlertTitle>

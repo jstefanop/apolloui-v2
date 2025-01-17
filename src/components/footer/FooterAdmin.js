@@ -10,7 +10,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 
-import config from '../../config.json';
+import config from '../../config';
 import { getVersionFromPackageJson } from '../../lib/utils';
 
 export default function Footer() {

@@ -12,6 +12,7 @@ export const SERVICES_STATUS_QUERY = gql`
             serviceName
             status
             requestedStatus
+            requestedAt
             lastChecked
           }
         }
@@ -32,6 +33,7 @@ export const initialState = {
           serviceName: null,
           status: null,
           requestedStatus: null,
+          requestedAt: null,
           lastChecked: null,
         },
       },

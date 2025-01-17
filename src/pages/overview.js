@@ -25,6 +25,7 @@ import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
 import { bytesToSize, getNodeErrorMessage } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
+import { servicesSelector } from '../redux/reselect/services';
 import { analyticsSelector } from '../redux/reselect/analytics';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
@@ -50,6 +51,8 @@ const Overview = () => {
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
+
+  const { data: servicesStatus } = useSelector(servicesSelector);
 
   // Miner data
   const {
@@ -179,6 +182,7 @@ const Overview = () => {
               prevAvgData={prevGlobalAvgHashrate}
               shadow={shadow}
               iconColor={iconColor}
+              serviceStatus={servicesStatus}
             />
           </GridItem>
 
@@ -232,7 +236,7 @@ const Overview = () => {
                               : undefined
                           }
                         >
-                          {typeof avgBoardTemp !== 'undefined' &&
+                          {servicesStatus?.miner?.status === 'online' &&
                           avgBoardTemp !== null
                             ? `${avgBoardTemp}°C`
                             : 'N/A'}
@@ -288,7 +292,7 @@ const Overview = () => {
                               : undefined
                           }
                         >
-                          {typeof avgBoardErrors !== 'undefined' &&
+                          {servicesStatus?.miner?.status === 'online' &&
                           avgBoardErrors !== null
                             ? `${avgBoardErrors}%`
                             : 'N/A'}
@@ -309,6 +313,7 @@ const Overview = () => {
               prevData={prevMinerPower}
               shadow={shadow}
               iconColor={iconColor}
+              serviceStatus={servicesStatus}
             />
           </GridItem>
 

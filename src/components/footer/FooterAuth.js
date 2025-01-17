@@ -9,7 +9,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 
-import config from '../../config.json';
+import config from '../../config';
 
 export default function Footer() {
   const textColor = useColorModeValue('gray.400', 'white');
