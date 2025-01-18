@@ -22,7 +22,7 @@ import { SharesSentIcon } from '../UI/Icons/SharesSentIcon';
 import { BlocksIcon } from '../UI/Icons/BlocksIcon';
 import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
-import { filterRecentShares } from '../../lib/utils';
+import { filterRecentShares, workerIsActive } from '../../lib/utils';
 
 const SoloMiningDrawer = ({
   isOpen,
@@ -55,53 +55,63 @@ const SoloMiningDrawer = ({
     .map((element) => {
       if (!element) return null;
       const mappedArray = [];
-      let workerName = ''; // Per memorizzare il workername
+      let workerName = '';
+      let lastShare = null;
+      let isActive = false;
 
       desiredKeys.forEach((key) => {
         if (key in element) {
-          let value, icon;
+          let value, icon, name;
           switch (key) {
             case 'hashrate5m':
+              name = 'Hashrate (5m)';
               value = `${element[key]} (5m)`;
               icon = MinerIcon;
               break;
             case 'hashrate1d':
+              name = 'Hashrate (1d)';
               value = `${element[key]} (1d)`;
               icon = MinerIcon;
               break;
             case 'workername':
-              workerName = element[key]; // Salva il workername
+              name = 'Workername';
+              workerName = element[key];
               break;
             case 'lastshare':
+              name = 'Last Share';
+              lastShare = element[key];
               value = `${moment(element[key], 'X').fromNow()}`;
               icon = LastShareIcon;
               break;
             case 'shares':
+              name = 'Shares';
               value = `${element[key]?.toLocaleString('en-US')}`;
               icon = SharesSentIcon;
               break;
             case 'bestever':
+              name = 'Best ever';
               value =
                 difficulty > 0
                   ? `${element[key].toLocaleString('en-US', {
-                      maximumFractionDigits: 0,
-                    })}`
+                    maximumFractionDigits: 0,
+                  })}`
                   : 'n.a.';
               icon = BlocksIcon;
               break;
           }
           if (value || icon) {
-            mappedArray.push({ value, icon });
+            mappedArray.push({ name, value, icon });
           }
         }
       });
 
-      // Aggiungi il workername al risultato mappato
-      return { workername: workerName, data: mappedArray };
+      if (lastShare !== null) {
+        isActive = workerIsActive(lastShare, 180);
+      }
+      return { workername: workerName, active: isActive, data: mappedArray };
     })
-    .filter(Boolean) // Rimuovi valori null/undefined
+    .filter(Boolean)
     .sort((a, b) => {
-      // Ordina per workername in ordine alfabetico
       return a.workername.localeCompare(b.workername);
     });
 
@@ -145,7 +155,9 @@ const SoloMiningDrawer = ({
                   >
                     <PanelGrid
                       title={`Worker ${worker.workername}`}
-                      data={worker.data} // Passa i dati mappati
+                      data={worker.data}
+                      showName={true}
+                      status={worker.active}
                     />
                   </Card>
                 ))}

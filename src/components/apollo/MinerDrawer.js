@@ -55,25 +55,31 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
         let icon;
         switch (key) {
           case 'hashrate':
+            name = 'Hashrate';
             icon = MinerIcon;
             break;
           case 'temperature':
+            name = 'Temperature';
             icon = MinerTempIcon;
             break;
           case 'fanSPeed':
+            name = 'Fan Speed';
             icon = FanIcon;
             break;
           case 'power':
+            name = 'Power';
             icon = PowerIcon;
             break;
           case 'voltage':
+            name = 'Voltage';
             icon = VoltageIcon;
             break;
           case 'errorRate':
+            name = 'Error Rate';
             icon = BugIcon;
             break;
         }
-        return { value, icon };
+        return { name, value, icon };
       });
     })
     .value();
@@ -92,22 +98,27 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
         let icon;
         switch (key) {
           case 'hashrate':
+            name = 'Hashrate';
             icon = MinerIcon;
             break;
           case 'diff':
+            name = 'Difficulty';
             icon = DifficultyIcon;
             break;
           case 'sharesSent':
+            name = 'Shares Sent';
             icon = SharesSentIcon;
             break;
           case 'sharesAccepted':
+            name = 'Shares Accepted';
             icon = SharesAcceptedIcon;
             break;
           case 'sharesRejected':
+            name = 'Shares Rejected';
             icon = SharesRejectedIcon;
             break;
         }
-        return { value, icon };
+        return { name, value, icon };
       });
     })
     .value();
@@ -173,6 +184,7 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                       version={dataSorted[index].version}
                       badgeSecondaryText="Active ASICs"
                       comport={dataSorted[index].comport}
+                      showName={true}
                     />
                   </Card>
                 ))}
@@ -194,6 +206,7 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                       badgeSecondaryText={dataSorted[index].poolUsername}
                       version={dataSorted[index].version}
                       comport={dataSorted[index].comport}
+                      showName={true}
                     />
                   </Card>
                 ))}

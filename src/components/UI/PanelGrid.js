@@ -21,6 +21,7 @@ const PanelGrid = ({
   comport,
   badgeText,
   badgeSecondaryText,
+  showName,
 }) => {
   const badgeBgColor = useColorModeValue('gray.200', 'gray.900');
   const tagColor = useColorModeValue('gray.800', 'gray.200');
@@ -29,6 +30,7 @@ const PanelGrid = ({
     v1: { color: 'blue', name: 'Apollo BTC' },
     v2: { color: 'teal', name: 'Apollo II' },
   };
+
   return (
     <Flex mt="4" mx="5" direction="column">
       <Flex justify="space-between" direction={{ base: 'column', md: 'row' }}>
@@ -120,6 +122,11 @@ const PanelGrid = ({
             ) : (
               <Flex align="center" mb="4" key={index}>
                 <Icon as={item.icon} me="3" w="18px" h="18px" />
+                {showName && (
+                  <Text fontWeight="400" color="gray.500" me="3">
+                    {item.name}
+                  </Text>
+                )}
                 <Text fontWeight="600" minWidth="100px">
                   {item.value}
                 </Text>

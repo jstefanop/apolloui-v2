@@ -312,6 +312,13 @@ export const filterRecentShares = (dataArray, intervalInSeconds) => {
   return _.filter(dataArray, (item) => item.lastshare >= cutoffTimeInSeconds);
 };
 
+export const workerIsActive = (lastshare, intervalInSeconds) => {
+  const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+  const cutoffTimeInSeconds = currentTimeInSeconds - intervalInSeconds;
+
+  return lastshare >= cutoffTimeInSeconds;
+};
+
 export const capitalizeFirstLetter = (val) => {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 };
