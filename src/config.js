@@ -22,6 +22,10 @@ const config = {
 		MINER_START_PENDING_THRESHOLD: 40, // Seconds to wait for starting
 		MINER_SUCCESS_ALERT_DURATION: 5000, // Milliseconds to display success alert
 		MINER_SUCCESS_THRESHOLD: 60, // Seconds to show success alert
+		NODE_STOP_PENDING_THRESHOLD: 10, // Seconds to wait for stopping
+		NODE_START_PENDING_THRESHOLD: 35, // Seconds to wait for starting
+		NODE_SUCCESS_ALERT_DURATION: 5000, // Milliseconds to display success alert
+		NODE_SUCCESS_THRESHOLD: 60, // Seconds to show success alert
 	},
 };
 

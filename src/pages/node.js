@@ -24,6 +24,7 @@ import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 import MiniStatistics from '../components/UI/MiniStatistics';
 import { bytesToSize, displayHashrate, numberToText } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
+import { servicesSelector } from '../redux/reselect/services';
 import { FormattedNumber } from 'react-intl';
 import { TimeIcon } from '../components/UI/Icons/TimeIcon';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
@@ -37,6 +38,7 @@ import { settingsSelector } from '../redux/reselect/settings';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
 import { getNodeErrorMessage } from '../lib/utils';
 import { MdCastConnected } from 'react-icons/md';
+import NodeStatus from '../components/UI/NodeStatus';
 
 const Node = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -104,6 +106,9 @@ const Node = () => {
   const { data: settings } = useSelector(settingsSelector);
 
   const { nodeRpcPassword, nodeEnableTor, nodeMaxConnections } = settings || {};
+
+  // Services data reselected
+  const { data: servicesStatus } = useSelector(servicesSelector);
 
   const nodeAddress =
     localaddresses?.length && nodeEnableTor
@@ -176,289 +181,324 @@ const Node = () => {
         pass={nodeRpcPassword}
         address={nodeAddress}
       />
-      <Flex direction="column">
-        <Card
-          h={{ base: '470px', md: '370px' }}
-          shadow={shadow}
-          style={{
-            backgroundImage: `url(${BannerNode.src})`,
-            backgroundSize: 'cover',
-          }}
-        >
-          <Flex
-            justify="center"
-            align="center"
-            mt="3"
-            direction={{ base: 'column', md: 'row' }}
-          >
-            <Text fontSize="2xl" fontWeight="bold" color="white">
-              {blockHeader === blocksCount
-                ? `Current block`
-                : `Syncing blocks...`}
-            </Text>
-            <IconBox
-              w="80px"
-              h="80px"
-              bg={bgMainIcon}
-              icon={<BlocksIcon w="32px" h="32px" color={'white'} />}
-              mx="5"
-            />
-            <Text
-              color="white"
-              fontSize={{ base: blockHeader === blocksCount ? '4xl' : '2xl' }}
-              fontWeight="800"
-              minW="180px"
-              my="auto"
-              className={
-                blocksCount !== prevData?.blocksCount
-                  ? 'animate__animated animate__pulse'
-                  : undefined
-              }
-              align={{ base: 'center', md: 'start' }}
-            >
-              {blockHeader === blocksCount && (
-                <CountUp
-                  start={prevData?.blocksCount || 0}
-                  end={blocksCount}
-                  duration="1"
-                  decimals="0"
-                  separator=","
-                />
-              )}
-              {blockHeader !== blocksCount && (
-                <>
-                  <FormattedNumber value={blocksCount} /> /{' '}
-                  <FormattedNumber value={blockHeader} />
-                </>
-              )}
-            </Text>
-          </Flex>
-        </Card>
-
-        <Flex
-          direction="column"
-          px={{ lg: '10px', xl: '70px', '2xl': '200px' }}
-        >
+      <NodeStatus serviceStatus={servicesStatus} />
+      {servicesStatus?.node?.status === 'online' && (
+        <Flex direction="column">
           <Card
-            py="15px"
-            pb="30px"
-            bgColor={cardColor}
-            boxShadow={shadow}
-            mt="-230px"
-          >
-            {/* BOTTOM */}
-            <Flex m="2">
-              <Text fontSize="lg" fontWeight="800">
-                Details
-              </Text>
-            </Flex>
-            {loadingNode ? (
-              <List />
-            ) : errorNodeSentence ? (
-              <Alert borderRadius={'10px'} status={errorNodeType || 'info'}>
-                <AlertIcon />
-                <AlertTitle>{errorNodeType || 'info'}</AlertTitle>
-                <AlertDescription>{errorNodeSentence}</AlertDescription>
-              </Alert>
-            ) : (
-              <Box>
-                {/* TOP */}
-                <SimpleGrid columns={{ base: 1, md: 2 }} spacing="20px" mb="5">
-                  <MiniStatistics
-                    bgColor={statisticColor}
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <TimeIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={
-                      blockHeader === blocksCount
-                        ? 'Minutes since last block'
-                        : blockHeader > blocksCount
-                        ? `Percentage completed ${(
-                            (blocksCount * 100) /
-                            blockHeader
-                          ).toFixed(2)}%`
-                        : '...'
-                    }
-                    value={
-                      blockHeader === blocksCount
-                        ? lastBlockTime
-                        : blockHeader > blocksCount
-                        ? `Processing queue...`
-                        : '...'
-                    }
-                    reversed={true}
-                  />
-                  <MiniStatistics
-                    bgColor={statisticColor}
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <BlockchainIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Blockchain size"
-                    value={bytesToSize(sizeOnDisk)}
-                    reversed={true}
-                  />
-                </SimpleGrid>
-
-                {/* BOTTOM */}
-                <SimpleGrid columns={{ base: 1, md: 3 }} spacing="20px">
-                  <MiniStatistics
-                    bgColor={statisticColor}
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <MinersIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Network hashrate"
-                    value={displayHashrate(networkhashps, 'h', true, 2)}
-                    secondaryText={numberToText(difficulty)}
-                    secondaryDescription="Difficulty"
-                    reversed={true}
-                  />
-                  <MiniStatistics
-                    bgColor={statisticColor}
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <ConnectionsIcons
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Connections"
-                    value={
-                      <Flex>
-                        {connectionCount}
-                        <Text color="gray.400">
-                          /{nodeMaxConnections || 64}
-                        </Text>
-                      </Flex>
-                    }
-                    progress={true}
-                    progressValue={connectionCount}
-                    progressTotal={nodeMaxConnections || 64}
-                    reversed={true}
-                  />
-                  <MiniStatistics
-                    bgColor={statisticColor}
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <DatabaseIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Remaining space"
-                    value={`${remainingSpace}%`}
-                    progress={true}
-                    progressPercent={remainingSpace}
-                    reversed={true}
-                  />
-                </SimpleGrid>
-                <SimpleGrid columns={{ base: 1 }} spacing="20px" mt="5">
-                  <MiniStatistics
-                    bgColor={statisticColor}
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <NetworkIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Local node address"
-                    value={nodeAddress}
-                    reversed={true}
-                    fontSize="md"
-                    button={'Connect'}
-                    buttonHandler={onOpen}
-                    buttonIcon={<MdCastConnected />}
-                  />
-                  <MiniStatistics
-                    bgColor={statisticColor}
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <BlocksIcon
-                            w="32px"
-                            h="32px"
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name="Bitcoin Node Version"
-                    value={subversion}
-                    reversed={true}
-                    fontSize="md"
-                  />
-                </SimpleGrid>
-              </Box>
-            )}
-          </Card>
-        </Flex>
-        {!loadingNode && !errorNode?.length && (
-          <DynamicTable
-            columnsData={columnsData}
-            tableData={dataTable}
-            tableTitle={`Last connections`}
+            h={{ base: '470px', md: '370px' }}
             shadow={shadow}
-            mt="5"
-          />
-        )}
-      </Flex>
+            style={{
+              backgroundImage: `url(${BannerNode.src})`,
+              backgroundSize: 'cover',
+            }}
+          >
+            <Flex
+              justify="center"
+              align="center"
+              mt="3"
+              direction={{ base: 'column', md: 'row' }}
+            >
+              <Flex direction="column" align="right">
+                <Text fontSize="2xl" fontWeight="bold" color="white">
+                  {blockHeader === blocksCount
+                    ? `Node is up to date`
+                    : `Syncing blocks...`}
+                </Text>
+                <Text
+                  fontSize="sm"
+                  fontWeight={500}
+                  color="gray.600"
+                  mt="0"
+                  align={'right'}
+                >
+                  {blockHeader === blocksCount
+                    ? '100% synched'
+                    : `${((blocksCount / blockHeader) * 100).toFixed(
+                        2
+                      )}% synched`}
+                </Text>
+              </Flex>
+              <IconBox
+                w="80px"
+                h="80px"
+                bg={bgMainIcon}
+                icon={<BlocksIcon w="32px" h="32px" color={'white'} />}
+                mx="5"
+              />
+              <Flex direction="column" align={{ base: 'center', md: 'start' }}>
+                <Text
+                  color="white"
+                  fontSize={{
+                    base: blockHeader === blocksCount ? '4xl' : '2xl',
+                  }}
+                  fontWeight="800"
+                  minW="180px"
+                  my="auto"
+                  className={
+                    blocksCount !== prevData?.blocksCount
+                      ? 'animate__animated animate__pulse'
+                      : undefined
+                  }
+                >
+                  {blockHeader === blocksCount && (
+                    <Flex direction="row" alignItems="baseline">
+                      <CountUp
+                        start={prevData?.blocksCount || 0}
+                        end={blocksCount}
+                        duration="1"
+                        decimals="0"
+                        separator=","
+                      />
+                      <Text
+                        fontSize="sm"
+                        fontWeight={500}
+                        color="gray.600"
+                        ml="2"
+                      >
+                        blocks
+                      </Text>
+                    </Flex>
+                  )}
+                  {blockHeader !== blocksCount && (
+                    <>
+                      <FormattedNumber value={blocksCount} /> /{' '}
+                      <FormattedNumber value={blockHeader} />
+                    </>
+                  )}
+                </Text>
+              </Flex>
+            </Flex>
+          </Card>
+
+          <Flex
+            direction="column"
+            px={{ lg: '10px', xl: '70px', '2xl': '200px' }}
+          >
+            <Card
+              py="15px"
+              pb="30px"
+              bgColor={cardColor}
+              boxShadow={shadow}
+              mt="-230px"
+            >
+              {/* BOTTOM */}
+              <Flex m="2">
+                <Text fontSize="lg" fontWeight="800">
+                  Details
+                </Text>
+              </Flex>
+              {loadingNode ? (
+                <List />
+              ) : errorNodeSentence ? (
+                <Alert borderRadius={'10px'} status={errorNodeType || 'info'}>
+                  <AlertIcon />
+                  <AlertTitle>{errorNodeType || 'info'}</AlertTitle>
+                  <AlertDescription>{errorNodeSentence}</AlertDescription>
+                </Alert>
+              ) : (
+                <Box>
+                  {/* TOP */}
+                  <SimpleGrid
+                    columns={{ base: 1, md: 2 }}
+                    spacing="20px"
+                    mb="5"
+                  >
+                    <MiniStatistics
+                      bgColor={statisticColor}
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <TimeIcon
+                              w="32px"
+                              h="32px"
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name={
+                        blockHeader === blocksCount
+                          ? 'Minutes since last block'
+                          : blockHeader > blocksCount
+                          ? `Percentage completed ${(
+                              (blocksCount * 100) /
+                              blockHeader
+                            ).toFixed(2)}%`
+                          : '...'
+                      }
+                      value={
+                        blockHeader === blocksCount
+                          ? lastBlockTime
+                          : blockHeader > blocksCount
+                          ? `Processing queue...`
+                          : '...'
+                      }
+                      reversed={true}
+                    />
+                    <MiniStatistics
+                      bgColor={statisticColor}
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <BlockchainIcon
+                              w="32px"
+                              h="32px"
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Blockchain size"
+                      value={bytesToSize(sizeOnDisk)}
+                      reversed={true}
+                    />
+                  </SimpleGrid>
+
+                  {/* BOTTOM */}
+                  <SimpleGrid columns={{ base: 1, md: 3 }} spacing="20px">
+                    <MiniStatistics
+                      bgColor={statisticColor}
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <MinersIcon
+                              w="32px"
+                              h="32px"
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Network hashrate"
+                      value={displayHashrate(networkhashps, 'h', true, 2)}
+                      secondaryText={numberToText(difficulty)}
+                      secondaryDescription="Difficulty"
+                      reversed={true}
+                    />
+                    <MiniStatistics
+                      bgColor={statisticColor}
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <ConnectionsIcons
+                              w="32px"
+                              h="32px"
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Connections"
+                      value={
+                        <Flex>
+                          {connectionCount}
+                          <Text color="gray.400">
+                            /{nodeMaxConnections || 64}
+                          </Text>
+                        </Flex>
+                      }
+                      progress={true}
+                      progressValue={connectionCount}
+                      progressTotal={nodeMaxConnections || 64}
+                      reversed={true}
+                    />
+                    <MiniStatistics
+                      bgColor={statisticColor}
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <DatabaseIcon
+                              w="32px"
+                              h="32px"
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Remaining space"
+                      value={`${remainingSpace}%`}
+                      progress={true}
+                      progressPercent={remainingSpace}
+                      reversed={true}
+                    />
+                  </SimpleGrid>
+                  <SimpleGrid columns={{ base: 1 }} spacing="20px" mt="5">
+                    <MiniStatistics
+                      bgColor={statisticColor}
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <NetworkIcon
+                              w="32px"
+                              h="32px"
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Local node address"
+                      value={nodeAddress}
+                      reversed={true}
+                      fontSize="md"
+                      button={'Connect'}
+                      buttonHandler={onOpen}
+                      buttonIcon={<MdCastConnected />}
+                    />
+                    <MiniStatistics
+                      bgColor={statisticColor}
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <BlocksIcon
+                              w="32px"
+                              h="32px"
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name="Bitcoin Node Version"
+                      value={subversion}
+                      reversed={true}
+                      fontSize="md"
+                    />
+                  </SimpleGrid>
+                </Box>
+              )}
+            </Card>
+          </Flex>
+          {!loadingNode && !errorNode?.length && (
+            <DynamicTable
+              columnsData={columnsData}
+              tableData={dataTable}
+              tableTitle={`Last connections`}
+              shadow={shadow}
+              mt="5"
+            />
+          )}
+        </Flex>
+      )}
     </Box>
   );
 };

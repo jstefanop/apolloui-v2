@@ -36,7 +36,10 @@ import { GoVersions } from 'react-icons/go';
 import { TbAlertHexagonFilled } from 'react-icons/tb';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
-import { getVersionFromPackageJson, capitalizeFirstLetter } from '../../lib/utils';
+import {
+  getVersionFromPackageJson,
+  capitalizeFirstLetter,
+} from '../../lib/utils';
 import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
 import NavbarUpdateModal from './NavbarUpdateModal';
@@ -88,8 +91,9 @@ export default function HeaderLinks({
 
   const { nodeEnableSoloMining } = settings;
 
-  const nodeStatusLabel =
-    nodeOnline ? capitalizeFirstLetter(nodeOnline) : 'Error';
+  const nodeStatusLabel = nodeOnline
+    ? capitalizeFirstLetter(nodeOnline)
+    : 'Error';
 
   const minerStatusLabel =
     minerOnline && !error.length ? capitalizeFirstLetter(minerOnline) : 'Error';
@@ -151,6 +155,8 @@ export default function HeaderLinks({
                   ? 'gray.400'
                   : nodeStatusLabel === 'Error'
                   ? 'orange.500'
+                  : nodeStatusLabel === 'Pending'
+                  ? 'gray.300'
                   : null
               }
               h="20px"
@@ -168,6 +174,8 @@ export default function HeaderLinks({
                     ? PowerIcon
                     : nodeStatusLabel === 'Error'
                     ? WarningIcon
+                    : nodeStatusLabel === 'Pending'
+                    ? Spinner
                     : null
                 }
               />
@@ -341,8 +349,7 @@ export default function HeaderLinks({
               fontWeight="700"
               me="6px"
             >
-              {minerStatusLabel === 'Online' ? avgBoardTemp : '-'}
-              {minerStatusLabel === 'Online' && <span>°C</span>}
+              {minerStatusLabel === 'Online' && avgBoardTemp !== null ? `${avgBoardTemp.toFixed(2)}°C` : '-'}
             </Text>
           </Flex>
 
@@ -373,21 +380,27 @@ export default function HeaderLinks({
                 <MenuGroup title="Miner">
                   <MenuItem
                     icon={<StartIcon />}
-                    isDisabled={minerOnline === 'online'}
+                    isDisabled={
+                      minerOnline === 'online' || minerOnline === 'pending'
+                    }
                     onClick={() => handleSystemAction('startMiner')}
                   >
                     Start
                   </MenuItem>
                   <MenuItem
                     icon={<StopIcon />}
-                    isDisabled={minerOnline === 'offline'}
+                    isDisabled={
+                      minerOnline === 'offline' || minerOnline === 'pending'
+                    }
                     onClick={() => handleSystemAction('stopMiner')}
                   >
                     Stop
                   </MenuItem>
                   <MenuItem
                     icon={<RestartIcon />}
-                    isDisabled={minerOnline === 'offline'}
+                    isDisabled={
+                      minerOnline === 'offline' || minerOnline === 'pending'
+                    }
                     onClick={() => handleSystemAction('restartMiner')}
                   >
                     Restart
@@ -397,14 +410,18 @@ export default function HeaderLinks({
                 <MenuGroup title="Node">
                   <MenuItem
                     icon={<StartIcon />}
-                    isDisabled={nodeOnline !== 'offline'}
+                    isDisabled={
+                      nodeOnline === 'online' || nodeOnline === 'pending'
+                    }
                     onClick={() => handleSystemAction('startNode')}
                   >
                     Start
                   </MenuItem>
                   <MenuItem
                     icon={<StopIcon />}
-                    isDisabled={nodeOnline !== 'online'}
+                    isDisabled={
+                      nodeOnline === 'offline' || nodeOnline === 'pending'
+                    }
                     onClick={() => handleSystemAction('stopNode')}
                   >
                     Stop

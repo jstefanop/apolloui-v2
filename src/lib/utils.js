@@ -273,6 +273,10 @@ export const getNodeErrorMessage = (error) => {
     sentence = 'Connection refused. Your node is not running.';
   }
 
+  if (error[0].code === 'ERR_BAD_RESPONSE') {
+    sentence = 'Bad response. Trying again in a few seconds...';
+  }
+
   if (error[0].type === 'authentication') {
     sentence = 'Waiting for node response...';
     type = 'info';

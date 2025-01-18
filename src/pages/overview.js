@@ -11,6 +11,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Spinner,
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import Head from 'next/head';
@@ -41,6 +42,7 @@ import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { settingsSelector } from '../redux/reselect/settings';
 import HashrateChart from '../components/apollo/HashrateChart';
+import { MdOfflineBolt } from 'react-icons/md';
 
 const Overview = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
@@ -53,6 +55,8 @@ const Overview = () => {
   );
 
   const { data: servicesStatus } = useSelector(servicesSelector);
+
+  const nodeStatus = servicesStatus?.node?.status;
 
   // Miner data
   const {
@@ -231,14 +235,15 @@ const Overview = () => {
                       value={
                         <span
                           className={
-                            avgBoardTemp !== prevAvgBoardTemp
+                            avgBoardTemp !== prevAvgBoardTemp &&
+                            servicesStatus?.miner?.status === 'online'
                               ? 'animate__animated animate__flash'
                               : undefined
                           }
                         >
                           {servicesStatus?.miner?.status === 'online' &&
                           avgBoardTemp !== null
-                            ? `${avgBoardTemp}°C`
+                            ? `${avgBoardTemp.toFixed(2)}°C`
                             : 'N/A'}
                         </span>
                       }
@@ -324,14 +329,37 @@ const Overview = () => {
                   Node status
                 </Text>
               </Flex>
-              {loadingNode ? (
-                <List />
+              {nodeStatus === 'pending' ? (
+                <Flex my="auto" align="center" justify="center" direction="row">
+                  <IconBox
+                    w="56px"
+                    h="56px"
+                    icon={
+                      nodeStatus === 'pending' ? (
+                        <Spinner size="lg" thickness="4px" color="brand.500" />
+                      ) : (
+                        <Icon
+                          w="32px"
+                          h="32px"
+                          as={MdOfflineBolt} // Offline icon
+                          color="red.500"
+                        />
+                      )
+                    }
+                    mr="4"
+                  />
+                  <Text fontSize="md" fontWeight="400" color="gray.600">
+                    Pending... Please wait.
+                  </Text>
+                </Flex>
               ) : errorNodeSentence ? (
                 <Alert borderRadius={'10px'} status={errorNodeType}>
                   <AlertIcon />
                   <AlertTitle>{errorNodeType}</AlertTitle>
                   <AlertDescription>{errorNodeSentence}</AlertDescription>
                 </Alert>
+              ) : loadingNode ? (
+                <List />
               ) : (
                 <Flex
                   my="auto"
@@ -340,7 +368,7 @@ const Overview = () => {
                   direction={{ base: 'column', lg: 'row' }}
                 >
                   <NoCardStatisticsGauge
-                    id="minerTemp"
+                    id="nodeConnections"
                     startContent={
                       <IconBox
                         w="56px"
@@ -375,7 +403,7 @@ const Overview = () => {
                     align="start"
                   />
                   <NoCardStatisticsGauge
-                    id="minerTemp"
+                    id="nodeBlocks"
                     startContent={
                       <IconBox
                         w="56px"
@@ -409,7 +437,7 @@ const Overview = () => {
                     align="start"
                   />
                   <NoCardStatisticsGauge
-                    id="minerTemp"
+                    id="nodeBlockchainSize"
                     startContent={
                       <IconBox
                         w="56px"
