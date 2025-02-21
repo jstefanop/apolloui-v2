@@ -73,6 +73,8 @@ const Overview = () => {
     avgBoardErrors,
   } = dataMiner;
 
+  console.log(dataMiner)
+
   // Mcu data
   const {
     loading: loadingMcu,
@@ -236,14 +238,14 @@ const Overview = () => {
                         <span
                           className={
                             avgBoardTemp !== prevAvgBoardTemp &&
-                            servicesStatus?.miner?.status === 'online'
+                              servicesStatus?.miner?.status === 'online'
                               ? 'animate__animated animate__flash'
                               : undefined
                           }
                         >
                           {servicesStatus?.miner?.status === 'online' &&
-                          avgBoardTemp !== null
-                            ? `${avgBoardTemp.toFixed(2)}°C`
+                            avgBoardTemp !== null
+                            ? `${avgBoardTemp?.toFixed(2)}°C`
                             : 'N/A'}
                         </span>
                       }
@@ -267,7 +269,7 @@ const Overview = () => {
                       name="System temperature"
                       value={
                         typeof mcuTemperature !== 'undefined' &&
-                        mcuTemperature !== null
+                          mcuTemperature !== null
                           ? `${Math.round(mcuTemperature / 1000)}°C `
                           : 'N/A'
                       }
@@ -298,7 +300,7 @@ const Overview = () => {
                           }
                         >
                           {servicesStatus?.miner?.status === 'online' &&
-                          avgBoardErrors !== null
+                            avgBoardErrors !== null
                             ? `${avgBoardErrors}%`
                             : 'N/A'}
                         </span>
@@ -429,8 +431,8 @@ const Overview = () => {
                       >
                         {blocksCount
                           ? blocksCount.toLocaleString('en-US', {
-                              maximumFractionDigits: 0,
-                            })
+                            maximumFractionDigits: 0,
+                          })
                           : 'N/A'}
                       </span>
                     }

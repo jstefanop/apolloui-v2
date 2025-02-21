@@ -39,15 +39,13 @@ const PowerCard = ({
   const mainDataContent = (() => {
     if (status === 'online') {
       return (
-        <Text>
-          <CountUp
-            start={prevData || 0}
-            end={data}
-            duration="1"
-            decimals="0"
-            suffix={` Watts`}
-          />
-        </Text>
+        <CountUp
+          start={prevData || 0}
+          end={data}
+          duration="1"
+          decimals="0"
+          suffix={` Watts`}
+        />
       );
     } else if (status === 'offline') {
       return <span>Offline</span>;
@@ -72,12 +70,12 @@ const PowerCard = ({
       secondaryData={
         status === 'online' &&
         avgData && (
-            <CountUp
-              start={prevAvgData || 0}
-              end={avgData || 0}
-              duration="1"
-              decimals="0"
-            />
+          <CountUp
+            start={prevAvgData || 0}
+            end={avgData || 0}
+            duration="1"
+            decimals="0"
+          />
         )
       }
       loading={loading}

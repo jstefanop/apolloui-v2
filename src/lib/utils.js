@@ -10,7 +10,16 @@ export const displayHashrate = (
   precision = 2,
   returnObject = false
 ) => {
-  const hashrateUnits = ['H/s', 'KH/s', 'MH/s', 'GH/s', 'TH/s', 'PH/s', 'EH/s'];
+  const hashrateUnits = [
+    'H/s',
+    'KH/s',
+    'MH/s',
+    'GH/s',
+    'TH/s',
+    'PH/s',
+    'EH/s',
+    'ZH/s',
+  ];
   precision = typeof precision === 'number' ? precision : 2;
   let i = hashrateUnits.indexOf(unit);
   while (i > 0) {
@@ -18,7 +27,7 @@ export const displayHashrate = (
     i--;
   }
   i = 0;
-  while (hashrate >= 1000) {
+  while (hashrate >= 1000 && i < hashrateUnits.length - 1) {
     hashrate /= 1000;
     i++;
   }
@@ -26,11 +35,11 @@ export const displayHashrate = (
   return withUnit
     ? `${parseFloat(hashrate).toFixed(precision)} ${hashrateUnits[i]}`
     : returnObject
-    ? {
+      ? {
         value: parseFloat(hashrate).toFixed(precision),
         unit: hashrateUnits[i],
       }
-    : parseFloat(parseFloat(hashrate).toFixed(precision));
+      : parseFloat(parseFloat(hashrate).toFixed(precision));
 };
 
 export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
@@ -49,6 +58,10 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
     multiplier = 1e12;
   } else if (hashrateString.toUpperCase().includes('P')) {
     multiplier = 1e15;
+  } else if (hashrateString.toUpperCase().includes('E')) {
+    multiplier = 1e18;
+  } else if (hashrateString.toUpperCase().includes('Z')) {
+    multiplier = 1e21;
   }
 
   switch (unit.toUpperCase()) {
@@ -64,6 +77,10 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
       return (hashValue * multiplier) / 1e12;
     case 'PH/S':
       return (hashValue * multiplier) / 1e15;
+    case 'EH/S':
+      return (hashValue * multiplier) / 1e18;
+    case 'ZH/S':
+      return (hashValue * multiplier) / 1e21;
     default:
       return (hashValue * multiplier) / 1e9;
   }
@@ -91,12 +108,12 @@ export const percentColor = (value) => {
   return value <= 40
     ? '#03a9f4'
     : value <= 55
-    ? '#8bc34a'
-    : value <= 70
-    ? '#ffab00'
-    : value <= 85
-    ? '#ff5722'
-    : '#f44336';
+      ? '#8bc34a'
+      : value <= 70
+        ? '#ffab00'
+        : value <= 85
+          ? '#ff5722'
+          : '#f44336';
 };
 
 export const bytesToSize = (bytes, decimals = 2, withUnits = true) => {
@@ -108,9 +125,8 @@ export const bytesToSize = (bytes, decimals = 2, withUnits = true) => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${
-    withUnits ? ' ' + sizes[i] : ''
-  }`;
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${withUnits ? ' ' + sizes[i] : ''
+    }`;
 };
 
 export const tempColor = (value) => {
