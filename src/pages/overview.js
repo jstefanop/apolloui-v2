@@ -73,8 +73,6 @@ const Overview = () => {
     avgBoardErrors,
   } = dataMiner;
 
-  console.log(dataMiner)
-
   // Mcu data
   const {
     loading: loadingMcu,
