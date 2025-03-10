@@ -39,6 +39,7 @@ import { PowerIcon } from '../UI/Icons/PowerIcon';
 import {
   getVersionFromPackageJson,
   capitalizeFirstLetter,
+  formatTemperature,
 } from '../../lib/utils';
 import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
@@ -89,7 +90,7 @@ export default function HeaderLinks({
   // Parse stats
   const { globalHashrate, avgBoardTemp, ckPoolDisconnected } = minerStats;
 
-  const { nodeEnableSoloMining } = settings;
+  const { nodeEnableSoloMining, temperatureUnit } = settings;
 
   const nodeStatusLabel = nodeOnline
     ? capitalizeFirstLetter(nodeOnline)
@@ -152,12 +153,12 @@ export default function HeaderLinks({
                 nodeStatusLabel === 'Online'
                   ? 'green.500'
                   : nodeStatusLabel === 'Offline'
-                  ? 'gray.400'
-                  : nodeStatusLabel === 'Error'
-                  ? 'orange.500'
-                  : nodeStatusLabel === 'Pending'
-                  ? 'gray.300'
-                  : null
+                    ? 'gray.400'
+                    : nodeStatusLabel === 'Error'
+                      ? 'orange.500'
+                      : nodeStatusLabel === 'Pending'
+                        ? 'gray.300'
+                        : null
               }
               h="20px"
               w="20px"
@@ -171,12 +172,12 @@ export default function HeaderLinks({
                   nodeStatusLabel === 'Online'
                     ? CheckIcon
                     : nodeStatusLabel === 'Offline'
-                    ? PowerIcon
-                    : nodeStatusLabel === 'Error'
-                    ? WarningIcon
-                    : nodeStatusLabel === 'Pending'
-                    ? Spinner
-                    : null
+                      ? PowerIcon
+                      : nodeStatusLabel === 'Error'
+                        ? WarningIcon
+                        : nodeStatusLabel === 'Pending'
+                          ? Spinner
+                          : null
                 }
               />
             </Flex>
@@ -220,8 +221,8 @@ export default function HeaderLinks({
                   !ckPoolDisconnected && minerStatusLabel === 'Online'
                     ? 'green.500'
                     : minerStatusLabel !== 'Online'
-                    ? 'gray.400'
-                    : 'orange.500'
+                      ? 'gray.400'
+                      : 'orange.500'
                 }
                 h="20px"
                 w="20px"
@@ -235,8 +236,8 @@ export default function HeaderLinks({
                     !ckPoolDisconnected && minerStatusLabel === 'Online'
                       ? CheckIcon
                       : minerStatusLabel === 'Offline'
-                      ? PowerIcon
-                      : WarningIcon
+                        ? PowerIcon
+                        : WarningIcon
                   }
                 />
               </Flex>
@@ -291,12 +292,12 @@ export default function HeaderLinks({
                 minerStatusLabel === 'Online'
                   ? 'green.500'
                   : minerStatusLabel === 'Offline'
-                  ? 'gray.400'
-                  : minerStatusLabel === 'Error'
-                  ? 'orange.500'
-                  : minerStatusLabel === 'Pending'
-                  ? 'gray.300'
-                  : null
+                    ? 'gray.400'
+                    : minerStatusLabel === 'Error'
+                      ? 'orange.500'
+                      : minerStatusLabel === 'Pending'
+                        ? 'gray.300'
+                        : null
               }
               h="20px"
               w="20px"
@@ -310,12 +311,12 @@ export default function HeaderLinks({
                   minerStatusLabel === 'Online'
                     ? CheckIcon
                     : minerStatusLabel === 'Offline'
-                    ? PowerIcon
-                    : minerStatusLabel === 'Error'
-                    ? WarningIcon
-                    : minerStatusLabel === 'Pending'
-                    ? Spinner
-                    : null
+                      ? PowerIcon
+                      : minerStatusLabel === 'Error'
+                        ? WarningIcon
+                        : minerStatusLabel === 'Pending'
+                          ? Spinner
+                          : null
                 }
               />
             </Flex>
@@ -349,7 +350,9 @@ export default function HeaderLinks({
               fontWeight="700"
               me="6px"
             >
-              {minerStatusLabel === 'Online' && avgBoardTemp !== null ? `${avgBoardTemp.toFixed(2)}°C` : '-'}
+              {minerStatusLabel === 'Online' && avgBoardTemp !== null
+                ? `${formatTemperature(avgBoardTemp, temperatureUnit)}`
+                : '-'}
             </Text>
           </Flex>
 

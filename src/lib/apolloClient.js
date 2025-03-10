@@ -75,6 +75,9 @@ function createApolloClient() {
       MinerActions: {
         merge: true,
       },
+      NodeActions: {
+        merge: true,
+      },
       MinerStatsResult: {
         fields: {
           stats: {
@@ -129,6 +132,14 @@ function createApolloClient() {
       },
       Query: {
         fields: {
+          Node: {
+            merge(existing, incoming) {
+              return {
+                ...existing,
+                ...incoming,
+              };
+            },
+          },
           Mcu: {
             merge(existing, incoming) {
               return {

@@ -23,7 +23,11 @@ import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
-import { bytesToSize, getNodeErrorMessage } from '../lib/utils';
+import {
+  bytesToSize,
+  getNodeErrorMessage,
+  formatTemperature,
+} from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
 import { servicesSelector } from '../redux/reselect/services';
@@ -111,7 +115,7 @@ const Overview = () => {
   // Settings data
   const { data: settings } = useSelector(settingsSelector);
 
-  const { nodeMaxConnections } = settings || {};
+  const { nodeMaxConnections, temperatureUnit } = settings || {};
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);
@@ -243,7 +247,7 @@ const Overview = () => {
                         >
                           {servicesStatus?.miner?.status === 'online' &&
                             avgBoardTemp !== null
-                            ? `${avgBoardTemp?.toFixed(2)}°C`
+                            ? `${formatTemperature(avgBoardTemp, temperatureUnit)}`
                             : 'N/A'}
                         </span>
                       }
@@ -268,7 +272,10 @@ const Overview = () => {
                       value={
                         typeof mcuTemperature !== 'undefined' &&
                           mcuTemperature !== null
-                          ? `${Math.round(mcuTemperature / 1000)}°C `
+                          ? `${formatTemperature(
+                            Math.round(mcuTemperature / 1000),
+                            temperatureUnit
+                          )} `
                           : 'N/A'
                       }
                     />

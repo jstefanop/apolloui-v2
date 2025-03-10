@@ -338,3 +338,16 @@ export const workerIsActive = (lastshare, intervalInSeconds) => {
 export const capitalizeFirstLetter = (val) => {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1);
 };
+
+export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
+  if (tempCelsius === null || tempCelsius === undefined) return 'n.a.';
+
+  if (unit === 'f') {
+    // Convert to Fahrenheit: (°C × 9/5) + 32 = °F
+    const tempFahrenheit = (tempCelsius * 9 / 5) + 32;
+    return `${tempFahrenheit.toFixed(precision)}°F`;
+  }
+
+  // Default or 'C' unit
+  return `${tempCelsius.toFixed(precision)}°C`;
+};

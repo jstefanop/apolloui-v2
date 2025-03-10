@@ -47,6 +47,7 @@ import MinerDrawer from '../components/apollo/MinerDrawer';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import MinerStatus from '../components/UI/MinerStatus';
+import { formatTemperature } from '../lib/utils';
 
 const Miner = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -121,7 +122,7 @@ const Miner = () => {
     soloMining,
   } = dataMiner;
 
-  const { minerMode, fanHigh, fanLow, frequency, voltage } = dataSettings;
+  const { minerMode, fanHigh, fanLow, frequency, voltage, temperatureUnit } = dataSettings;
 
   const dataTableBoards = [
     {
@@ -129,7 +130,7 @@ const Miner = () => {
       icon: MinerIcon,
     },
     {
-      value: `${avgBoardTemp ? avgBoardTemp.toFixed(2) : 'n.a.'}°C`,
+      value: `${avgBoardTemp ? formatTemperature(avgBoardTemp, temperatureUnit) : 'n.a.'}`,
       icon: MinerTempIcon,
     },
     {
@@ -137,9 +138,8 @@ const Miner = () => {
       icon: FanIcon,
     },
     {
-      value: `${
-        (avgBoardEfficiency && avgBoardEfficiency.toFixed(2)) || 0
-      } W/TH`,
+      value: `${(avgBoardEfficiency && avgBoardEfficiency.toFixed(2)) || 0
+        } W/TH`,
       icon: PowerIcon,
     },
     {
@@ -551,7 +551,7 @@ const Miner = () => {
                     }
                     name="Miner temperature"
                     value={
-                      avgBoardTemp ? `${avgBoardTemp.toFixed(0)}°C` : 'N/A'
+                      avgBoardTemp ? `${formatTemperature(avgBoardTemp, temperatureUnit)}` : 'N/A'
                     }
                     rawValue={avgBoardTemp}
                     legendValue={'On the average'}
