@@ -68,7 +68,7 @@ const MultiStatistics = ({
             </StatNumber>
           )}
         </Stat>
-        <Flex ms="auto" w="max-content" display={{ base: 'none', md: 'block'}}>
+        <Flex ms="auto" w="max-content" display={{ md: 'block'}}>
           <Stat ms={startContent ? '18px' : '0px'}>
             {reversed && (
               <StatNumber

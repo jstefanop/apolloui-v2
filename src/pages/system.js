@@ -199,7 +199,7 @@ const System = () => {
 
           <GridItem gridArea="Bottom">
             <SimpleGrid
-              columns={{ base: 1, md: 3 }}
+              columns={{ base: 1, md: mcuNoderyDisk ? 4 : 3 }}
               gap="20px"
             >
               <NoCardStatisticsGauge

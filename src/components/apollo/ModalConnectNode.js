@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 const ModalConnectNode = ({ isOpen, onClose, pass, address }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Connect to your Bitcoin Node</ModalHeader>

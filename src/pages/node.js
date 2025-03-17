@@ -198,26 +198,29 @@ const Node = () => {
               mt="3"
               direction={{ base: 'column', md: 'row' }}
             >
-              <Flex direction="column" align="right">
-                <Text fontSize="2xl" fontWeight="bold" color="white">
-                  {blockHeader === blocksCount
-                    ? `Node is up to date`
-                    : `Syncing blocks...`}
-                </Text>
-                <Text
-                  fontSize="sm"
-                  fontWeight={500}
-                  color="gray.600"
-                  mt="0"
-                  align={'right'}
-                >
-                  {blockHeader === blocksCount
-                    ? '100% synched'
-                    : `${((blocksCount / blockHeader) * 100).toFixed(
-                        2
-                      )}% synched`}
-                </Text>
-              </Flex>
+              {blockHeader && (
+                <Flex direction="column" align="right">
+                  <Text fontSize="2xl" fontWeight="bold" color="white">
+                    {blockHeader === blocksCount
+                      ? `Node is up to date`
+                      : `Syncing blocks...`}
+                  </Text>
+
+                  <Text
+                    fontSize="sm"
+                    fontWeight={500}
+                    color="gray.600"
+                    mt="0"
+                    align={'right'}
+                  >
+                    {blockHeader === blocksCount
+                      ? '100% synched'
+                      : `${((blocksCount / blockHeader) * 100).toFixed(
+                          2
+                        )}% synched`}
+                  </Text>
+                </Flex>
+              )}
               <IconBox
                 w="80px"
                 h="80px"
@@ -225,48 +228,53 @@ const Node = () => {
                 icon={<BlocksIcon w="32px" h="32px" color={'white'} />}
                 mx="5"
               />
-              <Flex direction="column" align={{ base: 'center', md: 'start' }}>
-                <Text
-                  color="white"
-                  fontSize={{
-                    base: blockHeader === blocksCount ? '4xl' : '2xl',
-                  }}
-                  fontWeight="800"
-                  minW="180px"
-                  my="auto"
-                  className={
-                    blocksCount !== prevData?.blocksCount
-                      ? 'animate__animated animate__pulse'
-                      : undefined
-                  }
+              {blockHeader && (
+                <Flex
+                  direction="column"
+                  align={{ base: 'center', md: 'start' }}
                 >
-                  {blockHeader === blocksCount && (
-                    <Flex direction="row" alignItems="baseline">
-                      <CountUp
-                        start={prevData?.blocksCount || 0}
-                        end={blocksCount}
-                        duration="1"
-                        decimals="0"
-                        separator=","
-                      />
-                      <Text
-                        fontSize="sm"
-                        fontWeight={500}
-                        color="gray.600"
-                        ml="2"
-                      >
-                        blocks
-                      </Text>
-                    </Flex>
-                  )}
-                  {blockHeader !== blocksCount && (
-                    <>
-                      <FormattedNumber value={blocksCount} /> /{' '}
-                      <FormattedNumber value={blockHeader} />
-                    </>
-                  )}
-                </Text>
-              </Flex>
+                  <Text
+                    color="white"
+                    fontSize={{
+                      base: blockHeader === blocksCount ? '4xl' : '2xl',
+                    }}
+                    fontWeight="800"
+                    minW="180px"
+                    my="auto"
+                    className={
+                      blocksCount !== prevData?.blocksCount
+                        ? 'animate__animated animate__pulse'
+                        : undefined
+                    }
+                  >
+                    {blockHeader === blocksCount && (
+                      <Flex direction="row" alignItems="baseline">
+                        <CountUp
+                          start={prevData?.blocksCount || 0}
+                          end={blocksCount}
+                          duration="1"
+                          decimals="0"
+                          separator=","
+                        />
+                        <Text
+                          fontSize="sm"
+                          fontWeight={500}
+                          color="gray.600"
+                          ml="2"
+                        >
+                          blocks
+                        </Text>
+                      </Flex>
+                    )}
+                    {blockHeader !== blocksCount && (
+                      <>
+                        <FormattedNumber value={blocksCount} /> /{' '}
+                        <FormattedNumber value={blockHeader} />
+                      </>
+                    )}
+                  </Text>
+                </Flex>
+              )}
             </Flex>
           </Card>
 
