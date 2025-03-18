@@ -30,7 +30,7 @@ import {
   NODE_STOP_QUERY,
   NODE_FORMAT_QUERY,
 } from '../graphql/node';
-import { sendFeedback } from '../redux/actions/feedback';
+import { sendFeedback } from '../redux/slices/feedbackSlice';
 import { SettingsProvider } from '../components/settings/context/SettingsContext';
 import PoolsTab from '../components/settings/tabs/PoolsTab';
 import MinerTab from '../components/settings/tabs/MinerTab';

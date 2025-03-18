@@ -10,51 +10,63 @@ export const nodeSelector = createSelector(
   nodeErrorSelector,
   nodeLoadingSelector,
   (nodeData, nodeError, nodeLoading) => {
-    const {
-      Node: {
-        stats: { error: errorStats, result },
-      },
-    } = nodeData ?? initialState;
+    // Handle null or undefined nodeData
+    if (!nodeData) {
+      return {
+        loading: nodeLoading,
+        error: [nodeError].filter(Boolean),
+        data: null,
+      };
+    }
 
-    const nodeStats = result?.stats ?? {};
+    // Safely extract values using optional chaining
+    const errorStats = nodeData?.Node?.stats?.error;
+    const result = nodeData?.Node?.stats?.result;
+    const nodeStats = result?.stats || {};
+    const error = nodeStats?.error;
 
-    const { error } = nodeStats;
-
+    // Filter out null/undefined errors
     const errors = [...[nodeError, error, errorStats].filter(Boolean)];
 
-    let stats;
-    if (!errors.length && nodeStats) {
-      const {
-        timestamp,
-        blockchainInfo: { blocks, blockTime, headers, sizeOnDisk },
-        connectionCount,
-        miningInfo: { difficulty, networkhashps },
-        peerInfo,
-        networkInfo: { version, subversion, localaddresses },
-        error,
-      } = nodeStats;
+    let stats = null;
+    // Only process data if we have valid nodeStats and no errors
+    if (nodeStats && !errors.length) {
+      try {
+        // Use optional chaining for deep properties to avoid undefined errors
+        const blockchainInfo = nodeStats?.blockchainInfo || {};
+        const miningInfo = nodeStats?.miningInfo || {};
+        const networkInfo = nodeStats?.networkInfo || {};
 
-      stats = {
-        timestamp,
-        blocksCount: blocks,
-        blockTime,
-        blockHeader: headers,
-        sizeOnDisk,
-        connectionCount,
-        error,
-        difficulty,
-        networkhashps,
-        peerInfo,
-        version,
-        subversion,
-        localaddresses,
-      };
+        stats = {
+          timestamp: nodeStats.timestamp,
+          blocksCount: blockchainInfo.blocks,
+          blockTime: blockchainInfo.blockTime,
+          blockHeader: blockchainInfo.headers,
+          sizeOnDisk: blockchainInfo.sizeOnDisk,
+          connectionCount: nodeStats.connectionCount,
+          error: nodeStats.error,
+          difficulty: miningInfo?.difficulty,
+          networkhashps: miningInfo?.networkhashps,
+          peerInfo: nodeStats.peerInfo || [],
+          version: networkInfo?.version,
+          subversion: networkInfo?.subversion,
+          localaddresses: networkInfo?.localaddresses || [],
+        };
+      } catch (e) {
+        // If something goes wrong during extraction, log it and return null
+        console.error('Error processing node data:', e);
+        return {
+          loading: nodeLoading,
+          error: [...errors, { message: 'Error processing node data' }],
+          data: null,
+        };
+      }
     }
 
     return {
       loading: nodeLoading,
       error: errors,
-      data: !errors.length && stats,
+      data: errors.length === 0 ? stats : null,
     };
   }
 );

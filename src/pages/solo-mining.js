@@ -92,7 +92,7 @@ const SoloMining = () => {
     error: errorNode,
   } = useSelector(nodeSelector, shallowEqual);
 
-  const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode;
+  const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode || {};
 
   // Mcu data
   const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector, shallowEqual);

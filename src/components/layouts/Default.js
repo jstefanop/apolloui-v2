@@ -1,9 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  Portal,
-  Box,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Portal, Box, useDisclosure } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 
@@ -12,19 +8,19 @@ import Footer from '../footer/FooterAdmin';
 import Navbar from '../navbar/NavbarAdmin';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useQuery } from '@apollo/client';
-import { updateNodeStats } from '../../redux/actions/node';
+import { updateNodeStats } from '../../redux/slices/nodeSlice';
 import { NODE_STATS_QUERY } from '../../graphql/node';
 import { MINER_STATS_QUERY } from '../../graphql/miner';
-import { updateMinerStats } from '../../redux/actions/miner';
+import { updateMinerStats } from '../../redux/slices/minerSlice';
 import { MCU_STATS_QUERY } from '../../graphql/mcu';
-import { updateMcuStats } from '../../redux/actions/mcu';
+import { updateMcuStats } from '../../redux/slices/mcuSlice';
 import { GET_SETTINGS_QUERY } from '../../graphql/settings';
-import { updateSettings } from '../../redux/actions/settings';
+import { updateSettings } from '../../redux/slices/settingsSlice';
 import { GET_ANALYTICS_QUERY } from '../../graphql/analytics';
-import { updateAnalytics } from '../../redux/actions/analytics';
+import { updateAnalytics } from '../../redux/slices/analyticsSlice';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { SERVICES_STATUS_QUERY } from '../../graphql/services';
-import { updateServicesStatus } from '../../redux/actions/services';
+import { updateServicesStatus } from '../../redux/slices/servicesSlice';
 
 const Layout = ({ children, routes }) => {
   const { onOpen } = useDisclosure();
@@ -42,13 +38,20 @@ const Layout = ({ children, routes }) => {
 
   useEffect(() => {
     startPollingMiner(minerPollingTime);
-    dispatch(
-      updateMinerStats({
-        loading: loadingMiner,
-        error: errorMiner,
-        data: dataMiner,
-      })
-    );
+
+    // Ensure we're only dispatching when we have data and it's changed
+    if (dataMiner) {
+      // Create a deep copy to avoid direct reference to Apollo cache objects
+      const safeData = JSON.parse(JSON.stringify(dataMiner));
+
+      dispatch(
+        updateMinerStats({
+          loading: loadingMiner,
+          error: errorMiner,
+          data: safeData,
+        })
+      );
+    }
   }, [
     startPollingMiner,
     dispatch,

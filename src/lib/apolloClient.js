@@ -11,7 +11,7 @@ import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from 'moment';
-import { sendFeedback, resetFeedback } from '../redux/actions/feedback';
+import { sendFeedback, resetFeedback } from '../redux/slices/feedbackSlice';
 import { store } from '../redux/store';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
@@ -22,6 +22,38 @@ const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
 const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
 
 let apolloClient;
+
+const isMoment = (value) => {
+  return value && typeof value === 'object' && value._isAMomentObject;
+};
+
+const convertMomentToString = (obj) => {
+  if (!obj) return obj;
+
+  if (isMoment(obj)) {
+    return obj.format();
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(convertMomentToString);
+  }
+
+  if (typeof obj === 'object' && obj !== null) {
+    // Skip handling special objects that could cause circular references
+    if (obj._reactFragment || obj.constructor.name !== 'Object') {
+      return obj;
+    }
+
+    const result = {};
+    Object.keys(obj).forEach(key => {
+      result[key] = convertMomentToString(obj[key]);
+    });
+    return result;
+  }
+
+  return obj;
+};
+
 const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message }) => {
@@ -58,6 +90,15 @@ const authLink = new ApolloLink((operation, forward) => {
 
   // Call the next link in the middleware chain.
   return forward(operation);
+});
+
+const momentTransformLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map((response) => {
+    if (response.data) {
+      response.data = convertMomentToString(response.data);
+    }
+    return response;
+  });
 });
 
 function createApolloClient() {
@@ -155,7 +196,12 @@ function createApolloClient() {
 
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: from([errorLink, authLink.concat(httpLink)]),
+    link: from([
+      errorLink,
+      authLink,
+      momentTransformLink,
+      httpLink
+    ]),
     cache,
   });
 }

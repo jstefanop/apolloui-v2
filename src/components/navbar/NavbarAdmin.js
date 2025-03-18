@@ -23,11 +23,11 @@ import {
   MINER_STOP_QUERY,
 } from '../../graphql/miner';
 import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
-import { updateMinerAction } from '../../redux/actions/minerAction';
+import { updateMinerAction } from '../../redux/slices/minerActionSlice';
 import { minerSelector } from '../../redux/reselect/miner';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
-import { sendFeedback } from '../../redux/actions/feedback';
+import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import { servicesSelector } from '../../redux/reselect/services';
 import StatusTransitionFeedback from '../UI/StatusTransitionFeedback';

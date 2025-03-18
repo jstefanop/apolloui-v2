@@ -31,7 +31,7 @@ import { Wifi03Icon } from './Icons/Wifi03Icon';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { wifiSelector } from '../../redux/reselect/wifi';
-import { updateWifi } from '../../redux/actions/wifi';
+import { updateWifi } from '../../redux/slices/wifiSlice';
 
 const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
   const cardBgColor = useColorModeValue('gray.50', 'secondaryGray.900');

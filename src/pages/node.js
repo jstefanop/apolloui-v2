@@ -10,6 +10,7 @@ import {
   SimpleGrid,
   Code,
   useDisclosure,
+  Center,
 } from '@chakra-ui/react';
 import moment from 'moment';
 import CountUp from 'react-countup';
@@ -65,18 +66,18 @@ const Node = () => {
   } = useSelector(nodeSelector, shallowEqual);
 
   const {
-    connectionCount,
-    networkhashps,
-    difficulty,
-    blocksCount,
-    sizeOnDisk,
-    blockHeader,
-    blockTime,
-    peerInfo,
-    timestamp,
-    localaddresses,
-    subversion,
-  } = dataNode;
+    connectionCount = 0,
+    networkhashps = 0,
+    difficulty = 0,
+    blocksCount = 0,
+    sizeOnDisk = 0,
+    blockHeader = 0,
+    blockTime = 0,
+    peerInfo = [],
+    timestamp = null,
+    localaddresses = [],
+    subversion = '',
+  } = dataNode || {};
 
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode);
@@ -93,7 +94,10 @@ const Node = () => {
   }, [dataNode]);
 
   // Mcu data
-  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector, shallowEqual);
+  const { data: dataMcu, error: errorMcu } = useSelector(
+    mcuSelector,
+    shallowEqual
+  );
 
   const { disks, network } = dataMcu;
 
@@ -109,6 +113,7 @@ const Node = () => {
 
   // Services data reselected
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
+  const nodeServiceStatus = servicesStatus?.node;
 
   const nodeAddress =
     localaddresses?.length && nodeEnableTor
@@ -164,6 +169,8 @@ const Node = () => {
     },
   ];
 
+  const isServiceError = nodeServiceStatus?.status === 'error';
+
   return (
     <Box mx="5">
       <Head>
@@ -182,7 +189,34 @@ const Node = () => {
         address={nodeAddress}
       />
       <NodeStatus serviceStatus={servicesStatus} />
-      {servicesStatus?.node?.status === 'online' && (
+
+      {/* Render error alert if service status is in error state */}
+      {isServiceError && (
+        <Center>
+          <Alert
+            status="error"
+            borderRadius="10px"
+            mb="5"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            maxWidth="xl"
+          >
+            <AlertIcon boxSize="40px" mr={0} />
+            <AlertTitle mt={4} mb={1} fontSize="xl">
+              Node Service Error
+            </AlertTitle>
+            <AlertDescription maxWidth="sm">
+              The node service is currently experiencing an error. Please check
+              your system configuration or contact support.
+            </AlertDescription>
+          </Alert>
+        </Center>
+      )}
+
+      {/* Only render the main content if service is not in error state and is online */}
+      {!isServiceError && servicesStatus?.node?.status === 'online' && (
         <Flex direction="column">
           <Card
             h={{ base: '470px', md: '370px' }}

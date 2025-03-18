@@ -100,7 +100,11 @@ const Overview = () => {
     error: errorNode,
   } = useSelector(nodeSelector, shallowEqual);
 
-  const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
+  const {
+    connectionCount = 0,
+    blocksCount = 0,
+    sizeOnDisk = 0,
+  } = dataNode || {};
 
   // Analytics data
   const {
