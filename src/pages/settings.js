@@ -60,9 +60,6 @@ const Settings = () => {
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
   const [isModalFormatOpen, setIsModalFormatOpen] = useState(false);
   const [isModalConnectOpen, setIsModalConnectOpen] = useState(false);
-  const [lockPassword, setLockPassword] = useState();
-  const [verifyLockpassword, setVerifyLockPassword] = useState();
-  const [isLockpasswordError, setIsLockpasswordError] = useState(false);
 
   // Node data from Redux
   const {
@@ -134,23 +131,6 @@ const Settings = () => {
 
   const [changeLockPassword, { loading: changeLockPasswordLoading }] =
     useLazyQuery(CHANGE_PASSWORD_QUERY, { fetchPolicy: 'no-cache' });
-
-  // Password validation
-  useEffect(() => {
-    if (!lockPassword || !verifyLockpassword) {
-      setIsLockpasswordError(false);
-      setIsChanged(false);
-    } else if (lockPassword.length < 8) {
-      setIsLockpasswordError('The password must have 8 characters at least');
-      setIsChanged(false);
-    } else if (lockPassword === verifyLockpassword) {
-      setIsLockpasswordError(false);
-      setIsChanged(true);
-    } else {
-      setIsLockpasswordError('Passwords must match');
-      setIsChanged(false);
-    }
-  }, [lockPassword, verifyLockpassword]);
 
   // Load initial settings
   useEffect(() => {
@@ -224,10 +204,10 @@ const Settings = () => {
       restartMinerNeeded && restartNodeNeeded
         ? 'both'
         : restartMinerNeeded && !restartNodeNeeded
-          ? 'miner'
-          : !restartMinerNeeded && restartNodeNeeded
-            ? 'node'
-            : null;
+        ? 'miner'
+        : !restartMinerNeeded && restartNodeNeeded
+        ? 'node'
+        : null;
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
@@ -378,12 +358,13 @@ const Settings = () => {
 
       // Handle password change if needed
       if (
-        lockPassword &&
-        verifyLockpassword &&
-        lockPassword === verifyLockpassword
+        settings.lockPassword &&
+        settings.verifyLockpassword &&
+        settings.lockPassword === settings.verifyLockpassword
       ) {
+        console.log('Changing password');
         await changeLockPassword({
-          variables: { input: { password: lockPassword } },
+          variables: { input: { password: settings.lockPassword } },
         });
         setIsChanged(false);
       }
@@ -540,12 +521,6 @@ const Settings = () => {
           handleFormatDisk,
           handleDiscardChanges,
           handleSaveSettings,
-          lockPassword,
-          setLockPassword,
-          verifyLockpassword,
-          setVerifyLockPassword,
-          isLockpasswordError,
-          setIsLockpasswordError,
           setIsModalRestoreOpen,
           setIsModalFormatOpen,
           setIsModalConnectOpen,
