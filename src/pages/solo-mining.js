@@ -17,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useEffect, useState } from 'react';
 import { BulletList } from 'react-content-loader';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { useRouter } from 'next/router';
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
@@ -40,7 +40,6 @@ import { GiDiamondTrophy } from 'react-icons/gi';
 import ActiveBadge from '../components/apollo/ActiveBadge';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
-import CustomAlert from '../components/UI/CustomAlert';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
@@ -68,14 +67,14 @@ const SoloMining = () => {
   const isBannerDisabled = Cookies.get('solo-mining-banner-disabled');
   const [showBanner, setShowBanner] = useState(!isBannerDisabled);
 
-  const { data: servicesStatus } = useSelector(servicesSelector);
+  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   // Settings data
   const {
     loading: loadingSettings,
     data: dataSettings,
     error: errorSettings,
-  } = useSelector(settingsSelector);
+  } = useSelector(settingsSelector, shallowEqual);
 
   const { nodeEnableSoloMining } = dataSettings;
 
@@ -84,19 +83,19 @@ const SoloMining = () => {
     loading: loadingMiner,
     data: { online: minerOnline, stats: dataMiner },
     error: errorMiner,
-  } = useSelector(minerSelector);
+  } = useSelector(minerSelector, shallowEqual);
 
   // Node data
   const {
     loading: loadingNode,
     data: dataNode,
     error: errorNode,
-  } = useSelector(nodeSelector);
+  } = useSelector(nodeSelector, shallowEqual);
 
   const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode;
 
   // Mcu data
-  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector);
+  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector, shallowEqual);
 
   const { network } = dataMcu;
 

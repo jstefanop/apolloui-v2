@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react';
 import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
 import Navbar from '../navbar/NavbarAdmin';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useQuery } from '@apollo/client';
 import { updateNodeStats } from '../../redux/actions/node';
 import { NODE_STATS_QUERY } from '../../graphql/node';
@@ -194,7 +194,7 @@ const Layout = ({ children, routes }) => {
   // Settings data reselected
   const {
     data: { nodeEnableSoloMining },
-  } = useSelector(settingsSelector);
+  } = useSelector(settingsSelector, shallowEqual);
 
   // Reparsing routes
   routes = routes.filter((route) => {

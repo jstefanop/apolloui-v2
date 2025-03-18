@@ -9,16 +9,19 @@ const minerErrorSelector = (state) => state.miner.error;
 const minerLoadingSelector = (state) => state.miner.loading;
 
 export const minerSelector = createSelector(
-  [minerDataSelector, minerErrorSelector, minerLoadingSelector],
+  minerDataSelector,
+  minerErrorSelector,
+  minerLoadingSelector,
   (minerData, minerError, minerLoading) => {
     const {
       Miner: {
         online: { error: errorOnline, result = {} },
         stats: { error: errorStats, result: resultStats },
       },
-    } = minerData || initialState;
+    } = minerData ?? initialState;
 
-    const { stats: minerStats, ckpool: ckData } = resultStats || {};
+    const minerStats = resultStats?.stats ?? {};
+    const ckData = resultStats?.ckpool ?? {};
 
     let minerOnline = false;
     if (result?.online && result?.online?.status)
@@ -93,7 +96,9 @@ export const minerSelector = createSelector(
           wattTotal,
           hashrateInGh,
           avgHashrateInGh,
-          efficiency: avgHashrateInGh ? (wattTotal / avgHashrateInGh) * 1000 : 0,
+          efficiency: avgHashrateInGh
+            ? (wattTotal / avgHashrateInGh) * 1000
+            : 0,
           fanSpeed: _.mean(fanRpm),
           temperature,
           errorRate,
@@ -111,7 +116,10 @@ export const minerSelector = createSelector(
       const { pool: ckPool, users: ckUsers } = ckData || {};
 
       const filteredCkUsers = _.filter(ckUsers, (user) => {
-        return user.lastshare && user.lastshare > moment().subtract(1, 'days').format('X');
+        return (
+          user.lastshare &&
+          user.lastshare > moment().subtract(1, 'days').format('X')
+        );
       });
 
       const {
@@ -215,7 +223,7 @@ export const minerSelector = createSelector(
       });
 
       // Board sum/avg
-      let avgBoardEfficiency = (minerPower / globalAvgHashrateInGh) * 1000
+      let avgBoardEfficiency = (minerPower / globalAvgHashrateInGh) * 1000;
 
       let avgBoardTemp = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.temperature;
@@ -324,17 +332,12 @@ export const minerSelector = createSelector(
         totalBoards,
         activePools,
         soloMining: (ckData && true) || false,
-        ckRuntime: moment().to(
-          moment().subtract(
-            ckRuntime,
-            'seconds'
-          ),
-          true
-        ),
+        ckRuntime: moment().to(moment().subtract(ckRuntime, 'seconds'), true),
         ckPoolLastUpdate,
         ckUsersCount,
         ckWorkersCount,
-        ckPoolHashrateInGhs: ckHashrate1m && convertHashrateStringToValue(ckHashrate1m),
+        ckPoolHashrateInGhs:
+          ckHashrate1m && convertHashrateStringToValue(ckHashrate1m),
         ckPoolHashrate1m:
           ckHashrate1m &&
           displayHashrate(

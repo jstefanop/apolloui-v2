@@ -13,7 +13,7 @@ import SimpleCard from '../../UI/SimpleCard';
 import SimpleSwitchSettingsItem from '../../UI/SimpleSwitchSettingsItem';
 import { useSettings } from '../context/SettingsContext';
 import { isValidBitcoinAddress, isCompatibleBitcoinAddress } from '../../../lib/utils';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { presetPools } from '../../../lib/utils';
 
@@ -42,7 +42,7 @@ const SoloSettings = () => {
   }, [settings.nodeEnableSoloMining]);
 
   // Node data
-  const { data: dataNode } = useSelector(nodeSelector);
+  const { data: dataNode } = useSelector(nodeSelector, shallowEqual);
   const { blocksCount, blockHeader } = dataNode || {};
 
   // Check for btcsig setting

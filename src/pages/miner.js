@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useEffect } from 'react';
 import { BulletList, List } from 'react-content-loader';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
@@ -63,17 +63,17 @@ const Miner = () => {
     loading: loadingSettings,
     data: dataSettings,
     error: errorSettings,
-  } = useSelector(settingsSelector);
+  } = useSelector(settingsSelector, shallowEqual);
 
   // Miner data
   const {
     loading: loadingMiner,
     data: { stats: dataMiner },
     error: errorMiner,
-  } = useSelector(minerSelector);
+  } = useSelector(minerSelector, shallowEqual);
 
   // Services data reselected
-  const { data: servicesStatus } = useSelector(servicesSelector);
+  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataMiner);

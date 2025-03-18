@@ -17,7 +17,7 @@ import SimpleCard from '../../UI/SimpleCard';
 import SimpleSwitchSettingsItem from '../../UI/SimpleSwitchSettingsItem';
 import { useNodeSettings } from '../hooks/useNodeSettings';
 import { useSettings } from '../context/SettingsContext';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { getNodeErrorMessage } from '../../../lib/utils';
 
@@ -40,7 +40,7 @@ const NodeSettings = () => {
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
 
   // Node data from Redux
-  const { data: dataNode, error: errorNode, loading: loadingNode } = useSelector(nodeSelector);
+  const { data: dataNode, error: errorNode, loading: loadingNode } = useSelector(nodeSelector, shallowEqual);
   const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode);
 
   // Handle button click to open connect modal

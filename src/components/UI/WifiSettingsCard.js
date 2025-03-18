@@ -29,7 +29,7 @@ import { Wifi01Icon } from './Icons/Wifi01Icon';
 import { Wifi02Icon } from './Icons/Wifi02Icon';
 import { Wifi03Icon } from './Icons/Wifi03Icon';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { wifiSelector } from '../../redux/reselect/wifi';
 import { updateWifi } from '../../redux/actions/wifi';
 
@@ -46,7 +46,7 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
     data: dataWifi,
     error: errorWifi,
     loading: loadingWifi,
-  } = useSelector(wifiSelector);
+  } = useSelector(wifiSelector, shallowEqual);
 
   const initialState = {
     Mcu: {

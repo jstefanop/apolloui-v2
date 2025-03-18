@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLazyQuery } from '@apollo/client';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import NavbarSeconday from './NavbarSecondary';
@@ -42,13 +42,13 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     loading,
     data: { stats },
     error,
-  } = useSelector(minerSelector);
+  } = useSelector(minerSelector, shallowEqual);
 
   // Settings data
-  const { data: settings } = useSelector(settingsSelector);
+  const { data: settings } = useSelector(settingsSelector, shallowEqual);
 
   // Services data reselected
-  const { data: servicesStatus } = useSelector(servicesSelector);
+  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   // Miner actions
   const [startMiner, { loading: loadingMinerStart, error: errorMinerStart }] =

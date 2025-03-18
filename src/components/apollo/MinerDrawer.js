@@ -28,7 +28,7 @@ import { SharesSentIcon } from '../UI/Icons/SharesSentIcon';
 import { DifficultyIcon } from '../UI/Icons/DifficultyIcon';
 import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import { settingsSelector } from '../../redux/reselect/settings';
 
 const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
@@ -39,7 +39,7 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
   );
 
   // Settings data
-  const { data: settings } = useSelector(settingsSelector);
+  const { data: settings } = useSelector(settingsSelector, shallowEqual);
   const temperatureUnit = settings?.temperatureUnit || 'c'; // Use 'C' as default
 
   const activeBoards = _.size(_.filter(data, { status: true }));

@@ -18,7 +18,7 @@ import Head from 'next/head';
 
 import React, { useEffect, useRef } from 'react';
 import { BulletList, List } from 'react-content-loader';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
@@ -58,7 +58,7 @@ const Overview = () => {
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
 
-  const { data: servicesStatus } = useSelector(servicesSelector);
+  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   const nodeStatus = servicesStatus?.node?.status;
 
@@ -67,7 +67,7 @@ const Overview = () => {
     loading: loadingMiner,
     data: { stats: dataMiner },
     error: errorMiner,
-  } = useSelector(minerSelector);
+  } = useSelector(minerSelector, shallowEqual);
 
   const {
     globalHashrate,
@@ -82,7 +82,7 @@ const Overview = () => {
     loading: loadingMcu,
     data: dataMcu,
     error: errorMcu,
-  } = useSelector(mcuSelector);
+  } = useSelector(mcuSelector, shallowEqual);
 
   const { temperature: mcuTemperature, cpu, disks, memory } = dataMcu || {};
 
@@ -98,7 +98,7 @@ const Overview = () => {
     loading: loadingNode,
     data: dataNode,
     error: errorNode,
-  } = useSelector(nodeSelector);
+  } = useSelector(nodeSelector, shallowEqual);
 
   const { connectionCount, blocksCount, sizeOnDisk } = dataNode;
 
@@ -107,13 +107,13 @@ const Overview = () => {
     loading: loadingAnalytics,
     data: dataAnalytics,
     error: errorAnalytics,
-  } = useSelector(analyticsSelector);
+  } = useSelector(analyticsSelector, shallowEqual);
 
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode);
 
   // Settings data
-  const { data: settings } = useSelector(settingsSelector);
+  const { data: settings } = useSelector(settingsSelector, shallowEqual);
 
   const { nodeMaxConnections, temperatureUnit } = settings || {};
 

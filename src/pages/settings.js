@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useQuery, useLazyQuery } from '@apollo/client';
 import { PoolIcon } from '../components/UI/Icons/PoolIcon';
 import { MinerIcon } from '../components/UI/Icons/MinerIcon';
@@ -69,12 +69,12 @@ const Settings = () => {
     data: dataNode,
     error: errorNode,
     loading: loadingNode,
-  } = useSelector(nodeSelector);
+  } = useSelector(nodeSelector, shallowEqual);
   const { localaddresses } = dataNode || {};
   const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode);
 
   // Mcu data from Redux
-  const { data: dataMcu } = useSelector(mcuSelector);
+  const { data: dataMcu } = useSelector(mcuSelector, shallowEqual);
   const { network } = dataMcu || {};
 
   // Calculate node address for connection modal

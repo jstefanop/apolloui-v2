@@ -1,8 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 import { createWrapper } from 'next-redux-wrapper';
 import { persistStore, persistReducer } from 'redux-persist';
-import thunkMiddleware from 'redux-thunk';
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import * as reducers from './reducers';
@@ -22,18 +21,22 @@ const persistedReducer = persistReducer(
 );
 
 let store;
+let persistor;
 
 const makeStore = () => {
   store = configureStore({
     reducer: persistedReducer,
     devTools: process.env.NODE_ENV !== 'production',
-    middleware: [thunkMiddleware, feedbackMiddleware],
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }).concat(feedbackMiddleware),
   });
 
-  store.__persistor = persistStore(store); // Nasty hack
+  persistor = persistStore(store);
 
   return store;
 };
 
-export { store };
-export default createWrapper(makeStore);
+export { store, persistor };
+export default createWrapper(makeStore, { debug: false });

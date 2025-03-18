@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import _ from 'lodash';
 
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
@@ -40,7 +40,7 @@ const System = () => {
     loading: loadingMcu,
     data: dataMcu,
     error: errorMcu,
-  } = useSelector(mcuSelector);
+  } = useSelector(mcuSelector, shallowEqual);
 
   const {
     temperature: mcuTemperature,

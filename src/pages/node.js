@@ -15,7 +15,7 @@ import moment from 'moment';
 import CountUp from 'react-countup';
 import Head from 'next/head';
 import { List } from 'react-content-loader';
-import { useSelector } from 'react-redux';
+import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
@@ -62,7 +62,7 @@ const Node = () => {
     loading: loadingNode,
     data: dataNode,
     error: errorNode,
-  } = useSelector(nodeSelector);
+  } = useSelector(nodeSelector, shallowEqual);
 
   const {
     connectionCount,
@@ -93,7 +93,7 @@ const Node = () => {
   }, [dataNode]);
 
   // Mcu data
-  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector);
+  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector, shallowEqual);
 
   const { disks, network } = dataMcu;
 
@@ -103,12 +103,12 @@ const Node = () => {
   const localAddress = wlan0?.address || eth0?.address;
 
   // Settings data
-  const { data: settings } = useSelector(settingsSelector);
+  const { data: settings } = useSelector(settingsSelector, shallowEqual);
 
   const { nodeRpcPassword, nodeEnableTor, nodeMaxConnections } = settings || {};
 
   // Services data reselected
-  const { data: servicesStatus } = useSelector(servicesSelector);
+  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   const nodeAddress =
     localaddresses?.length && nodeEnableTor
@@ -246,6 +246,7 @@ const Node = () => {
                         ? 'animate__animated animate__pulse'
                         : undefined
                     }
+                    as="span"
                   >
                     {blockHeader === blocksCount && (
                       <Flex direction="row" alignItems="baseline">
@@ -261,6 +262,7 @@ const Node = () => {
                           fontWeight={500}
                           color="gray.600"
                           ml="2"
+                          as="span"
                         >
                           blocks
                         </Text>

@@ -6,20 +6,17 @@ const nodeErrorSelector = (state) => state.node.error;
 const nodeLoadingSelector = (state) => state.node.loading;
 
 export const nodeSelector = createSelector(
-  [nodeDataSelector, nodeErrorSelector, nodeLoadingSelector],
+  nodeDataSelector,
+  nodeErrorSelector,
+  nodeLoadingSelector,
   (nodeData, nodeError, nodeLoading) => {
     const {
       Node: {
-        stats: {
-          error: errorStats,
-          result,
-        },
+        stats: { error: errorStats, result },
       },
-    } = nodeData || initialState;
+    } = nodeData ?? initialState;
 
-    const {
-      stats: nodeStats = {},
-    } = result || {};
+    const nodeStats = result?.stats ?? {};
 
     const { error } = nodeStats;
 

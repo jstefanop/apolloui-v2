@@ -6,7 +6,9 @@ const analyticsErrorSelector = (state) => state.analytics.error;
 const analyticsLoadingSelector = (state) => state.analytics.loading;
 
 export const analyticsSelector = createSelector(
-  [analyticsDataSelector, analyticsErrorSelector, analyticsLoadingSelector],
+  analyticsDataSelector,
+  analyticsErrorSelector,
+  analyticsLoadingSelector,
   (analyticsData, analyticsError, analyticsLoading) => {
     const {
       TimeSeries: {
@@ -14,7 +16,7 @@ export const analyticsSelector = createSelector(
       },
     } = analyticsData || initialState;
 
-    const { data = [] } = result || [];
+    const { data = [] } = result || {};
 
     const errors = [...[analyticsError, errorStats].filter(Boolean)];
 

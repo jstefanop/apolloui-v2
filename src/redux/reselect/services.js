@@ -6,23 +6,22 @@ const servicesErrorSelector = (state) => state.services.error;
 const servicesLoadingSelector = (state) => state.services.loading;
 
 export const servicesSelector = createSelector(
-  [servicesDataSelector, servicesErrorSelector, servicesLoadingSelector],
+  servicesDataSelector,
+  servicesErrorSelector,
+  servicesLoadingSelector,
   (servicesData, servicesError, servicesLoading) => {
     const {
       Services: {
-        stats: {
-          error: errorStats,
-          result,
-        },
+        stats: { error: errorStats, result },
       },
-    } = servicesData || initialState;
+    } = servicesData ?? initialState;
 
-    const {
-      data: servicesStatus = [],
-    } = result || {};
+    const servicesStatus = result?.data ?? [];
 
     // Ensure servicesStatus is always an array
-    const servicesStatusArray = Array.isArray(servicesStatus) ? servicesStatus : [];
+    const servicesStatusArray = Array.isArray(servicesStatus)
+      ? servicesStatus
+      : [];
 
     // Transform servicesStatusArray into an object keyed by serviceName
     const transformedData = servicesStatusArray.reduce((acc, service) => {
