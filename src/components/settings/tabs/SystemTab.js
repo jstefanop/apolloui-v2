@@ -9,10 +9,10 @@ const SystemTab = () => {
     <>
       <SimpleGrid columns={{ base: 1, xl: 2 }} gap="20px" mb="20px">
         <WifiSettings />
+        <TemperatureSettings />
       </SimpleGrid>
       <SimpleGrid columns={{ base: 1, md: 2 }} gap="20px">
         <PasswordSettings />
-        <TemperatureSettings />
       </SimpleGrid>
     </>
   );

@@ -21,7 +21,7 @@ function AuthCentered(props) {
       justifySelf="center"
       overflow="hidden"
       mx={{ base: '10px', lg: '0px' }}
-      minH="80vh"
+      minH="100vh"
     >
       <FixedPlugin />
       <Box

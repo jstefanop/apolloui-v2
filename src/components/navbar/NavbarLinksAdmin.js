@@ -15,6 +15,7 @@ import {
   Spinner,
   Box,
   useDisclosure,
+  Tooltip,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { signOut } from 'next-auth/react';
@@ -34,8 +35,10 @@ import { StartIcon } from '../UI/Icons/StartIcon';
 import { GrUserWorker } from 'react-icons/gr';
 import { GoVersions } from 'react-icons/go';
 import { TbAlertHexagonFilled } from 'react-icons/tb';
+import { MdOutlineDescription } from 'react-icons/md';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
+import NavbarLogsModal from './NavbarLogsModal';
 import {
   getVersionFromPackageJson,
   capitalizeFirstLetter,
@@ -68,6 +71,11 @@ export default function HeaderLinks({
   );
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isLogsModalOpen,
+    onOpen: onLogsModalOpen,
+    onClose: onLogsModalClose
+  } = useDisclosure();
 
   const handleSignout = async () => {
     await signOut({ redirect: false });
@@ -120,8 +128,27 @@ export default function HeaderLinks({
         remoteVersion={remoteVersion}
       />
 
+      <NavbarLogsModal
+        isOpen={isLogsModalOpen}
+        onClose={onLogsModalClose}
+      />
+
       {!loading && (
         <Center>
+          {/* Logs Button */}
+          <Tooltip label="View System Logs">
+            <IconButton
+              aria-label="View System Logs"
+              icon={<MdOutlineDescription />}
+              size="md"
+              variant="outline"
+              mr={2}
+              borderRadius="full"
+              _hover={{ bg: 'navy.50', color: 'navy.600' }}
+              onClick={onLogsModalOpen}
+            />
+          </Tooltip>
+
           {/* NODE */}
           <Flex
             bg={badgeBg}

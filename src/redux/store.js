@@ -17,6 +17,7 @@ import feedbackReducer, {
 } from './slices/feedbackSlice';
 import minerActionReducer from './slices/minerActionSlice';
 import servicesReducer from './slices/servicesSlice';
+import logsReducer from './slices/logsSlice';
 
 // Custom middleware
 const feedbackMiddleware = (store) => (next) => (action) => {
@@ -76,6 +77,7 @@ const rootReducer = {
   feedback: feedbackReducer,
   minerAction: minerActionReducer,
   services: servicesReducer,
+  logs: logsReducer,
 };
 
 // Create persisted reducer
