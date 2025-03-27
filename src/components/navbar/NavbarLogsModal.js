@@ -136,7 +136,7 @@ const NavbarLogsModal = ({ isOpen, onClose }) => {
     if (isOpen && autoRefresh) {
       intervalRef.current = setInterval(fetchLogs, refreshInterval);
     }
-  }, [autoRefresh, fetchLogs, isOpen]);
+  }, [autoRefresh, isOpen, fetchLogs]);
 
   // Scroll to bottom when logs update
   useEffect(() => {
