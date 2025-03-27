@@ -1,4 +1,10 @@
-import { useTheme, useColorModeValue, Box, Spinner, Center } from '@chakra-ui/react';
+import {
+  useTheme,
+  useColorModeValue,
+  Box,
+  Spinner,
+  Center,
+} from '@chakra-ui/react';
 import { useEffect, useRef, useMemo } from 'react';
 import {
   Chart as ChartJS,
@@ -28,10 +34,22 @@ const HashrateChart = ({ dataAnalytics }) => {
   const theme = useTheme();
   const chartRef = useRef(null);
 
-  const gridColor = useColorModeValue(theme.colors.secondaryGray[400], theme.colors.secondaryGray[900]);
-  const textColor = useColorModeValue(theme.colors.secondaryGray[700], theme.colors.secondaryGray[700]);
-  const minerColor = useColorModeValue(theme.colors.blue[500], theme.colors.blue[500]);
-  const poolColor = useColorModeValue(theme.colors.brand[600], theme.colors.brand[600]);
+  const gridColor = useColorModeValue(
+    theme.colors.secondaryGray[400],
+    theme.colors.secondaryGray[900]
+  );
+  const textColor = useColorModeValue(
+    theme.colors.secondaryGray[700],
+    theme.colors.secondaryGray[700]
+  );
+  const minerColor = useColorModeValue(
+    theme.colors.blue[500],
+    theme.colors.blue[500]
+  );
+  const poolColor = useColorModeValue(
+    theme.colors.brand[600],
+    theme.colors.brand[600]
+  );
 
   const MAX_DATA_POINTS = 24;
 
@@ -42,14 +60,16 @@ const HashrateChart = ({ dataAnalytics }) => {
     }
 
     // Sort by date to ensure we're getting the most recent data
-    const sortedData = [...dataAnalytics].sort((a, b) =>
-      new Date(b.date) - new Date(a.date)
+    const sortedData = [...dataAnalytics].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
     );
 
     // Take only the most recent MAX_DATA_POINTS
     const limitedData = sortedData.slice(0, MAX_DATA_POINTS).reverse();
 
-    const labels = limitedData.map((item) => moment(item.date).startOf('hour').format('HH:mm'));
+    const labels = limitedData.map((item) =>
+      moment(item.date).startOf('hour').format('HH:mm')
+    );
     const hashrates = limitedData.map((item) => item.hashrate);
     const poolhashrates = limitedData.map((item) => item.poolHashrate);
 
@@ -104,7 +124,7 @@ const HashrateChart = ({ dataAnalytics }) => {
         },
         grid: {
           color: gridColor,
-        }
+        },
       },
     },
     plugins: {
@@ -116,29 +136,40 @@ const HashrateChart = ({ dataAnalytics }) => {
             return `Average at start of ${context[0].label}`;
           },
           label: (context) => {
-            return `${context.dataset.label} ${displayHashrate(context.parsed.y, 'GH/s', true, 2)}`;
+            return `${context.dataset.label} ${displayHashrate(
+              context.parsed.y,
+              'GH/s',
+              true,
+              2
+            )}`;
           },
         },
       },
       legend: {
         labels: {
           color: textColor,
-        }
-      }
+        },
+      },
     },
   };
 
-  // Cleanup chart instance when component unmounts
   useEffect(() => {
+    // Capture the ref value when the effect runs
+    const chart = chartRef.current;
+
     return () => {
-      if (chartRef.current && chartRef.current.chartInstance) {
-        chartRef.current.chartInstance.destroy();
+      if (chart && chart.chartInstance) {
+        chart.chartInstance.destroy();
       }
     };
   }, []);
 
   // Show loading state if no data is available yet
-  if (!dataAnalytics || !Array.isArray(dataAnalytics) || dataAnalytics.length === 0) {
+  if (
+    !dataAnalytics ||
+    !Array.isArray(dataAnalytics) ||
+    dataAnalytics.length === 0
+  ) {
     return (
       <Center w="100%" h="300px">
         <Spinner size="xl" thickness="4px" color="brand.500" />
@@ -148,11 +179,7 @@ const HashrateChart = ({ dataAnalytics }) => {
 
   return (
     <Box w="100%" h="300px" p="20px">
-      <Line
-        ref={chartRef}
-        data={chartData}
-        options={chartOptions}
-      />
+      <Line ref={chartRef} data={chartData} options={chartOptions} />
     </Box>
   );
 };

@@ -128,7 +128,7 @@ const Setup = () => {
     if (step === 'mining') {
       getNodeStatus(); // Trigger the node status query when step is 'mining'
     }
-  }, [step]);
+  }, [step, getNodeStatus]);
 
   useEffect(() => {
     if (!nodeStatusData) return;
