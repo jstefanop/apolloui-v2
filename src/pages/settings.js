@@ -12,6 +12,7 @@ import {
   Text,
   Flex,
   Button,
+  Spinner,
 } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
@@ -60,6 +61,7 @@ const Settings = () => {
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
   const [isModalFormatOpen, setIsModalFormatOpen] = useState(false);
   const [isModalConnectOpen, setIsModalConnectOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false); // New state variable to track saving process
 
   // Node data from Redux
   const {
@@ -204,10 +206,10 @@ const Settings = () => {
       restartMinerNeeded && restartNodeNeeded
         ? 'both'
         : restartMinerNeeded && !restartNodeNeeded
-        ? 'miner'
-        : !restartMinerNeeded && restartNodeNeeded
-        ? 'node'
-        : null;
+          ? 'miner'
+          : !restartMinerNeeded && restartNodeNeeded
+            ? 'node'
+            : null;
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
@@ -246,6 +248,8 @@ const Settings = () => {
   // Handle restore
   const handleRestoreBackup = async () => {
     try {
+      setIsSaving(true); // Set saving state to true
+
       const { pools, settings } = restoreData;
       delete settings.__typename;
       pools.forEach((element) => {
@@ -264,7 +268,10 @@ const Settings = () => {
           type: 'success',
         })
       );
+
+      setIsSaving(false); // Set saving state back to false when done
     } catch (error) {
+      setIsSaving(false); // Set saving state back to false on error
       dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
   };
@@ -272,6 +279,8 @@ const Settings = () => {
   // Handle format disk
   const handleFormatDisk = async () => {
     try {
+      setIsSaving(true); // Set saving state to true
+
       await stopNode();
       await formatDisk();
       dispatch(
@@ -280,7 +289,10 @@ const Settings = () => {
           type: 'info',
         })
       );
+
+      setIsSaving(false); // Set saving state back to false when done
     } catch (error) {
+      setIsSaving(false); // Set saving state back to false on error
       dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
   };
@@ -293,6 +305,7 @@ const Settings = () => {
 
   // Handle save settings
   const handleSaveSettings = async (type) => {
+    setIsSaving(true); // Set saving state to true
     setErrorForm(null);
     try {
       // Extract values from settings
@@ -320,8 +333,10 @@ const Settings = () => {
       const { enabled, url, username, password, index } = pool;
 
       // Validations - these should be moved to separate functions or hooks
-      if (!url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/))
+      if (!url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/)) {
+        setIsSaving(false); // Set saving state back to false on validation error
         return setErrorForm('Invalid pool URL');
+      }
 
       // Prepare inputs
       const input = {
@@ -405,10 +420,17 @@ const Settings = () => {
       } else {
         dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
+
+      setIsSaving(false); // Set saving state back to false when done
     } catch (error) {
+      setIsSaving(false); // Set saving state back to false on error
       dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
     }
   };
+
+  // Determine if saving is in progress
+  const isSavingInProgress = isSaving || loadingSave || loadingSavePools || loadingMinerRestart ||
+    loadingNodeStart || loadingNodeStop || changeLockPasswordLoading;
 
   // Errors
   if (errorQuerySettings || errorQueryPools) {
@@ -476,6 +498,7 @@ const Settings = () => {
               variant={'solid'}
               size={'md'}
               onClick={handleDiscardChanges}
+              isDisabled={isSavingInProgress}
             >
               Discard changes
             </Button>
@@ -486,8 +509,10 @@ const Settings = () => {
                   variant={'solid'}
                   size={'md'}
                   mr="4"
-                  disabled={errorForm}
+                  disabled={errorForm || isSavingInProgress}
                   onClick={() => handleSaveSettings(restartNeeded)}
+                  isLoading={isSavingInProgress}
+                  loadingText="Saving..."
                 >
                   Save & Restart
                 </Button>
@@ -497,8 +522,10 @@ const Settings = () => {
                   colorScheme="green"
                   variant={'solid'}
                   size={'md'}
-                  disabled={errorForm}
+                  disabled={errorForm || isSavingInProgress}
                   onClick={() => handleSaveSettings()}
+                  isLoading={isSavingInProgress}
+                  loadingText="Saving..."
                 >
                   Save
                 </Button>
