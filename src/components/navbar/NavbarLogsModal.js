@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -76,7 +76,7 @@ const NavbarLogsModal = ({ isOpen, onClose }) => {
     },
   });
 
-  const fetchLogs = () => {
+  const fetchLogs = useCallback(() => {
     setIsLoadingLogs(true);
 
     // Simulate minimum loading time of 1 second
@@ -106,7 +106,7 @@ const NavbarLogsModal = ({ isOpen, onClose }) => {
         }, remainingTime);
       },
     });
-  };
+  }, [logType, lines, getLogs]);
 
   // Start auto-refresh when modal opens
   useEffect(() => {
@@ -124,7 +124,7 @@ const NavbarLogsModal = ({ isOpen, onClose }) => {
         intervalRef.current = null;
       }
     };
-  }, [isOpen, logType, lines, autoRefresh]);
+  }, [isOpen, logType, lines, autoRefresh, fetchLogs]);
 
   // Handle auto-refresh toggle
   useEffect(() => {
@@ -136,7 +136,7 @@ const NavbarLogsModal = ({ isOpen, onClose }) => {
     if (isOpen && autoRefresh) {
       intervalRef.current = setInterval(fetchLogs, refreshInterval);
     }
-  }, [autoRefresh]);
+  }, [autoRefresh, fetchLogs, isOpen]);
 
   // Scroll to bottom when logs update
   useEffect(() => {
