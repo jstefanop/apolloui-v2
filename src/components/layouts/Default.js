@@ -210,8 +210,9 @@ const Layout = ({ children, routes }) => {
         lastAnalyticsPollRef.current = now;
       }
 
+      
       // Always dispatch updates when we have data and component is mounted
-      if (dataAnalytics && isMountedRef.current) {
+      if (dataAnalytics) {
         dispatch(
           updateAnalytics({
             loading: loadingAnalytics,
@@ -223,6 +224,7 @@ const Layout = ({ children, routes }) => {
     } else {
       // If we're not on the overview page, stop polling to save resources
       stopPollingAnalytics();
+      lastAnalyticsPollRef.current = null;
     }
 
     return () => {
