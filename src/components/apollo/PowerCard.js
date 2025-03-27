@@ -1,7 +1,7 @@
 import { useColorModeValue } from '@chakra-ui/system';
-import { Text } from '@chakra-ui/react';
+import { Spinner } from '@chakra-ui/react';
 import CountUp from 'react-countup';
-import { MdOfflineBolt, MdPending } from 'react-icons/md';
+import { MdOfflineBolt } from 'react-icons/md';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import TileCard from '../UI/TileCard';
 import BannerPower from '../../assets/img/powerusage_banner.png';
@@ -31,7 +31,7 @@ const PowerCard = ({
   // Determine the appropriate icon for the TileCard
   const tileCardIcon = (() => {
     if (status === 'offline') return MdOfflineBolt;
-    if (status === 'pending') return MdPending;
+    if (status === 'pending') return Spinner;
     return PowerIcon;
   })();
 

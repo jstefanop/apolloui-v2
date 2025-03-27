@@ -12,7 +12,6 @@ export const GET_ANALYTICS_QUERY = gql`
             hashrate
             accepted
             poolHashrate
-            accepted
             rejected
             sent
             errors

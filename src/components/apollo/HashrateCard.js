@@ -1,6 +1,6 @@
 import { useColorModeValue } from '@chakra-ui/system';
-import { Icon, Text } from '@chakra-ui/react';
-import { MdOfflineBolt, MdPending } from 'react-icons/md';
+import { Spinner } from '@chakra-ui/react';
+import { MdOfflineBolt } from 'react-icons/md';
 import { MinerIcon } from '../UI/Icons/MinerIcon';
 import TileCard from '../UI/TileCard';
 import CountUp from 'react-countup';
@@ -32,7 +32,7 @@ const HashrateCard = ({
   // Determine the appropriate icon for the TileCard
   const tileCardIcon = (() => {
     if (status === 'offline') return MdOfflineBolt;
-    if (status === 'pending') return MdPending;
+    if (status === 'pending') return Spinner;
     return MinerIcon;
   })();
 

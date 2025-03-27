@@ -16,7 +16,11 @@ export const analyticsSelector = createSelector(
       },
     } = analyticsData || initialState;
 
-    const { data = [] } = result || {};
+    // Get data and ensure it's limited to the most recent 24 elements
+    let data = result?.data || [];
+    if (data.length > 24) {
+      data = data.slice(-24);
+    }
 
     const errors = [...[analyticsError, errorStats].filter(Boolean)];
 

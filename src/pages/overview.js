@@ -211,7 +211,13 @@ const Overview = () => {
                 justify={{ base: 'center', xl: 'center' }}
                 direction={{ base: 'column', md: 'row' }}
               >
-                <HashrateChart dataAnalytics={dataAnalytics} />
+                <HashrateChart
+                  dataAnalytics={
+                    dataAnalytics && Array.isArray(dataAnalytics)
+                      ? dataAnalytics
+                      : null
+                  }
+                />
               </Flex>
             </Card>
           </GridItem>
@@ -244,14 +250,17 @@ const Overview = () => {
                         <span
                           className={
                             avgBoardTemp !== prevAvgBoardTemp &&
-                              servicesStatus?.miner?.status === 'online'
+                            servicesStatus?.miner?.status === 'online'
                               ? 'animate__animated animate__flash'
                               : undefined
                           }
                         >
                           {servicesStatus?.miner?.status === 'online' &&
-                            avgBoardTemp !== null
-                            ? `${formatTemperature(avgBoardTemp, temperatureUnit)}`
+                          avgBoardTemp !== null
+                            ? `${formatTemperature(
+                                avgBoardTemp,
+                                temperatureUnit
+                              )}`
                             : 'N/A'}
                         </span>
                       }
@@ -275,11 +284,11 @@ const Overview = () => {
                       name="System temperature"
                       value={
                         typeof mcuTemperature !== 'undefined' &&
-                          mcuTemperature !== null
+                        mcuTemperature !== null
                           ? `${formatTemperature(
-                            Math.round(mcuTemperature / 1000),
-                            temperatureUnit
-                          )} `
+                              Math.round(mcuTemperature / 1000),
+                              temperatureUnit
+                            )} `
                           : 'N/A'
                       }
                     />
@@ -309,7 +318,7 @@ const Overview = () => {
                           }
                         >
                           {servicesStatus?.miner?.status === 'online' &&
-                            avgBoardErrors !== null
+                          avgBoardErrors !== null
                             ? `${avgBoardErrors}%`
                             : 'N/A'}
                         </span>
@@ -440,8 +449,8 @@ const Overview = () => {
                       >
                         {blocksCount
                           ? blocksCount.toLocaleString('en-US', {
-                            maximumFractionDigits: 0,
-                          })
+                              maximumFractionDigits: 0,
+                            })
                           : 'N/A'}
                       </span>
                     }
