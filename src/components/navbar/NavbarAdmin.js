@@ -327,7 +327,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               routes={routes}
               handleSystemAction={handleSystemAction}
               minerOnline={servicesStatus?.miner?.status}
-              minerStats={stats}
+              minerStats={stats || []}
               nodeOnline={servicesStatus?.node?.status}
               settings={settings}
               error={error}

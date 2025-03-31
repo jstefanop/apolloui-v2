@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
 import Navbar from '../navbar/NavbarAdmin';
+import BlockFoundCelebration from '../UI/BlockFoundCelebration';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useQuery } from '@apollo/client';
 import { updateNodeStats } from '../../redux/slices/nodeSlice';
@@ -21,6 +22,7 @@ import { updateAnalytics } from '../../redux/slices/analyticsSlice';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { SERVICES_STATUS_QUERY } from '../../graphql/services';
 import { updateServicesStatus } from '../../redux/slices/servicesSlice';
+import { minerSelector } from '../../redux/reselect/miner';
 
 const Layout = ({ children, routes }) => {
   const { onOpen } = useDisclosure();
@@ -201,6 +203,13 @@ const Layout = ({ children, routes }) => {
     data: { nodeEnableSoloMining },
   } = useSelector(settingsSelector, shallowEqual);
 
+  // Get block found status from minerData
+  const {
+    data: {
+      stats: { blockFound },
+    },
+  } = useSelector(minerSelector, shallowEqual);
+
   // Reparsing routes
   routes = routes.filter((route) => {
     if (route.name === 'SOLO Mining' && !nodeEnableSoloMining) return false;
@@ -246,6 +255,18 @@ const Layout = ({ children, routes }) => {
               />
             </Box>
           </Portal>
+
+          {/* Block Found Celebration */}
+          {blockFound && (
+            <Box
+              mx="auto"
+              px={{ base: '20px', md: '30px' }}
+              pt={{ base: '150px', md: '70px' }}
+            >
+              <BlockFoundCelebration blockFound={blockFound} />
+            </Box>
+          )}
+
           <Box
             mx="auto"
             p={{ base: '20px', md: '30px' }}
@@ -253,7 +274,7 @@ const Layout = ({ children, routes }) => {
             minH="90vh"
             pt="50px"
           >
-            <Box pt={{ base: '130px', md: '80px', xl: '80px' }}>
+            <Box pt={!blockFound && { base: '130px', md: '80px', xl: '80px' }}>
               {React.cloneElement(children)}
             </Box>
           </Box>

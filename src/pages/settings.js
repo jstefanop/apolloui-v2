@@ -43,7 +43,11 @@ import ModalFormat from '../components/apollo/ModalFormat';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
 import _ from 'lodash';
 import moment from 'moment';
-import { getNodeErrorMessage } from '../lib/utils';
+import {
+  getNodeErrorMessage,
+  isValidBitcoinAddress,
+  isCompatibleBitcoinAddress,
+} from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../graphql/auth';
@@ -206,10 +210,10 @@ const Settings = () => {
       restartMinerNeeded && restartNodeNeeded
         ? 'both'
         : restartMinerNeeded && !restartNodeNeeded
-          ? 'miner'
-          : !restartMinerNeeded && restartNodeNeeded
-            ? 'node'
-            : null;
+        ? 'miner'
+        : !restartMinerNeeded && restartNodeNeeded
+        ? 'node'
+        : null;
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
@@ -338,6 +342,21 @@ const Settings = () => {
         return setErrorForm('Invalid pool URL');
       }
 
+      // Additional validation for solo mining
+      if (nodeEnableSoloMining) {
+        if (!isValidBitcoinAddress(username)) {
+          setIsSaving(false);
+          return setErrorForm('Invalid Bitcoin address for solo mining');
+        }
+
+        if (!isCompatibleBitcoinAddress(username)) {
+          setIsSaving(false);
+          return setErrorForm(
+            'P2WSH and P2TR Bitcoin addresses are not valid for solo mining'
+          );
+        }
+      }
+
       // Prepare inputs
       const input = {
         agree,
@@ -429,8 +448,14 @@ const Settings = () => {
   };
 
   // Determine if saving is in progress
-  const isSavingInProgress = isSaving || loadingSave || loadingSavePools || loadingMinerRestart ||
-    loadingNodeStart || loadingNodeStop || changeLockPasswordLoading;
+  const isSavingInProgress =
+    isSaving ||
+    loadingSave ||
+    loadingSavePools ||
+    loadingMinerRestart ||
+    loadingNodeStart ||
+    loadingNodeStop ||
+    changeLockPasswordLoading;
 
   // Errors
   if (errorQuerySettings || errorQueryPools) {
@@ -509,7 +534,7 @@ const Settings = () => {
                   variant={'solid'}
                   size={'md'}
                   mr="4"
-                  disabled={errorForm || isSavingInProgress}
+                  isDisabled={errorForm || isSavingInProgress}
                   onClick={() => handleSaveSettings(restartNeeded)}
                   isLoading={isSavingInProgress}
                   loadingText="Saving..."
@@ -522,7 +547,7 @@ const Settings = () => {
                   colorScheme="green"
                   variant={'solid'}
                   size={'md'}
-                  disabled={errorForm || isSavingInProgress}
+                  isDisabled={errorForm || isSavingInProgress}
                   onClick={() => handleSaveSettings()}
                   isLoading={isSavingInProgress}
                   loadingText="Saving..."

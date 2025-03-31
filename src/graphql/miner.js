@@ -67,6 +67,7 @@ export const MINER_STATS_QUERY = gql`
                 bestever
               }
             }
+            blockFound
           }
           stats {
             uuid
@@ -301,6 +302,19 @@ export const MINER_RESTART_QUERY = gql`
   query MINER_RESTART {
     Miner {
       restart {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const RESET_BLOCK_FOUND_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query RESET_BLOCK_FOUND {
+    Miner {
+      resetBlockFoundFlag {
         error {
           ...ErrorFragment
         }

@@ -20,7 +20,7 @@ export const minerSelector = createSelector(
       },
     } = minerData ?? initialState;
 
-    const minerStats = resultStats?.stats ?? {};
+    const minerStats = resultStats?.stats ?? [];
     const ckData = resultStats?.ckpool ?? {};
 
     let minerOnline = false;
@@ -113,7 +113,7 @@ export const minerSelector = createSelector(
       });
 
       // ckPool data
-      const { pool: ckPool, users: ckUsers } = ckData || {};
+      const { pool: ckPool, users: ckUsers, blockFound } = ckData || {};
 
       const filteredCkUsers = _.filter(ckUsers, (user) => {
         return (
@@ -375,6 +375,7 @@ export const minerSelector = createSelector(
         ckSharesAccepted,
         ckSharesRejected,
         ckUsers: filteredCkUsers,
+        blockFound,
       };
     }
 

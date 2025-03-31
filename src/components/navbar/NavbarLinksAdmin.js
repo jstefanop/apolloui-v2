@@ -96,9 +96,17 @@ export default function HeaderLinks({
   };
 
   // Parse stats
-  const { globalHashrate, avgBoardTemp, ckPoolDisconnected } = minerStats;
+  const globalHashrate = Array.isArray(minerStats?.stats) && minerStats.stats.length > 0
+    ? minerStats.stats[0].globalHashrate
+    : null;
+  const avgBoardTemp = Array.isArray(minerStats?.stats) && minerStats.stats.length > 0
+    ? minerStats.stats[0].avgBoardTemp
+    : null;
+  const ckPoolDisconnected = Array.isArray(minerStats?.stats) && minerStats.stats.length > 0
+    ? minerStats.stats[0].ckPoolDisconnected
+    : false;
 
-  const { nodeEnableSoloMining, temperatureUnit } = settings;
+  const { nodeEnableSoloMining, temperatureUnit } = settings || {};
 
   const nodeStatusLabel = nodeOnline
     ? capitalizeFirstLetter(nodeOnline)
