@@ -74,7 +74,7 @@ export default function HeaderLinks({
   const {
     isOpen: isLogsModalOpen,
     onOpen: onLogsModalOpen,
-    onClose: onLogsModalClose
+    onClose: onLogsModalClose,
   } = useDisclosure();
 
   const handleSignout = async () => {
@@ -96,15 +96,7 @@ export default function HeaderLinks({
   };
 
   // Parse stats
-  const globalHashrate = Array.isArray(minerStats?.stats) && minerStats.stats.length > 0
-    ? minerStats.stats[0].globalHashrate
-    : null;
-  const avgBoardTemp = Array.isArray(minerStats?.stats) && minerStats.stats.length > 0
-    ? minerStats.stats[0].avgBoardTemp
-    : null;
-  const ckPoolDisconnected = Array.isArray(minerStats?.stats) && minerStats.stats.length > 0
-    ? minerStats.stats[0].ckPoolDisconnected
-    : false;
+  const { globalHashrate, avgBoardTemp, ckPoolDisconnected } = minerStats || {};
 
   const { nodeEnableSoloMining, temperatureUnit } = settings || {};
 
@@ -136,10 +128,7 @@ export default function HeaderLinks({
         remoteVersion={remoteVersion}
       />
 
-      <NavbarLogsModal
-        isOpen={isLogsModalOpen}
-        onClose={onLogsModalClose}
-      />
+      <NavbarLogsModal isOpen={isLogsModalOpen} onClose={onLogsModalClose} />
 
       {!loading && (
         <Center>
@@ -188,12 +177,12 @@ export default function HeaderLinks({
                 nodeStatusLabel === 'Online'
                   ? 'green.500'
                   : nodeStatusLabel === 'Offline'
-                    ? 'gray.400'
-                    : nodeStatusLabel === 'Error'
-                      ? 'orange.500'
-                      : nodeStatusLabel === 'Pending'
-                        ? 'gray.300'
-                        : null
+                  ? 'gray.400'
+                  : nodeStatusLabel === 'Error'
+                  ? 'orange.500'
+                  : nodeStatusLabel === 'Pending'
+                  ? 'gray.300'
+                  : null
               }
               h="20px"
               w="20px"
@@ -207,12 +196,12 @@ export default function HeaderLinks({
                   nodeStatusLabel === 'Online'
                     ? CheckIcon
                     : nodeStatusLabel === 'Offline'
-                      ? PowerIcon
-                      : nodeStatusLabel === 'Error'
-                        ? WarningIcon
-                        : nodeStatusLabel === 'Pending'
-                          ? Spinner
-                          : null
+                    ? PowerIcon
+                    : nodeStatusLabel === 'Error'
+                    ? WarningIcon
+                    : nodeStatusLabel === 'Pending'
+                    ? Spinner
+                    : null
                 }
               />
             </Flex>
@@ -256,8 +245,8 @@ export default function HeaderLinks({
                   !ckPoolDisconnected && minerStatusLabel === 'Online'
                     ? 'green.500'
                     : minerStatusLabel !== 'Online'
-                      ? 'gray.400'
-                      : 'orange.500'
+                    ? 'gray.400'
+                    : 'orange.500'
                 }
                 h="20px"
                 w="20px"
@@ -271,8 +260,8 @@ export default function HeaderLinks({
                     !ckPoolDisconnected && minerStatusLabel === 'Online'
                       ? CheckIcon
                       : minerStatusLabel === 'Offline'
-                        ? PowerIcon
-                        : WarningIcon
+                      ? PowerIcon
+                      : WarningIcon
                   }
                 />
               </Flex>
@@ -327,12 +316,12 @@ export default function HeaderLinks({
                 minerStatusLabel === 'Online'
                   ? 'green.500'
                   : minerStatusLabel === 'Offline'
-                    ? 'gray.400'
-                    : minerStatusLabel === 'Error'
-                      ? 'orange.500'
-                      : minerStatusLabel === 'Pending'
-                        ? 'gray.300'
-                        : null
+                  ? 'gray.400'
+                  : minerStatusLabel === 'Error'
+                  ? 'orange.500'
+                  : minerStatusLabel === 'Pending'
+                  ? 'gray.300'
+                  : null
               }
               h="20px"
               w="20px"
@@ -346,12 +335,12 @@ export default function HeaderLinks({
                   minerStatusLabel === 'Online'
                     ? CheckIcon
                     : minerStatusLabel === 'Offline'
-                      ? PowerIcon
-                      : minerStatusLabel === 'Error'
-                        ? WarningIcon
-                        : minerStatusLabel === 'Pending'
-                          ? Spinner
-                          : null
+                    ? PowerIcon
+                    : minerStatusLabel === 'Error'
+                    ? WarningIcon
+                    : minerStatusLabel === 'Pending'
+                    ? Spinner
+                    : null
                 }
               />
             </Flex>
