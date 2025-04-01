@@ -21,7 +21,7 @@ export const minerSelector = createSelector(
     } = minerData ?? initialState;
 
     const minerStats = resultStats?.stats ?? [];
-    const ckData = resultStats?.ckpool ?? {};
+    const ckData = resultStats?.ckpool ?? null;
 
     let minerOnline = false;
     if (result?.online && result?.online?.status)
