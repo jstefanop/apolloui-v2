@@ -351,3 +351,8 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
   // Default or 'C' unit
   return `${tempCelsius.toFixed(precision)}°C`;
 };
+
+export const calculateDailyChance = (hashrateInGhs, networkHashrateInHashes) => {
+  if (!hashrateInGhs || !networkHashrateInHashes) return null;
+  return 1 / (((hashrateInGhs * 1e9) / networkHashrateInHashes) * 144);
+};

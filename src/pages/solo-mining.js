@@ -43,7 +43,7 @@ import Head from 'next/head';
 import moment from 'moment';
 import Cookies from 'js-cookie';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
-import { filterRecentShares, shortenBitcoinAddress } from '../lib/utils';
+import { filterRecentShares, shortenBitcoinAddress, calculateDailyChance } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
 import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
@@ -144,10 +144,7 @@ const SoloMining = () => {
   const prevBestSharePerc =
     1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
 
-  const dailyChance =
-    ckPoolHashrateInGhs && networkhashps
-      ? 1 / (((ckPoolHashrateInGhs * 1e9) / networkhashps) * 144)
-      : null;
+  const dailyChance = calculateDailyChance(ckPoolHashrateInGhs, networkhashps);
 
   const desiredKeys = [
     'hashrate5m',
@@ -561,6 +558,7 @@ const SoloMining = () => {
                           data={ckUsers[index].worker}
                           user={boardNames[index]}
                           difficulty={difficulty}
+                          networkhashps={networkhashps}
                         />
                         <Flex justifyContent={{ base: 'flex-end' }} mr="4">
                           <Button

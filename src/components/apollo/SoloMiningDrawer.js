@@ -20,9 +20,10 @@ import { MinerIcon } from '../UI/Icons/MinerIcon';
 import { LastShareIcon } from '../UI/Icons/LastShareIcon';
 import { SharesSentIcon } from '../UI/Icons/SharesSentIcon';
 import { BlocksIcon } from '../UI/Icons/BlocksIcon';
+import { GiDiamondTrophy } from 'react-icons/gi';
 import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
-import { filterRecentShares, workerIsActive } from '../../lib/utils';
+import { filterRecentShares, workerIsActive, calculateDailyChance, convertHashrateStringToValue } from '../../lib/utils';
 
 const SoloMiningDrawer = ({
   isOpen,
@@ -31,6 +32,7 @@ const SoloMiningDrawer = ({
   data,
   user,
   difficulty,
+  networkhashps,
 }) => {
   const drawerBgColor = useColorModeValue('gray.200', 'brand.700');
   const cardColor = useColorModeValue('white', 'brand.800');
@@ -104,6 +106,19 @@ const SoloMiningDrawer = ({
           }
         }
       });
+
+      // Add daily chance calculation
+      if (element.hashrate5m && networkhashps) {
+        const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
+        const dailyChance = calculateDailyChance(hashrateValue, networkhashps);
+        if (dailyChance !== null) {
+          mappedArray.push({
+            name: 'Daily chance',
+            value: `1 in ${dailyChance.toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
+            icon: GiDiamondTrophy ,
+          });
+        }
+      }
 
       if (lastShare !== null) {
         isActive = workerIsActive(lastShare, 180);
