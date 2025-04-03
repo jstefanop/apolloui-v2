@@ -132,17 +132,25 @@ const Setup = () => {
 
   useEffect(() => {
     if (!nodeStatusData) return;
-    const {
-      Node: {
-        stats: {
-          result: {
-            stats: {
-              blockchainInfo: { blocks: blocksCount, headers: blockHeader },
-            },
-          },
-        },
-      },
-    } = nodeStatusData || {};
+    
+    // Add proper null checks for each level of the object
+    const Node = nodeStatusData.Node;
+    if (!Node) return;
+    
+    const stats = Node.stats;
+    if (!stats) return;
+    
+    const result = stats.result;
+    if (!result) return;
+    
+    const statsData = result.stats;
+    if (!statsData) return;
+    
+    const blockchainInfo = statsData.blockchainInfo;
+    if (!blockchainInfo) return;
+    
+    const { blocks: blocksCount, headers: blockHeader } = blockchainInfo;
+    
     if (blockHeader && blockHeader === blocksCount) {
       setIsNodeSynced(true); // Set sync status based on query result
     }

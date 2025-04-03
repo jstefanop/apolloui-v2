@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { serializeError } from '../utils/errorUtils';
 
 // Helper function to deeply serialize any Moment objects
 const serializeMomentObjects = (obj) => {
@@ -42,7 +43,7 @@ const minerSlice = createSlice({
       // Serialize any Moment objects before updating state
       state.data = serializeMomentObjects(action.payload.data);
       state.loading = action.payload.loading;
-      state.error = action.payload.error;
+      state.error = serializeError(action.payload.error);
     },
   },
 });

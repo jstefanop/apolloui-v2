@@ -114,7 +114,7 @@ const StepPassword = ({
         )}
 
         <Flex justify="space-between" mt="80px">
-          <Button onClick={() => setStep('mining')}>Previous</Button>
+          <Button onClick={() => setStep(1)}>Previous</Button>
           <Button type="submit">Next</Button>
         </Flex>
       </form>

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { serializeError } from '../utils/errorUtils';
 
 const initialState = {
   data: null,
@@ -13,7 +14,7 @@ const servicesSlice = createSlice({
     updateServicesStatus: (state, action) => {
       state.data = action.payload.data;
       state.loading = action.payload.loading;
-      state.error = action.payload.error;
+      state.error = serializeError(action.payload.error);
     },
   },
 });

@@ -12,6 +12,10 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import Card from '../card/Card';
 
@@ -28,25 +32,35 @@ const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
           Select mining type
         </Heading>
       </Box>
+      {!isNodeSynced && (
+        <Alert status="warning" mb="10" borderRadius="lg">
+          <AlertIcon />
+          <Box>
+            <AlertTitle>Node not fully synced</AlertTitle>
+            <AlertDescription>
+              Solo mining will only begin once your node is 100% synced. You can select this option now, but mining will start automatically when sync is complete.
+            </AlertDescription>
+          </Box>
+        </Alert>
+      )}
       <Flex flexDir={{ base: 'column', md: 'row' }} justifyContent="center">
         <Card
-          onClick={isNodeSynced ? onOpen : null}
-          cursor={isNodeSynced ? 'pointer' : 'not-allowed'}
+          onClick={onOpen}
+          cursor="pointer"
           h="auto"
           mx="20px"
           p="50px"
           border="2px solid"
           borderColor="blue.900"
           bg="brand.800"
-          opacity={isNodeSynced ? '0.8' : '0.4'}
+          opacity="0.8"
         >
           <Button
             variant="outline"
             size="lg"
             colorScheme="white"
             textColor="white"
-            onClick={isNodeSynced ? onOpen : null}
-            isDisabled={!isNodeSynced}
+            onClick={onOpen}
           >
             Solo Mining
           </Button>
@@ -59,11 +73,7 @@ const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
             solo miners then solo blocks will be found every day and ensure
             Bitcoin can never be censored!
           </Text>
-          {!isNodeSynced && (
-            <Text mt="10px" color="red.300" fontSize="sm">
-              Node must be fully synced to enable Solo Mining. You can select this later once sync is complete.
-            </Text>
-          )}
+          
         </Card>
 
         <Card

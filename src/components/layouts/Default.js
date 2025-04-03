@@ -23,6 +23,18 @@ import { settingsSelector } from '../../redux/reselect/settings';
 import { SERVICES_STATUS_QUERY } from '../../graphql/services';
 import { updateServicesStatus } from '../../redux/slices/servicesSlice';
 import { minerSelector } from '../../redux/reselect/miner';
+import { isAuthError } from '../../redux/utils/errorUtils';
+
+// Funzione di utilità per serializzare gli errori Apollo
+const createSerializableError = (error) => {
+  if (!error) return null;
+  
+  return {
+    message: error.message || 'Unknown error',
+    operationName: error.operation?.operationName || 'Unknown operation',
+    timestamp: new Date().toISOString()
+  };
+};
 
 const Layout = ({ children, routes }) => {
   const { onOpen } = useDisclosure();
@@ -45,12 +57,27 @@ const Layout = ({ children, routes }) => {
     if (dataMiner) {
       // Create a deep copy to avoid direct reference to Apollo cache objects
       const safeData = JSON.parse(JSON.stringify(dataMiner));
+      
+      // Create a serializable error object
+      const serializableError = createSerializableError(errorMiner);
 
       dispatch(
         updateMinerStats({
           loading: loadingMiner,
-          error: errorMiner,
+          error: serializableError,
           data: safeData,
+        })
+      );
+    } else if (errorMiner && !isAuthError(errorMiner)) {
+      // Only dispatch non-auth errors
+      // Create a serializable error object
+      const serializableError = createSerializableError(errorMiner);
+      
+      dispatch(
+        updateMinerStats({
+          loading: loadingMiner,
+          error: serializableError,
+          data: null,
         })
       );
     }
@@ -73,13 +100,20 @@ const Layout = ({ children, routes }) => {
 
   useEffect(() => {
     startPollingMcu(minerPollingTime);
-    dispatch(
-      updateMcuStats({
-        loading: loadingMcu,
-        error: errorMcu,
-        data: dataMcu,
-      })
-    );
+    
+    // Only dispatch if we have data or if the error is not an authentication error
+    if (dataMcu || (errorMcu && !isAuthError(errorMcu))) {
+      // Create a serializable error object
+      const serializableError = createSerializableError(errorMcu);
+      
+      dispatch(
+        updateMcuStats({
+          loading: loadingMcu,
+          error: serializableError,
+          data: dataMcu,
+        })
+      );
+    }
   }, [
     startPollingMcu,
     dispatch,
@@ -99,13 +133,20 @@ const Layout = ({ children, routes }) => {
 
   useEffect(() => {
     startPollingNode(nodePollingTime);
-    dispatch(
-      updateNodeStats({
-        loading: loadingNode,
-        error: errorNode,
-        data: dataNode,
-      })
-    );
+    
+    // Only dispatch if we have data or if the error is not an authentication error
+    if (dataNode || (errorNode && !isAuthError(errorNode))) {
+      // Create a serializable error object
+      const serializableError = createSerializableError(errorNode);
+      
+      dispatch(
+        updateNodeStats({
+          loading: loadingNode,
+          error: serializableError,
+          data: dataNode,
+        })
+      );
+    }
   }, [
     startPollingNode,
     dispatch,
@@ -125,13 +166,20 @@ const Layout = ({ children, routes }) => {
 
   useEffect(() => {
     startPollingSettings(minerPollingTime);
-    dispatch(
-      updateSettings({
-        loading: loadingSettings,
-        error: errorSettings,
-        data: dataSettings,
-      })
-    );
+    
+    // Only dispatch if we have data or if the error is not an authentication error
+    if (dataSettings || (errorSettings && !isAuthError(errorSettings))) {
+      // Create a serializable error object
+      const serializableError = createSerializableError(errorSettings);
+      
+      dispatch(
+        updateSettings({
+          loading: loadingSettings,
+          error: serializableError,
+          data: dataSettings,
+        })
+      );
+    }
   }, [
     startPollingSettings,
     dispatch,
@@ -157,13 +205,20 @@ const Layout = ({ children, routes }) => {
 
   useEffect(() => {
     startPollingAnalytics(nodePollingTime);
-    dispatch(
-      updateAnalytics({
-        loading: loadingAnalytics,
-        error: errorAnalytics,
-        data: dataAnalytics,
-      })
-    );
+    
+    // Only dispatch if we have data or if the error is not an authentication error
+    if (dataAnalytics || (errorAnalytics && !isAuthError(errorAnalytics))) {
+      // Create a serializable error object
+      const serializableError = createSerializableError(errorAnalytics);
+      
+      dispatch(
+        updateAnalytics({
+          loading: loadingAnalytics,
+          error: serializableError,
+          data: dataAnalytics,
+        })
+      );
+    }
   }, [
     startPollingAnalytics,
     dispatch,
@@ -183,13 +238,20 @@ const Layout = ({ children, routes }) => {
 
   useEffect(() => {
     startPollingServices(2000);
-    dispatch(
-      updateServicesStatus({
-        loading: loadingServices,
-        error: errorServices,
-        data: dataServices,
-      })
-    );
+    
+    // Only dispatch if we have data or if the error is not an authentication error
+    if (dataServices || (errorServices && !isAuthError(errorServices))) {
+      // Create a serializable error object
+      const serializableError = createSerializableError(errorServices);
+      
+      dispatch(
+        updateServicesStatus({
+          loading: loadingServices,
+          error: serializableError,
+          data: dataServices,
+        })
+      );
+    }
   }, [
     startPollingServices,
     dispatch,

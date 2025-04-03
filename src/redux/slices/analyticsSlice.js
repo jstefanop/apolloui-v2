@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { serializeError } from '../utils/errorUtils';
 
 const initialState = {
   data: null,
@@ -31,7 +32,7 @@ const analyticsSlice = createSlice({
       // Apply the limit to the data before storing it
       state.data = action.payload.data ? limitAnalyticsData(action.payload.data) : null;
       state.loading = action.payload.loading;
-      state.error = action.payload.error;
+      state.error = serializeError(action.payload.error);
     },
   },
 });

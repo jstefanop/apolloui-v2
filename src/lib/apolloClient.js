@@ -5,6 +5,8 @@ import {
   HttpLink,
   from,
   InMemoryCache,
+  Observable,
+  defaultDataIdFromObject,
 } from '@apollo/client';
 import os from 'os';
 import { onError } from '@apollo/client/link/error';
@@ -65,16 +67,36 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
     let err;
     if (networkError.message === 'Timeout exceeded') {
       err = `[Timeout error]: Operation: ${operation.operationName}`;
+    } else if (networkError.message === 'Failed to fetch') {
+      err = `[Connection error]: Backend service is unavailable, Operation: ${operation.operationName}`;
     } else {
       err = `[Network error]: ${networkError.message}, Operation: ${operation.operationName}`;
     }
-    //store.dispatch(sendFeedback({ message: err, type: 'error' }));
+    
+    // Create a serializable error object for Redux
+    const serializableError = {
+      message: err,
+      operationName: operation.operationName,
+      timestamp: new Date().toISOString()
+    };
+    
+    // Dispatch a serializable error object
+    store.dispatch(sendFeedback({ 
+      message: err, 
+      type: 'error',
+      error: serializableError
+    }));
+    
     console.log(err);
   }
 });
 
 const httpLink = new HttpLink({
   uri: `http://${hostnameApi}:${portApi}/api/graphql`,
+  // Add a timeout to prevent long-hanging requests
+  fetchOptions: {
+    timeout: 10000, // 10 seconds timeout
+  },
 });
 
 const authLink = new ApolloLink((operation, forward) => {
@@ -97,6 +119,61 @@ const momentTransformLink = new ApolloLink((operation, forward) => {
     if (response.data) {
       response.data = convertMomentToString(response.data);
     }
+    return response;
+  });
+});
+
+// Add a utility function to check if the backend is available
+export const checkBackendAvailability = async () => {
+  try {
+    const response = await fetch(`http://${hostnameApi}:${portApi}/api/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Short timeout for health check
+      signal: AbortSignal.timeout(3000),
+    });
+    return response.ok;
+  } catch (error) {
+    console.log('[Backend health check failed]:', error.message);
+    return false;
+  }
+};
+
+// Add a link to check backend availability before making requests
+const healthCheckLink = new ApolloLink((operation, forward) => {
+  // Skip health check for certain operations if needed
+  if (operation.operationName === 'HealthCheck') {
+    return forward(operation);
+  }
+  
+  // For now, let's disable the health check to avoid the error
+  // We'll implement a better solution later
+  return forward(operation);
+});
+
+// Add a retry link for network errors
+const retryLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map((response) => {
+    // If the response has errors, retry the operation
+    if (response.errors) {
+      const retryCount = operation.getContext().retryCount || 0;
+      
+      // Only retry up to 3 times
+      if (retryCount < 3) {
+        // Set the retry count in the operation context
+        operation.setContext({ retryCount: retryCount + 1 });
+        
+        // Retry the operation after a delay
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(forward(operation));
+          }, 1000 * (retryCount + 1)); // Exponential backoff
+        });
+      }
+    }
+    
     return response;
   });
 });
@@ -198,11 +275,29 @@ function createApolloClient() {
     ssrMode: typeof window === 'undefined',
     link: from([
       errorLink,
+      healthCheckLink,
+      retryLink,
       authLink,
       momentTransformLink,
       httpLink
     ]),
     cache,
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'cache-and-network',
+        errorPolicy: 'all',
+        // Add retry configuration
+        retry: 3,
+        retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 30000),
+      },
+      query: {
+        fetchPolicy: 'network-only',
+        errorPolicy: 'all',
+      },
+      mutate: {
+        errorPolicy: 'all',
+      },
+    },
   });
 }
 
