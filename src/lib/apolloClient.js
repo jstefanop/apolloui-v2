@@ -5,8 +5,6 @@ import {
   HttpLink,
   from,
   InMemoryCache,
-  Observable,
-  defaultDataIdFromObject,
 } from '@apollo/client';
 import os from 'os';
 import { onError } from '@apollo/client/link/error';
@@ -271,6 +269,30 @@ function createApolloClient() {
     },
   });
 
+  // Add cache size monitoring
+  const MAX_CACHE_SIZE = 50 * 1024 * 1024; // 50MB limit
+  let lastCacheSize = 0;
+
+  const checkCacheSize = () => {
+    const currentSize = JSON.stringify(cache.extract()).length;
+    
+    if (currentSize > MAX_CACHE_SIZE) {
+      console.log(`Cache size exceeded limit (${(currentSize / 1024 / 1024).toFixed(2)}MB), performing cleanup`);
+      cache.gc();
+    }
+    
+    // Log cache size changes if significant
+    if (Math.abs(currentSize - lastCacheSize) > 1024 * 1024) { // Log if change > 1MB
+      console.log(`Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB`);
+      lastCacheSize = currentSize;
+    }
+  };
+
+  // Monitor cache size periodically
+  if (typeof window !== 'undefined') {
+    setInterval(checkCacheSize, 60 * 1000); // Check every minute
+  }
+
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([
@@ -284,9 +306,8 @@ function createApolloClient() {
     cache,
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: 'cache-and-network',
+        fetchPolicy: 'network-only',
         errorPolicy: 'all',
-        // Add retry configuration
         retry: 3,
         retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 30000),
       },
@@ -299,6 +320,19 @@ function createApolloClient() {
       },
     },
   });
+}
+
+// Add cache cleanup function
+export const cleanupApolloCache = () => {
+  if (apolloClient) {
+    apolloClient.cache.gc();
+    console.log('Cache cleanup performed');
+  }
+};
+
+// Add periodic cache cleanup
+if (typeof window !== 'undefined') {
+  setInterval(cleanupApolloCache, 5 * 60 * 1000); // Clean cache every 5 minutes
 }
 
 export function initializeApollo(initialState = null) {
