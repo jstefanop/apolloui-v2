@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import Head from 'next/head';
+import { FormattedMessage } from 'react-intl';
 
 import React, { useEffect, useRef } from 'react';
 import { BulletList, List } from 'react-content-loader';
@@ -50,10 +51,8 @@ import { MdOfflineBolt } from 'react-icons/md';
 
 const Overview = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
-
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
-
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
@@ -156,14 +155,21 @@ const Overview = () => {
   return (
     <Box>
       <Head>
-        <title>Apollo Overview</title>
+        <title>
+          <FormattedMessage id="overview.title" defaultMessage="Apollo Overview" />
+        </title>
       </Head>
       {errorNode && errorMcu && !errorMiner ? (
         <Alert borderRadius={'10px'} status="warning">
           <AlertIcon />
-          <AlertTitle>Warning</AlertTitle>
+          <AlertTitle>
+            <FormattedMessage id="overview.warning.title" defaultMessage="Warning" />
+          </AlertTitle>
           <AlertDescription>
-            There is a problem getting data from the server.
+            <FormattedMessage 
+              id="overview.warning.description" 
+              defaultMessage="There is a problem getting data from the server."
+            />
           </AlertDescription>
         </Alert>
       ) : (
@@ -202,7 +208,10 @@ const Overview = () => {
             <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
               <Flex m="2">
                 <Text fontSize="lg" fontWeight="800">
-                  Last 24h Hashrate
+                  <FormattedMessage 
+                    id="overview.hashrate.title" 
+                    defaultMessage="Last 24h Hashrate"
+                  />
                 </Text>
               </Flex>
               <Flex
@@ -245,7 +254,12 @@ const Overview = () => {
                           }
                         />
                       }
-                      name="Miner temperature"
+                      name={
+                        <FormattedMessage 
+                          id="overview.temperatures.miner" 
+                          defaultMessage="Miner temperature"
+                        />
+                      }
                       value={
                         <span
                           className={
@@ -281,7 +295,12 @@ const Overview = () => {
                           }
                         />
                       }
-                      name="System temperature"
+                      name={
+                        <FormattedMessage 
+                          id="overview.temperatures.system" 
+                          defaultMessage="System temperature"
+                        />
+                      }
                       value={
                         typeof mcuTemperature !== 'undefined' &&
                         mcuTemperature !== null
@@ -308,7 +327,12 @@ const Overview = () => {
                           }
                         />
                       }
-                      name="Hardware errors"
+                      name={
+                        <FormattedMessage 
+                          id="overview.temperatures.hardware_errors" 
+                          defaultMessage="Hardware errors"
+                        />
+                      }
                       value={
                         <span
                           className={
@@ -346,7 +370,10 @@ const Overview = () => {
             <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow}>
               <Flex m="2">
                 <Text fontSize="lg" fontWeight="800">
-                  Node status
+                  <FormattedMessage 
+                    id="overview.node.title" 
+                    defaultMessage="Node status"
+                  />
                 </Text>
               </Flex>
               {nodeStatus === 'pending' ? (
@@ -361,7 +388,7 @@ const Overview = () => {
                         <Icon
                           w="32px"
                           h="32px"
-                          as={MdOfflineBolt} // Offline icon
+                          as={MdOfflineBolt}
                           color="red.500"
                         />
                       )
@@ -369,7 +396,10 @@ const Overview = () => {
                     mr="4"
                   />
                   <Text fontSize="md" fontWeight="400" color="gray.600">
-                    Pending... Please wait.
+                    <FormattedMessage 
+                      id="overview.node.pending" 
+                      defaultMessage="Pending... Please wait."
+                    />
                   </Text>
                 </Flex>
               ) : errorNodeSentence ? (
@@ -403,7 +433,12 @@ const Overview = () => {
                         }
                       />
                     }
-                    name="Connections"
+                    name={
+                      <FormattedMessage 
+                        id="overview.node.connections" 
+                        defaultMessage="Connections"
+                      />
+                    }
                     value={
                       <Flex>
                         <span
@@ -438,7 +473,12 @@ const Overview = () => {
                         }
                       />
                     }
-                    name="Blocks"
+                    name={
+                      <FormattedMessage 
+                        id="overview.node.blocks" 
+                        defaultMessage="Blocks"
+                      />
+                    }
                     value={
                       <span
                         className={
@@ -472,7 +512,12 @@ const Overview = () => {
                         }
                       />
                     }
-                    name="Blockchain size"
+                    name={
+                      <FormattedMessage 
+                        id="overview.node.blockchain_size" 
+                        defaultMessage="Blockchain size"
+                      />
+                    }
                     value={bytesToSize(sizeOnDisk)}
                     align="start"
                   />
@@ -504,9 +549,14 @@ const Overview = () => {
                     }
                   />
                 }
-                name="CPU usage"
+                name={
+                  <FormattedMessage 
+                    id="overview.system.cpu_usage" 
+                    defaultMessage="CPU usage"
+                  />
+                }
                 value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
-                legendValue={`${cpuCores} cores`}
+                legendValue={`${cpuCores} `}
                 percent={cpuUsage}
                 gauge={true}
                 loading={loadingMcu}
@@ -529,7 +579,12 @@ const Overview = () => {
                     }
                   />
                 }
-                name="Memory usage"
+                name={
+                  <FormattedMessage 
+                    id="overview.system.memory_usage" 
+                    defaultMessage="Memory usage"
+                  />
+                }
                 legendValue={`${bytesToSize(
                   memoryUsed * 1024,
                   0
@@ -557,7 +612,12 @@ const Overview = () => {
                     }
                   />
                 }
-                name="System disk usage"
+                name={
+                  <FormattedMessage 
+                    id="overview.system.disk_usage" 
+                    defaultMessage="System disk usage"
+                  />
+                }
                 legendValue={`${bytesToSize(
                   diskUsed * 1024,
                   0,

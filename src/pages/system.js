@@ -8,7 +8,7 @@ import {
   SimpleGrid,
 } from '@chakra-ui/react';
 import _ from 'lodash';
-
+import { useIntl } from 'react-intl';
 import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
@@ -30,8 +30,8 @@ import MultiStatistics from '../components/UI/MultiStatistics';
 import { NetworkIcon } from '../components/UI/Icons/NetworkIcon';
 
 const System = () => {
+  const intl = useIntl();
   const cardColor = useColorModeValue('white', 'brand.800');
-
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
 
@@ -71,7 +71,7 @@ const System = () => {
   return (
     <Box>
       <Head>
-        <title>Apollo BTC System</title>
+        <title>{intl.formatMessage({ id: 'system.title' })}</title>
       </Head>
       <Card py="15px" bgColor={cardColor}>
         <Grid
@@ -110,7 +110,7 @@ const System = () => {
                     }
                   />
                 }
-                name="Architecture"
+                name={intl.formatMessage({ id: 'system.stats.architecture' })}
                 value={architecture}
                 reversed={true}
               />
@@ -129,7 +129,7 @@ const System = () => {
                     }
                   />
                 }
-                name="Hostname"
+                name={intl.formatMessage({ id: 'system.stats.hostname' })}
                 value={hostname}
                 reversed={true}
               />
@@ -144,7 +144,7 @@ const System = () => {
                     }
                   />
                 }
-                name="Operating System"
+                name={intl.formatMessage({ id: 'system.stats.operating_system' })}
                 value={operatingSystem}
                 reversed={true}
               />
@@ -159,7 +159,7 @@ const System = () => {
                     }
                   />
                 }
-                name="System uptime"
+                name={intl.formatMessage({ id: 'system.stats.system_uptime' })}
                 value={moment(uptime).fromNow()}
                 reversed={true}
               />
@@ -180,17 +180,17 @@ const System = () => {
                     }
                   />
                 }
-                name="Active wifi"
-                value={wlan0 && wlan0.address ? wifi : 'Disconnected'}
-                name2="Ethernet"
-                value2={eth0 && eth0.address ? 'Connected' : 'Disconnected'}
-                name3="Network data"
+                name={intl.formatMessage({ id: 'system.stats.active_wifi' })}
+                value={wlan0 && wlan0.address ? wifi : intl.formatMessage({ id: 'system.stats.disconnected' })}
+                name2={intl.formatMessage({ id: 'system.stats.ethernet' })}
+                value2={eth0 && eth0.address ? intl.formatMessage({ id: 'system.stats.connected' }) : intl.formatMessage({ id: 'system.stats.disconnected' })}
+                name3={intl.formatMessage({ id: 'system.stats.network_data' })}
                 value3={
                   eth0 && eth0.address
                     ? `${eth0.address} - ${eth0.mac}`
                     : wlan0 && wlan0.address
                     ? `${wlan0.address} - ${wlan0.mac}`
-                    : 'Disconnected'
+                    : intl.formatMessage({ id: 'system.stats.disconnected' })
                 }
                 reversed={true}
               />
@@ -218,9 +218,9 @@ const System = () => {
                     }
                   />
                 }
-                name="CPU usage"
+                name={intl.formatMessage({ id: 'system.stats.cpu_usage' })}
                 value={`${cpuUsage}%`}
-                legendValue={`${cpuCores} cores`}
+                legendValue={`${cpuCores} ${intl.formatMessage({ id: 'system.stats.cores' })}`}
                 percent={cpuUsage}
                 gauge={true}
                 loading={loadingMcu}
@@ -242,7 +242,7 @@ const System = () => {
                     }
                   />
                 }
-                name="Memory usage"
+                name={intl.formatMessage({ id: 'system.stats.memory_usage' })}
                 legendValue={`${bytesToSize(
                   memoryUsed * 1024,
                   0
@@ -269,7 +269,7 @@ const System = () => {
                     }
                   />
                 }
-                name="System disk usage"
+                name={intl.formatMessage({ id: 'system.stats.system_disk_usage' })}
                 legendValue={`${bytesToSize(
                   diskUsed * 1024,
                   0,
@@ -298,7 +298,7 @@ const System = () => {
                       }
                     />
                   }
-                  name="Node disk usage"
+                  name={intl.formatMessage({ id: 'system.stats.node_disk_usage' })}
                   legendValue={`${bytesToSize(
                     nodeDiskUsed * 1024,
                     0,

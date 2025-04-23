@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { useIntl } from 'react-intl';
 
 export const usePasswordSettings = () => {
+  const intl = useIntl();
   const { settings, setSettings, setErrorForm, setIsChanged } = useSettings();
 
   // Stato locale delle password
@@ -16,7 +18,7 @@ export const usePasswordSettings = () => {
       setIsLockpasswordError(false);
       setIsChanged(false);
     } else if (lockPassword.length < 8) {
-      setIsLockpasswordError('The password must have 8 characters at least');
+      setIsLockpasswordError(intl.formatMessage({ id: 'settings.sections.system.password.error.required' }));
       setIsChanged(false);
     } else if (lockPassword === verifyLockpassword) {
       setIsLockpasswordError(false);
@@ -28,10 +30,10 @@ export const usePasswordSettings = () => {
       }));
       setIsChanged(true);
     } else {
-      setIsLockpasswordError('Passwords must match');
+      setIsLockpasswordError(intl.formatMessage({ id: 'settings.sections.system.password.error.match' }));
       setIsChanged(false);
     }
-  }, [lockPassword, verifyLockpassword, setSettings, setIsChanged]);
+  }, [lockPassword, verifyLockpassword, setSettings, setIsChanged, intl]);
 
   return {
     lockPassword,

@@ -4,8 +4,10 @@ import { Card, Flex, Icon, Text } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import CustomAlert from './CustomAlert';
 import config from '../../config';
+import { useIntl } from 'react-intl';
 
 const NodeStatus = ({ serviceStatus }) => {
+  const intl = useIntl();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const node = serviceStatus?.node;
 
@@ -28,8 +30,8 @@ const NodeStatus = ({ serviceStatus }) => {
   if (!node) {
     return (
       <CustomAlert
-        title="Node status unavailable"
-        description="Could not fetch the node status. Please try again later."
+        title={intl.formatMessage({ id: 'node.status.unavailable.title' })}
+        description={intl.formatMessage({ id: 'node.status.unavailable.description' })}
         status="error"
       />
     );
@@ -44,8 +46,8 @@ const NodeStatus = ({ serviceStatus }) => {
       if (timeSinceRequest <= config.thresholds.NODE_STOP_PENDING_THRESHOLD) {
         return (
           <CustomAlert
-            title="Stopping node"
-            description="The node is stopping. Please wait a moment."
+            title={intl.formatMessage({ id: 'node.status.stopping.title' })}
+            description={intl.formatMessage({ id: 'node.status.stopping.description' })}
             status="info"
             extraStatus={status}
           />
@@ -53,8 +55,8 @@ const NodeStatus = ({ serviceStatus }) => {
       } else {
         return (
           <CustomAlert
-            title="Stop taking longer than expected"
-            description="The node is taking longer than expected to stop. Please wait a little more or check the connection."
+            title={intl.formatMessage({ id: 'node.status.stop_delay.title' })}
+            description={intl.formatMessage({ id: 'node.status.stop_delay.description' })}
             status="warning"
             extraStatus={status}
           />
@@ -66,8 +68,8 @@ const NodeStatus = ({ serviceStatus }) => {
       if (timeSinceRequest <= config.thresholds.NODE_START_PENDING_THRESHOLD) {
         return (
           <CustomAlert
-            title="Starting node"
-            description="The node is starting. Please wait a moment."
+            title={intl.formatMessage({ id: 'node.status.starting.title' })}
+            description={intl.formatMessage({ id: 'node.status.starting.description' })}
             status="info"
             extraStatus={status}
           />
@@ -75,8 +77,8 @@ const NodeStatus = ({ serviceStatus }) => {
       } else {
         return (
           <CustomAlert
-            title="Start taking longer than expected"
-            description="The node is taking longer than expected to start. Please wait a little more or check the connection."
+            title={intl.formatMessage({ id: 'node.status.start_delay.title' })}
+            description={intl.formatMessage({ id: 'node.status.start_delay.description' })}
             status="warning"
             extraStatus={status}
           />
@@ -89,8 +91,8 @@ const NodeStatus = ({ serviceStatus }) => {
   if (status === 'offline' && requestedStatus === 'offline') {
     return (
       <CustomAlert
-        title="Node is offline"
-        description="The node is currently offline. You can start it from the top menu if needed."
+        title={intl.formatMessage({ id: 'node.status.offline.title' })}
+        description={intl.formatMessage({ id: 'node.status.offline.description' })}
         status="info"
       />
     );
@@ -100,8 +102,8 @@ const NodeStatus = ({ serviceStatus }) => {
   if (status === 'offline' && requestedStatus === 'online') {
     return (
       <CustomAlert
-        title="Node connection issue"
-        description="The node is currently offline, but it should be online. Please check the connection or try restarting."
+        title={intl.formatMessage({ id: 'node.status.connection_issue.title' })}
+        description={intl.formatMessage({ id: 'node.status.connection_issue.description' })}
         status="error"
       />
     );
@@ -111,8 +113,8 @@ const NodeStatus = ({ serviceStatus }) => {
   if (status === 'online' && requestedStatus === 'offline') {
     return (
       <CustomAlert
-        title="Unexpected node status"
-        description="The node is online, but it was requested to stop. Please verify its state or restart."
+        title={intl.formatMessage({ id: 'node.status.unexpected.title' })}
+        description={intl.formatMessage({ id: 'node.status.unexpected.description' })}
         status="warning"
       />
     );
@@ -127,7 +129,7 @@ const NodeStatus = ({ serviceStatus }) => {
             <Flex align={'center'} color="white">
               <Icon as={CheckIcon} mr="2" />
               <Text>
-                Your node is <strong>online</strong> and operational.{' '}
+                {intl.formatMessage({ id: 'node.status.online.message' })}
               </Text>
             </Flex>
           </Flex>

@@ -18,8 +18,10 @@ import AuthLayout from '../components/layouts/Auth';
 import DefaultLayout from '../components/layouts/Default';
 import ProtectedRoutes from '../components/ProtectedRoutes';
 import illustration from '../assets/img/networking_banner.png';
+import { flattenMessages } from '../lib/utils';
 
 import messages_en from '../locales/en.json';
+import messages_it from '../locales/it.json';
 import Error from 'next/error';
 
 function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
@@ -30,14 +32,22 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
 
   const locales = {
     en: {
-      messages: messages_en,
+      messages: flattenMessages(messages_en),
       title: 'English',
       helpPath: 'en-us',
+    },
+    it: {
+      messages: flattenMessages(messages_it),
+      title: 'Italiano',
+      helpPath: 'it-it',
     },
   };
 
   const locale = router.locale || 'en';
   const defaultLocale = router.defaultLocale;
+
+  // Ensure messages are loaded
+  const messages = locales[locale]?.messages || {};
 
   useEffect(() => {
     if (router.isReady) setAsPath(router.asPath);
@@ -51,7 +61,14 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
             <IntlProvider
               locale={locale}
               defaultLocale={defaultLocale}
-              messages={locales[locale].messages}
+              messages={messages}
+              onError={(err) => {
+                if (err.code === 'MISSING_TRANSLATION') {
+                  console.warn('Missing translation:', err.message);
+                  return;
+                }
+                throw err;
+              }}
             >
               <ProtectedRoutes router={router}>
                 <AnimatePresence mode='wait' initial={false}>
@@ -60,8 +77,6 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
                       illustrationBackground={illustration.src}
                       image={illustration.src}
                       asPath={asPath}
-                      locales={locales}
-                      locale={locale}
                     >
                       <Component {...pageProps} />
                     </AuthLayout>
@@ -70,8 +85,6 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
                   ) : (
                     <DefaultLayout
                       asPath={asPath}
-                      locales={locales}
-                      locale={locale}
                       routes={routes}
                     >
                       <Component {...pageProps} />

@@ -19,6 +19,7 @@ import { useRef, useEffect, useState } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
 import { useRouter } from 'next/router';
+import { useIntl } from 'react-intl';
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
 import { minerSelector } from '../redux/reselect/miner';
@@ -50,6 +51,7 @@ import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
 import SoloMiningStatus from '../components/UI/SoloMiningStatus';
 
 const SoloMining = () => {
+  const intl = useIntl();
   const router = useRouter();
 
   const {
@@ -239,8 +241,13 @@ const SoloMining = () => {
       <Head>
         <title>
           {ckPoolGlobalHashrate
-            ? `Apollo BTC Miner ${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}`
-            : 'Apollo BTC Miner'}
+            ? intl.formatMessage(
+                { id: 'solo_mining.title', defaultMessage: 'Apollo BTC Miner {hashrate}' },
+                { hashrate: `${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}` }
+              )
+            : intl.formatMessage(
+                { id: 'solo_mining.title', defaultMessage: 'Apollo BTC Miner' }
+              )}
         </title>
       </Head>
 
@@ -256,8 +263,15 @@ const SoloMining = () => {
           {showBanner || isVisibleBanner ? (
             <Alert mb="5" borderRadius={'10px'} status={'info'}>
               <AlertIcon mr={4} />
-              <AlertTitle>SOLO LAN Mining</AlertTitle>
-              <AlertDescription>{`Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: ${localAddress}:3333 Username: <bitcoin address>`}</AlertDescription>
+              <AlertTitle>
+                {intl.formatMessage({ id: 'solo_mining.banner.title' })}
+              </AlertTitle>
+              <AlertDescription>
+                {intl.formatMessage(
+                  { id: 'solo_mining.banner.description' },
+                  { address: localAddress }
+                )}
+              </AlertDescription>
               <CloseButton
                 position="absolute"
                 right={2}
@@ -273,7 +287,7 @@ const SoloMining = () => {
               variant="lightBrand"
               size={'sm'}
             >
-              {'Connect'}
+              {intl.formatMessage({ id: 'solo_mining.banner.connect' })}
             </Button>
           )}
 
@@ -340,7 +354,7 @@ const SoloMining = () => {
                       }
                     />
                   }
-                  name="Accepted shares"
+                  name={intl.formatMessage({ id: 'solo_mining.stats.accepted_shares' })}
                   value={
                     <span>{ckSharesAccepted?.toLocaleString('en-US')}</span>
                   }
@@ -363,7 +377,7 @@ const SoloMining = () => {
                       }
                     />
                   }
-                  name="Rejected shares"
+                  name={intl.formatMessage({ id: 'solo_mining.stats.rejected_shares' })}
                   value={
                     <span>{ckSharesRejected?.toLocaleString('en-US')}</span>
                   }
@@ -385,7 +399,7 @@ const SoloMining = () => {
                       }
                     />
                   }
-                  name="Last share"
+                  name={intl.formatMessage({ id: 'solo_mining.stats.last_share' })}
                   value={
                     !ckDisconnected && ckPoolLastUpdate
                       ? ckPoolLastUpdate?.replace('a few', '')
@@ -409,7 +423,7 @@ const SoloMining = () => {
                       }
                     />
                   }
-                  name="Uptime"
+                  name={intl.formatMessage({ id: 'solo_mining.stats.uptime' })}
                   value={(!ckDisconnected && ckRuntime) || 'N/A'}
                   reversed={true}
                 />
@@ -420,7 +434,7 @@ const SoloMining = () => {
               <Card py="15px" pr="40px" bgColor={cardColor} boxShadow={shadow}>
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
-                    Solo Info
+                    {intl.formatMessage({ id: 'solo_mining.info.title' })}
                   </Text>
                 </Flex>
                 {loadingMiner ? (
@@ -443,7 +457,7 @@ const SoloMining = () => {
                           }
                         />
                       }
-                      name="Daily Chance of Solving a Solo Block"
+                      name={intl.formatMessage({ id: 'solo_mining.info.daily_chance' })}
                       value={
                         dailyChance
                           ? `1 in ${dailyChance.toLocaleString('en-US', {
@@ -469,7 +483,7 @@ const SoloMining = () => {
                           }
                         />
                       }
-                      name="Users"
+                      name={intl.formatMessage({ id: 'solo_mining.info.users' })}
                       value={ckUsersCount}
                       reversed={true}
                     />
@@ -489,7 +503,7 @@ const SoloMining = () => {
                           }
                         />
                       }
-                      name="Workers"
+                      name={intl.formatMessage({ id: 'solo_mining.info.workers' })}
                       value={ckWorkersCount}
                       reversed={true}
                     />
@@ -510,7 +524,7 @@ const SoloMining = () => {
                           }
                         />
                       }
-                      name="Idle"
+                      name={intl.formatMessage({ id: 'solo_mining.info.idle' })}
                       value={ckIdle}
                       reversed={true}
                     />
@@ -526,14 +540,14 @@ const SoloMining = () => {
                 >
                   <Flex m="2">
                     <Text fontSize="lg" fontWeight="800">
-                      SOLO Mining Users
+                      {intl.formatMessage({ id: 'solo_mining.users.title' })}
                     </Text>
                   </Flex>
                 </Flex>
                 {loadingMiner ? (
                   <BulletList />
                 ) : !dataTableBoards.length ? (
-                  <Text m="3">Waiting for stats to refresh...</Text>
+                  <Text m="3">{intl.formatMessage({ id: 'solo_mining.users.waiting' })}</Text>
                 ) : (
                   <Box
                     overflowY={'auto'}
@@ -568,7 +582,7 @@ const SoloMining = () => {
                             size="sm"
                             onClick={() => handleOpen(index)}
                           >
-                            Show all data
+                            {intl.formatMessage({ id: 'solo_mining.users.show_all_data' })}
                           </Button>
                           {typeof ckWorkers[index].activeWorkers !==
                             'undefined' &&
@@ -579,7 +593,7 @@ const SoloMining = () => {
                               <ActiveBadge
                                 active={ckWorkers[index].activeWorkers}
                                 total={ckWorkers[index].totalWorkers}
-                                title="Active"
+                                title={intl.formatMessage({ id: 'solo_mining.users.active' })}
                               />
                             )}
                         </Flex>

@@ -18,6 +18,7 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useQuery, useLazyQuery } from '@apollo/client';
+import { useIntl } from 'react-intl';
 import { PoolIcon } from '../components/UI/Icons/PoolIcon';
 import { MinerIcon } from '../components/UI/Icons/MinerIcon';
 import { NodeIcon } from '../components/UI/Icons/NodeIcon';
@@ -53,6 +54,7 @@ import { mcuSelector } from '../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../graphql/auth';
 
 const Settings = () => {
+  const intl = useIntl();
   const dispatch = useDispatch();
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
@@ -477,7 +479,7 @@ const Settings = () => {
   return (
     <Box>
       <Head>
-        <title>Apollo Settings</title>
+        <title>{intl.formatMessage({ id: 'settings.title' })}</title>
       </Head>
 
       <ModalRestore
@@ -485,12 +487,14 @@ const Settings = () => {
         onClose={() => setIsModalRestoreOpen(false)}
         onUpload={setRestoreData}
         onRestore={handleRestoreBackup}
+        isLoading={isSaving}
       />
 
       <ModalFormat
         isOpen={isModalFormatOpen}
         onClose={() => setIsModalFormatOpen(false)}
         onFormat={handleFormatDisk}
+        isLoading={isSaving}
       />
 
       <ModalConnectNode
@@ -525,7 +529,7 @@ const Settings = () => {
               onClick={handleDiscardChanges}
               isDisabled={isSavingInProgress}
             >
-              Discard changes
+              {intl.formatMessage({ id: 'settings.actions.discard' })}
             </Button>
             <Flex direction="row">
               {restartNeeded && (
@@ -537,9 +541,9 @@ const Settings = () => {
                   isDisabled={errorForm || isSavingInProgress}
                   onClick={() => handleSaveSettings(restartNeeded)}
                   isLoading={isSavingInProgress}
-                  loadingText="Saving..."
+                  loadingText={intl.formatMessage({ id: 'settings.actions.saving' })}
                 >
-                  Save & Restart
+                  {intl.formatMessage({ id: 'settings.actions.save_restart' })}
                 </Button>
               )}
               {!restartNeeded && (
@@ -550,9 +554,9 @@ const Settings = () => {
                   isDisabled={errorForm || isSavingInProgress}
                   onClick={() => handleSaveSettings()}
                   isLoading={isSavingInProgress}
-                  loadingText="Saving..."
+                  loadingText={intl.formatMessage({ id: 'settings.actions.saving' })}
                 >
-                  Save
+                  {intl.formatMessage({ id: 'settings.actions.save' })}
                 </Button>
               )}
             </Flex>
@@ -592,7 +596,7 @@ const Settings = () => {
                 me="2"
                 display={{ base: 'none', md: 'block' }}
               >
-                Pools
+                {intl.formatMessage({ id: 'settings.tabs.pools' })}
               </Text>
               <PoolIcon display={{ base: 'block' }} />
             </Tab>
@@ -602,7 +606,7 @@ const Settings = () => {
                 me="2"
                 display={{ base: 'none', md: 'block' }}
               >
-                Miner
+                {intl.formatMessage({ id: 'settings.tabs.miner' })}
               </Text>
               <MinerIcon display={{ base: 'block' }} />
             </Tab>
@@ -612,7 +616,7 @@ const Settings = () => {
                 me="2"
                 display={{ base: 'none', md: 'block' }}
               >
-                Node
+                {intl.formatMessage({ id: 'settings.tabs.node' })}
               </Text>
               <NodeIcon display={{ base: 'block' }} />
             </Tab>
@@ -622,7 +626,7 @@ const Settings = () => {
                 me="2"
                 display={{ base: 'none', md: 'block' }}
               >
-                System
+                {intl.formatMessage({ id: 'settings.tabs.system' })}
               </Text>
               <SystemIcon display={{ base: 'block' }} />
             </Tab>

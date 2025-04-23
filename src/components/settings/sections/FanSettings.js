@@ -1,11 +1,13 @@
 import React from 'react';
 import { useColorModeValue } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import { FanIcon } from '../../UI/Icons/FanIcon';
 import PanelCard from '../../UI/PanelCard';
 import SimpleSwitchSettingsItem from '../../UI/SimpleSwitchSettingsItem';
 import { useMinerSettings } from '../hooks/useMinerSettings';
 
 const FanSettings = () => {
+  const intl = useIntl();
   const textColor = useColorModeValue('brands.900', 'white');
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
 
@@ -18,8 +20,8 @@ const FanSettings = () => {
 
   return (
     <PanelCard
-      title={'Miner fan settings'}
-      description={'Adjust the fan speed or set it to automatic'}
+      title={intl.formatMessage({ id: 'settings.sections.miner.fan.title' })}
+      description={intl.formatMessage({ id: 'settings.sections.miner.fan.description' })}
       textColor={textColor}
       icon={FanIcon}
       mb="20px"

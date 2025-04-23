@@ -35,11 +35,11 @@ export const displayHashrate = (
   return withUnit
     ? `${parseFloat(hashrate).toFixed(precision)} ${hashrateUnits[i]}`
     : returnObject
-      ? {
+    ? {
         value: parseFloat(hashrate).toFixed(precision),
         unit: hashrateUnits[i],
       }
-      : parseFloat(parseFloat(hashrate).toFixed(precision));
+    : parseFloat(parseFloat(hashrate).toFixed(precision));
 };
 
 export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
@@ -108,12 +108,12 @@ export const percentColor = (value) => {
   return value <= 40
     ? '#03a9f4'
     : value <= 55
-      ? '#8bc34a'
-      : value <= 70
-        ? '#ffab00'
-        : value <= 85
-          ? '#ff5722'
-          : '#f44336';
+    ? '#8bc34a'
+    : value <= 70
+    ? '#ffab00'
+    : value <= 85
+    ? '#ff5722'
+    : '#f44336';
 };
 
 export const bytesToSize = (bytes, decimals = 2, withUnits = true) => {
@@ -125,8 +125,9 @@ export const bytesToSize = (bytes, decimals = 2, withUnits = true) => {
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${withUnits ? ' ' + sizes[i] : ''
-    }`;
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))}${
+    withUnits ? ' ' + sizes[i] : ''
+  }`;
 };
 
 export const tempColor = (value) => {
@@ -344,7 +345,7 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
 
   if (unit === 'f') {
     // Convert to Fahrenheit: (°C × 9/5) + 32 = °F
-    const tempFahrenheit = (tempCelsius * 9 / 5) + 32;
+    const tempFahrenheit = (tempCelsius * 9) / 5 + 32;
     return `${tempFahrenheit.toFixed(precision)}°F`;
   }
 
@@ -352,7 +353,25 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
   return `${tempCelsius.toFixed(precision)}°C`;
 };
 
-export const calculateDailyChance = (hashrateInGhs, networkHashrateInHashes) => {
+export const calculateDailyChance = (
+  hashrateInGhs,
+  networkHashrateInHashes
+) => {
   if (!hashrateInGhs || !networkHashrateInHashes) return null;
   return 1 / (((hashrateInGhs * 1e9) / networkHashrateInHashes) * 144);
+};
+
+export const flattenMessages = (nestedMessages, prefix = '') => {
+  return Object.keys(nestedMessages).reduce((messages, key) => {
+    const value = nestedMessages[key];
+    const prefixedKey = prefix ? `${prefix}.${key}` : key;
+
+    if (typeof value === 'string') {
+      messages[prefixedKey] = value;
+    } else {
+      Object.assign(messages, flattenMessages(value, prefixedKey));
+    }
+
+    return messages;
+  }, {});
 };

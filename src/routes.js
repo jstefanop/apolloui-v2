@@ -5,42 +5,43 @@ import { NodeIcon } from './components/UI/Icons/NodeIcon';
 import { SettingsIcon } from './components/UI/Icons/SettingsIcon';
 import { SystemIcon } from './components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
+import { FormattedMessage } from 'react-intl';
 
 const routes = [
   {
-    name: 'Overview',
+    name: <FormattedMessage id="routes.overview" />,
     layout: '/admin',
     path: '/overview',
     icon: <DashboardIcon width='20px' height='20px' color='inherit' />,
   },
   {
-    name: 'Miner',
+    name: <FormattedMessage id="routes.miner" />,
     layout: '/admin',
     path: '/miner',
     icon: <MinerIcon width='20px' height='20px' color='inherit' />,
   },
   {
-    name: 'SOLO Mining',
+    name: <FormattedMessage id="routes.soloMining" />,
     layout: '/admin',
     path: '/solo-mining',
     children: true,
     icon: <GrUserWorker size='1.2em' color='inherit' />,
   },
   {
-    name: 'Node',
+    name: <FormattedMessage id="routes.node" />,
     layout: '/admin',
     icon: <NodeIcon width='20px' height='20px' color='inherit' />,
     path: '/node',
   },
   {
-    name: 'System',
+    name: <FormattedMessage id="routes.system" />,
     layout: '/admin',
     path: '/system',
     bottom: true,
     icon: <SystemIcon width='20px' height='20px' color='inherit' />,
   },
   {
-    name: 'Settings',
+    name: <FormattedMessage id="routes.settings" />,
     layout: '/admin',
     path: '/settings',
     bottom: true,

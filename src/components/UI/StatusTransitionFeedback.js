@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useToast } from '@chakra-ui/react';
 import { MdOfflineBolt, MdPending, MdCheckCircle } from 'react-icons/md';
+import { useIntl } from 'react-intl';
 
 const StatusTransitionFeedback = ({ serviceStatus, type }) => {
+  const intl = useIntl();
   const [lastStatus, setLastStatus] = useState(null);
   const toast = useToast();
 
@@ -22,14 +24,14 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
     const toastPosition = 'top'; // Position toast at the top center
 
     // Define dynamic labels based on type
-    const entity = type === 'miner' ? 'Miner' : 'Node';
+    const entity = type === 'miner' ? 'miner' : 'node';
 
     // Handle transitions between states
     if (status === 'pending') {
       if (requestedStatus === 'offline') {
         toast({
-          title: `Stopping ${entity.toLowerCase()}`,
-          description: `The ${entity.toLowerCase()} is stopping. Please wait a moment.`,
+          title: intl.formatMessage({ id: `status_transition.${entity}.stopping.title` }),
+          description: intl.formatMessage({ id: `status_transition.${entity}.stopping.description` }),
           status: 'info',
           duration: 5000,
           isClosable: true,
@@ -38,8 +40,8 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
         });
       } else if (requestedStatus === 'online') {
         toast({
-          title: `Starting ${entity.toLowerCase()}`,
-          description: `The ${entity.toLowerCase()} is starting. Please wait a moment.`,
+          title: intl.formatMessage({ id: `status_transition.${entity}.starting.title` }),
+          description: intl.formatMessage({ id: `status_transition.${entity}.starting.description` }),
           status: 'info',
           duration: 5000,
           isClosable: true,
@@ -51,8 +53,8 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
       // Notify when the requested status matches the current status
       if (status === 'online') {
         toast({
-          title: `${entity} is online`,
-          description: `The ${entity.toLowerCase()} is online and operational.`,
+          title: intl.formatMessage({ id: `status_transition.${entity}.online.title` }),
+          description: intl.formatMessage({ id: `status_transition.${entity}.online.description` }),
           status: 'success',
           duration: 5000,
           isClosable: true,
@@ -61,8 +63,8 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
         });
       } else if (status === 'offline') {
         toast({
-          title: `${entity} is offline`,
-          description: `The ${entity.toLowerCase()} has successfully stopped.`,
+          title: intl.formatMessage({ id: `status_transition.${entity}.offline.title` }),
+          description: intl.formatMessage({ id: `status_transition.${entity}.offline.description` }),
           status: 'warning',
           duration: 5000,
           isClosable: true,
@@ -74,7 +76,7 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
 
     // Update the last status to prevent duplicate notifications
     setLastStatus(status);
-  }, [serviceStatus, type, toast, lastStatus]);
+  }, [serviceStatus, type, toast, lastStatus, intl]);
 
   return null; // This component does not render anything
 };

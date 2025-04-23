@@ -117,7 +117,7 @@ const PanelGrid = ({
       {data && data.length && (
         <SimpleGrid columns={{ base: '1', xl: '2' }} spacing={0} my="5" ml="2">
           {data.map((item, index) =>
-            item.value && (
+            item.value !== null && item.value !== undefined && (
               <Flex align="center" mb="4" key={index}>
                 <Icon as={item.icon} me="3" w="18px" h="18px" />
                 {showName && (

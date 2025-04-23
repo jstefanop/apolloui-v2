@@ -4,8 +4,10 @@ import { Card, Flex, Icon, Text } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import CustomAlert from './CustomAlert';
 import config from '../../config';
+import { useIntl } from 'react-intl';
 
 const MinerStatus = ({ serviceStatus }) => {
+  const intl = useIntl();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const miner = serviceStatus?.miner;
 
@@ -29,8 +31,8 @@ const MinerStatus = ({ serviceStatus }) => {
   if (!miner) {
     return (
       <CustomAlert
-        title="Miner status unavailable"
-        description="Could not fetch the miner status. Please try again later."
+        title={intl.formatMessage({ id: 'miner.status.unavailable.title' })}
+        description={intl.formatMessage({ id: 'miner.status.unavailable.description' })}
         status="error"
       />
     );
@@ -45,8 +47,8 @@ const MinerStatus = ({ serviceStatus }) => {
       if (timeSinceRequest <= config.thresholds.MINER_STOP_PENDING_THRESHOLD) {
         return (
           <CustomAlert
-            title="Stopping miner"
-            description="The miner is stopping. Please wait a moment."
+            title={intl.formatMessage({ id: 'miner.status.stopping.title' })}
+            description={intl.formatMessage({ id: 'miner.status.stopping.description' })}
             status="info"
             extraStatus={status}
           />
@@ -54,8 +56,8 @@ const MinerStatus = ({ serviceStatus }) => {
       } else {
         return (
           <CustomAlert
-            title="Stop taking longer than expected"
-            description="The miner is taking longer than expected to stop. Please wait a little more or check the connection."
+            title={intl.formatMessage({ id: 'miner.status.stop_delay.title' })}
+            description={intl.formatMessage({ id: 'miner.status.stop_delay.description' })}
             status="warning"
             extraStatus={status}
           />
@@ -67,8 +69,8 @@ const MinerStatus = ({ serviceStatus }) => {
       if (timeSinceRequest <= config.thresholds.MINER_START_PENDING_THRESHOLD) {
         return (
           <CustomAlert
-            title="Starting miner"
-            description="The miner is starting. Please wait a moment."
+            title={intl.formatMessage({ id: 'miner.status.starting.title' })}
+            description={intl.formatMessage({ id: 'miner.status.starting.description' })}
             status="info"
             extraStatus={status}
           />
@@ -76,8 +78,8 @@ const MinerStatus = ({ serviceStatus }) => {
       } else {
         return (
           <CustomAlert
-            title="Start taking longer than expected"
-            description="The miner is taking longer than expected to start. Please wait a little more or check the connection."
+            title={intl.formatMessage({ id: 'miner.status.start_delay.title' })}
+            description={intl.formatMessage({ id: 'miner.status.start_delay.description' })}
             status="warning"
             extraStatus={status}
           />
@@ -90,8 +92,8 @@ const MinerStatus = ({ serviceStatus }) => {
   if (status === 'offline' && requestedStatus === 'offline') {
     return (
       <CustomAlert
-        title="Miner is offline"
-        description="The miner is currently offline. You can start it from the top menu if needed."
+        title={intl.formatMessage({ id: 'miner.status.offline.title' })}
+        description={intl.formatMessage({ id: 'miner.status.offline.description' })}
         status="info"
       />
     );
@@ -101,8 +103,8 @@ const MinerStatus = ({ serviceStatus }) => {
   if (status === 'offline' && requestedStatus === 'online') {
     return (
       <CustomAlert
-        title="Miner connection issue"
-        description="The miner is currently offline, but it should be online. Please check the connection or try restarting."
+        title={intl.formatMessage({ id: 'miner.status.connection_issue.title' })}
+        description={intl.formatMessage({ id: 'miner.status.connection_issue.description' })}
         status="error"
       />
     );
@@ -112,8 +114,8 @@ const MinerStatus = ({ serviceStatus }) => {
   if (status === 'online' && requestedStatus === 'offline') {
     return (
       <CustomAlert
-        title="Unexpected miner status"
-        description="The miner is online, but it was requested to stop. Please verify its state or restart."
+        title={intl.formatMessage({ id: 'miner.status.unexpected.title' })}
+        description={intl.formatMessage({ id: 'miner.status.unexpected.description' })}
         status="warning"
       />
     );
@@ -128,7 +130,7 @@ const MinerStatus = ({ serviceStatus }) => {
             <Flex align={'center'} color="white">
               <Icon as={CheckIcon} mr="2" />
               <Text>
-                Your miner is <strong>online</strong> and operational.{' '}
+                {intl.formatMessage({ id: 'miner.status.online.message' })}
               </Text>
             </Flex>
           </Flex>

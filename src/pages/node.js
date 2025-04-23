@@ -22,11 +22,12 @@ import IconBox from '../components/icons/IconBox';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { ConnectionsIcons } from '../components/UI/Icons/ConnectionsIcons';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
+import { FormattedNumber } from '../components/UI/FormattedNumber';
 import MiniStatistics from '../components/UI/MiniStatistics';
 import { bytesToSize, displayHashrate, numberToText } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { servicesSelector } from '../redux/reselect/services';
-import { FormattedNumber } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { TimeIcon } from '../components/UI/Icons/TimeIcon';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { MinersIcon } from '../components/UI/Icons/MinersIcon';
@@ -153,17 +154,17 @@ const Node = () => {
 
   const columnsData = [
     {
-      Header: 'ADDRESS',
+      Header: <FormattedMessage id="node.table.address" />,
       accessor: 'addr',
       type: 'name',
     },
     {
-      Header: 'CLIENT',
+      Header: <FormattedMessage id="node.table.client" />,
       accessor: 'subver',
       type: 'name',
     },
     {
-      Header: 'STATUS',
+      Header: <FormattedMessage id="node.table.status" />,
       accessor: 'status',
       type: 'status',
     },
@@ -175,11 +176,16 @@ const Node = () => {
     <Box mx="5">
       <Head>
         <title>
-          {blockHeader === blocksCount && lastBlockTime
-            ? `${lastBlockTime}m since the last block`
-            : blockHeader > blocksCount
-            ? 'Syncing blocks...'
-            : '...'}
+          {blockHeader === blocksCount && lastBlockTime ? (
+            <FormattedMessage
+              id="node.title.last_block"
+              values={{ time: lastBlockTime }}
+            />
+          ) : blockHeader > blocksCount ? (
+            <FormattedMessage id="node.title.syncing" />
+          ) : (
+            '...'
+          )}
         </title>
       </Head>
       <ModalConnectNode
@@ -205,11 +211,10 @@ const Node = () => {
           >
             <AlertIcon boxSize="40px" mr={0} />
             <AlertTitle mt={4} mb={1} fontSize="xl">
-              Node Service Error
+              <FormattedMessage id="node.status.error.title" />
             </AlertTitle>
             <AlertDescription maxWidth="sm">
-              The node service is currently experiencing an error. Please check
-              your system configuration or contact support.
+              <FormattedMessage id="node.status.error.description" />
             </AlertDescription>
           </Alert>
         </Center>
@@ -234,11 +239,13 @@ const Node = () => {
             >
               <Flex direction="column" align="right">
                 <Text fontSize="2xl" fontWeight="bold" color="white">
-                  {blocksCount === 0 && blockHeader === 0
-                    ? 'Pre-synchronization'
-                    : blockHeader === blocksCount
-                    ? `Node is up to date`
-                    : `Syncing blocks...`}
+                  {blocksCount === 0 && blockHeader === 0 ? (
+                    <FormattedMessage id="node.title.pre_sync" />
+                  ) : blockHeader === blocksCount ? (
+                    <FormattedMessage id="node.title.up_to_date" />
+                  ) : (
+                    <FormattedMessage id="node.title.syncing" />
+                  )}
                 </Text>
 
                 <Text
@@ -248,11 +255,18 @@ const Node = () => {
                   mt="0"
                   align={'right'}
                 >
-                  {blocksCount === 0 && blockHeader === 0
-                    ? 'Initializing...'
-                    : blockHeader === blocksCount
-                    ? '100% synched'
-                    : `${((blocksCount / blockHeader) * 100).toFixed(2)}% synched`}
+                  {blocksCount === 0 && blockHeader === 0 ? (
+                    <FormattedMessage id="node.stats.initializing" />
+                  ) : blockHeader === blocksCount ? (
+                    <FormattedMessage id="node.stats.synched" />
+                  ) : (
+                    <FormattedMessage
+                      id="node.stats.synching"
+                      values={{
+                        percentage: ((blocksCount / blockHeader) * 100).toFixed(2),
+                      }}
+                    />
+                  )}
                 </Text>
               </Flex>
               <IconBox
@@ -294,7 +308,7 @@ const Node = () => {
                         ml="2"
                         as="span"
                       >
-                        blocks
+                        <FormattedMessage id="node.stats.blocks" />
                       </Text>
                     </Flex>
                   ) : (
@@ -322,7 +336,7 @@ const Node = () => {
               {/* BOTTOM */}
               <Flex m="2">
                 <Text fontSize="lg" fontWeight="800">
-                  Details
+                  <FormattedMessage id="node.stats.details" />
                 </Text>
               </Flex>
               {loadingNode ? (
@@ -358,20 +372,26 @@ const Node = () => {
                         />
                       }
                       name={
-                        blockHeader === blocksCount
-                          ? 'Minutes since last block'
-                          : blockHeader > blocksCount
-                          ? `Percentage completed ${(
-                              (blocksCount * 100) /
-                              blockHeader
-                            ).toFixed(2)}%`
-                          : '...'
+                        blockHeader === blocksCount ? (
+                          <FormattedMessage id="node.stats.last_block" />
+                        ) : blockHeader > blocksCount ? (
+                          <FormattedMessage
+                            id="node.stats.percentage_completed"
+                            values={{
+                              percentage: ((blocksCount * 100) / blockHeader).toFixed(2),
+                            }}
+                          />
+                        ) : (
+                          '...'
+                        )
                       }
                       value={
                         blockHeader === blocksCount
                           ? lastBlockTime
                           : blockHeader > blocksCount
-                          ? `Processing queue...`
+                          ? (
+                            <FormattedMessage id="node.stats.processing_queue" />
+                          )
                           : '...'
                       }
                       reversed={true}
@@ -392,7 +412,9 @@ const Node = () => {
                           }
                         />
                       }
-                      name="Blockchain size"
+                      name={
+                        <FormattedMessage id="node.stats.blockchain_size" />
+                      }
                       value={bytesToSize(sizeOnDisk)}
                       reversed={true}
                     />
@@ -416,10 +438,14 @@ const Node = () => {
                           }
                         />
                       }
-                      name="Network hashrate"
+                      name={
+                        <FormattedMessage id="node.stats.network_hashrate" />
+                      }
                       value={displayHashrate(networkhashps, 'h', true, 2)}
                       secondaryText={numberToText(difficulty)}
-                      secondaryDescription="Difficulty"
+                      secondaryDescription={
+                        <FormattedMessage id="node.stats.difficulty" />
+                      }
                       reversed={true}
                     />
                     <MiniStatistics
@@ -438,7 +464,9 @@ const Node = () => {
                           }
                         />
                       }
-                      name="Connections"
+                      name={
+                        <FormattedMessage id="node.stats.connections" />
+                      }
                       value={
                         <Flex>
                           {connectionCount}
@@ -468,7 +496,9 @@ const Node = () => {
                           }
                         />
                       }
-                      name="Remaining space"
+                      name={
+                        <FormattedMessage id="node.stats.remaining_space" />
+                      }
                       value={`${remainingSpace}%`}
                       progress={true}
                       progressPercent={remainingSpace}
@@ -492,11 +522,15 @@ const Node = () => {
                           }
                         />
                       }
-                      name="Local node address"
+                      name={
+                        <FormattedMessage id="node.stats.node_address" />
+                      }
                       value={nodeAddress}
                       reversed={true}
                       fontSize="md"
-                      button={'Connect'}
+                      button={
+                        <FormattedMessage id="node.stats.connect" />
+                      }
                       buttonHandler={onOpen}
                       buttonIcon={<MdCastConnected />}
                     />
@@ -516,7 +550,9 @@ const Node = () => {
                           }
                         />
                       }
-                      name="Bitcoin Node Version"
+                      name={
+                        <FormattedMessage id="node.stats.node_version" />
+                      }
                       value={subversion}
                       reversed={true}
                       fontSize="md"
@@ -530,7 +566,9 @@ const Node = () => {
             <DynamicTable
               columnsData={columnsData}
               tableData={dataTable}
-              tableTitle={`Last connections`}
+              tableTitle={
+                <FormattedMessage id="node.table.title" />
+              }
               shadow={shadow}
               mt="5"
             />

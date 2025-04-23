@@ -16,8 +16,10 @@ import { isValidBitcoinAddress, isCompatibleBitcoinAddress } from '../../../lib/
 import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { presetPools } from '../../../lib/utils';
+import { useIntl } from 'react-intl';
 
 const SoloSettings = () => {
+  const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
@@ -27,10 +29,9 @@ const SoloSettings = () => {
     id: 'solo',
     color: 'green',
     icon: GrUserWorker,
-    title: 'SOLO Mining mode',
+    title: intl.formatMessage({ id: 'settings.sections.solo.mining_mode' }),
     selected: settings.nodeEnableSoloMining || false,
-    description:
-      'Enable solo mining mode to mine directly to your own Bitcoin Node. Note: your node will be restarted to apply.',
+    description: intl.formatMessage({ id: 'settings.sections.solo.mining_mode_description' }),
   });
 
   // Update the state when settings change
@@ -84,12 +85,10 @@ const SoloSettings = () => {
     setErrorForm(null);
 
     if (!isValidBitcoinAddress(e.target.value))
-      setErrorForm('Please add a valid Bitcoin address');
+      setErrorForm(intl.formatMessage({ id: 'settings.sections.solo.invalid_address' }));
 
     if (!isCompatibleBitcoinAddress(e.target.value))
-      setErrorForm(
-        'Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address'
-      );
+      setErrorForm(intl.formatMessage({ id: 'settings.sections.solo.incompatible_address' }));
 
     const poolChanged = {
       ...settings.pool,
@@ -110,8 +109,8 @@ const SoloSettings = () => {
 
   return (
     <PanelCard
-      title={'SOLO settings'}
-      description={'Mine directly to your Bitcoin node'}
+      title={intl.formatMessage({ id: 'settings.sections.solo.title' })}
+      description={intl.formatMessage({ id: 'settings.sections.solo.description' })}
       textColor={textColor}
       icon={GrUserWorker}
     >
@@ -126,14 +125,14 @@ const SoloSettings = () => {
           />
           {soloMiningMode.selected && (
             <SimpleCard
-              title={'Wallet address'}
+              title={intl.formatMessage({ id: 'settings.sections.solo.wallet_address' })}
               textColor={textColor}
             >
               <Input
                 color={inputTextColor}
                 name="wallet"
                 type="text"
-                placeholder={'1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'}
+                placeholder={intl.formatMessage({ id: 'settings.sections.solo.wallet_placeholder' })}
                 value={settings.pool.username}
                 onChange={handleSoloMiningChange}
               />
@@ -143,10 +142,7 @@ const SoloSettings = () => {
             <Alert mt="5" borderRadius={'10px'} status={'error'}>
               <AlertIcon />
               <AlertDescription>
-                You have tor enabled, it is suggested to turn off
-                tor for solo mining. Bitcoin nodes over the tor
-                network propagate blocks slower, and there is a
-                higher chance of orphaning a block
+                {intl.formatMessage({ id: 'settings.sections.solo.tor_warning' })}
               </AlertDescription>
             </Alert>
           )}
@@ -154,24 +150,22 @@ const SoloSettings = () => {
       ) : (
         <SimpleCard
           bg="orange.300"
-          title={'Cannot enable SOLO mining'}
+          title={intl.formatMessage({ id: 'settings.sections.solo.cannot_enable' })}
           textColor={'orange.600'}
           mt="20px"
         >
           <Text fontSize="sm" color="gray.800">
-            Your Bitcoin node is not running or not fully synced.
-            You can enable solo mining only after your node is fully
-            synced.
+            {intl.formatMessage({ id: 'settings.sections.solo.node_not_synced' })}
           </Text>
         </SimpleCard>
       )}
 
-      <SimpleCard title={'BTC Signature'} textColor={textColor}>
+      <SimpleCard title={intl.formatMessage({ id: 'settings.sections.solo.btc_signature' })} textColor={textColor}>
         <Input
           color={inputTextColor}
           name="btcsig"
           type="text"
-          placeholder={'/Your preferred string/'}
+          placeholder={intl.formatMessage({ id: 'settings.sections.solo.btc_signature_placeholder' })}
           value={settings.btcsig}
           onChange={handleBtcsigChange}
         />

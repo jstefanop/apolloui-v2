@@ -15,6 +15,7 @@ import {
 import { useRef, useEffect } from 'react';
 import { BulletList, List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
@@ -57,6 +58,8 @@ const Miner = () => {
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
+
+  const intl = useIntl();
 
   // Settings data
   const {
@@ -138,8 +141,7 @@ const Miner = () => {
       icon: FanIcon,
     },
     {
-      value: `${(avgBoardEfficiency && avgBoardEfficiency.toFixed(2)) || 0
-        } W/TH`,
+      value: `${(avgBoardEfficiency && avgBoardEfficiency.toFixed(2)) || 0} W/TH`,
       icon: PowerIcon,
     },
     {
@@ -184,8 +186,13 @@ const Miner = () => {
       <Head>
         <title>
           {globalHashrate
-            ? `Apollo Miner ${globalHashrate.value} ${globalHashrate.unit}`
-            : 'Apollo Miner'}
+            ? intl.formatMessage(
+                { id: 'miner.title', defaultMessage: 'Apollo Miner {hashrate}' },
+                { hashrate: `${globalHashrate.value} ${globalHashrate.unit}` }
+              )
+            : intl.formatMessage(
+                { id: 'miner.title', defaultMessage: 'Apollo Miner' }
+              )}
         </title>
       </Head>
       <MinerDrawer
@@ -263,7 +270,7 @@ const Miner = () => {
                     }
                   />
                 }
-                name="Accepted"
+                name={intl.formatMessage({ id: 'miner.stats.shares.accepted' })}
                 value={
                   <span
                     className={
@@ -294,7 +301,7 @@ const Miner = () => {
                     }
                   />
                 }
-                name="Rejected"
+                name={intl.formatMessage({ id: 'miner.stats.shares.rejected' })}
                 value={
                   <span
                     className={
@@ -324,7 +331,7 @@ const Miner = () => {
                     }
                   />
                 }
-                name="Last share"
+                name={intl.formatMessage({ id: 'miner.stats.last_share' })}
                 value={
                   lastShareTime ? lastShareTime?.replace('a few', '') : 'N/A'
                 }
@@ -346,7 +353,7 @@ const Miner = () => {
                     }
                   />
                 }
-                name="Uptime"
+                name={intl.formatMessage({ id: 'miner.stats.uptime' })}
                 value={minerUptime}
                 reversed={true}
               />
@@ -357,7 +364,7 @@ const Miner = () => {
             <Card py="15px" pr="40px" bgColor={cardColor} boxShadow={shadow}>
               <Flex m="2">
                 <Text fontSize="lg" fontWeight="800">
-                  Device presets
+                  {intl.formatMessage({ id: 'miner.device_presets' })}
                 </Text>
               </Flex>
               {loadingMiner ? (
@@ -381,8 +388,8 @@ const Miner = () => {
                           }
                         />
                       }
-                      name="SOLO Mining"
-                      value={'ENABLED'}
+                      name={intl.formatMessage({ id: 'miner.solo_mining' })}
+                      value={intl.formatMessage({ id: 'miner.enabled' })}
                       reversed={true}
                     />
                   )}
@@ -402,7 +409,7 @@ const Miner = () => {
                         }
                       />
                     }
-                    name="Miner mode"
+                    name={intl.formatMessage({ id: 'miner.stats.mode' })}
                     value={minerMode?.toUpperCase()}
                     reversed={true}
                   />
@@ -422,8 +429,8 @@ const Miner = () => {
                         }
                       />
                     }
-                    name="Power management"
-                    value={minerMode === 'custom' ? `${voltage}%` : 'AUTO'}
+                    name={intl.formatMessage({ id: 'miner.stats.power' })}
+                    value={minerMode === 'custom' ? `${voltage}%` : intl.formatMessage({ id: 'miner.auto' })}
                     reversed={true}
                   />
                   <NoCardStatistics
@@ -442,8 +449,8 @@ const Miner = () => {
                         }
                       />
                     }
-                    name="Frequency"
-                    value={minerMode === 'custom' ? `${frequency}MHz` : 'AUTO'}
+                    name={intl.formatMessage({ id: 'miner.stats.frequency' })}
+                    value={minerMode === 'custom' ? `${frequency}MHz` : intl.formatMessage({ id: 'miner.auto' })}
                     reversed={true}
                   />
                   <NoCardStatistics
@@ -462,11 +469,11 @@ const Miner = () => {
                         }
                       />
                     }
-                    name="Fan management"
+                    name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
                     value={
                       fanLow !== 40 && fanHigh !== 60
                         ? `${fanLow}°C / ${fanHigh}°C`
-                        : 'AUTO'
+                        : intl.formatMessage({ id: 'miner.auto' })
                     }
                     reversed={true}
                   />
@@ -483,7 +490,7 @@ const Miner = () => {
               >
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
-                    Total pools and hashboards
+                    {intl.formatMessage({ id: 'miner.total_pools_hashboards' })}
                   </Text>
                 </Flex>
                 <Flex align-items="center">
@@ -494,7 +501,7 @@ const Miner = () => {
                     size="sm"
                     onClick={onOpen}
                   >
-                    Show all data
+                    {intl.formatMessage({ id: 'miner.show_all_data' })}
                   </Button>
                 </Flex>
               </Flex>
@@ -503,7 +510,7 @@ const Miner = () => {
               ) : (
                 <Box mt="3">
                   <PanelGrid
-                    title="Hashboards"
+                    title={intl.formatMessage({ id: 'miner.hashboards' })}
                     active={activeBoards}
                     total={totalBoards}
                     data={dataTableBoards}
@@ -512,7 +519,7 @@ const Miner = () => {
                     <Divider />
                   </Center>
                   <PanelGrid
-                    title="Pools"
+                    title={intl.formatMessage({ id: 'miner.pools' })}
                     active={activePools}
                     total={totalBoards}
                     data={dataTablePools}
@@ -526,7 +533,7 @@ const Miner = () => {
             <Card bgColor={cardColor} boxShadow={shadow}>
               <Flex m="2">
                 <Text fontSize="lg" fontWeight="800">
-                  Boards averages
+                  {intl.formatMessage({ id: 'miner.boards_averages' })}
                 </Text>
               </Flex>
               {loadingMiner ? (
@@ -549,12 +556,12 @@ const Miner = () => {
                         }
                       />
                     }
-                    name="Miner temperature"
+                    name={intl.formatMessage({ id: 'miner.stats.temperature' })}
                     value={
                       avgBoardTemp ? `${formatTemperature(avgBoardTemp, temperatureUnit)}` : 'N/A'
                     }
                     rawValue={avgBoardTemp}
-                    legendValue={'On the average'}
+                    legendValue={intl.formatMessage({ id: 'miner.stats.boards.average' })}
                     total="100"
                     gauge={true}
                     loading={loadingMiner}
@@ -576,7 +583,7 @@ const Miner = () => {
                         }
                       />
                     }
-                    name="Chip speed"
+                    name={intl.formatMessage({ id: 'miner.stats.chip_speed' })}
                     value={avgChipSpeed ? avgChipSpeed.toFixed(2) : 'N/A'}
                     rawValue={avgChipSpeed}
                     total={240}
@@ -600,7 +607,7 @@ const Miner = () => {
                         }
                       />
                     }
-                    name="Fan speed"
+                    name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
                     value={
                       avgFanSpeed ? `${avgFanSpeed.toFixed(0)} rpm` : 'N/A'
                     }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { useIntl } from 'react-intl';
 import _ from 'lodash';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
 import { FaBalanceScale } from 'react-icons/fa';
@@ -7,6 +8,7 @@ import { RiUserSettingsFill } from 'react-icons/ri';
 import { MdHdrAuto } from 'react-icons/md';
 
 export const useMinerSettings = () => {
+  const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
 
   // Initial configurations for miner modes
@@ -15,73 +17,67 @@ export const useMinerSettings = () => {
       id: 'eco',
       icon: IoLeaf,
       color: 'brand',
-      title: 'ECO',
+      title: intl.formatMessage({ id: 'settings.sections.miner.modes.eco.title' }),
       selected: false,
-      description:
-        'In ECO mode your miner will be at its most efficient, but its hashrate will be slightly slower. This mode is recommended, and will produce the least amount of noise and heat.',
+      description: intl.formatMessage({ id: 'settings.sections.miner.modes.eco.description' }),
     },
     {
       id: 'balanced',
       color: 'brand',
       icon: FaBalanceScale,
-      title: 'BALANCED',
+      title: intl.formatMessage({ id: 'settings.sections.miner.modes.balanced.title' }),
       selected: false,
-      description:
-        'BALANCED mode is a good compromise between hashrate, efficiency, and noise.',
+      description: intl.formatMessage({ id: 'settings.sections.miner.modes.balanced.description' }),
     },
     {
       id: 'turbo',
       color: 'brand',
       icon: IoRocket,
-      title: 'TURBO',
+      title: intl.formatMessage({ id: 'settings.sections.miner.modes.turbo.title' }),
       selected: false,
-      description:
-        'In TURBO mode your miner will be the least efficient, but its hashrate will be the highest. This mode is only recommended for expert users, and you should monitor your miner for possible overheating. The fan can get loud in this mode.',
+      description: intl.formatMessage({ id: 'settings.sections.miner.modes.turbo.description' }),
     },
     {
       id: 'custom',
       color: 'brand',
       icon: RiUserSettingsFill,
-      title: 'CUSTOM',
-      alertBadge: 'WARNING',
+      title: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.title' }),
+      alertBadge: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.warning' }),
       selected: false,
-      description:
-        'The Apollo comes with tuned preset values (above), which offer a good range of operating modes. By selecting custom you risk damaging your device and FutureBit will not be responsible for any or all damage caused by over-clocking or over-volting',
+      description: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.warning_description' }),
       sliders: [
         {
           id: 'voltage',
-          title: 'Power',
-          description:
-            'You can set your miner custom power or reset to default value.',
+          title: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.power.title' }),
+          description: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.power.description' }),
           min: 30,
           max: 95,
           step: 1,
           data: {
-            30: 'Min',
+            30: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.power.min' }),
             40: '40%',
             50: '50%',
             60: '60%',
             70: '70%',
             80: '80%',
             90: '90%',
-            95: 'Max',
+            95: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.power.max' }),
           },
         },
         {
           id: 'frequency',
-          title: 'Frequency',
-          description:
-            'You can set your miner custom frequency or reset to default value.',
+          title: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.frequency.title' }),
+          description: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.frequency.description' }),
           min: 25,
           max: 60,
           step: 1,
           data: {
-            25: 'Min',
+            25: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.frequency.min' }),
             32: '32',
             39: '39',
             46: '46',
             53: '53',
-            60: 'Max',
+            60: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.frequency.max' }),
           },
         },
       ],
@@ -96,36 +92,34 @@ export const useMinerSettings = () => {
     selected: false,
     fan_low: 0,
     fan_high: 0,
-    description:
-      'The Apollo comes with auto tuned fan speed, but you can set a custom curve by toggling auto to off.',
+    description: intl.formatMessage({ id: 'settings.sections.miner.fan.description' }),
     sliders: [
       {
         id: 'fan_low',
-        title: 'Temperature to start fan',
-        description: 'This is the temperature needed to start the fan.',
+        title: intl.formatMessage({ id: 'settings.sections.miner.fan.low.title' }),
+        description: intl.formatMessage({ id: 'settings.sections.miner.fan.low.description' }),
         min: 40,
         max: 70,
         steps: 5,
         data: {
-          40: 'Min',
+          40: intl.formatMessage({ id: 'settings.sections.miner.fan.low.min' }),
           50: '50°c',
           60: '60°c',
-          70: 'Max',
+          70: intl.formatMessage({ id: 'settings.sections.miner.fan.low.max' }),
         },
       },
       {
         id: 'fan_high',
-        title: 'Temperature for max fan speed',
-        description:
-          'This is the temperature needed to set the fan at maximum speed.',
+        title: intl.formatMessage({ id: 'settings.sections.miner.fan.high.title' }),
+        description: intl.formatMessage({ id: 'settings.sections.miner.fan.high.description' }),
         min: 60,
         max: 90,
         steps: 5,
         data: {
-          60: 'Min',
+          60: intl.formatMessage({ id: 'settings.sections.miner.fan.high.min' }),
           70: '70°c',
           80: '80°c',
-          90: 'Max',
+          90: intl.formatMessage({ id: 'settings.sections.miner.fan.high.max' }),
         },
       },
     ],
@@ -138,10 +132,9 @@ export const useMinerSettings = () => {
     id: 'powerled',
     color: 'green',
     icon: null,
-    title: 'Front Status Light',
+    title: intl.formatMessage({ id: 'settings.sections.miner.power_led.title' }),
     selected: false,
-    description:
-      'Turn off/on the front status led. Note: your miner will be restarted to apply.',
+    description: intl.formatMessage({ id: 'settings.sections.miner.power_led.description' }),
   });
 
   // Initialize and update states when settings change

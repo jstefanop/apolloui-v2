@@ -278,28 +278,35 @@ function createApolloClient() {
     const currentSize = JSON.stringify(cache.extract()).length;
     const memoryUsage = window.performance.memory?.usedJSHeapSize || 0;
     
-    // Log detailed memory information
-    console.log('Memory Usage Report:', {
-      cacheSize: `${(currentSize / 1024 / 1024).toFixed(2)}MB`,
-      jsHeapSize: memoryUsage ? `${(memoryUsage / 1024 / 1024).toFixed(2)}MB` : 'N/A',
-      cacheEntries: Object.keys(cache.extract()).length,
-      timestamp: new Date().toISOString()
-    });
+    // Log detailed memory information only in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Memory Usage Report:', {
+        cacheSize: `${(currentSize / 1024 / 1024).toFixed(2)}MB`,
+        jsHeapSize: memoryUsage ? `${(memoryUsage / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+        cacheEntries: Object.keys(cache.extract()).length,
+        timestamp: new Date().toISOString()
+      });
+      
+      if (currentSize > MAX_CACHE_SIZE) {
+        console.log(`Cache size exceeded limit (${(currentSize / 1024 / 1024).toFixed(2)}MB), performing cleanup`);
+      }
+      
+      // Log significant changes
+      if (Math.abs(currentSize - lastCacheSize) > 1024 * 1024 || 
+          (memoryUsage && Math.abs(memoryUsage - lastMemoryUsage) > 50 * 1024 * 1024)) {
+        console.log(`Significant change detected:
+          Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB
+          JS Heap size: ${memoryUsage ? (memoryUsage / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}`);
+      }
+    }
     
+    // Always perform cleanup if needed, regardless of environment
     if (currentSize > MAX_CACHE_SIZE) {
-      console.log(`Cache size exceeded limit (${(currentSize / 1024 / 1024).toFixed(2)}MB), performing cleanup`);
       cache.gc();
     }
     
-    // Log significant changes
-    if (Math.abs(currentSize - lastCacheSize) > 1024 * 1024 || 
-        (memoryUsage && Math.abs(memoryUsage - lastMemoryUsage) > 50 * 1024 * 1024)) {
-      console.log(`Significant change detected:
-        Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB
-        JS Heap size: ${memoryUsage ? (memoryUsage / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}`);
-      lastCacheSize = currentSize;
-      lastMemoryUsage = memoryUsage;
-    }
+    lastCacheSize = currentSize;
+    lastMemoryUsage = memoryUsage;
   };
 
   // Monitor cache size more frequently

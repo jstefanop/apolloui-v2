@@ -9,6 +9,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import { PoolIcon } from '../../UI/Icons/PoolIcon';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
@@ -16,6 +17,7 @@ import { useSettings } from '../context/SettingsContext';
 import { presetPools } from '../../../lib/utils';
 
 const PoolSettings = () => {
+  const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
   const [pool, setPool] = useState();
   const textColor = useColorModeValue('brands.900', 'white');
@@ -58,8 +60,8 @@ const PoolSettings = () => {
 
   return (
     <PanelCard
-      title={'Pooled settings'}
-      description={'Manage pools configuration for your miner'}
+      title={intl.formatMessage({ id: 'settings.sections.pool.title' })}
+      description={intl.formatMessage({ id: 'settings.sections.pool.description' })}
       textColor={textColor}
       icon={PoolIcon}
     >
@@ -71,7 +73,7 @@ const PoolSettings = () => {
           fontWeight="bold"
           _hover={{ cursor: 'pointer' }}
         >
-          Select a pool
+          {intl.formatMessage({ id: 'settings.sections.pool.select_pool' })}
         </FormLabel>
         <Select
           id="poolPreset"
@@ -96,7 +98,7 @@ const PoolSettings = () => {
           <Flex flexDir="row" mt="2">
             <a href={pool.webUrl} target="_blank" rel="noreferrer">
               <Text fontSize={'sm'}>
-                Learn more about this pool
+                {intl.formatMessage({ id: 'settings.sections.pool.learn_more' })}
               </Text>
             </a>
           </Flex>
@@ -111,12 +113,12 @@ const PoolSettings = () => {
         gap={2}
       >
         <GridItem colSpan={{ base: '', md: 3 }}>
-          <SimpleCard title={'URL'} textColor={textColor}>
+          <SimpleCard title={intl.formatMessage({ id: 'settings.sections.pool.url.title' })} textColor={textColor}>
             <Input
               color={inputTextColor}
               name="url"
               type="text"
-              placeholder={'stratum.slushpool.com:3333'}
+              placeholder={intl.formatMessage({ id: 'settings.sections.pool.url.placeholder' })}
               value={settings.pool.url}
               onChange={handlePoolChange}
               disabled={
@@ -126,12 +128,12 @@ const PoolSettings = () => {
           </SimpleCard>
         </GridItem>
         <GridItem colSpan={{ base: '', md: 2 }}>
-          <SimpleCard title={'Username'} textColor={textColor}>
+          <SimpleCard title={intl.formatMessage({ id: 'settings.sections.pool.username.title' })} textColor={textColor}>
             <Input
               color={inputTextColor}
               name="username"
               type="text"
-              placeholder={'futurebit.worker'}
+              placeholder={intl.formatMessage({ id: 'settings.sections.pool.username.placeholder' })}
               value={settings.pool.username}
               onChange={handlePoolChange}
               disabled={settings.nodeEnableSoloMining}
@@ -139,12 +141,12 @@ const PoolSettings = () => {
           </SimpleCard>
         </GridItem>
         <GridItem colSpan={{ base: '', md: 1 }}>
-          <SimpleCard title={'Password'} textColor={textColor}>
+          <SimpleCard title={intl.formatMessage({ id: 'settings.sections.pool.password.title' })} textColor={textColor}>
             <Input
               color={inputTextColor}
               name="password"
               type="text"
-              placeholder={'x'}
+              placeholder={intl.formatMessage({ id: 'settings.sections.pool.password.placeholder' })}
               value={settings.pool.password}
               onChange={handlePoolChange}
               disabled={settings.nodeEnableSoloMining}

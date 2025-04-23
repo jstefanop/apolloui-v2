@@ -7,6 +7,7 @@ import {
   Button,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import Card from '../../card/Card';
 import { useSettings } from '../context/SettingsContext';
 import { DownloadIcon } from '../../UI/Icons/DownloadIcon';
@@ -14,6 +15,7 @@ import { RestoreIcon } from '../../UI/Icons/RestoreIcon';
 import { FormatIcon } from '../../UI/Icons/FormatIcon';
 
 const ExtraSettingsActions = () => {
+  const intl = useIntl();
   const {
     handleBackup,
     setIsModalRestoreOpen,
@@ -28,27 +30,25 @@ const ExtraSettingsActions = () => {
       id: 'backup',
       color: 'teal',
       icon: DownloadIcon,
-      title: 'Backup settings',
-      buttonTitle: 'BACKUP',
-      description:
-        'Create a backup file of dashboard, miner and pools configurations',
+      title: intl.formatMessage({ id: 'settings.sections.extra.backup.title' }),
+      buttonTitle: intl.formatMessage({ id: 'settings.sections.extra.backup.button' }),
+      description: intl.formatMessage({ id: 'settings.sections.extra.backup.description' }),
     },
     {
       id: 'restore',
       color: 'orange',
       icon: RestoreIcon,
-      title: 'Restore settings',
-      buttonTitle: 'RESTORE',
-      description: 'Restore all configurations from a backup file',
+      title: intl.formatMessage({ id: 'settings.sections.extra.restore.title' }),
+      buttonTitle: intl.formatMessage({ id: 'settings.sections.extra.restore.button' }),
+      description: intl.formatMessage({ id: 'settings.sections.extra.restore.description' }),
     },
     {
       id: 'format',
       color: 'purple',
       icon: FormatIcon,
-      title: 'Format Node SSD',
-      buttonTitle: 'FORMAT',
-      description:
-        'Use this tool for formatting and setting up your Node NVMe SSD',
+      title: intl.formatMessage({ id: 'settings.sections.extra.format.title' }),
+      buttonTitle: intl.formatMessage({ id: 'settings.sections.extra.format.button' }),
+      description: intl.formatMessage({ id: 'settings.sections.extra.format.description' }),
     },
   ];
 

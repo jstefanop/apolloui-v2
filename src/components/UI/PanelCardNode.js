@@ -2,6 +2,7 @@ import { Icon, Text, Flex, Button, Tooltip } from '@chakra-ui/react';
 import { useState } from 'react';
 import { MdCastConnected } from 'react-icons/md';
 import Card from '../../components/card/Card';
+import { useIntl } from 'react-intl';
 
 const PanelCard = ({
   children,
@@ -18,6 +19,7 @@ const PanelCard = ({
   tooltip,
   ...rest
 }) => {
+  const intl = useIntl();
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
@@ -45,7 +47,7 @@ const PanelCard = ({
                 color="white"
                 placement="top"
                 isOpen={showTooltip}
-                label={buttonLoading ? `To connect to your node you need to enable the Allow LAN connections first and wait for the availability of the node.` : `Connect to your node`}
+                label={buttonLoading ? intl.formatMessage({ id: 'node.panel.connect_tooltip_loading' }) : intl.formatMessage({ id: 'node.panel.connect_tooltip' })}
               >
                 <Button
                   leftIcon={<MdCastConnected />}

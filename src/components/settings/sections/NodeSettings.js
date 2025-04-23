@@ -10,6 +10,7 @@ import {
   AlertDescription,
   useColorModeValue
 } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import { MdSettings } from 'react-icons/md';
 import { NodeIcon } from '../../UI/Icons/NodeIcon';
 import PanelCardNode from '../../UI/PanelCardNode';
@@ -22,6 +23,7 @@ import { nodeSelector } from '../../../redux/reselect/node';
 import { getNodeErrorMessage } from '../../../lib/utils';
 
 const NodeSettings = () => {
+  const intl = useIntl();
   const { settings, setIsModalConnectOpen } = useSettings();
   const {
     nodeTorMode,
@@ -50,12 +52,12 @@ const NodeSettings = () => {
 
   return (
     <PanelCardNode
-      title={'Bitcoin node settings'}
-      description={'Manage Bitcoin Node Configuration'}
+      title={intl.formatMessage({ id: 'settings.sections.node.title' })}
+      description={intl.formatMessage({ id: 'settings.sections.node.description' })}
       textColor={textColor}
       icon={NodeIcon}
       handleButtonClick={handleButtonClick}
-      buttonText="Connect"
+      buttonText={intl.formatMessage({ id: 'settings.sections.node.connect' })}
       buttonLoading={
         !settings?.nodeAllowLan ||
         errorNodeSentence ||
@@ -73,10 +75,7 @@ const NodeSettings = () => {
         <Alert mt="5" borderRadius={'10px'} status={'error'}>
           <AlertIcon />
           <AlertDescription>
-            You have solo mining enabled, it is suggested to turn off
-            tor for solo mining. Bitcoin nodes over the tor network
-            propagate blocks slower, and there is a higher chance of
-            orphaning a block
+            {intl.formatMessage({ id: 'settings.sections.node.solo_mining_warning' })}
           </AlertDescription>
         </Alert>
       )}
@@ -92,9 +91,9 @@ const NodeSettings = () => {
 
       <Divider mb="10px" />
 
-      <SimpleCard title={'Extra options'} textColor={textColor}>
+      <SimpleCard title={intl.formatMessage({ id: 'settings.sections.node.extra_options' })} textColor={textColor}>
         <InputGroup mt={4}>
-          <InputLeftAddon>Max connections</InputLeftAddon>
+          <InputLeftAddon>{intl.formatMessage({ id: 'settings.sections.node.max_connections' })}</InputLeftAddon>
           <Input
             color={inputTextColor}
             name="nodeMaxConnections"
@@ -110,10 +109,8 @@ const NodeSettings = () => {
       <Divider mb="10px" />
 
       <SimpleCard
-        title={'Bitcoin node configuration'}
-        description={
-          'Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. Please check Bitcoin Core documentation for valid options.)'
-        }
+        title={intl.formatMessage({ id: 'settings.sections.node.node_config.title' })}
+        description={intl.formatMessage({ id: 'settings.sections.node.node_config.description' })}
         textColor={textColor}
         icon={MdSettings}
       >

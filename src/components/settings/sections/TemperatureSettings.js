@@ -6,12 +6,14 @@ import {
   Flex,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import { MdDeviceThermostat } from 'react-icons/md';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
 import { useSettings } from '../context/SettingsContext';
 
 const TemperatureSettings = () => {
+  const intl = useIntl();
   const { settings, setSettings } = useSettings();
   const textColor = useColorModeValue('brands.900', 'white');
 
@@ -24,8 +26,8 @@ const TemperatureSettings = () => {
 
   return (
     <PanelCard
-      title={'Temperature Unit'}
-      description={'Choose your preferred unit'}
+      title={intl.formatMessage({ id: 'settings.sections.system.temperature_unit' })}
+      description={intl.formatMessage({ id: 'settings.sections.system.temperature_description' })}
       textColor={textColor}
       icon={MdDeviceThermostat}
       mb="20px"

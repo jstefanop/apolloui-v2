@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { useIntl } from 'react-intl';
 import { MdShield } from 'react-icons/md';
 
 export const useNodeSettings = () => {
+  const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
 
   // Node tor mode settings
@@ -10,10 +12,9 @@ export const useNodeSettings = () => {
     id: 'tor',
     color: 'green',
     icon: MdShield,
-    title: 'TOR mode',
+    title: intl.formatMessage({ id: 'settings.sections.node.tor_mode.title' }),
     selected: false,
-    description:
-      'Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply.',
+    description: intl.formatMessage({ id: 'settings.sections.node.tor_mode.description' }),
   });
 
   // Node allow LAN settings
@@ -21,10 +22,9 @@ export const useNodeSettings = () => {
     id: 'allowLan',
     color: 'green',
     icon: MdShield,
-    title: 'Allow LAN connections',
+    title: intl.formatMessage({ id: 'settings.sections.node.allow_lan.title' }),
     selected: false,
-    description:
-      'Allow LAN connections to your Bitcoin Node to connect external wallets and services. Note: your node will be restarted to apply.',
+    description: intl.formatMessage({ id: 'settings.sections.node.allow_lan.description' }),
   });
 
   // Node max connections

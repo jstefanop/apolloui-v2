@@ -10,12 +10,14 @@ import {
   Flex,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import { KeyIcon } from '../../UI/Icons/KeyIcon';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
 import { usePasswordSettings } from '../hooks/usePasswordSettings';
 
 const PasswordSettings = () => {
+  const intl = useIntl();
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
 
@@ -31,8 +33,8 @@ const PasswordSettings = () => {
 
   return (
     <PanelCard
-      title={'Lockscreen'}
-      description={'Change the password to access the dashboard'}
+      title={intl.formatMessage({ id: 'settings.sections.system.password.title' })}
+      description={intl.formatMessage({ id: 'settings.sections.system.password.description' })}
       textColor={textColor}
       icon={KeyIcon}
       mb="20px"
@@ -48,14 +50,14 @@ const PasswordSettings = () => {
               color={textColor}
               mb="8px"
             >
-              Password
+              {intl.formatMessage({ id: 'settings.sections.system.password.password' })}
             </FormLabel>
             <InputGroup size="md">
               <Input
                 color={inputTextColor}
                 isRequired={true}
                 fontSize="sm"
-                placeholder="Your lock screen password"
+                placeholder={intl.formatMessage({ id: 'settings.sections.system.password.password_placeholder' })}
                 mb="24px"
                 size="lg"
                 type={showLockPassword ? 'text' : 'password'}
@@ -70,7 +72,7 @@ const PasswordSettings = () => {
                   size="sm"
                   onClick={() => setShowLockPassword(!showLockPassword)}
                 >
-                  {showLockPassword ? 'Hide' : 'Show'}
+                  {showLockPassword ? intl.formatMessage({ id: 'settings.sections.system.password.hide' }) : intl.formatMessage({ id: 'settings.sections.system.password.show' })}
                 </Button>
               </InputRightElement>
             </InputGroup>
@@ -83,14 +85,14 @@ const PasswordSettings = () => {
               color={textColor}
               display="flex"
             >
-              Verify Password
+              {intl.formatMessage({ id: 'settings.sections.system.password.verify_password' })}
             </FormLabel>
             <InputGroup size="md">
               <Input
                 color={inputTextColor}
                 isRequired={true}
                 fontSize="sm"
-                placeholder="Verify your lock screen password"
+                placeholder={intl.formatMessage({ id: 'settings.sections.system.password.verify_password_placeholder' })}
                 mb="24px"
                 size="lg"
                 type={showLockPassword ? 'text' : 'password'}
@@ -105,7 +107,7 @@ const PasswordSettings = () => {
                   size="sm"
                   onClick={() => setShowLockPassword(!showLockPassword)}
                 >
-                  {showLockPassword ? 'Hide' : 'Show'}
+                  {showLockPassword ? intl.formatMessage({ id: 'settings.sections.system.password.hide' }) : intl.formatMessage({ id: 'settings.sections.system.password.show' })}
                 </Button>
               </InputRightElement>
             </InputGroup>

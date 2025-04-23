@@ -20,8 +20,10 @@ import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { FaBitcoin, FaTrophy } from 'react-icons/fa';
 import { GiPartyPopper } from 'react-icons/gi';
 import Confetti from './Confetti';
+import { useIntl } from 'react-intl';
 
 const BlockFoundCelebration = ({ blockFound }) => {
+  const intl = useIntl();
   const [showCelebration, setShowCelebration] = useState(false);
   const dispatch = useDispatch();
   const toast = useToast();
@@ -33,8 +35,8 @@ const BlockFoundCelebration = ({ blockFound }) => {
     fetchPolicy: 'no-cache',
     onCompleted: () => {
       toast({
-        title: 'Block found flag reset',
-        description: 'The block found notification has been reset',
+        title: intl.formatMessage({ id: 'block_found.reset.title' }),
+        description: intl.formatMessage({ id: 'block_found.reset.description' }),
         status: 'success',
         duration: 5000,
         isClosable: true,
@@ -44,7 +46,7 @@ const BlockFoundCelebration = ({ blockFound }) => {
     onError: (error) => {
       dispatch(
         sendFeedback({
-          message: `Error resetting block found flag: ${error.message}`,
+          message: intl.formatMessage({ id: 'block_found.reset.error' }, { error: error.message }),
           type: 'error',
         })
       );
@@ -100,7 +102,7 @@ const BlockFoundCelebration = ({ blockFound }) => {
           <Flex align="center" mb={4}>
             <Box as={FaBitcoin} size="40px" mr={3} />
             <AlertTitle fontSize="3xl" fontWeight="extrabold">
-              CONGRATULATIONS!
+              {intl.formatMessage({ id: 'block_found.congratulations' })}
             </AlertTitle>
             <Box as={GiPartyPopper} size="40px" ml={3} />
           </Flex>
@@ -109,12 +111,10 @@ const BlockFoundCelebration = ({ blockFound }) => {
 
           <AlertDescription maxWidth="lg" fontSize="xl">
             <Text fontWeight="bold" mb={4}>
-              Your miner has found a Bitcoin block!
+              {intl.formatMessage({ id: 'block_found.message' })}
             </Text>
             <Text mb={4}>
-              This is an extraordinary achievement in the world of Bitcoin
-              mining. You&apos;ve successfully mined an entire block and earned the
-              full block reward!
+              {intl.formatMessage({ id: 'block_found.description' })}
             </Text>
           </AlertDescription>
 
@@ -124,9 +124,9 @@ const BlockFoundCelebration = ({ blockFound }) => {
             size="lg"
             onClick={handleReset}
             isLoading={loading}
-            loadingText="Resetting..."
+            loadingText={intl.formatMessage({ id: 'block_found.reset.loading' })}
           >
-            Acknowledge & Reset
+            {intl.formatMessage({ id: 'block_found.reset.button' })}
           </Button>
         </Alert>
       </motion.div>
