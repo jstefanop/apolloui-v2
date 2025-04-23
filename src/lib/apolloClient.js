@@ -272,25 +272,39 @@ function createApolloClient() {
   // Add cache size monitoring
   const MAX_CACHE_SIZE = 50 * 1024 * 1024; // 50MB limit
   let lastCacheSize = 0;
+  let lastMemoryUsage = 0;
 
   const checkCacheSize = () => {
     const currentSize = JSON.stringify(cache.extract()).length;
+    const memoryUsage = window.performance.memory?.usedJSHeapSize || 0;
+    
+    // Log detailed memory information
+    console.log('Memory Usage Report:', {
+      cacheSize: `${(currentSize / 1024 / 1024).toFixed(2)}MB`,
+      jsHeapSize: memoryUsage ? `${(memoryUsage / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+      cacheEntries: Object.keys(cache.extract()).length,
+      timestamp: new Date().toISOString()
+    });
     
     if (currentSize > MAX_CACHE_SIZE) {
       console.log(`Cache size exceeded limit (${(currentSize / 1024 / 1024).toFixed(2)}MB), performing cleanup`);
       cache.gc();
     }
     
-    // Log cache size changes if significant
-    if (Math.abs(currentSize - lastCacheSize) > 1024 * 1024) { // Log if change > 1MB
-      console.log(`Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB`);
+    // Log significant changes
+    if (Math.abs(currentSize - lastCacheSize) > 1024 * 1024 || 
+        (memoryUsage && Math.abs(memoryUsage - lastMemoryUsage) > 50 * 1024 * 1024)) {
+      console.log(`Significant change detected:
+        Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB
+        JS Heap size: ${memoryUsage ? (memoryUsage / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}`);
       lastCacheSize = currentSize;
+      lastMemoryUsage = memoryUsage;
     }
   };
 
-  // Monitor cache size periodically
+  // Monitor cache size more frequently
   if (typeof window !== 'undefined') {
-    setInterval(checkCacheSize, 60 * 1000); // Check every minute
+    setInterval(checkCacheSize, 30 * 1000); // Check every 30 seconds
   }
 
   return new ApolloClient({
@@ -325,14 +339,19 @@ function createApolloClient() {
 // Add cache cleanup function
 export const cleanupApolloCache = () => {
   if (apolloClient) {
+    const beforeSize = JSON.stringify(apolloClient.cache.extract()).length;
     apolloClient.cache.gc();
-    console.log('Cache cleanup performed');
+    const afterSize = JSON.stringify(apolloClient.cache.extract()).length;
+    console.log(`Cache cleanup performed:
+      Before: ${(beforeSize / 1024 / 1024).toFixed(2)}MB
+      After: ${(afterSize / 1024 / 1024).toFixed(2)}MB
+      Reduction: ${(((beforeSize - afterSize) / beforeSize) * 100).toFixed(2)}%`);
   }
 };
 
 // Add periodic cache cleanup
 if (typeof window !== 'undefined') {
-  setInterval(cleanupApolloCache, 5 * 60 * 1000); // Clean cache every 5 minutes
+  setInterval(cleanupApolloCache, 2 * 60 * 1000); // Clean cache every 2 minutes
 }
 
 export function initializeApollo(initialState = null) {
