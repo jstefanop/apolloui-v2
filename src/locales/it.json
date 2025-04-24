@@ -528,5 +528,78 @@
     "node": "Nodo",
     "system": "Sistema",
     "settings": "Impostazioni"
+  },
+  "signin": {
+    "title": "Benvenuto in Apollo Web OS 2",
+    "heading": "Accedi",
+    "description": "Inserisci la tua password per accedere!",
+    "password_label": "Password",
+    "password_placeholder": "Min. 8 caratteri",
+    "button": "Accedi"
+  },
+  "setup": {
+    "welcome": {
+      "title": "Un nodo. Un miner. Una persona.",
+      "subtitle": "Benvenuto.",
+      "button": "Inizia la configurazione"
+    },
+    "password": {
+      "title": "Imposta password di blocco e sistema",
+      "password_label": "Password",
+      "password_placeholder": "Min. 8 caratteri",
+      "verify_label": "Verifica Password",
+      "verify_placeholder": "Verifica la tua password"
+    },
+    "mining_type": {
+      "title": "Seleziona tipo di mining",
+      "node_not_synced": {
+        "title": "Nodo non completamente sincronizzato",
+        "description": "Il mining in solo inizierà solo quando il tuo nodo sarà sincronizzato al 100%. Puoi selezionare questa opzione ora, ma il mining inizierà automaticamente quando la sincronizzazione sarà completata."
+      },
+      "solo": {
+        "title": "Mining in Solo",
+        "description": "Stai competendo con l'intera rete per un blocco Bitcoin completo (l'intera ricompensa BTC). Non ricevi ricompense durante il mining, nella speranza di trovare l'intero blocco. Questo è anche chiamato mining \"lotteria\" perché le probabilità sono basse, ma produce la massima decentralizzazione della rete bitcoin. Se ci sono milioni di miner in solo, i blocchi in solo verranno trovati ogni giorno e garantiranno che Bitcoin non possa mai essere censurato!"
+      },
+      "pool": {
+        "title": "Mining in Pool",
+        "description": "Stai contribuendo con il tuo hashrate a un \"pool\" collettivo che compete per trovare un blocco. Questo produce ricompense giornaliere in \"satoshi\" minati perché quando il tuo pool trova un blocco, condivide quella ricompensa con te in base alla tua % di hashrate contribuito al pool. Questa è la forma meno decentralizzata di mining, perché dai il controllo della creazione dei blocchi al pool. Nota che la maggior parte dei pool ha pagamenti minimi, che possono richiedere mesi di mining prima di accumulare abbastanza per un pagamento."
+      },
+      "disclaimer": {
+        "title": "Disclaimer legale per il Mining in Solo",
+        "part1": "L'Apollo II offre funzionalità avanzate per il mining in solo, inclusa la possibilità di avviare il proprio pool Stratum in solo con un semplice interruttore nell'interfaccia utente. Sebbene queste funzionalità siano progettate per facilità d'uso ed efficienza, il mining in solo comporta rischi intrinseci di cui gli utenti devono essere consapevoli. In particolare, il processo di mining in solo è sensibile alle condizioni di rete. Fattori come la congestione della rete Bitcoin, la latenza di rete e le velocità di upload possono influire sul corretto invio di un blocco in solo alla rete Bitcoin.",
+        "part2": "A causa della natura decentralizzata e competitiva della rete Bitcoin, un blocco minato dall'utente potrebbe essere orfano e non accettato dalla rete, specialmente in caso di alta latenza di rete o velocità di connessione subottimali. Sebbene FutureBit abbia progettato l'Apollo II per minimizzare tali rischi a livello di dispositivo, il risultato delle attività di mining in solo è influenzato da fattori oltre il nostro controllo.",
+        "part3": "Utilizzando l'Apollo II per il mining in solo, gli utenti riconoscono e accettano che FutureBit non è responsabile per eventuali blocchi in solo persi o orfani che possono verificarsi a causa di problemi hardware, problemi software, condizioni di rete inclusi ma non limitati a latenza e stabilità della connessione. FutureBit declina qualsiasi responsabilità per perdite o danni derivanti da attività di mining in solo. Gli utenti si impegnano nel mining in solo a proprio rischio e sono consigliati di assicurare una connessione Ethernet stabile ad alta velocità per prestazioni ottimali.",
+        "accept": "Accetta",
+        "cancel": "Annulla"
+      }
+    },
+    "wallet": {
+      "title": "Imposta indirizzo wallet",
+      "address_label": "Indirizzo wallet",
+      "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "error": {
+        "invalid_address": "Aggiungi un indirizzo Bitcoin valido",
+        "incompatible_address": "Gli indirizzi Bitcoin P2WSH e P2TR non sono validi per il mining in solo"
+      }
+    },
+    "pool": {
+      "title": "Imposta pool di mining",
+      "select_label": "Seleziona un pool",
+      "url_label": "URL",
+      "url_placeholder": "stratum+tcp://ss.antpool.com:3333",
+      "username_label": "Nome utente",
+      "username_placeholder": "futurebit.worker1",
+      "password_label": "Password",
+      "password_placeholder": "x"
+    },
+    "complete": {
+      "title": "La tua configurazione è completa!",
+      "subtitle": "Iniziamo a minare Bitcoin!",
+      "button": "Inizia il mining"
+    },
+    "common": {
+      "previous": "Precedente",
+      "next": "Avanti"
+    }
   }
 }

@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 
 import config from '../../config';
+import LanguageSelector from '../language/LanguageSelector';
 
 export default function Footer() {
   const textColor = useColorModeValue('gray.400', 'white');
@@ -45,23 +46,26 @@ export default function Footer() {
           </Link>
         </Text>
       </Text>
-      <List display="flex">
-        {config.footerLinks.map((item, index) => {
-          return (
-            <ListItem
-              me={{
-                base: '20px',
-                md: '44px',
-              }}
-              key={index}
-            >
-              <Link fontWeight="500" color={textColor} href={item.url}>
-                {item.anchor}
-              </Link>
-            </ListItem>
-          );
-        })}
-      </List>
+      <Flex alignItems="center" gap="20px">
+        <LanguageSelector />
+        <List display="flex">
+          {config.footerLinks.map((item, index) => {
+            return (
+              <ListItem
+                me={{
+                  base: '20px',
+                  md: '44px',
+                }}
+                key={index}
+              >
+                <Link fontWeight="500" color={textColor} href={item.url}>
+                  {item.anchor}
+                </Link>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Flex>
     </Flex>
   );
 }

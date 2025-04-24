@@ -528,5 +528,78 @@
     "node": "Node",
     "system": "System",
     "settings": "Settings"
+  },
+  "signin": {
+    "title": "Welcome to Apollo Web OS 2",
+    "heading": "Sign In",
+    "description": "Enter your password to sign in!",
+    "password_label": "Password",
+    "password_placeholder": "Min. 8 characters",
+    "button": "Sign In"
+  },
+  "setup": {
+    "welcome": {
+      "title": "One node. One miner. One person.",
+      "subtitle": "Welcome.",
+      "button": "Start setup process"
+    },
+    "password": {
+      "title": "Set lock and system password",
+      "password_label": "Password",
+      "password_placeholder": "Min. 8 characters",
+      "verify_label": "Verify Password",
+      "verify_placeholder": "Verify your password"
+    },
+    "mining_type": {
+      "title": "Select mining type",
+      "node_not_synced": {
+        "title": "Node not fully synced",
+        "description": "Solo mining will only begin once your node is 100% synced. You can select this option now, but mining will start automatically when sync is complete."
+      },
+      "solo": {
+        "title": "Solo Mining",
+        "description": "You are competing with the entire network for a full Bitcoin Block (the whole BTC reward). You gain zero rewards while mining, in hopes of hitting the entire block. This is also called \"lottery\" mining because the chances are low, but this produces the maximum decentralization of the bitcoin network. If there are millions of solo miners then solo blocks will be found every day and ensure Bitcoin can never be censored!"
+      },
+      "pool": {
+        "title": "Pooled Mining",
+        "description": "You are contributing your hashrate to a collective \"pool\" that is competing to find a block. This produces daily rewards in mined \"satoshis\" because once your pool finds a block, it shares that block reward with you based on your % of hashrate contributed to the pool. These is the least decentralized form of mining, because you give control of block creation to the pool. Please note most pools have minimum payouts, that can take months of mining before you accumulate enough for a payout."
+      },
+      "disclaimer": {
+        "title": "Legal Disclaimer for Solo Mining",
+        "part1": "The Apollo II offers enhanced features for solo mining, including the ability to launch your own Stratum solo pool with a simple toggle in the user interface. While these features are designed for ease of use and efficiency, solo mining inherently carries certain risks that users must be aware of. Specifically, the process of solo mining is sensitive to network conditions. Factors such as Bitcoin network congestion, network latency and upload speeds can impact the successful submission of a solo block to the Bitcoin network.",
+        "part2": "Due to the decentralized and competitive nature of the Bitcoin network, a block mined by the user may be orphaned and not accepted by the network, especially in cases of high network latency or suboptimal connection speeds. While FutureBit has engineered the Apollo II to minimize such risks at a device level, the outcome of solo mining activities is influenced by factors beyond our control.",
+        "part3": "By using the Apollo II for solo mining, users acknowledge and accept that FutureBit is not responsible for any lost or orphaned solo blocks that may occur as a result of hardware issues, software issues, network conditions including but not limited to latency and connection stability. FutureBit disclaims any liability for losses or damages resulting from solo mining activities. Users engage in solo mining at their own risk and are advised to ensure a high-speed, stable Ethernet connection for optimal performance.",
+        "accept": "Accept",
+        "cancel": "Cancel"
+      }
+    },
+    "wallet": {
+      "title": "Set wallet address",
+      "address_label": "Wallet address",
+      "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "error": {
+        "invalid_address": "Please add a valid Bitcoin address",
+        "incompatible_address": "P2WSH and P2TR Bitcoin addresses are not valid for solo mining"
+      }
+    },
+    "pool": {
+      "title": "Set mining pool",
+      "select_label": "Select a pool",
+      "url_label": "URL",
+      "url_placeholder": "stratum+tcp://ss.antpool.com:3333",
+      "username_label": "Username",
+      "username_placeholder": "futurebit.worker1",
+      "password_label": "Password",
+      "password_placeholder": "x"
+    },
+    "complete": {
+      "title": "Your Setup is complete!",
+      "subtitle": "Let's start mining some Bitcoin!",
+      "button": "Start mining"
+    },
+    "common": {
+      "previous": "Previous",
+      "next": "Next"
+    }
   }
 }

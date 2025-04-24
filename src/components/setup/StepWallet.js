@@ -17,6 +17,7 @@ import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Card from '../card/Card';
 import { isValidBitcoinAddress, isCompatibleBitcoinAddress } from '../../lib/utils';
 import { useState, useEffect } from 'react';
+import { useIntl } from 'react-intl';
 
 const StepWallet = ({
   poolUsername,
@@ -27,6 +28,7 @@ const StepWallet = ({
   error,
   setStep,
 }) => {
+  const intl = useIntl();
   const [isValid, setIsValid] = useState(false);
   const [isCompatible, setIsCompatible] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
@@ -62,9 +64,9 @@ const StepWallet = ({
       setIsCompatible(compatible);
       
       if (!valid) {
-        setPoolError('Please add a valid Bitcoin address');
+        setPoolError(intl.formatMessage({ id: 'setup.wallet.error.invalid_address' }));
       } else if (!compatible) {
-        setPoolError('P2WSH and P2TR Bitcoin addresses are not valid for solo mining');
+        setPoolError(intl.formatMessage({ id: 'setup.wallet.error.incompatible_address' }));
       }
     } else {
       setShowValidation(false);
@@ -80,7 +82,7 @@ const StepWallet = ({
     <Flex flexDir="column" alignItems="center" mx="auto" w="80%">
       <Box alignSelf="flex-start">
         <Heading color="white" fontSize="42px" mt="10">
-          Set wallet address
+          {intl.formatMessage({ id: 'setup.wallet.title' })}
         </Heading>
       </Box>
 
@@ -90,7 +92,7 @@ const StepWallet = ({
             <SimpleGrid columns={1} gap="20px">
               <Flex direction="column">
                 <FormLabel htmlFor="poolUsername" color="white" fontWeight="bold">
-                  Wallet address *
+                  {intl.formatMessage({ id: 'setup.wallet.address_label' })} *
                 </FormLabel>
                 <InputGroup>
                   <Input
@@ -100,7 +102,7 @@ const StepWallet = ({
                     type="text"
                     fontWeight="500"
                     variant="main"
-                    placeholder={'1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'}
+                    placeholder={intl.formatMessage({ id: 'setup.wallet.address_placeholder' })}
                     _placeholder={{
                       fontWeight: '400',
                       color: 'secondaryGray.600',
@@ -130,12 +132,14 @@ const StepWallet = ({
           )}
 
           <Flex justify="space-between" mt="40px">
-            <Button onClick={() => setStep('mining')}>Previous</Button>
+            <Button onClick={() => setStep('mining')}>
+              {intl.formatMessage({ id: 'setup.common.previous' })}
+            </Button>
             <Button 
               type="submit" 
               isDisabled={showValidation && !isFullyValid}
             >
-              Next
+              {intl.formatMessage({ id: 'setup.common.next' })}
             </Button>
           </Flex>
           {error && (
