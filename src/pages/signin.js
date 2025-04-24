@@ -42,7 +42,16 @@ const SignIn = () => {
       redirect: false,
     });
     const { error } = response;
-    setError(error);
+    
+    if (error) {
+      switch (error) {
+        case 'CredentialsSignin':
+          setError('Invalid password');
+          break;
+        default:
+          setError('Something went wrong');
+      }
+    }
     setLoading(false);
   };
 
