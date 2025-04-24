@@ -4,7 +4,7 @@ import { Card, Flex, Icon, Text } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import CustomAlert from './CustomAlert';
 import config from '../../config';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 const MinerStatus = ({ serviceStatus }) => {
   const intl = useIntl();
@@ -130,7 +130,9 @@ const MinerStatus = ({ serviceStatus }) => {
             <Flex align={'center'} color="white">
               <Icon as={CheckIcon} mr="2" />
               <Text>
-                {intl.formatMessage({ id: 'miner.status.online.message' })}
+                <FormattedMessage id="miner.status.online.message">
+                  {txt => <span dangerouslySetInnerHTML={{ __html: txt }} />}
+                </FormattedMessage>
               </Text>
             </Flex>
           </Flex>

@@ -15,8 +15,7 @@ import {
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import Head from 'next/head';
-import { FormattedMessage } from 'react-intl';
-
+import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef } from 'react';
 import { BulletList, List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
@@ -50,6 +49,7 @@ import HashrateChart from '../components/apollo/HashrateChart';
 import { MdOfflineBolt } from 'react-icons/md';
 
 const Overview = () => {
+  const intl = useIntl();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
@@ -556,7 +556,7 @@ const Overview = () => {
                   />
                 }
                 value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
-                legendValue={`${cpuCores} `}
+                legendValue={`${cpuCores} ${intl.formatMessage({ id: 'overview.system.cores' })}`}
                 percent={cpuUsage}
                 gauge={true}
                 loading={loadingMcu}

@@ -178,6 +178,7 @@
         "description": "Il miner sta impiegando più tempo del previsto per avviarsi. Attendere ancora un po' o controllare la connessione."
       },
       "offline": {
+        "tag": "Offline",
         "title": "Miner offline",
         "description": "Il miner è attualmente offline. È possibile avviarlo dal menu in alto se necessario."
       },
@@ -191,7 +192,16 @@
       },
       "online": {
         "message": "Il tuo miner è <strong>online</strong> e operativo."
-      }
+      },
+      "pending": "In attesa"
+    },
+    "hashrate": {
+      "current": "Hashrate attuale",
+      "average": "Media 1 ora"
+    },
+    "power": {
+      "usage": "Consumo energetico",
+      "watts_per_th": "Watt per TH/s"
     }
   },
   "solo_mining": {

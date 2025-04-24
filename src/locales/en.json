@@ -178,6 +178,7 @@
         "description": "The miner is taking longer than expected to start. Please wait a little more or check the connection."
       },
       "offline": {
+        "tag": "Offline",
         "title": "Miner is offline",
         "description": "The miner is currently offline. You can start it from the top menu if needed."
       },
@@ -191,7 +192,16 @@
       },
       "online": {
         "message": "Your miner is <strong>online</strong> and operational."
-      }
+      },
+      "pending": "Pending"
+    },
+    "hashrate": {
+      "current": "Current hashrate",
+      "average": "1 hour average"
+    },
+    "power": {
+      "usage": "Power usage",
+      "watts_per_th": "Watts per TH/s"
     }
   },
   "solo_mining": {

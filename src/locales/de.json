@@ -178,6 +178,7 @@
         "description": "Das Starten des Miners dauert länger als erwartet. Bitte warten Sie noch etwas oder überprüfen Sie die Verbindung."
       },
       "offline": {
+        "tag": "Offline",
         "title": "Miner ist offline",
         "description": "Der Miner ist derzeit offline. Sie können ihn bei Bedarf über das obere Menü starten."
       },
@@ -191,7 +192,16 @@
       },
       "online": {
         "message": "Ihr Miner ist <strong>online</strong> und betriebsbereit."
-      }
+      },
+      "pending": "Ausstehend"
+    },
+    "hashrate": {
+      "current": "Aktuelle Hashrate",
+      "average": "1-Stunden-Durchschnitt"
+    },
+    "power": {
+      "usage": "Stromverbrauch",
+      "watts_per_th": "Watt pro TH/s"
     }
   },
   "solo_mining": {
@@ -566,7 +576,7 @@
       },
       "disclaimer": {
         "title": "Rechtlicher Hinweis für Solo-Mining",
-        "part1": "Der Apollo II bietet erweiterte Funktionen für Solo-Mining, einschließlich der Möglichkeit, Ihren eigenen Stratum-Solo-Pool mit einem einfachen Schalter in der Benutzeroberfläche zu starten. Obwohl diese Funktionen für Benutzerfreundlichkeit und Effizienz konzipiert sind, birgt Solo-Mining inhärente Risiken, derer sich Benutzer bewusst sein müssen. Insbesondere ist der Solo-Mining-Prozess empfindlich gegenüber Netzwerkbedingungen. Faktoren wie Bitcoin-Netzwerküberlastung, Netzwerklatenz und Upload-Geschwindigkeiten können die erfolgreiche Übermittlung eines Solo-Blocks an das Bitcoin-Netzwerk beeinflussen.",
+        "part1": "Der Apollo II bietet erweiterte Funktionen für Solo-Mining, einschließlich der Möglichkeit, Ihren eigenen Stratum-Solo-Pool mit einem einfachen Schalter in der Benutzeroberfläche zu starten. Obwohl diese Funktionen für BenutzerFreundlichkeit und Effizienz konzipiert sind, birgt Solo-Mining inhärente Risiken, derer sich Benutzer bewusst sein müssen. Insbesondere ist der Solo-Mining-Prozess empfindlich gegenüber Netzwerkbedingungen. Faktoren wie Bitcoin-Netzwerküberlastung, Netzwerklatenz und Upload-Geschwindigkeiten können die erfolgreiche Übermittlung eines Solo-Blocks an das Bitcoin-Netzwerk beeinflussen.",
         "part2": "Aufgrund der dezentralisierten und wettbewerbsorientierten Natur des Bitcoin-Netzwerks kann ein vom Benutzer geminter Block verwaist und vom Netzwerk nicht akzeptiert werden, insbesondere bei hoher Netzwerklatenz oder suboptimalen Verbindungsgeschwindigkeiten. Obwohl FutureBit den Apollo II entwickelt hat, um solche Risiken auf Geräteebene zu minimieren, wird das Ergebnis von Solo-Mining-Aktivitäten von Faktoren beeinflusst, die außerhalb unserer Kontrolle liegen.",
         "part3": "Durch die Verwendung des Apollo II für Solo-Mining erkennen und akzeptieren Benutzer, dass FutureBit nicht verantwortlich ist für verlorene oder verwaiste Solo-Blöcke, die aufgrund von Hardware-Problemen, Software-Problemen, Netzwerkbedingungen einschließlich, aber nicht beschränkt auf Latenz und Verbindungsstabilität auftreten können. FutureBit lehnt jegliche Haftung für Verluste oder Schäden ab, die sich aus Solo-Mining-Aktivitäten ergeben. Benutzer betreiben Solo-Mining auf eigene Gefahr und wird empfohlen, eine schnelle, stabile Ethernet-Verbindung für optimale Leistung sicherzustellen.",
         "accept": "Akzeptieren",

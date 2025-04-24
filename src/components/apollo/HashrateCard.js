@@ -5,6 +5,7 @@ import { MinerIcon } from '../UI/Icons/MinerIcon';
 import TileCard from '../UI/TileCard';
 import CountUp from 'react-countup';
 import BannerHashrate from '../../assets/img/networking_banner.png';
+import { FormattedMessage } from 'react-intl';
 
 const HashrateCard = ({
   shadow,
@@ -51,13 +52,13 @@ const HashrateCard = ({
     } else if (status === 'offline') {
       return (
         <span>
-          Offline
+          <FormattedMessage id="miner.status.offline.tag" />
         </span>
       );
     } else if (status === 'pending') {
       return (
         <span>
-          Pending
+          <FormattedMessage id="miner.status.pending" />
         </span>
       );
     }
@@ -73,8 +74,8 @@ const HashrateCard = ({
       iconColor={iconColor}
       iconBgColor={'linear-gradient(290.56deg, #454D76 7.51%, #25283E 60.45%)'}
       secondaryTextColor={hashSecondaryColor}
-      secondaryText="1 hour average"
-      title="Current hashrate"
+      secondaryText={<FormattedMessage id="miner.hashrate.average" />}
+      title={<FormattedMessage id="miner.hashrate.current" />}
       bigFont={true}
       loading={loading}
       errors={errors}

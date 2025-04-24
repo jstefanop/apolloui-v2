@@ -5,6 +5,7 @@ import { MdOfflineBolt } from 'react-icons/md';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import TileCard from '../UI/TileCard';
 import BannerPower from '../../assets/img/powerusage_banner.png';
+import { FormattedMessage } from 'react-intl';
 
 const PowerCard = ({
   shadow,
@@ -48,9 +49,9 @@ const PowerCard = ({
         />
       );
     } else if (status === 'offline') {
-      return <span>Offline</span>;
+      return <span><FormattedMessage id="miner.status.offline.tag" /></span>;
     } else if (status === 'pending') {
-      return <span>Pending</span>;
+      return <span><FormattedMessage id="miner.status.pending" /></span>;
     }
     return null;
   })();
@@ -63,9 +64,9 @@ const PowerCard = ({
       icon={tileCardIcon}
       iconColor={iconColor}
       iconBgColor="linear-gradient(290.56deg, #455976 22.69%, #0B0F10 60.45%)"
-      title="Power usage"
+      title={<FormattedMessage id="miner.power.usage" />}
       secondaryTextColor={powerSecondaryColor}
-      secondaryText="Watts per TH/s"
+      secondaryText={<FormattedMessage id="miner.power.watts_per_th" />}
       mainData={mainDataContent}
       secondaryData={
         status === 'online' &&
