@@ -27,9 +27,9 @@ export const authOptions = {
             method: 'post',
             data: {
               query: `
-                  {
+                  query Login($input: AuthLoginInput!) {
                     Auth {
-                      login(input: {password: "${credentials.password}"}) {
+                      login(input: $input) {
                         result {
                           accessToken
                         }
@@ -47,12 +47,20 @@ export const authOptions = {
                     }
                   }
                 `,
+              variables: {
+                input: {
+                  password: credentials.password
+                }
+              }
             },
           });
 
           const { result, error } = authData?.data?.data?.Auth?.login;
 
-          if (error) throw new Error(error.message);
+            if (error) {
+            const errorMessage = error.message || 'Invalid password';
+            throw new Error(errorMessage);
+          }
 
           const { accessToken } = result;
 
@@ -60,8 +68,12 @@ export const authOptions = {
           // other kind of properties excluding email, name, image
           return { name: accessToken };
         } catch (err) {
-          console.log(err?.response?.data)
-          throw err;
+          console.log(err?.response?.data);
+          // Format the error message properly
+          const errorMessage = err?.response?.data?.errors?.[0]?.message || 
+                             err?.message || 
+                             'Authentication failed';
+          throw new Error(errorMessage);
         }
       },
     }),
