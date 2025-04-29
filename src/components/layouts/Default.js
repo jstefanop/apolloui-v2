@@ -274,7 +274,7 @@ const Layout = ({ children, routes }) => {
 
   // Reparsing routes
   routes = routes.filter((route) => {
-    if (route.name === 'SOLO Mining' && !nodeEnableSoloMining) return false;
+    if (route.path === '/solo-mining' && !nodeEnableSoloMining) return false;
     return true;
   });
 

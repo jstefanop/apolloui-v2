@@ -76,6 +76,11 @@ const PasswordSettings = () => {
                 </Button>
               </InputRightElement>
             </InputGroup>
+            {isLockpasswordError && (
+              <Text fontSize={'sm'} color={'red.500'} mb="24px">
+                {isLockpasswordError}
+              </Text>
+            )}
           </FormControl>
           <FormControl isRequired>
             <FormLabel
