@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useLazyQuery } from '@apollo/client';
 import { useColorModeValue, useDisclosure } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 
 import { MINER_RESTART_QUERY } from '../graphql/miner';
 import { AUTH_LOGIN_QUERY, SAVE_SETUP_QUERY } from '../graphql/auth';
@@ -21,6 +22,7 @@ import StepComplete from '../components/setup/StepComplete';
 
 const Setup = () => {
   const router = useRouter();
+  const intl = useIntl();
   const textColor = useColorModeValue('brand.800', 'white');
 
   const [step, setStep] = useState(1);
@@ -219,12 +221,17 @@ const Setup = () => {
     e.preventDefault();
 
     if (!password || !verifyPassword) {
-      setError('All fields are required');
+      setError(intl.formatMessage({ id: 'setup.password.required' }));
+      return;
+    }
+
+    if (password.length < 8) {
+      setError(intl.formatMessage({ id: 'setup.password.too_short' }));
       return;
     }
 
     if (password !== verifyPassword) {
-      setError('Passwords do not match');
+      setError(intl.formatMessage({ id: 'setup.password.mismatch' }));
       return;
     }
 
@@ -257,6 +264,7 @@ const Setup = () => {
           showPassword={showPassword}
           setShowPassword={setShowPassword}
           error={error}
+          setError={setError}
           handlePassword={handlePassword}
           setStep={setStep}
         />

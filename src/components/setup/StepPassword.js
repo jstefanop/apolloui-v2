@@ -26,10 +26,21 @@ const StepPassword = ({
   showPassword,
   setShowPassword,
   error,
+  setError,
   handlePassword,
   setStep,
 }) => {
   const intl = useIntl();
+
+  const handlePasswordChange = (e) => {
+    setError(null);
+    setPassword(e.target.value);
+  };
+
+  const handleVerifyPasswordChange = (e) => {
+    setError(null);
+    setVerifyPassword(e.target.value);
+  };
 
   return (
     <Flex flexDir="column" alignItems="center" mx="auto" w="80%">
@@ -61,7 +72,7 @@ const StepPassword = ({
                     }}
                     h="44px"
                     maxh="44px"
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                   />
                   <InputRightElement>
                     <Icon
@@ -96,7 +107,7 @@ const StepPassword = ({
                     }}
                     h="44px"
                     maxh="44px"
-                    onChange={(e) => setVerifyPassword(e.target.value)}
+                    onChange={handleVerifyPasswordChange}
                   />
                   <InputRightElement>
                     <Icon

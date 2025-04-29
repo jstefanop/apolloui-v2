@@ -558,7 +558,10 @@
       "password_label": "Password",
       "password_placeholder": "Min. 8 characters",
       "verify_label": "Verify Password",
-      "verify_placeholder": "Verify your password"
+      "verify_placeholder": "Verify your password",
+      "required": "All fields are required",
+      "too_short": "Password must be at least 8 characters long",
+      "mismatch": "Passwords do not match"
     },
     "mining_type": {
       "title": "Select mining type",
