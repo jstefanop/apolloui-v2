@@ -13,6 +13,7 @@ const NodeStatus = ({ serviceStatus }) => {
 
   // Show success alert only when the component is first loaded, if the node is online and requested status is also online within 2 minutes of the request.
   useEffect(() => {
+    let timer;
     if (node?.status === 'online' && node?.requestedStatus === 'online') {
       const timeSinceRequest = moment().diff(
         moment(node.requestedAt),
@@ -21,10 +22,15 @@ const NodeStatus = ({ serviceStatus }) => {
 
       if (timeSinceRequest <= config.thresholds.NODE_SUCCESS_THRESHOLD) {
         setShowSuccessAlert(true);
-        const timer = setTimeout(() => setShowSuccessAlert(false), 5000); // Hide the alert after 5 seconds
-        return () => clearTimeout(timer);
+        timer = setTimeout(() => setShowSuccessAlert(false), 5000);
       }
     }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [node?.status, node?.requestedStatus, node?.requestedAt]);
 
   if (!node) {
@@ -140,3 +146,4 @@ const NodeStatus = ({ serviceStatus }) => {
 };
 
 export default NodeStatus;
+

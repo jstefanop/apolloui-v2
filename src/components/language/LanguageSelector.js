@@ -19,6 +19,8 @@ const languages = [
 
 export default function LanguageSelector() {
   const textColor = useColorModeValue('gray.400', 'white');
+  const menuBg = useColorModeValue('white', 'gray.800');
+  const menuHoverBg = useColorModeValue('gray.100', 'gray.700');
   const router = useRouter();
   const [selectedLanguage, setSelectedLanguage] = React.useState(
     languages.find(lang => lang.code === router.locale) || languages[0]
@@ -41,13 +43,13 @@ export default function LanguageSelector() {
           <Text>{selectedLanguage.name}</Text>
         </HStack>
       </MenuButton>
-      <MenuList bg={useColorModeValue('white', 'gray.800')}>
+      <MenuList bg={menuBg}>
         {languages.map((lang) => (
           <MenuItem
             key={lang.code}
             onClick={() => handleLanguageChange(lang)}
-            bg={useColorModeValue('white', 'gray.800')}
-            _hover={{ bg: useColorModeValue('gray.100', 'gray.700') }}
+            bg={menuBg}
+            _hover={{ bg: menuHoverBg }}
           >
             <HStack spacing={2}>
               <Text fontSize="xl">{lang.flag}</Text>

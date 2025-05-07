@@ -614,5 +614,12 @@
       "previous": "Zurück",
       "next": "Weiter"
     }
+  },
+  "footer": {
+    "support": "Support",
+    "shop": "Shop",
+    "website": "Webseite",
+    "made_with_love": "Apollo Web OS v{version} Mit Liebe gemacht von",
+    "futurebit": "FutureBit"
   }
 }

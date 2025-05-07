@@ -84,7 +84,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     return () => {
       window.removeEventListener('scroll', changeNavbar);
     };
-  });
+  }, []);
 
   const handleSystemAction = (action) => {
     let title;

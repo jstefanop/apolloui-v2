@@ -8,6 +8,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { FormattedMessage } from 'react-intl';
 
 import config from '../../config';
 import LanguageSelector from '../language/LanguageSelector';
@@ -59,7 +60,7 @@ export default function Footer() {
                 key={index}
               >
                 <Link fontWeight="500" color={textColor} href={item.url}>
-                  {item.anchor}
+                  <FormattedMessage id={item.anchor} />
                 </Link>
               </ListItem>
             );

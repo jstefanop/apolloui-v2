@@ -9,12 +9,13 @@ import {
   useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { FormattedMessage } from 'react-intl';
 
 import config from '../../config';
 import { getVersionFromPackageJson } from '../../lib/utils';
 import LanguageSelector from '../language/LanguageSelector';
 
-export default function Footer() {
+const FooterAdmin = () => {
   const textColor = useColorModeValue('gray.400', 'white');
   const { toggleColorMode } = useColorMode();
 
@@ -44,7 +45,10 @@ export default function Footer() {
         {' '}
         &copy; {1900 + new Date().getYear()}
         <Text as='span' fontWeight='500' ms='4px'>
-          Apollo Web OS v{getVersionFromPackageJson()} Made with love by
+          <FormattedMessage
+            id="footer.made_with_love"
+            values={{ version: getVersionFromPackageJson() }}
+          />
           <Link
             mx='3px'
             color={textColor}
@@ -52,7 +56,7 @@ export default function Footer() {
             target='_blank'
             fontWeight='700'
           >
-            FutureBit
+            <FormattedMessage id="footer.futurebit" />
           </Link>
         </Text>
       </Text>
@@ -69,7 +73,7 @@ export default function Footer() {
                 key={index}
               >
                 <Link fontWeight='500' color={textColor} href={item.url}>
-                  {item.anchor}
+                  <FormattedMessage id={item.anchor} />
                 </Link>
               </ListItem>
             );
@@ -78,4 +82,6 @@ export default function Footer() {
       </Flex>
     </Flex>
   );
-}
+};
+
+export default FooterAdmin;

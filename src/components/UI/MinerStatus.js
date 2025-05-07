@@ -13,6 +13,7 @@ const MinerStatus = ({ serviceStatus }) => {
 
   // Show success alert only when the component is first loaded, if the miner is online and requested status is also online within 2 minutes of the request.
   useEffect(() => {
+    let timer;
     if (miner?.status === 'online' && miner?.requestedStatus === 'online') {
       const timeSinceRequest = moment().diff(
         moment(miner.requestedAt),
@@ -22,10 +23,15 @@ const MinerStatus = ({ serviceStatus }) => {
       if (timeSinceRequest <= config.thresholds.MINER_SUCCESS_THRESHOLD) {
         // Show success alert only if within 2 minutes of the request
         setShowSuccessAlert(true);
-        const timer = setTimeout(() => setShowSuccessAlert(false), 5000); // Hide the alert after 5 seconds
-        return () => clearTimeout(timer);
+        timer = setTimeout(() => setShowSuccessAlert(false), 5000);
       }
     }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [miner?.status, miner?.requestedStatus, miner?.requestedAt]);
 
   if (!miner) {

@@ -13,6 +13,8 @@ import isEqual from 'lodash/isEqual';
 import moment from 'moment';
 import { sendFeedback, resetFeedback } from '../redux/slices/feedbackSlice';
 import { store } from '../redux/store';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
@@ -277,15 +279,25 @@ function createApolloClient() {
   const checkCacheSize = () => {
     const currentSize = JSON.stringify(cache.extract()).length;
     const memoryUsage = window.performance.memory?.usedJSHeapSize || 0;
+    const totalJSHeapSize = window.performance.memory?.totalJSHeapSize || 0;
+    const jsHeapSizeLimit = window.performance.memory?.jsHeapSizeLimit || 0;
     
     // Log detailed memory information only in development
     if (process.env.NODE_ENV === 'development') {
       console.log('Memory Usage Report:', {
         cacheSize: `${(currentSize / 1024 / 1024).toFixed(2)}MB`,
         jsHeapSize: memoryUsage ? `${(memoryUsage / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+        totalJSHeapSize: totalJSHeapSize ? `${(totalJSHeapSize / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+        jsHeapSizeLimit: jsHeapSizeLimit ? `${(jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+        heapUsagePercentage: totalJSHeapSize ? `${((memoryUsage / totalJSHeapSize) * 100).toFixed(2)}%` : 'N/A',
         cacheEntries: Object.keys(cache.extract()).length,
         timestamp: new Date().toISOString()
       });
+      
+      // Log memory warning if usage is high
+      if (memoryUsage > jsHeapSizeLimit * 0.8) {
+        console.warn('High memory usage detected! Consider investigating memory leaks.');
+      }
       
       if (currentSize > MAX_CACHE_SIZE) {
         console.log(`Cache size exceeded limit (${(currentSize / 1024 / 1024).toFixed(2)}MB), performing cleanup`);
@@ -296,7 +308,9 @@ function createApolloClient() {
           (memoryUsage && Math.abs(memoryUsage - lastMemoryUsage) > 50 * 1024 * 1024)) {
         console.log(`Significant change detected:
           Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB
-          JS Heap size: ${memoryUsage ? (memoryUsage / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}`);
+          JS Heap size: ${memoryUsage ? (memoryUsage / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}
+          Total JS Heap: ${totalJSHeapSize ? (totalJSHeapSize / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}
+          Heap Usage: ${((memoryUsage / totalJSHeapSize) * 100).toFixed(2)}%`);
       }
     }
     
@@ -404,4 +418,66 @@ export function useApollo(pageProps) {
   const state = pageProps[APOLLO_STATE_PROP_NAME];
   const store = useMemo(() => initializeApollo(state), [state]);
   return store;
+}
+
+// Add React component monitoring
+if (process.env.NODE_ENV === 'development') {
+  const originalCreateElement = React.createElement;
+  React.createElement = function(type, props, ...children) {
+    const componentName = type?.displayName || type?.name || 'Unknown';
+    
+    // Monitor component creation
+    if (typeof type === 'function') {
+      const originalRender = type.prototype?.render;
+      if (originalRender) {
+        type.prototype.render = function() {
+          console.log(`Rendering component: ${componentName}`);
+          return originalRender.apply(this);
+        };
+      }
+    }
+    
+    return originalCreateElement(type, props, ...children);
+  };
+}
+
+// Add memory monitoring for React components
+const monitorReactMemory = () => {
+  if (process.env.NODE_ENV === 'development') {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.name.includes('react-dom-client.development.js')) {
+          console.log('React DOM Memory Usage:', {
+            component: entry.name,
+            duration: entry.duration,
+            timestamp: new Date().toISOString()
+          });
+        }
+      }
+    });
+    
+    observer.observe({ entryTypes: ['measure'] });
+    
+    // Monitor component mounting
+    const originalCreateRoot = ReactDOM.createRoot;
+    ReactDOM.createRoot = function(container, options) {
+      const root = originalCreateRoot(container, options);
+      const originalRender = root.render;
+      
+      root.render = function(element) {
+        console.log('Root render called with:', {
+          elementType: element?.type?.name || 'Unknown',
+          timestamp: new Date().toISOString()
+        });
+        return originalRender.call(this, element);
+      };
+      
+      return root;
+    };
+  }
+};
+
+// Call the monitoring function
+if (typeof window !== 'undefined') {
+  monitorReactMemory();
 }

@@ -2,17 +2,17 @@ const config = {
 	mainWebsite: "https://www.futurebit.io",
 	footerLinks: [
 		{
-			anchor: "Support",
+			anchor: "footer.support",
 			url: "https://www.futurebit.io/contact",
 			target: "_blank",
 		},
 		{
-			anchor: "Shop",
+			anchor: "footer.shop",
 			url: "https://shop.futurebit.io",
 			target: "_blank",
 		},
 		{
-			anchor: "Website",
+			anchor: "footer.website",
 			url: "https://www.futurebit.io",
 			target: "_blank",
 		},

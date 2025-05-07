@@ -75,8 +75,7 @@ const TileCard = ({
                 fontWeight="800"
                 minW="180px"
                 my="auto"
-                maxWidth={{ base: '150px', xl: '300px' }}
-                noOfLines={1}
+                textAlign="center"
               >
                 {loading ? <LoadingIcon /> : mainData}
               </Text>

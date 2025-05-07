@@ -81,6 +81,10 @@ const Layout = ({ children, routes }) => {
         })
       );
     }
+
+    return () => {
+      startPollingMiner(0); // Stop polling
+    };
   }, [
     startPollingMiner,
     dispatch,
@@ -114,6 +118,10 @@ const Layout = ({ children, routes }) => {
         })
       );
     }
+
+    return () => {
+      startPollingMcu(0); // Stop polling
+    };
   }, [
     startPollingMcu,
     dispatch,
@@ -147,6 +155,10 @@ const Layout = ({ children, routes }) => {
         })
       );
     }
+
+    return () => {
+      startPollingNode(0); // Stop polling
+    };
   }, [
     startPollingNode,
     dispatch,
@@ -180,6 +192,10 @@ const Layout = ({ children, routes }) => {
         })
       );
     }
+
+    return () => {
+      startPollingSettings(0); // Stop polling
+    };
   }, [
     startPollingSettings,
     dispatch,
@@ -219,6 +235,10 @@ const Layout = ({ children, routes }) => {
         })
       );
     }
+
+    return () => {
+      startPollingAnalytics(0); // Stop polling
+    };
   }, [
     startPollingAnalytics,
     dispatch,
@@ -252,6 +272,10 @@ const Layout = ({ children, routes }) => {
         })
       );
     }
+
+    return () => {
+      startPollingServices(0); // Stop polling
+    };
   }, [
     startPollingServices,
     dispatch,
