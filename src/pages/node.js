@@ -22,7 +22,7 @@ import IconBox from '../components/icons/IconBox';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { ConnectionsIcons } from '../components/UI/Icons/ConnectionsIcons';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
-import { FormattedNumber } from '../components/UI/FormattedNumber';
+import FormattedNumber from '../components/UI/FormattedNumber';
 import MiniStatistics from '../components/UI/MiniStatistics';
 import { bytesToSize, displayHashrate, numberToText } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';

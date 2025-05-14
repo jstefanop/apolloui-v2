@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useToast } from '@chakra-ui/react';
 import { MdOfflineBolt, MdPending, MdCheckCircle } from 'react-icons/md';
 import { useIntl } from 'react-intl';
@@ -11,13 +11,13 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
   const activeToastIds = useRef(new Set());
   const toastRef = useRef(null);
 
-  // Function to close all active toasts
-  const closeAllToasts = () => {
+  // Function to close all active toasts - wrapped in useCallback to prevent recreation on each render
+  const closeAllToasts = useCallback(() => {
     activeToastIds.current.forEach((id) => {
       toast.close(id);
     });
     activeToastIds.current.clear();
-  };
+  }, [toast]);
 
   // Effect to handle language changes
   useEffect(() => {
@@ -36,7 +36,7 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
         toastRef.current = null;
       }
     }
-  }, [intl.locale, toast]);
+  }, [intl.locale, toast, closeAllToasts]);
 
   useEffect(() => {
     if (!serviceStatus || !serviceStatus[type]) return;
