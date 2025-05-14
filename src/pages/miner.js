@@ -15,7 +15,7 @@ import {
 import { useRef, useEffect } from 'react';
 import { BulletList, List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
@@ -82,11 +82,8 @@ const Miner = () => {
   const prevData = useRef(dataMiner);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      prevData.current = dataMiner;
-    }, process.env.NEXT_PUBLIC_POLLING_TIME);
-
-    return () => clearInterval(intervalId);
+    // Store the current value directly when dataMiner changes
+    prevData.current = dataMiner;
   }, [dataMiner]);
 
   const {

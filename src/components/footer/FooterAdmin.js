@@ -16,7 +16,7 @@ import { getVersionFromPackageJson } from '../../lib/utils';
 import LanguageSelector from '../language/LanguageSelector';
 
 const FooterAdmin = () => {
-  const textColor = useColorModeValue('gray.400', 'white');
+  const textColor = useColorModeValue('gray.800', 'white');
   const { toggleColorMode } = useColorMode();
 
   return (

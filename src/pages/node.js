@@ -87,11 +87,8 @@ const Node = () => {
   const prevData = useRef(dataNode);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      prevData.current = dataNode;
-    }, process.env.NEXT_PUBLIC_POLLING_TIME_NODE);
-
-    return () => clearInterval(intervalId);
+    // Store the current value directly when dataNode changes
+    prevData.current = dataNode;
   }, [dataNode]);
 
   // Mcu data

@@ -14,6 +14,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLazyQuery } from '@apollo/client';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useIntl } from 'react-intl';
 
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import NavbarSeconday from './NavbarSecondary';
@@ -36,6 +37,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [scrolled, setScrolled] = useState(false);
+  const intl = useIntl();
 
   // Miner data
   const {
@@ -243,10 +245,12 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         }}
       >
         <StatusTransitionFeedback
+          key={`miner-feedback-${intl.locale}`}
           serviceStatus={servicesStatus}
           type={'miner'}
         />
         <StatusTransitionFeedback
+          key={`node-feedback-${intl.locale}`}
           serviceStatus={servicesStatus}
           type={'node'}
         />

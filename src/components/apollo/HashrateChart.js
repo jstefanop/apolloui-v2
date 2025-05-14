@@ -12,6 +12,7 @@ import { Line } from 'react-chartjs-2';
 import moment from 'moment';
 import { displayHashrate } from '../../lib/utils';
 import { useTheme, useColorModeValue, Box } from '@chakra-ui/react';
+import React from 'react';
 
 
 ChartJS.register(
@@ -32,10 +33,13 @@ const HashrateChart = ({ dataAnalytics }) => {
   const minerColor = useColorModeValue(theme.colors.blue[500], theme.colors.blue[500]);
   const poolColor = useColorModeValue(theme.colors.brand[600], theme.colors.brand[600]);
 
-  // Limit data to the most recent 24 data points
-  const limitedData = dataAnalytics ?
-    [...dataAnalytics].slice(-24) :
-    [];
+  // Ensure data is limited to exactly 24 data points to prevent memory accumulation
+  const limitedData = React.useMemo(() => {
+    if (!dataAnalytics || !Array.isArray(dataAnalytics)) {
+      return [];
+    }
+    return dataAnalytics.slice(-24);
+  }, [dataAnalytics]);
 
   const labels = limitedData.map((item) =>
     moment(item.date).startOf('hour').format('HH:mm')

@@ -18,9 +18,9 @@ const languages = [
 ];
 
 export default function LanguageSelector() {
-  const textColor = useColorModeValue('gray.400', 'white');
+  const textColor = useColorModeValue('gray.800', 'white');
   const menuBg = useColorModeValue('white', 'gray.800');
-  const menuHoverBg = useColorModeValue('gray.100', 'gray.700');
+  const menuHoverBg = useColorModeValue('gray.300', 'gray.700');
   const router = useRouter();
   const [selectedLanguage, setSelectedLanguage] = React.useState(
     languages.find(lang => lang.code === router.locale) || languages[0]

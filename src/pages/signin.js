@@ -23,9 +23,8 @@ import { useIntl } from 'react-intl';
 const SignIn = () => {
   const intl = useIntl();
   // Chakra color mode
-  const textButtonColor = useColorModeValue('white', 'brand.800');
   const textColor = useColorModeValue('brand.800', 'white');
-  const textColorSecondary = 'gray.400';
+  const textColorSecondary = useColorModeValue('gray.600', 'gray.500');
   const brandStars = useColorModeValue('brand.500', 'brand.400');
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);

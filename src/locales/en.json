@@ -208,7 +208,7 @@
     "title": "Apollo BTC Miner {hashrate}",
     "banner": {
       "title": "SOLO LAN Mining",
-      "description": "Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: {address}:3333 Username: <bitcoin address>",
+      "description": "Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: {address}:3333 Username: [bitcoin address]",
       "connect": "Connect"
     },
     "stats": {
@@ -228,6 +228,7 @@
       "title": "SOLO Mining Users",
       "waiting": "Waiting for stats to refresh...",
       "show_all_data": "Show all data",
+      "no_active_workers": "No active workers",
       "active": "Active"
     },
     "status": {

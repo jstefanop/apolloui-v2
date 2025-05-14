@@ -207,8 +207,8 @@
   "solo_mining": {
     "title": "Miner BTC Apollo {hashrate}",
     "banner": {
-      "title": "Mining SOLO LAN",
-      "description": "Punta qualsiasi Bitcoin Miner sulla tua rete locale al tuo Solo Pool con il seguente URL: {address}:3333 Username: <indirizzo bitcoin>",
+      "title": "SOLO LAN Mining",
+      "description": "Punta qualsiasi Bitcoin Miner sulla tua rete locale al tuo Solo Pool con il seguente URL: {address}:3333 Username: [bitcoin address]",
       "connect": "Connetti"
     },
     "stats": {
@@ -228,6 +228,7 @@
       "title": "Utenti Mining SOLO",
       "waiting": "In attesa dell'aggiornamento delle statistiche...",
       "show_all_data": "Mostra tutti i dati",
+      "no_active_workers": "Nessun worker attivo",
       "active": "Attivo"
     },
     "status": {

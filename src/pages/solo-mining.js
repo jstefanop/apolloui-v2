@@ -110,11 +110,8 @@ const SoloMining = () => {
   const prevData = useRef(dataMiner);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      prevData.current = dataMiner;
-    }, process.env.NEXT_PUBLIC_POLLING_TIME);
-
-    return () => clearInterval(intervalId);
+    // Store the current value directly when dataMiner changes
+    prevData.current = dataMiner;
   }, [dataMiner]);
 
   useEffect(() => {
@@ -547,7 +544,7 @@ const SoloMining = () => {
                 {loadingMiner ? (
                   <BulletList />
                 ) : !dataTableBoards.length ? (
-                  <Text m="3">{intl.formatMessage({ id: 'solo_mining.users.waiting' })}</Text>
+                  <Text m="3">{intl.formatMessage({ id: 'solo_mining.users.no_active_workers' })}</Text>
                 ) : (
                   <Box
                     overflowY={'auto'}

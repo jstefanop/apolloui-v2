@@ -124,11 +124,8 @@ const Overview = () => {
   const prevData = useRef(dataMiner);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      prevData.current = dataMiner;
-    }, process.env.NEXT_PUBLIC_POLLING_TIME);
-
-    return () => clearInterval(intervalId);
+    // Store the current value directly when dataMiner changes
+    prevData.current = dataMiner;
   }, [dataMiner]);
 
   const {
@@ -142,11 +139,8 @@ const Overview = () => {
   const prevDataNode = useRef(dataNode);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      prevDataNode.current = dataNode;
-    }, process.env.NEXT_PUBLIC_POLLING_TIME_NODE);
-
-    return () => clearInterval(intervalId);
+    // Store the current value directly when dataNode changes
+    prevDataNode.current = dataNode;
   }, [dataNode]);
 
   const { connectionCount: prevConnectionCount, blocksCount: prevBlocksCount } =
