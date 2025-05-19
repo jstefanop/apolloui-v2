@@ -483,52 +483,52 @@
     }
   },
   "block_found": {
-    "congratulations": "COMPLIMENTI!",
-    "message": "Il tuo miner ha trovato un blocco Bitcoin!",
-    "description": "Questo è un risultato straordinario nel mondo del mining di Bitcoin. Hai minato con successo un intero blocco e guadagnato la ricompensa completa!",
+    "congratulations": "CONGRATULATIONS!",
+    "message": "Your miner has found a Bitcoin block!",
+    "description": "This is an extraordinary achievement in the Bitcoin mining world. You have successfully mined an entire block and earned the full reward!",
     "reset": {
-      "title": "Reset del flag blocco trovato",
-      "description": "La notifica del blocco trovato è stata resettata",
-      "error": "Errore durante il reset del flag blocco trovato: {error}",
-      "loading": "Reset in corso...",
-      "button": "Conferma e Reset"
+      "title": "Reset block found flag",
+      "description": "The block found notification has been reset",
+      "error": "Error while resetting block found flag: {error}",
+      "loading": "Resetting...",
+      "button": "Confirm and Reset"
     }
   },
   "status_transition": {
     "miner": {
       "stopping": {
-        "title": "Arresto del miner",
-        "description": "Il miner si sta arrestando. Attendere un momento."
+        "title": "Stopping miner",
+        "description": "The miner is stopping. Please wait a moment."
       },
       "starting": {
-        "title": "Avvio del miner",
-        "description": "Il miner si sta avviando. Attendere un momento."
+        "title": "Starting miner",
+        "description": "The miner is starting. Please wait a moment."
       },
       "online": {
-        "title": "Il miner è online",
-        "description": "Il miner è online e operativo."
+        "title": "Miner is online",
+        "description": "The miner is online and operational."
       },
       "offline": {
-        "title": "Il miner è offline",
-        "description": "Il miner è stato arrestato con successo."
+        "title": "Miner is offline",
+        "description": "The miner has been successfully stopped."
       }
     },
     "node": {
       "stopping": {
-        "title": "Arresto del nodo",
-        "description": "Il nodo si sta arrestando. Attendere un momento."
+        "title": "Stopping node",
+        "description": "The node is stopping. Please wait a moment."
       },
       "starting": {
-        "title": "Avvio del nodo",
-        "description": "Il nodo si sta avviando. Attendere un momento."
+        "title": "Starting node",
+        "description": "The node is starting. Please wait a moment."
       },
       "online": {
-        "title": "Il nodo è online",
-        "description": "Il nodo è online e operativo."
+        "title": "Node is online",
+        "description": "The node is online and operational."
       },
       "offline": {
-        "title": "Il nodo è offline",
-        "description": "Il nodo è stato arrestato con successo."
+        "title": "Node is offline",
+        "description": "The node has been successfully stopped."
       }
     }
   },

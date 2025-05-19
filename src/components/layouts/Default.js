@@ -48,6 +48,7 @@ const Layout = ({ children, routes }) => {
     error: errorMiner,
     data: dataMiner,
     startPolling: startPollingMiner,
+    stopPolling: stopPollingMiner,
   } = useQuery(MINER_STATS_QUERY);
 
   useEffect(() => {
@@ -55,8 +56,20 @@ const Layout = ({ children, routes }) => {
 
     // Ensure we're only dispatching when we have data and it's changed
     if (dataMiner) {
-      // Create a deep copy to avoid direct reference to Apollo cache objects
-      const safeData = JSON.parse(JSON.stringify(dataMiner));
+      // Instead of deep copy, use a more efficient approach
+      const safeData = {
+        ...dataMiner,
+        Miner: dataMiner.Miner ? {
+          ...dataMiner.Miner,
+          stats: dataMiner.Miner.stats ? {
+            ...dataMiner.Miner.stats,
+            result: dataMiner.Miner.stats.result ? {
+              ...dataMiner.Miner.stats.result,
+              stats: dataMiner.Miner.stats.result.stats
+            } : null
+          } : null
+        } : null
+      };
       
       // Create a serializable error object
       const serializableError = createSerializableError(errorMiner);
@@ -83,7 +96,7 @@ const Layout = ({ children, routes }) => {
     }
 
     return () => {
-      startPollingMiner(0); // Stop polling
+      stopPollingMiner(); // Stop polling
     };
   }, [
     startPollingMiner,
@@ -100,7 +113,11 @@ const Layout = ({ children, routes }) => {
     error: errorMcu,
     data: dataMcu,
     startPolling: startPollingMcu,
-  } = useQuery(MCU_STATS_QUERY);
+    stopPolling: stopPollingMcu,
+  } = useQuery(MCU_STATS_QUERY, {
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
+  });
 
   useEffect(() => {
     startPollingMcu(minerPollingTime);
@@ -120,7 +137,7 @@ const Layout = ({ children, routes }) => {
     }
 
     return () => {
-      startPollingMcu(0); // Stop polling
+      stopPollingMcu(); // Stop polling
     };
   }, [
     startPollingMcu,
@@ -137,7 +154,11 @@ const Layout = ({ children, routes }) => {
     error: errorNode,
     data: dataNode,
     startPolling: startPollingNode,
-  } = useQuery(NODE_STATS_QUERY);
+    stopPolling: stopPollingNode,
+  } = useQuery(NODE_STATS_QUERY, {
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
+  });
 
   useEffect(() => {
     startPollingNode(nodePollingTime);
@@ -157,7 +178,7 @@ const Layout = ({ children, routes }) => {
     }
 
     return () => {
-      startPollingNode(0); // Stop polling
+      stopPollingNode(); // Stop polling
     };
   }, [
     startPollingNode,
@@ -174,7 +195,11 @@ const Layout = ({ children, routes }) => {
     error: errorSettings,
     data: dataSettings,
     startPolling: startPollingSettings,
-  } = useQuery(GET_SETTINGS_QUERY);
+    stopPolling: stopPollingSettings,
+  } = useQuery(GET_SETTINGS_QUERY, {
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
+  });
 
   useEffect(() => {
     startPollingSettings(minerPollingTime);
@@ -194,7 +219,7 @@ const Layout = ({ children, routes }) => {
     }
 
     return () => {
-      startPollingSettings(0); // Stop polling
+      stopPollingSettings(); // Stop polling
     };
   }, [
     startPollingSettings,
@@ -211,12 +236,15 @@ const Layout = ({ children, routes }) => {
     error: errorAnalytics,
     data: dataAnalytics,
     startPolling: startPollingAnalytics,
+    stopPolling: stopPollingAnalytics,
   } = useQuery(GET_ANALYTICS_QUERY, {
     variables: {
       input: {
         interval: 'hour',
       },
     },
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   });
 
   useEffect(() => {
@@ -237,7 +265,7 @@ const Layout = ({ children, routes }) => {
     }
 
     return () => {
-      startPollingAnalytics(0); // Stop polling
+      stopPollingAnalytics(); // Stop polling
     };
   }, [
     startPollingAnalytics,
@@ -254,7 +282,11 @@ const Layout = ({ children, routes }) => {
     error: errorServices,
     data: dataServices,
     startPolling: startPollingServices,
-  } = useQuery(SERVICES_STATUS_QUERY);
+    stopPolling: stopPollingServices,
+  } = useQuery(SERVICES_STATUS_QUERY, {
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
+  });
 
   useEffect(() => {
     startPollingServices(2000);
@@ -274,7 +306,7 @@ const Layout = ({ children, routes }) => {
     }
 
     return () => {
-      startPollingServices(0); // Stop polling
+      stopPollingServices(); // Stop polling
     };
   }, [
     startPollingServices,

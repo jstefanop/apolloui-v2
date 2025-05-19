@@ -68,14 +68,6 @@ const Overview = () => {
     error: errorMiner,
   } = useSelector(minerSelector, shallowEqual);
 
-  const {
-    globalHashrate,
-    globalAvgHashrate,
-    minerPower,
-    avgBoardTemp,
-    avgBoardErrors,
-  } = dataMiner;
-
   // Mcu data
   const {
     loading: loadingMcu,
@@ -121,30 +113,74 @@ const Overview = () => {
   const { nodeMaxConnections, temperatureUnit } = settings || {};
 
   // Set Previous state for CountUp component
-  const prevData = useRef(dataMiner);
+  const prevData = useRef(null);
 
   useEffect(() => {
-    // Store the current value directly when dataMiner changes
-    prevData.current = dataMiner;
+    if (dataMiner) {
+      // Keep only the values needed for CountUp animations
+      prevData.current = {
+        globalHashrate: dataMiner.globalHashrate,
+        globalAvgHashrate: dataMiner.globalAvgHashrate,
+        minerPower: dataMiner.minerPower,
+        avgBoardTemp: dataMiner.avgBoardTemp,
+        avgBoardErrors: dataMiner.avgBoardErrors
+      };
+    }
+    return () => {
+      prevData.current = null;
+    };
   }, [dataMiner]);
 
+  // Extract only the current values we need
   const {
-    avgBoardErrors: prevAvgBoardErrors,
-    avgBoardTemp: prevAvgBoardTemp,
+    globalHashrate,
+    globalAvgHashrate,
+    minerPower,
+    avgBoardTemp,
+    avgBoardErrors,
+  } = dataMiner || {};
+
+  // Keep only the previous values needed for CountUp animations
+  const {
     globalHashrate: prevGlobalHashrate,
     globalAvgHashrate: prevGlobalAvgHashrate,
     minerPower: prevMinerPower,
+    avgBoardTemp: prevAvgBoardTemp,
+    avgBoardErrors: prevAvgBoardErrors,
   } = prevData.current || {};
 
-  const prevDataNode = useRef(dataNode);
+  // Clean up any unused data from dataMiner
+  useEffect(() => {
+    return () => {
+      // Clear any cached data when component unmounts
+      if (dataMiner) {
+        Object.keys(dataMiner).forEach(key => {
+          if (!['globalHashrate', 'globalAvgHashrate', 'minerPower', 
+                'avgBoardTemp', 'avgBoardErrors'].includes(key)) {
+            delete dataMiner[key];
+          }
+        });
+      }
+    };
+  }, [dataMiner]);
+
+  const prevDataNode = useRef(null);
 
   useEffect(() => {
-    // Store the current value directly when dataNode changes
-    prevDataNode.current = dataNode;
+    if (dataNode) {
+      // Keep only the values needed for CountUp animations
+      prevDataNode.current = {
+        connectionCount: dataNode.connectionCount,
+        blocksCount: dataNode.blocksCount
+      };
+    }
+    return () => {
+      prevDataNode.current = null;
+    };
   }, [dataNode]);
 
   const { connectionCount: prevConnectionCount, blocksCount: prevBlocksCount } =
-    prevData.current || {};
+    prevDataNode.current || {};
 
   return (
     <Box>

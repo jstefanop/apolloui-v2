@@ -79,13 +79,54 @@ const Miner = () => {
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   // Set Previous state for CountUp component
-  const prevData = useRef(dataMiner);
+  const prevData = useRef(null);
 
   useEffect(() => {
-    // Store the current value directly when dataMiner changes
-    prevData.current = dataMiner;
+    if (dataMiner) {
+      // Keep only the values needed for CountUp animations
+      prevData.current = {
+        totalBoardRejected: dataMiner.totalBoardRejected,
+        avgBoardErrors: dataMiner.avgBoardErrors,
+        avgBoardTemp: dataMiner.avgBoardTemp,
+        globalHashrate: dataMiner.globalHashrate,
+        globalAvgHashrate: dataMiner.globalAvgHashrate,
+        minerPower: dataMiner.minerPower,
+        avgBoardEfficiency: dataMiner.avgBoardEfficiency
+      };
+    }
+    return () => {
+      prevData.current = null;
+    };
   }, [dataMiner]);
 
+  // Extract only the current values we need
+  const {
+    totalBoardRejected,
+    avgBoardErrors,
+    avgBoardTemp,
+    globalHashrate,
+    globalAvgHashrate,
+    minerPower,
+    avgBoardEfficiency,
+    avgFanSpeed,
+    avgVoltage,
+    avgChipSpeed,
+    lastShareTime,
+    minerUptime,
+    totalBoardAccepted,
+    poolHashrate,
+    avgDiff,
+    totalSharesSent,
+    totalSharesAccepted,
+    totalSharesRejected,
+    activeBoards,
+    totalBoards,
+    activePools,
+    boards,
+    soloMining
+  } = dataMiner || {};
+
+  // Keep only the previous values needed for CountUp animations
   const {
     totalBoardRejected: prevAvgBoardRejected,
     avgBoardErrors: prevAvgBoardErrors,
@@ -93,36 +134,26 @@ const Miner = () => {
     globalHashrate: prevGlobalHashrate,
     globalAvgHashrate: prevGlobalAvgHashrate,
     minerPower: prevMinerPower,
-    avgBoardEfficiency: prevAvgBoardEfficiency,
+    avgBoardEfficiency: prevAvgBoardEfficiency
   } = prevData.current || {};
 
-  const {
-    globalHashrate,
-    globalAvgHashrate,
-    minerPower,
-    avgBoardEfficiency,
-    avgBoardTemp,
-    avgBoardErrors,
-    totalBoardRejected,
-    totalBoardAccepted,
-    avgChipSpeed,
-    avgFanSpeed,
-    avgVoltage,
-    lastShareTime,
-    minerUptime,
-    totalSharesSent,
-    totalSharesAccepted,
-    totalSharesRejected,
-    avgDiff,
-    poolHashrate,
-    activeBoards,
-    totalBoards,
-    activePools,
-    boards,
-    soloMining,
-  } = dataMiner;
+  // Clean up any unused data from dataMiner
+  useEffect(() => {
+    return () => {
+      // Clear any cached data when component unmounts
+      if (dataMiner) {
+        Object.keys(dataMiner).forEach(key => {
+          if (!['totalBoardRejected', 'avgBoardErrors', 'avgBoardTemp', 
+                'globalHashrate', 'globalAvgHashrate', 'minerPower', 
+                'avgBoardEfficiency'].includes(key)) {
+            delete dataMiner[key];
+          }
+        });
+      }
+    };
+  }, [dataMiner]);
 
-  const { minerMode, fanHigh, fanLow, frequency, voltage, temperatureUnit } = dataSettings;
+  const { minerMode, fanHigh, fanLow, frequency, voltage, temperatureUnit } = dataSettings || {};
 
   const dataTableBoards = [
     {
