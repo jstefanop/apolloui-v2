@@ -23,6 +23,7 @@ import { flattenMessages } from '../lib/utils';
 import messages_en from '../locales/en.json';
 import messages_it from '../locales/it.json';
 import messages_de from '../locales/de.json';
+import messages_es from '../locales/es.json';
 import Error from 'next/error';
 
 function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
@@ -46,6 +47,11 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
       messages: flattenMessages(messages_de),
       title: 'Deutsch',
       helpPath: 'de-de',
+    },
+    es: {
+      messages: flattenMessages(messages_es),
+      title: 'Español',
+      helpPath: 'es-es',
     },
   };
 

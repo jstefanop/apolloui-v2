@@ -105,6 +105,7 @@ const Layout = ({ children, routes }) => {
     errorMiner,
     dataMiner,
     minerPollingTime,
+    stopPollingMiner
   ]);
 
   // Mcu data
@@ -146,6 +147,7 @@ const Layout = ({ children, routes }) => {
     errorMcu,
     dataMcu,
     minerPollingTime,
+    stopPollingMcu
   ]);
 
   // Node data
@@ -187,6 +189,7 @@ const Layout = ({ children, routes }) => {
     errorNode,
     dataNode,
     nodePollingTime,
+    stopPollingNode
   ]);
 
   // Settings data
@@ -228,6 +231,7 @@ const Layout = ({ children, routes }) => {
     errorSettings,
     dataSettings,
     minerPollingTime,
+    stopPollingSettings
   ]);
 
   // Analytics data
@@ -274,6 +278,7 @@ const Layout = ({ children, routes }) => {
     errorAnalytics,
     dataAnalytics,
     nodePollingTime,
+    stopPollingAnalytics
   ]);
 
   // Services data
@@ -314,6 +319,7 @@ const Layout = ({ children, routes }) => {
     loadingServices,
     errorServices,
     dataServices,
+    stopPollingServices
   ]);
 
   // Settings data reselected

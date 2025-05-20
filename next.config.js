@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   i18n: {
-    locales: ['en', 'it', 'de'],
+    locales: ['en', 'it', 'de', 'es'],
     defaultLocale: 'en'
   },
   async redirects() {
