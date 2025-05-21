@@ -72,7 +72,7 @@ const MiniStatistics = ({
                   base: fontSize || '2xl',
                 }}
                 noOfLines={1}
-                maxWidth={{ base: '150px', xl: '200px' }}
+                maxWidth={{ base: '300px', xl: '300px' }}
               >
                 {value}
               </StatNumber>

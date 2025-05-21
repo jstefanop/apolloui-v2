@@ -9,7 +9,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import moment from 'moment';
+import moment from '../../lib/moment';
 import { displayHashrate } from '../../lib/utils';
 import { useTheme, useColorModeValue, Box } from '@chakra-ui/react';
 import React from 'react';

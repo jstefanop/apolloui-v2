@@ -2,7 +2,7 @@ import { createSelector } from 'reselect';
 import _ from 'lodash';
 import { initialState } from '../../graphql/miner';
 import { displayHashrate, convertHashrateStringToValue } from '../../lib/utils';
-import moment from 'moment';
+import moment from '../../lib/moment';
 
 const minerDataSelector = (state) => state.miner.data;
 const minerErrorSelector = (state) => state.miner.error;

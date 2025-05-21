@@ -102,6 +102,14 @@
     "panel": {
       "connect_tooltip": "Conéctate a tu nodo",
       "connect_tooltip_loading": "Para conectarte a tu nodo necesitas habilitar primero la opción Permitir conexiones LAN y esperar a que el nodo esté disponible."
+    },
+    "error": {
+      "unknown": "Error desconocido",
+      "stats": "Hubo un error al obtener estadísticas del Nodo: {error}",
+      "connection_refused": "Conexión rechazada. Tu nodo no está en ejecución.",
+      "bad_response": "Respuesta incorrecta. Intentando de nuevo en unos segundos...",
+      "waiting_response": "Esperando respuesta del nodo...",
+      "starting_up": "Tu nodo está iniciando..."
     }
   },
   "miner": {
@@ -622,5 +630,14 @@
     "website": "Sitio web",
     "made_with_love": "Apollo Web OS v{version} Hecho con amor por",
     "futurebit": "FutureBit"
+  },
+  "utils": {
+    "units": {
+      "trillions": "billones",
+      "billions": "mil millones",
+      "millions": "millones",
+      "units": "unidades"
+    },
+    "about": "Aproximadamente"
   }
 }

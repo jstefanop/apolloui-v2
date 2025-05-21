@@ -14,7 +14,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import _ from 'lodash';
-import moment from 'moment';
+import moment from '../../lib/moment';
 import Card from '../card/Card';
 import { MinerIcon } from '../UI/Icons/MinerIcon';
 import { LastShareIcon } from '../UI/Icons/LastShareIcon';

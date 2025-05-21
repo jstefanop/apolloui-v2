@@ -41,7 +41,7 @@ import { GiDiamondTrophy } from 'react-icons/gi';
 import ActiveBadge from '../components/apollo/ActiveBadge';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
-import moment from 'moment';
+import moment from '../lib/moment';
 import Cookies from 'js-cookie';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { filterRecentShares, shortenBitcoinAddress, calculateDailyChance } from '../lib/utils';

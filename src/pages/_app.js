@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { ApolloProvider } from '@apollo/client';
 import { useApollo } from '../lib/apolloClient';
 import { SessionProvider } from 'next-auth/react';
+import { setMomentLocale } from '../lib/moment';
 
 import '../assets/css/App.css';
 import 'animate.css';
@@ -64,6 +65,11 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
   useEffect(() => {
     if (router.isReady) setAsPath(router.asPath);
   }, [router]);
+
+  // Set moment.js locale when app locale changes
+  useEffect(() => {
+    setMomentLocale(locale);
+  }, [locale]);
 
   return (
     <SessionProvider session={session}>

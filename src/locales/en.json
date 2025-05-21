@@ -102,6 +102,14 @@
     "panel": {
       "connect_tooltip": "Connect to your node",
       "connect_tooltip_loading": "To connect to your node you need to enable the Allow LAN connections first and wait for the availability of the node."
+    },
+    "error": {
+      "unknown": "Unknown error",
+      "stats": "There was an error getting stats for Node: {error}",
+      "connection_refused": "Connection refused. Your node is not running.",
+      "bad_response": "Bad response. Trying again in a few seconds...",
+      "waiting_response": "Waiting for node response...",
+      "starting_up": "Your node is starting up..."
     }
   },
   "miner": {
@@ -622,5 +630,14 @@
     "website": "Website",
     "made_with_love": "Apollo Web OS v{version} Made with love by",
     "futurebit": "FutureBit"
+  },
+  "utils": {
+    "units": {
+      "trillions": "trillions",
+      "billions": "billions",
+      "millions": "millions",
+      "units": "units"
+    },
+    "about": "About"
   }
 }

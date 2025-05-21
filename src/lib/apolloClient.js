@@ -10,7 +10,7 @@ import os from 'os';
 import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
-import moment from 'moment';
+import moment from './moment';
 import { sendFeedback, resetFeedback } from '../redux/slices/feedbackSlice';
 import { store } from '../redux/store';
 import React from 'react';

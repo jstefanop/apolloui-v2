@@ -2,6 +2,7 @@ import packageJson from '../../package.json';
 import { MdOutlineUsb } from 'react-icons/md';
 import { CgServer } from 'react-icons/cg';
 import { Icon } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 
 export const displayHashrate = (
   hashrate,
@@ -87,17 +88,20 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
 };
 
 export const numberToText = (num) => {
-  if (num < 1e6) return `${Math.ceil(num)} units`; // Less than 1 million
+  const intl = useIntl();
+  
+  if (num < 1e6) return `${Math.ceil(num)} ${intl.formatMessage({ id: 'utils.units.units' })}`; // Less than 1 million
 
   const units = [
-    { value: 1e12, name: 'trillions' },
-    { value: 1e9, name: 'billions' },
-    { value: 1e6, name: 'millions' },
+    { value: 1e12, name: intl.formatMessage({ id: 'utils.units.trillions' }) },
+    { value: 1e9, name: intl.formatMessage({ id: 'utils.units.billions' }) },
+    { value: 1e6, name: intl.formatMessage({ id: 'utils.units.millions' }) },
   ];
 
   for (const unit of units) {
     if (num >= unit.value) {
-      return `About ${Math.ceil(num / unit.value)} ${unit.name}`;
+      const value = (num / unit.value).toFixed(1);
+      return `${intl.formatMessage({ id: 'utils.about' })} ${value} ${unit.name}`;
     }
   }
 
@@ -278,29 +282,33 @@ export const getVersionFromPackageJson = () => {
 };
 
 export const getNodeErrorMessage = (error) => {
+  const intl = useIntl();
   let parsedError;
   let sentence = null;
   let type = 'warning';
   if (!error.length) return { sentence, type };
 
-  parsedError = error[0].message || error[0].code || 'Unknown error';
-  sentence = `There was an error getting stats for Node: ${parsedError}`;
+  parsedError = error[0].message || error[0].code || intl.formatMessage({ id: 'node.error.unknown' });
+  sentence = intl.formatMessage(
+    { id: 'node.error.stats' },
+    { error: parsedError }
+  );
 
   if (error[0].code === 'ECONNREFUSED') {
-    sentence = 'Connection refused. Your node is not running.';
+    sentence = intl.formatMessage({ id: 'node.error.connection_refused' });
   }
 
   if (error[0].code === 'ERR_BAD_RESPONSE') {
-    sentence = 'Bad response. Trying again in a few seconds...';
+    sentence = intl.formatMessage({ id: 'node.error.bad_response' });
   }
 
   if (error[0].type === 'authentication') {
-    sentence = 'Waiting for node response...';
+    sentence = intl.formatMessage({ id: 'node.error.waiting_response' });
     type = 'info';
   }
 
   if (error[0].code === '-28') {
-    sentence = 'Your node is starting up...';
+    sentence = intl.formatMessage({ id: 'node.error.starting_up' });
     type = 'info';
   }
 

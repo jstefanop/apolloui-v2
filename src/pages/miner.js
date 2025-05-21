@@ -361,7 +361,7 @@ const Miner = () => {
                 }
                 name={intl.formatMessage({ id: 'miner.stats.last_share' })}
                 value={
-                  lastShareTime ? lastShareTime?.replace('a few', '') : 'N/A'
+                  lastShareTime || 'N/A'
                 }
                 reversed={true}
               />
