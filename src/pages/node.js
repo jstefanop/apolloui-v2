@@ -130,7 +130,14 @@ const Node = () => {
     if (!disks.length) return;
 
     const nodeDisk = _.find(disks, { mountPoint: '/media/nvme' });
-    const { used, total } = nodeDisk || {};
+    const { used = 0, total = 0 } = nodeDisk || {};
+    
+    // If total is 0, set remainingSpace to 0 to avoid division by zero
+    if (total === 0) {
+      setRemainingSpace(0);
+      return;
+    }
+    
     const difference = total - used;
     const percentage = (difference / total) * 100;
     setRemainingSpace(Math.round(percentage * 100) / 100);
