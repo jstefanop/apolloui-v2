@@ -72,7 +72,7 @@
         "description": "The node is online, but it was requested to stop. Please verify its state or restart."
       },
       "online": {
-        "message": "Your node is <strong>online</strong> and operational."
+        "message": "Your node is {online} and operational."
       }
     },
     "table": {
@@ -199,7 +199,7 @@
         "description": "The miner is online, but it was requested to stop. Please verify its state or restart."
       },
       "online": {
-        "message": "Your miner is <strong>online</strong> and operational."
+        "message": "Your miner is {online} and operational."
       },
       "pending": "Pending"
     },
@@ -285,7 +285,7 @@
         "description": "Node needs to be synced to correctly mine on SOLO mode. Please check your node for problems."
       },
       "online": {
-        "message": "Your miner is <strong>online</strong> and operational."
+        "message": "Your miner is {online} and operational."
       }
     }
   },

@@ -174,9 +174,10 @@ const SoloMiningStatus = ({
             <Flex align={'center'} color="white">
               <Icon as={CheckIcon} mr="2" />
               <Text>
-                <FormattedMessage id="miner.status.online.message">
-                  {txt => <span dangerouslySetInnerHTML={{ __html: txt }} />}
-                </FormattedMessage>
+                <FormattedMessage 
+                  id="miner.status.online.message"
+                  values={{ online: <strong>online</strong> }}
+                />
               </Text>
             </Flex>
           </Flex>

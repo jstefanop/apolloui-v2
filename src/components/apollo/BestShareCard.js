@@ -3,6 +3,7 @@ import CountUp from 'react-countup';
 import { BlocksIcon } from '../UI/Icons/BlocksIcon';
 import TileCard from '../UI/TileCard';
 import { numberToText } from '../../lib/utils';
+import { useIntl } from 'react-intl';
 
 const BestShare = ({
   shadow,
@@ -12,6 +13,7 @@ const BestShare = ({
   data,
   prevData,
 }) => {
+  const intl = useIntl();
   const cardColor = useColorModeValue(
     'linear-gradient(135deg, #EE1C26 0%, #080C0C 100%)',
     'linear-gradient(135deg, #EE1C26 20%, #080C0C 100%)'
@@ -41,7 +43,7 @@ const BestShare = ({
         />
       }
       secondaryData={
-        numberToText(data)
+        numberToText(data, intl)
       }
       loading={loading}
       errors={errors}

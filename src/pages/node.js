@@ -41,6 +41,7 @@ import ModalConnectNode from '../components/apollo/ModalConnectNode';
 import { getNodeErrorMessage } from '../lib/utils';
 import { MdCastConnected } from 'react-icons/md';
 import NodeStatus from '../components/UI/NodeStatus';
+import { useIntl } from 'react-intl';
 
 const Node = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -175,6 +176,8 @@ const Node = () => {
   ];
 
   const isServiceError = nodeServiceStatus?.status === 'error';
+
+  const intl = useIntl();
 
   return (
     <Box mx="5">
@@ -446,7 +449,7 @@ const Node = () => {
                         <FormattedMessage id="node.stats.network_hashrate" />
                       }
                       value={displayHashrate(networkhashps, 'h', true, 2)}
-                      secondaryText={numberToText(difficulty)}
+                      secondaryText={numberToText(difficulty, intl)}
                       secondaryDescription={
                         <FormattedMessage id="node.stats.difficulty" />
                       }

@@ -135,7 +135,10 @@ const NodeStatus = ({ serviceStatus }) => {
             <Flex align={'center'} color="white">
               <Icon as={CheckIcon} mr="2" />
               <Text>
-                {intl.formatMessage({ id: 'node.status.online.message' })}
+                {intl.formatMessage(
+                  { id: 'node.status.online.message' },
+                  { online: <strong>online</strong> }
+                )}
               </Text>
             </Flex>
           </Flex>

@@ -87,9 +87,7 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
   }
 };
 
-export const numberToText = (num) => {
-  const intl = useIntl();
-  
+export const numberToText = (num, intl) => {
   if (num < 1e6) return `${Math.ceil(num)} ${intl.formatMessage({ id: 'utils.units.units' })}`; // Less than 1 million
 
   const units = [
@@ -281,8 +279,7 @@ export const getVersionFromPackageJson = () => {
   }
 };
 
-export const getNodeErrorMessage = (error) => {
-  const intl = useIntl();
+export const getNodeErrorMessage = (error, intl) => {
   let parsedError;
   let sentence = null;
   let type = 'warning';
