@@ -32,12 +32,10 @@ const NavbarSeconday = ({
       w={{ sm: '100%', md: 'auto' }}
       alignItems="center"
       flexDirection="row"
-      bg={menuBg}
       flexWrap={'unset'}
       p="10px"
-      borderRadius="30px"
-      boxShadow={shadow}
     >
+      {/* Miner */}
       {type === 'miner' && (
         <Center>
           {(minerOnline === 'online' || minerOnline === 'pending') && (
@@ -69,7 +67,7 @@ const NavbarSeconday = ({
                   fontWeight="600"
                   me="6px"
                 >
-                  Stop miner
+                  Stop
                 </Text>
               </Button>
 
@@ -100,7 +98,7 @@ const NavbarSeconday = ({
                   fontWeight="600"
                   me="6px"
                 >
-                  Restart miner
+                  Restart
                 </Text>
               </Button>
             </>
@@ -134,13 +132,14 @@ const NavbarSeconday = ({
                 fontWeight="600"
                 me="6px"
               >
-                Start miner
+                Start
               </Text>
             </Button>
           )}
         </Center>
       )}
 
+      {/* Node */}
       {type === 'node' && (
         <Center>
           {(nodeOnline === 'online' || nodeOnline === 'pending') && (
@@ -171,7 +170,7 @@ const NavbarSeconday = ({
                 fontWeight="600"
                 me="6px"
               >
-                Stop Node
+                Stop
               </Text>
             </Button>
           )}
@@ -204,7 +203,7 @@ const NavbarSeconday = ({
                 fontWeight="600"
                 me="6px"
               >
-                Start Node
+                Start
               </Text>
             </Button>
           )}

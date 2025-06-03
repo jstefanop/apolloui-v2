@@ -177,6 +177,9 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
 
   const currentRoute = _.find(routes, { path: router.pathname });
 
+  // Extract the message ID from the FormattedMessage component
+  const routeName = currentRoute?.name?.props?.id?.replace('routes.', '') || '';
+
   // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
   let mainText = useColorModeValue('navy.700', 'white');
   let secondaryText = useColorModeValue('gray.700', 'white');
@@ -227,7 +230,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         mx="auto"
         mt={secondaryMargin}
         pb="8px"
-        right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
+        right={{ base: '12px', md: '30px', lg: '30px', xl: '70px' }}
         px={{
           sm: paddingX,
           md: '10px',
@@ -266,7 +269,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           <Box mb={{ sm: '8px', md: '5px' }}>
             <Breadcrumb>
               <BreadcrumbItem color={secondaryText} fontSize="sm">
-                {currentRoute && currentRoute.name !== 'Overview' ? (
+                {currentRoute && routeName !== 'overview' ? (
                   <Link href="/overview">Overview</Link>
                 ) : (
                   <Text>Apollo System</Text>
@@ -302,7 +305,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
             <SidebarResponsive routes={routes} />
           </Box>
 
-          {currentRoute && currentRoute.name === 'Miner' && (
+          {currentRoute && routeName === 'miner' && (
             <Box ml="5" display={{ base: 'none', xl: 'block' }}>
               <NavbarSeconday
                 type={'miner'}
@@ -312,7 +315,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
             </Box>
           )}
 
-          {currentRoute && currentRoute.name === 'Node' && (
+          {currentRoute && routeName === 'node' && (
             <Box ml="5" display={{ base: 'none', xl: 'block' }}>
               <NavbarSeconday
                 type={'node'}
