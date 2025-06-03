@@ -149,21 +149,6 @@ const Overview = () => {
     avgBoardErrors: prevAvgBoardErrors,
   } = prevData.current || {};
 
-  // Clean up any unused data from dataMiner
-  useEffect(() => {
-    return () => {
-      // Clear any cached data when component unmounts
-      if (dataMiner) {
-        Object.keys(dataMiner).forEach(key => {
-          if (!['globalHashrate', 'globalAvgHashrate', 'minerPower', 
-                'avgBoardTemp', 'avgBoardErrors'].includes(key)) {
-            delete dataMiner[key];
-          }
-        });
-      }
-    };
-  }, [dataMiner]);
-
   const prevDataNode = useRef(null);
 
   useEffect(() => {

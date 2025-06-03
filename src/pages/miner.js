@@ -85,6 +85,7 @@ const Miner = () => {
     if (dataMiner) {
       // Keep only the values needed for CountUp animations
       prevData.current = {
+        totalBoardAccepted: dataMiner.totalBoardAccepted,
         totalBoardRejected: dataMiner.totalBoardRejected,
         avgBoardErrors: dataMiner.avgBoardErrors,
         avgBoardTemp: dataMiner.avgBoardTemp,
@@ -128,6 +129,7 @@ const Miner = () => {
 
   // Keep only the previous values needed for CountUp animations
   const {
+    totalBoardAccepted: prevTotalBoardAccepted,
     totalBoardRejected: prevAvgBoardRejected,
     avgBoardErrors: prevAvgBoardErrors,
     avgBoardTemp: prevAvgBoardTemp,
@@ -136,22 +138,6 @@ const Miner = () => {
     minerPower: prevMinerPower,
     avgBoardEfficiency: prevAvgBoardEfficiency
   } = prevData.current || {};
-
-  // Clean up any unused data from dataMiner
-  useEffect(() => {
-    return () => {
-      // Clear any cached data when component unmounts
-      if (dataMiner) {
-        Object.keys(dataMiner).forEach(key => {
-          if (!['totalBoardRejected', 'avgBoardErrors', 'avgBoardTemp', 
-                'globalHashrate', 'globalAvgHashrate', 'minerPower', 
-                'avgBoardEfficiency'].includes(key)) {
-            delete dataMiner[key];
-          }
-        });
-      }
-    };
-  }, [dataMiner]);
 
   const { minerMode, fanHigh, fanLow, frequency, voltage, temperatureUnit } = dataSettings || {};
 
@@ -229,7 +215,7 @@ const Miner = () => {
         placement="right"
         data={boards}
       />
-      <MinerStatus serviceStatus={servicesStatus} />
+      {!loadingMiner && <MinerStatus serviceStatus={servicesStatus} />}
       {servicesStatus?.miner?.status === 'online' && (
         <Grid
           templateAreas={{
@@ -302,7 +288,7 @@ const Miner = () => {
                 value={
                   <span
                     className={
-                      avgBoardErrors !== prevAvgBoardErrors
+                      totalBoardAccepted !== prevTotalBoardAccepted
                         ? 'animate__animated animate__flash'
                         : undefined
                     }

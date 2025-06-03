@@ -379,7 +379,7 @@ export const minerSelector = createSelector(
       };
     }
 
-    return {
+    const selectorResult = {
       loading: minerLoading,
       error: errors,
       data: {
@@ -387,5 +387,6 @@ export const minerSelector = createSelector(
         stats: !errors.length && stats,
       },
     };
+    return selectorResult;
   }
 );

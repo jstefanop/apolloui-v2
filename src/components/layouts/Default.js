@@ -25,7 +25,6 @@ import { updateServicesStatus } from '../../redux/slices/servicesSlice';
 import { minerSelector } from '../../redux/reselect/miner';
 import { isAuthError } from '../../redux/utils/errorUtils';
 
-// Funzione di utilità per serializzare gli errori Apollo
 const createSerializableError = (error) => {
   if (!error) return null;
   
@@ -49,51 +48,40 @@ const Layout = ({ children, routes }) => {
     data: dataMiner,
     startPolling: startPollingMiner,
     stopPolling: stopPollingMiner,
-  } = useQuery(MINER_STATS_QUERY);
+  } = useQuery(MINER_STATS_QUERY, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-and-network'
+  });
 
   useEffect(() => {
     startPollingMiner(minerPollingTime);
 
-    // Ensure we're only dispatching when we have data and it's changed
-    if (dataMiner) {
-      // Instead of deep copy, use a more efficient approach
-      const safeData = {
-        ...dataMiner,
-        Miner: dataMiner.Miner ? {
-          ...dataMiner.Miner,
-          stats: dataMiner.Miner.stats ? {
-            ...dataMiner.Miner.stats,
-            result: dataMiner.Miner.stats.result ? {
-              ...dataMiner.Miner.stats.result,
-              stats: dataMiner.Miner.stats.result.stats
-            } : null
+    // Create a serializable error object
+    const serializableError = createSerializableError(errorMiner);
+
+    // Prepare the data if available
+    const safeData = dataMiner ? {
+      ...dataMiner,
+      Miner: dataMiner.Miner ? {
+        ...dataMiner.Miner,
+        stats: dataMiner.Miner.stats ? {
+          ...dataMiner.Miner.stats,
+          result: dataMiner.Miner.stats.result ? {
+            ...dataMiner.Miner.stats.result,
+            stats: dataMiner.Miner.stats.result.stats
           } : null
         } : null
-      };
-      
-      // Create a serializable error object
-      const serializableError = createSerializableError(errorMiner);
+      } : null
+    } : null;
 
-      dispatch(
-        updateMinerStats({
-          loading: loadingMiner,
-          error: serializableError,
-          data: safeData,
-        })
-      );
-    } else if (errorMiner && !isAuthError(errorMiner)) {
-      // Only dispatch non-auth errors
-      // Create a serializable error object
-      const serializableError = createSerializableError(errorMiner);
-      
-      dispatch(
-        updateMinerStats({
-          loading: loadingMiner,
-          error: serializableError,
-          data: null,
-        })
-      );
-    }
+    // Single dispatch with current state
+    dispatch(
+      updateMinerStats({
+        loading: loadingMiner,
+        error: serializableError,
+        data: safeData,
+      })
+    );
 
     return () => {
       stopPollingMiner(); // Stop polling

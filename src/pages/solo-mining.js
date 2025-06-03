@@ -44,7 +44,11 @@ import Head from 'next/head';
 import moment from '../lib/moment';
 import Cookies from 'js-cookie';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
-import { filterRecentShares, shortenBitcoinAddress, calculateDailyChance } from '../lib/utils';
+import {
+  filterRecentShares,
+  shortenBitcoinAddress,
+  calculateDailyChance,
+} from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
 import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
@@ -94,10 +98,14 @@ const SoloMining = () => {
     error: errorNode,
   } = useSelector(nodeSelector, shallowEqual);
 
-  const { difficulty, networkhashps, blocksCount, blockHeader } = dataNode || {};
+  const { difficulty, networkhashps, blocksCount, blockHeader } =
+    dataNode || {};
 
   // Mcu data
-  const { data: dataMcu, error: errorMcu } = useSelector(mcuSelector, shallowEqual);
+  const { data: dataMcu, error: errorMcu } = useSelector(
+    mcuSelector,
+    shallowEqual
+  );
 
   const { network } = dataMcu;
 
@@ -212,13 +220,13 @@ const SoloMining = () => {
 
   const handleOpen = (index) => {
     const newDrawerState = [...isDrawerOpen];
-    newDrawerState[index] = true; // Apre solo il drawer corrispondente all'indice
+    newDrawerState[index] = true;
     setIsDrawerOpen(newDrawerState);
   };
 
   const handleClose = (index) => {
     const newDrawerState = [...isDrawerOpen];
-    newDrawerState[index] = false; // Chiude solo il drawer corrispondente all'indice
+    newDrawerState[index] = false;
     setIsDrawerOpen(newDrawerState);
   };
 
@@ -239,22 +247,30 @@ const SoloMining = () => {
         <title>
           {ckPoolGlobalHashrate
             ? intl.formatMessage(
-                { id: 'solo_mining.title', defaultMessage: 'Apollo BTC Miner {hashrate}' },
-                { hashrate: `${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}` }
+                {
+                  id: 'solo_mining.title',
+                  defaultMessage: 'Apollo BTC Miner {hashrate}',
+                },
+                {
+                  hashrate: `${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}`,
+                }
               )
-            : intl.formatMessage(
-                { id: 'solo_mining.title', defaultMessage: 'Apollo BTC Miner' }
-              )}
+            : intl.formatMessage({
+                id: 'solo_mining.title',
+                defaultMessage: 'Apollo BTC Miner',
+              })}
         </title>
       </Head>
 
-      <SoloMiningStatus
-        serviceStatus={servicesStatus}
-        ckPoolLastUpdate={ckPoolLastUpdate}
-        ckDisconnected={ckDisconnected}
-        blocksCount={blocksCount}
-        blockHeader={blockHeader}
-      />
+      {!loadingMiner && (
+        <SoloMiningStatus
+          serviceStatus={servicesStatus}
+          ckPoolLastUpdate={ckPoolLastUpdate}
+          ckDisconnected={ckDisconnected}
+          blocksCount={blocksCount}
+          blockHeader={blockHeader}
+        />
+      )}
       {servicesStatus?.miner?.status === 'online' && (
         <>
           {showBanner || isVisibleBanner ? (
@@ -351,7 +367,9 @@ const SoloMining = () => {
                       }
                     />
                   }
-                  name={intl.formatMessage({ id: 'solo_mining.stats.accepted_shares' })}
+                  name={intl.formatMessage({
+                    id: 'solo_mining.stats.accepted_shares',
+                  })}
                   value={
                     <span>{ckSharesAccepted?.toLocaleString('en-US')}</span>
                   }
@@ -374,7 +392,9 @@ const SoloMining = () => {
                       }
                     />
                   }
-                  name={intl.formatMessage({ id: 'solo_mining.stats.rejected_shares' })}
+                  name={intl.formatMessage({
+                    id: 'solo_mining.stats.rejected_shares',
+                  })}
                   value={
                     <span>{ckSharesRejected?.toLocaleString('en-US')}</span>
                   }
@@ -396,7 +416,9 @@ const SoloMining = () => {
                       }
                     />
                   }
-                  name={intl.formatMessage({ id: 'solo_mining.stats.last_share' })}
+                  name={intl.formatMessage({
+                    id: 'solo_mining.stats.last_share',
+                  })}
                   value={
                     !ckDisconnected && ckPoolLastUpdate
                       ? ckPoolLastUpdate?.replace('a few', '')
@@ -454,7 +476,9 @@ const SoloMining = () => {
                           }
                         />
                       }
-                      name={intl.formatMessage({ id: 'solo_mining.info.daily_chance' })}
+                      name={intl.formatMessage({
+                        id: 'solo_mining.info.daily_chance',
+                      })}
                       value={
                         dailyChance
                           ? `1 in ${dailyChance.toLocaleString('en-US', {
@@ -480,7 +504,9 @@ const SoloMining = () => {
                           }
                         />
                       }
-                      name={intl.formatMessage({ id: 'solo_mining.info.users' })}
+                      name={intl.formatMessage({
+                        id: 'solo_mining.info.users',
+                      })}
                       value={ckUsersCount}
                       reversed={true}
                     />
@@ -500,7 +526,9 @@ const SoloMining = () => {
                           }
                         />
                       }
-                      name={intl.formatMessage({ id: 'solo_mining.info.workers' })}
+                      name={intl.formatMessage({
+                        id: 'solo_mining.info.workers',
+                      })}
                       value={ckWorkersCount}
                       reversed={true}
                     />
@@ -544,7 +572,11 @@ const SoloMining = () => {
                 {loadingMiner ? (
                   <BulletList />
                 ) : !dataTableBoards.length ? (
-                  <Text m="3">{intl.formatMessage({ id: 'solo_mining.users.no_active_workers' })}</Text>
+                  <Text m="3">
+                    {intl.formatMessage({
+                      id: 'solo_mining.users.no_active_workers',
+                    })}
+                  </Text>
                 ) : (
                   <Box
                     overflowY={'auto'}
@@ -579,7 +611,9 @@ const SoloMining = () => {
                             size="sm"
                             onClick={() => handleOpen(index)}
                           >
-                            {intl.formatMessage({ id: 'solo_mining.users.show_all_data' })}
+                            {intl.formatMessage({
+                              id: 'solo_mining.users.show_all_data',
+                            })}
                           </Button>
                           {typeof ckWorkers[index].activeWorkers !==
                             'undefined' &&
@@ -590,7 +624,9 @@ const SoloMining = () => {
                               <ActiveBadge
                                 active={ckWorkers[index].activeWorkers}
                                 total={ckWorkers[index].totalWorkers}
-                                title={intl.formatMessage({ id: 'solo_mining.users.active' })}
+                                title={intl.formatMessage({
+                                  id: 'solo_mining.users.active',
+                                })}
                               />
                             )}
                         </Flex>
