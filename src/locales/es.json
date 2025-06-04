@@ -110,6 +110,15 @@
       "bad_response": "Respuesta incorrecta. Intentando de nuevo en unos segundos...",
       "waiting_response": "Esperando respuesta del nodo...",
       "starting_up": "Tu nodo está iniciando..."
+    },
+    "latest_blocks": "Últimos Bloques",
+    "block": {
+      "height": "Altura",
+      "time": "Tiempo",
+      "size": "Tamaño",
+      "txs": "Transacciones",
+      "fees": "Comisiones",
+      "miner": "Minero"
     }
   },
   "miner": {

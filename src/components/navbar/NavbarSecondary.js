@@ -19,9 +19,9 @@ const NavbarSeconday = ({
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.400', 'white');
   const menuBg = useColorModeValue('white', 'navy.800');
-  const badgeColor = useColorModeValue('gray.400', 'gray.300');
-  const badgeBox = useColorModeValue('white', 'navy.800');
-  const iconColor = useColorModeValue('gray.400', 'gray.300');
+  const badgeColor = useColorModeValue('gray.600', 'gray.300');
+  const badgeBox = useColorModeValue('gray.300', 'navy.800');
+  const iconColor = useColorModeValue('gray.600', 'gray.300');
   const shadow = useColorModeValue(
     '14px 17px 40px 4px rgba(112, 144, 176, 0.18)',
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'

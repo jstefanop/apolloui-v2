@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@chakra-ui/react';
 
-const Confetti = () => {
+const Confetti = ({ width = '100%', height = '100%', duration = 5, numberOfPieces = 150 }) => {
   const [confettiPieces, setConfettiPieces] = useState([]);
 
   useEffect(() => {
@@ -9,14 +9,14 @@ const Confetti = () => {
     const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722'];
     const pieces = [];
 
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < numberOfPieces; i++) {
       const x = Math.random() * 100;
       const y = -20 - Math.random() * 100;
       const color = colors[Math.floor(Math.random() * colors.length)];
       const size = 5 + Math.random() * 15;
       const rotation = Math.random() * 360;
-      const duration = 5 + Math.random() * 5;
-      const delay = Math.random() * 3;
+      const pieceDuration = duration + Math.random() * 2;
+      const delay = Math.random() * 2;
 
       pieces.push({
         id: i,
@@ -25,28 +25,21 @@ const Confetti = () => {
         color,
         size,
         rotation,
-        duration,
+        duration: pieceDuration,
         delay
       });
     }
 
     setConfettiPieces(pieces);
-
-    // Clean up after animation
-    const timer = setTimeout(() => {
-      setConfettiPieces([]);
-    }, 10000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  }, [duration, numberOfPieces]);
 
   return (
     <Box
-      position="fixed"
+      position="absolute"
       top="0"
       left="0"
-      width="100%"
-      height="100%"
+      width={width}
+      height={height}
       pointerEvents="none"
       zIndex="1000"
       overflow="hidden"

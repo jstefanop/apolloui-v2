@@ -42,6 +42,7 @@ import { getNodeErrorMessage } from '../lib/utils';
 import { MdCastConnected } from 'react-icons/md';
 import NodeStatus from '../components/UI/NodeStatus';
 import { useIntl } from 'react-intl';
+import LatestBlocks from '../components/apollo/LatestBlocks';
 
 const Node = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -230,6 +231,7 @@ const Node = () => {
       {/* Only render the main content if service is not in error state and is online */}
       {!isServiceError && servicesStatus?.node?.status === 'online' && (
         <Flex direction="column">
+          <LatestBlocks mb="5" />
           <Card
             h={{ base: '470px', md: '370px' }}
             shadow={shadow}

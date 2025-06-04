@@ -110,6 +110,15 @@
       "bad_response": "Bad response. Trying again in a few seconds...",
       "waiting_response": "Waiting for node response...",
       "starting_up": "Your node is starting up..."
+    },
+    "latest_blocks": "Latest Blocks",
+    "block": {
+      "height": "Height",
+      "time": "Time",
+      "size": "Size",
+      "txs": "Transactions",
+      "fees": "Fees",
+      "miner": "Miner"
     }
   },
   "miner": {
