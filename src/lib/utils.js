@@ -2,14 +2,7 @@ import packageJson from '../../package.json';
 import { MdOutlineUsb } from 'react-icons/md';
 import { CgServer } from 'react-icons/cg';
 import { Icon, useColorModeValue } from '@chakra-ui/react';
-import { useIntl } from 'react-intl';
-import {
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaTimesCircle,
-  FaExclamationCircle,
-  FaSkull,
-} from 'react-icons/fa';
+import _ from 'lodash';
 
 export const displayHashrate = (
   hashrate,
@@ -408,7 +401,7 @@ export const dailyChanceRanges = [
   { max: Infinity, color: 'red.600', bars: 1 },
 ];
 
-export const getDailyChanceVisualization = (dailyChance) => {
+export const useDailyChanceVisualization = (dailyChance) => {
   const textColor = useColorModeValue('brand.900', 'white');
   
   if (!dailyChance)
@@ -431,4 +424,41 @@ export const getDailyChanceVisualization = (dailyChance) => {
     color: textColor,
     bars,
   };
+};
+
+export const useDailyChanceVisualizations = (data, networkhashps) => {
+  // Calculate all daily chances first
+  const dailyChances = data.map(element => {
+    if (!element?.hashrate5m || !networkhashps) return null;
+    const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
+    return calculateDailyChance(hashrateValue, networkhashps);
+  });
+
+  // Create individual hooks for each daily chance
+  const visualization0 = useDailyChanceVisualization(dailyChances[0] || 0);
+  const visualization1 = useDailyChanceVisualization(dailyChances[1] || 0);
+  const visualization2 = useDailyChanceVisualization(dailyChances[2] || 0);
+  const visualization3 = useDailyChanceVisualization(dailyChances[3] || 0);
+  const visualization4 = useDailyChanceVisualization(dailyChances[4] || 0);
+  const visualization5 = useDailyChanceVisualization(dailyChances[5] || 0);
+  const visualization6 = useDailyChanceVisualization(dailyChances[6] || 0);
+  const visualization7 = useDailyChanceVisualization(dailyChances[7] || 0);
+  const visualization8 = useDailyChanceVisualization(dailyChances[8] || 0);
+  const visualization9 = useDailyChanceVisualization(dailyChances[9] || 0);
+
+  // Combine all visualizations, replacing null values with the default visualization
+  const visualizations = [
+    dailyChances[0] ? visualization0 : null,
+    dailyChances[1] ? visualization1 : null,
+    dailyChances[2] ? visualization2 : null,
+    dailyChances[3] ? visualization3 : null,
+    dailyChances[4] ? visualization4 : null,
+    dailyChances[5] ? visualization5 : null,
+    dailyChances[6] ? visualization6 : null,
+    dailyChances[7] ? visualization7 : null,
+    dailyChances[8] ? visualization8 : null,
+    dailyChances[9] ? visualization9 : null,
+  ];
+
+  return visualizations;
 };

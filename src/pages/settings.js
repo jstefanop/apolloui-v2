@@ -508,7 +508,7 @@ const Settings = () => {
       {isChanged && (
         <Box
           position="fixed"
-          bg="blue.900"
+          bg="brand.500"
           backgroundPosition="center"
           backgroundSize="cover"
           p="15px"
@@ -517,7 +517,7 @@ const Settings = () => {
           bottom={{ base: '0px' }}
           w={{
             base: '100%',
-            xl: 'calc(100vw - 250px)',
+            xl: 'calc(100vw - 215px)',
           }}
           zIndex="1"
         >

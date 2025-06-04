@@ -6,6 +6,10 @@ import {
   Link,
   Spinner,
   Card,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
@@ -116,6 +120,10 @@ const LatestBlocks = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const scrollContainerRef = useRef(null);
 
+  const trackBg = useColorModeValue('gray.100', 'gray.700');
+  const thumbBg = useColorModeValue('gray.300', 'gray.600');
+  const thumbHoverBg = useColorModeValue('gray.400', 'gray.500');
+
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
@@ -152,7 +160,7 @@ const LatestBlocks = () => {
       try {
         const response = await fetch('https://mempool.space/api/v1/blocks');
         if (!response.ok) {
-          throw new Error('Failed to fetch blocks');
+          throw new Error('Failed to fetch blocks from mempool.space. Trying again in 1 minute.');
         }
         const data = await response.json();
         
@@ -209,9 +217,11 @@ const LatestBlocks = () => {
 
   if (error) {
     return (
-      <Flex justify="center" align="center" h="200px">
-        <Text color="red.500">Error: {error}</Text>
-      </Flex>
+      <Alert status="warning" borderRadius="10px" mb="5">
+        <AlertIcon />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
     );
   }
 
@@ -226,14 +236,14 @@ const LatestBlocks = () => {
           height: '8px',
         },
         '&::-webkit-scrollbar-track': {
-          background: useColorModeValue('gray.100', 'gray.700'),
+          background: trackBg,
           borderRadius: '4px',
         },
         '&::-webkit-scrollbar-thumb': {
-          background: useColorModeValue('gray.300', 'gray.600'),
+          background: thumbBg,
           borderRadius: '4px',
           '&:hover': {
-            background: useColorModeValue('gray.400', 'gray.500'),
+            background: thumbHoverBg,
           },
         },
       }}

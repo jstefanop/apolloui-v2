@@ -15,7 +15,7 @@
   },
   "scripts": {
     "preinstall": "yarn config set ignore-engines true",
-    "dev": "rm -rf .next && next lint && next dev",
+    "dev": "rm -rf .next && next lint && next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

@@ -22,17 +22,20 @@ const WifiSettings = () => {
   ] = useLazyQuery(MCU_WIFI_SCAN_QUERY, { fetchPolicy: 'no-cache' });
 
   const handleSwitchWifi = (e) => {
-    const v = e.target.value === 'true' ? true : false;
-    setSettings({ ...settings, connectedWifi: !v });
+    const v = e.target.checked;
+    setSettings({ ...settings, connectedWifi: v });
+    if (v) {
+      handleWifiScan();
+    }
   };
 
   const wifiMode = {
     id: 'wifi',
     color: 'green',
     icon: MdWifi,
-    title: intl.formatMessage({ id: 'settings.sections.system.wifi.title' }),
+    title: intl.formatMessage({ id: 'settings.sections.system.wifi.scan.title' }),
     selected: !settings.connectedWifi,
-    description: intl.formatMessage({ id: 'settings.sections.system.wifi.description' }),
+    description: intl.formatMessage({ id: 'settings.sections.system.wifi.scan.description' }),
   };
 
   return (
@@ -50,13 +53,15 @@ const WifiSettings = () => {
         inverted={true}
         handleSwitch={handleSwitchWifi}
       />
-      <WifiSettingsCard
-        textColor={textColor}
-        loading={loadingWifiScan}
-        error={errorWifiScan}
-        data={dataWifiScan}
-        onScan={handleWifiScan}
-      />
+      {settings.connectedWifi && (
+        <WifiSettingsCard
+          textColor={textColor}
+          loading={loadingWifiScan}
+          error={errorWifiScan}
+          data={dataWifiScan}
+          onScan={handleWifiScan}
+        />
+      )}
     </PanelCard>
   );
 };

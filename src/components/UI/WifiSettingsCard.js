@@ -35,6 +35,11 @@ import { updateWifi } from '../../redux/slices/wifiSlice';
 
 const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
   const cardBgColor = useColorModeValue('gray.50', 'secondaryGray.900');
+  const inputBgColor = useColorModeValue('gray.50', 'secondaryGray.900');
+  const inputBorderColor = useColorModeValue('gray.200', 'gray.600');
+  const inputHoverBorderColor = useColorModeValue('blue.400', 'blue.300');
+  const inputFocusBorderColor = useColorModeValue('blue.500', 'blue.400');
+  const inputTextColor = useColorModeValue('gray.900', 'white');
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const [errorConnect, setErrorConnect] = useState(false);
@@ -148,20 +153,6 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
       py="21px"
       transition="0.2s linear"
     >
-      <Flex direction={{ base: 'column' }}>
-        <Text
-          color="secondaryGray.600"
-          fontSize={{ base: 'xs', lg: 'sm' }}
-          fontWeight="400"
-          me="14px"
-        >
-          Click the scan button and your system will scan for available wifi
-          networks. Click one of the available SSIDs, and enter your WiFi
-          passphrase. Clicking the disconnect button will delete all saved WiFi
-          connections. If you are having issues connecting, set your wifi router
-          to a seperate 2.4GHz SSID with WPA2 only security.
-        </Text>
-      </Flex>
 
       <Box px="11px" mt={'2'}>
         <Flex direction={'column'}>
@@ -219,8 +210,8 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
                           </Badge>
                         )}
                         {!loadingWifi && show === index && (
-                          <FormControl isRequired w={'240px'} mt={-1}>
-                            <InputGroup size="sm">
+                          <FormControl isRequired w={'240px'} mt={-2}>
+                            <InputGroup size="md">
                               <Input
                                 isRequired={true}
                                 fontSize="sm"
@@ -228,6 +219,16 @@ const WifiSettingsCard = ({ textColor, loading, error, data, onScan }) => {
                                 type={showLockPassword ? 'text' : 'password'}
                                 onChange={(e) => setPassphrase(e.target.value)}
                                 id="passphrase"
+                                bg={inputBgColor}
+                                borderColor={inputBorderColor}
+                                color={inputTextColor}
+                                _hover={{
+                                  borderColor: inputHoverBorderColor,
+                                }}
+                                _focus={{
+                                  borderColor: inputFocusBorderColor,
+                                  boxShadow: `0 0 0 1px ${inputFocusBorderColor}`,
+                                }}
                               />
                               <InputRightElement width="4.5rem">
                                 <Button

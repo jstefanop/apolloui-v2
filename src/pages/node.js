@@ -15,6 +15,8 @@ import {
 import moment from 'moment';
 import CountUp from 'react-countup';
 import Head from 'next/head';
+import _ from 'lodash';
+import { useIntl } from 'react-intl';
 import { List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
@@ -41,7 +43,6 @@ import ModalConnectNode from '../components/apollo/ModalConnectNode';
 import { getNodeErrorMessage } from '../lib/utils';
 import { MdCastConnected } from 'react-icons/md';
 import NodeStatus from '../components/UI/NodeStatus';
-import { useIntl } from 'react-intl';
 import LatestBlocks from '../components/apollo/LatestBlocks';
 
 const Node = () => {

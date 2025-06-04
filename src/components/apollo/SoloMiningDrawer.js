@@ -25,7 +25,13 @@ import { GiDiamondTrophy } from 'react-icons/gi';
 import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
 import ColorBars from '../UI/ColorBars';
-import { filterRecentShares, workerIsActive, calculateDailyChance, convertHashrateStringToValue, getDailyChanceVisualization } from '../../lib/utils';
+import {
+  filterRecentShares,
+  workerIsActive,
+  calculateDailyChance,
+  convertHashrateStringToValue,
+  useDailyChanceVisualizations,
+} from '../../lib/utils';
 
 const SoloMiningDrawer = ({
   isOpen,
@@ -55,8 +61,11 @@ const SoloMiningDrawer = ({
   const totalWorkers = _.size(data);
   const activeWorkers = _.size(filterRecentShares(data, 180));
 
+  // Get all daily chance visualizations at once
+  const dailyChanceVisualizations = useDailyChanceVisualizations(data, networkhashps);
+
   const dataTableWorkers = data
-    .map((element) => {
+    .map((element, index) => {
       if (!element) return null;
       const mappedArray = [];
       let workerName = '';
@@ -97,8 +106,8 @@ const SoloMiningDrawer = ({
               value =
                 difficulty > 0
                   ? `${element[key].toLocaleString('en-US', {
-                    maximumFractionDigits: 0,
-                  })}`
+                      maximumFractionDigits: 0,
+                    })}`
                   : 'n.a.';
               icon = BlocksIcon;
               break;
@@ -109,23 +118,21 @@ const SoloMiningDrawer = ({
         }
       });
 
-      // Add daily chance calculation
-      if (element.hashrate5m && networkhashps) {
+      // Add daily chance visualization if available
+      const visualization = dailyChanceVisualizations[index];
+      if (visualization) {
         const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
         const dailyChance = calculateDailyChance(hashrateValue, networkhashps);
-        if (dailyChance !== null) {
-          const { text, color, bars } = getDailyChanceVisualization(dailyChance);
-          mappedArray.push({
-            name: 'Daily chance',
-            value: (
-              <Flex align="center" gap={2}>
-                <Text color={color}>{text}</Text>
-                <ColorBars bars={bars} currentValue={dailyChance} />
-              </Flex>
-            ),
-            icon: GiDiamondTrophy,
-          });
-        }
+        mappedArray.push({
+          name: 'Daily chance',
+          value: (
+            <Flex align="center" gap={2}>
+              <Text color={visualization.color}>{visualization.text}</Text>
+              <ColorBars bars={visualization.bars} currentValue={dailyChance} />
+            </Flex>
+          ),
+          icon: GiDiamondTrophy,
+        });
       }
 
       if (lastShare !== null) {

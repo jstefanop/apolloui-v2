@@ -420,8 +420,12 @@
         "api_access": "API-Zugriff",
         "custom_approval": "Benutzerdefinierte Genehmigung",
         "wifi": {
-          "title": "WLAN-Einstellungen",
-          "description": "Verbinden Sie Ihren Systemcontroller mit einem WLAN anstatt mit Ethernet"
+          "title": "WiFi-Einstellungen",
+          "description": "Konfigurieren Sie Ihre WiFi-Verbindung",
+          "scan": {
+            "title": "WiFi-Netzwerke scannen",
+            "description": "Klicken Sie auf die Scan-Schaltfläche und Ihr System sucht nach verfügbaren WiFi-Netzwerken. Klicken Sie auf einen der verfügbaren SSIDs und geben Sie Ihr WiFi-Passwort ein. Durch Klicken auf die Trennen-Schaltfläche werden alle gespeicherten WiFi-Verbindungen gelöscht. Wenn Sie Verbindungsprobleme haben, stellen Sie Ihren WiFi-Router auf ein separates 2,4GHz-SSID mit nur WPA2-Sicherheit ein."
+          }
         },
         "password": {
           "title": "Sperrbildschirm",

@@ -43,13 +43,15 @@ import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import moment from '../lib/moment';
 import Cookies from 'js-cookie';
+import _ from 'lodash';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import {
   filterRecentShares,
   shortenBitcoinAddress,
   calculateDailyChance,
   convertHashrateStringToValue,
-  getDailyChanceVisualization,
+  useDailyChanceVisualizations,
+  useDailyChanceVisualization,
 } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
@@ -167,7 +169,13 @@ const SoloMining = () => {
 
   const boardNames = [];
 
-  const dataTableBoards = ckUsers.map((element) => {
+  // Get all daily chance visualizations at once
+  const dailyChanceVisualizations = useDailyChanceVisualizations(ckUsers, networkhashps);
+
+  // Calculate global daily chance visualization
+  const globalDailyChanceVisualization = useDailyChanceVisualization(dailyChance);
+
+  const dataTableBoards = ckUsers.map((element, index) => {
     if (!element) return;
     const mappedArray = [];
     desiredKeys.forEach((key) => {
@@ -209,29 +217,21 @@ const SoloMining = () => {
       }
     });
 
-    // Add daily chance calculation
-    if (element.hashrate5m && networkhashps) {
+    // Add daily chance visualization if available
+    const visualization = dailyChanceVisualizations[index];
+    if (visualization) {
       const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
       const dailyChance = calculateDailyChance(hashrateValue, networkhashps);
-      if (dailyChance !== null) {
-        mappedArray.push({
-          name: 'Daily chance',
-          value: (
-            <Flex align="center" gap={2}>
-              {(() => {
-                const { text, color, bars } = getDailyChanceVisualization(dailyChance);
-                return (
-                  <>
-                    <Text color={color}>{text}</Text>
-                    <ColorBars bars={bars} currentValue={dailyChance} />
-                  </>
-                );
-              })()}
-            </Flex>
-          ),
-          icon: GiDiamondTrophy,
-        });
-      }
+      mappedArray.push({
+        name: 'Daily chance',
+        value: (
+          <Flex align="center" gap={2}>
+            <Text color={visualization.color}>{visualization.text}</Text>
+            <ColorBars bars={visualization.bars} currentValue={dailyChance} />
+          </Flex>
+        ),
+        icon: GiDiamondTrophy,
+      });
     }
     return mappedArray;
   });
@@ -508,17 +508,15 @@ const SoloMining = () => {
                         id: 'solo_mining.info.daily_chance',
                       })}
                       value={
-                        dailyChance ? (
+                        dailyChance && globalDailyChanceVisualization ? (
                           <Flex align="center" gap={2}>
-                            {(() => {
-                              const { text, color, bars } = getDailyChanceVisualization(dailyChance);
-                              return (
-                                <>
-                                  <Text color={color}>{text}</Text>
-                                  <ColorBars bars={bars} currentValue={dailyChance} />
-                                </>
-                              );
-                            })()}
+                            <Text color={globalDailyChanceVisualization.color}>
+                              {globalDailyChanceVisualization.text}
+                            </Text>
+                            <ColorBars 
+                              bars={globalDailyChanceVisualization.bars} 
+                              currentValue={dailyChance} 
+                            />
                           </Flex>
                         ) : 'N/A'
                       }
