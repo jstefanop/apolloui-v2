@@ -48,11 +48,14 @@ import {
   filterRecentShares,
   shortenBitcoinAddress,
   calculateDailyChance,
+  convertHashrateStringToValue,
+  getDailyChanceVisualization,
 } from '../lib/utils';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { InfoIcon } from '@chakra-ui/icons';
 import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
 import SoloMiningStatus from '../components/UI/SoloMiningStatus';
+import ColorBars from '../components/UI/ColorBars';
 
 const SoloMining = () => {
   const intl = useIntl();
@@ -205,6 +208,31 @@ const SoloMining = () => {
         mappedArray.push({ value, icon });
       }
     });
+
+    // Add daily chance calculation
+    if (element.hashrate5m && networkhashps) {
+      const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
+      const dailyChance = calculateDailyChance(hashrateValue, networkhashps);
+      if (dailyChance !== null) {
+        mappedArray.push({
+          name: 'Daily chance',
+          value: (
+            <Flex align="center" gap={2}>
+              {(() => {
+                const { text, color, bars } = getDailyChanceVisualization(dailyChance);
+                return (
+                  <>
+                    <Text color={color}>{text}</Text>
+                    <ColorBars bars={bars} currentValue={dailyChance} />
+                  </>
+                );
+              })()}
+            </Flex>
+          ),
+          icon: GiDiamondTrophy,
+        });
+      }
+    }
     return mappedArray;
   });
 
@@ -480,11 +508,19 @@ const SoloMining = () => {
                         id: 'solo_mining.info.daily_chance',
                       })}
                       value={
-                        dailyChance
-                          ? `1 in ${dailyChance.toLocaleString('en-US', {
-                              maximumFractionDigits: 0,
-                            })}`
-                          : 'N/A'
+                        dailyChance ? (
+                          <Flex align="center" gap={2}>
+                            {(() => {
+                              const { text, color, bars } = getDailyChanceVisualization(dailyChance);
+                              return (
+                                <>
+                                  <Text color={color}>{text}</Text>
+                                  <ColorBars bars={bars} currentValue={dailyChance} />
+                                </>
+                              );
+                            })()}
+                          </Flex>
+                        ) : 'N/A'
                       }
                       reversed={true}
                     />

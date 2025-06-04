@@ -1,8 +1,15 @@
 import packageJson from '../../package.json';
 import { MdOutlineUsb } from 'react-icons/md';
 import { CgServer } from 'react-icons/cg';
-import { Icon } from '@chakra-ui/react';
+import { Icon, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
+import {
+  FaCheckCircle,
+  FaExclamationTriangle,
+  FaTimesCircle,
+  FaExclamationCircle,
+  FaSkull,
+} from 'react-icons/fa';
 
 export const displayHashrate = (
   hashrate,
@@ -88,7 +95,10 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
 };
 
 export const numberToText = (num, intl) => {
-  if (num < 1e6) return `${Math.ceil(num)} ${intl.formatMessage({ id: 'utils.units.units' })}`; // Less than 1 million
+  if (num < 1e6)
+    return `${Math.ceil(num)} ${intl.formatMessage({
+      id: 'utils.units.units',
+    })}`; // Less than 1 million
 
   const units = [
     { value: 1e12, name: intl.formatMessage({ id: 'utils.units.trillions' }) },
@@ -99,7 +109,9 @@ export const numberToText = (num, intl) => {
   for (const unit of units) {
     if (num >= unit.value) {
       const value = (num / unit.value).toFixed(1);
-      return `${intl.formatMessage({ id: 'utils.about' })} ${value} ${unit.name}`;
+      return `${intl.formatMessage({ id: 'utils.about' })} ${value} ${
+        unit.name
+      }`;
     }
   }
 
@@ -285,7 +297,10 @@ export const getNodeErrorMessage = (error, intl) => {
   let type = 'warning';
   if (!error.length) return { sentence, type };
 
-  parsedError = error[0].message || error[0].code || intl.formatMessage({ id: 'node.error.unknown' });
+  parsedError =
+    error[0].message ||
+    error[0].code ||
+    intl.formatMessage({ id: 'node.error.unknown' });
   sentence = intl.formatMessage(
     { id: 'node.error.stats' },
     { error: parsedError }
@@ -379,4 +394,41 @@ export const flattenMessages = (nestedMessages, prefix = '') => {
 
     return messages;
   }, {});
+};
+
+export const dailyChanceRanges = [
+  { max: 1000, color: 'green.700', bars: 5 },
+  { max: 5000, color: 'green.400', bars: 5 },
+  { max: 10000, color: 'green.200', bars: 5 },
+  { max: 100000, color: 'blue.600', bars: 4 },
+  { max: 300000, color: 'blue.400', bars: 4 },
+  { max: 500000, color: 'blue.200', bars: 4 },
+  { max: 1000000, color: 'orange.200', bars: 3 },
+  { max: 10000000, color: 'orange.400', bars: 2 },
+  { max: Infinity, color: 'red.600', bars: 1 },
+];
+
+export const getDailyChanceVisualization = (dailyChance) => {
+  const textColor = useColorModeValue('brand.900', 'white');
+  
+  if (!dailyChance)
+    return { text: 'N/A', color: 'gray.500', bars: Array(5).fill('gray.500') };
+
+  const formattedValue = `1 in ${dailyChance.toLocaleString('en-US', {
+    maximumFractionDigits: 0,
+  })}`;
+
+  const range = dailyChanceRanges.find(r => dailyChance <= r.max);
+  const activeBars = range.bars;
+  const activeColor = range.color;
+
+  const bars = Array(5)
+    .fill('gray.500')
+    .map((_, index) => (index < activeBars ? activeColor : 'gray.500'));
+
+  return {
+    text: formattedValue,
+    color: textColor,
+    bars,
+  };
 };

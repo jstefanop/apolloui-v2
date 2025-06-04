@@ -12,6 +12,7 @@ import {
   Tab,
   TabPanel,
   useColorModeValue,
+  Flex,
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import moment from '../../lib/moment';
@@ -23,7 +24,8 @@ import { BlocksIcon } from '../UI/Icons/BlocksIcon';
 import { GiDiamondTrophy } from 'react-icons/gi';
 import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
-import { filterRecentShares, workerIsActive, calculateDailyChance, convertHashrateStringToValue } from '../../lib/utils';
+import ColorBars from '../UI/ColorBars';
+import { filterRecentShares, workerIsActive, calculateDailyChance, convertHashrateStringToValue, getDailyChanceVisualization } from '../../lib/utils';
 
 const SoloMiningDrawer = ({
   isOpen,
@@ -112,10 +114,16 @@ const SoloMiningDrawer = ({
         const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
         const dailyChance = calculateDailyChance(hashrateValue, networkhashps);
         if (dailyChance !== null) {
+          const { text, color, bars } = getDailyChanceVisualization(dailyChance);
           mappedArray.push({
             name: 'Daily chance',
-            value: `1 in ${dailyChance.toLocaleString('en-US', { maximumFractionDigits: 0 })}`,
-            icon: GiDiamondTrophy ,
+            value: (
+              <Flex align="center" gap={2}>
+                <Text color={color}>{text}</Text>
+                <ColorBars bars={bars} currentValue={dailyChance} />
+              </Flex>
+            ),
+            icon: GiDiamondTrophy,
           });
         }
       }
