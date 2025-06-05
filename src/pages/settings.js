@@ -76,7 +76,7 @@ const Settings = () => {
     loading: loadingNode,
   } = useSelector(nodeSelector, shallowEqual);
   const { localaddresses } = dataNode || {};
-  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode);
+  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl);
 
   // Mcu data from Redux
   const { data: dataMcu } = useSelector(mcuSelector, shallowEqual);
@@ -582,91 +582,93 @@ const Settings = () => {
           setIsModalConnectOpen,
         }}
       >
-        <Tabs
-          size="md"
-          isLazy
-          variant={'line'}
-          index={tabIndex}
-          onChange={(index) => setTabIndex(index)}
-        >
-          <TabList ml="5">
-            <Tab>
-              <Text
-                fontWeight={600}
-                me="2"
-                display={{ base: 'none', md: 'block' }}
-              >
-                {intl.formatMessage({ id: 'settings.tabs.pools' })}
-              </Text>
-              <PoolIcon display={{ base: 'block' }} />
-            </Tab>
-            <Tab>
-              <Text
-                fontWeight={600}
-                me="2"
-                display={{ base: 'none', md: 'block' }}
-              >
-                {intl.formatMessage({ id: 'settings.tabs.miner' })}
-              </Text>
-              <MinerIcon display={{ base: 'block' }} />
-            </Tab>
-            <Tab>
-              <Text
-                fontWeight={600}
-                me="2"
-                display={{ base: 'none', md: 'block' }}
-              >
-                {intl.formatMessage({ id: 'settings.tabs.node' })}
-              </Text>
-              <NodeIcon display={{ base: 'block' }} />
-            </Tab>
-            <Tab>
-              <Text
-                fontWeight={600}
-                me="2"
-                display={{ base: 'none', md: 'block' }}
-              >
-                {intl.formatMessage({ id: 'settings.tabs.system' })}
-              </Text>
-              <SystemIcon display={{ base: 'block' }} />
-            </Tab>
-            <Tab>
-              <Text
-                fontWeight={600}
-                me="2"
-                display={{ base: 'none', md: 'block' }}
-              >
-                Extra
-              </Text>
-              <MdSettings display={{ base: 'block' }} />
-            </Tab>
-          </TabList>
+        <Box minH="calc(100vh - 80px)" pb={isChanged ? "80px" : "0"}>
+          <Tabs
+            size="md"
+            isLazy
+            variant={'line'}
+            index={tabIndex}
+            onChange={(index) => setTabIndex(index)}
+          >
+            <TabList ml="5">
+              <Tab>
+                <Text
+                  fontWeight={600}
+                  me="2"
+                  display={{ base: 'none', md: 'block' }}
+                >
+                  {intl.formatMessage({ id: 'settings.tabs.pools' })}
+                </Text>
+                <PoolIcon display={{ base: 'block' }} />
+              </Tab>
+              <Tab>
+                <Text
+                  fontWeight={600}
+                  me="2"
+                  display={{ base: 'none', md: 'block' }}
+                >
+                  {intl.formatMessage({ id: 'settings.tabs.miner' })}
+                </Text>
+                <MinerIcon display={{ base: 'block' }} />
+              </Tab>
+              <Tab>
+                <Text
+                  fontWeight={600}
+                  me="2"
+                  display={{ base: 'none', md: 'block' }}
+                >
+                  {intl.formatMessage({ id: 'settings.tabs.node' })}
+                </Text>
+                <NodeIcon display={{ base: 'block' }} />
+              </Tab>
+              <Tab>
+                <Text
+                  fontWeight={600}
+                  me="2"
+                  display={{ base: 'none', md: 'block' }}
+                >
+                  {intl.formatMessage({ id: 'settings.tabs.system' })}
+                </Text>
+                <SystemIcon display={{ base: 'block' }} />
+              </Tab>
+              <Tab>
+                <Text
+                  fontWeight={600}
+                  me="2"
+                  display={{ base: 'none', md: 'block' }}
+                >
+                  Extra
+                </Text>
+                <MdSettings display={{ base: 'block' }} />
+              </Tab>
+            </TabList>
 
-          {errorForm && (
-            <Alert my="5" borderRadius={'10px'} status={'error'}>
-              <AlertIcon />
-              <AlertDescription>{errorForm}</AlertDescription>
-            </Alert>
-          )}
+            {errorForm && (
+              <Alert my="5" borderRadius={'10px'} status={'error'}>
+                <AlertIcon />
+                <AlertDescription>{errorForm}</AlertDescription>
+              </Alert>
+            )}
 
-          <TabPanels>
-            <TabPanel>
-              <PoolsTab />
-            </TabPanel>
-            <TabPanel>
-              <MinerTab />
-            </TabPanel>
-            <TabPanel>
-              <NodeTab />
-            </TabPanel>
-            <TabPanel>
-              <SystemTab />
-            </TabPanel>
-            <TabPanel>
-              <ExtraTab />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+            <TabPanels>
+              <TabPanel>
+                <PoolsTab />
+              </TabPanel>
+              <TabPanel>
+                <MinerTab />
+              </TabPanel>
+              <TabPanel>
+                <NodeTab />
+              </TabPanel>
+              <TabPanel>
+                <SystemTab />
+              </TabPanel>
+              <TabPanel>
+                <ExtraTab />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </Box>
       </SettingsProvider>
     </Box>
   );

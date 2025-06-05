@@ -43,6 +43,7 @@ export const nodeSelector = createSelector(
           blockTime: blockchainInfo.blockTime,
           blockHeader: blockchainInfo.headers,
           sizeOnDisk: blockchainInfo.sizeOnDisk,
+          verificationProgress: blockchainInfo.verificationprogress,
           connectionCount: nodeStats.connectionCount,
           error: nodeStats.error,
           difficulty: miningInfo?.difficulty,
@@ -51,6 +52,8 @@ export const nodeSelector = createSelector(
           version: networkInfo?.version,
           subversion: networkInfo?.subversion,
           localaddresses: networkInfo?.localaddresses || [],
+          connectionsIn: networkInfo?.connections_in,
+          connectionsOut: networkInfo?.connections_out,
         };
       } catch (e) {
         // If something goes wrong during extraction, log it and return null

@@ -91,6 +91,10 @@ export const authOptions = {
     },
     async redirect({ url, baseUrl }) {
       console.log('redirect callback called with:', { url, baseUrl });
+      // If the URL is the signin page and we have a valid session, redirect to the main page
+      if (url.includes('/signin')) {
+        return baseUrl;
+      }
       return url.startsWith(baseUrl) ? url : baseUrl;
     },
     async session({ session, token, user }) {

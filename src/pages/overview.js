@@ -105,7 +105,7 @@ const Overview = () => {
   } = useSelector(analyticsSelector, shallowEqual);
 
   const { sentence: errorNodeSentence, type: errorNodeType } =
-    getNodeErrorMessage(errorNode);
+    getNodeErrorMessage(errorNode, intl);
 
   // Settings data
   const { data: settings } = useSelector(settingsSelector, shallowEqual);

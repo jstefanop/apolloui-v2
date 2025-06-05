@@ -431,7 +431,6 @@ if (process.env.NODE_ENV === 'development') {
       const originalRender = type.prototype?.render;
       if (originalRender) {
         type.prototype.render = function() {
-          console.log(`Rendering component: ${componentName}`);
           return originalRender.apply(this);
         };
       }

@@ -288,32 +288,35 @@ export const getNodeErrorMessage = (error, intl) => {
   let parsedError;
   let sentence = null;
   let type = 'warning';
-  if (!error.length) return { sentence, type };
+  if (!error?.length) return { sentence, type };
+
+  // Default message if intl is not provided
+  const getMessage = (id, values = {}) => {
+    if (!intl) return id;
+    return intl.formatMessage({ id }, values);
+  };
 
   parsedError =
     error[0].message ||
     error[0].code ||
-    intl.formatMessage({ id: 'node.error.unknown' });
-  sentence = intl.formatMessage(
-    { id: 'node.error.stats' },
-    { error: parsedError }
-  );
+    getMessage('node.error.unknown');
+  sentence = getMessage('node.error.stats', { error: parsedError });
 
   if (error[0].code === 'ECONNREFUSED') {
-    sentence = intl.formatMessage({ id: 'node.error.connection_refused' });
+    sentence = getMessage('node.error.connection_refused');
   }
 
   if (error[0].code === 'ERR_BAD_RESPONSE') {
-    sentence = intl.formatMessage({ id: 'node.error.bad_response' });
+    sentence = getMessage('node.error.bad_response');
   }
 
   if (error[0].type === 'authentication') {
-    sentence = intl.formatMessage({ id: 'node.error.waiting_response' });
+    sentence = getMessage('node.error.waiting_response');
     type = 'info';
   }
 
   if (error[0].code === '-28') {
-    sentence = intl.formatMessage({ id: 'node.error.starting_up' });
+    sentence = getMessage('node.error.starting_up');
     type = 'info';
   }
 

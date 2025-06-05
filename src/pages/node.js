@@ -23,7 +23,6 @@ import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { ConnectionsIcons } from '../components/UI/Icons/ConnectionsIcons';
-import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 import FormattedNumber from '../components/UI/FormattedNumber';
 import MiniStatistics from '../components/UI/MiniStatistics';
 import { bytesToSize, displayHashrate, numberToText } from '../lib/utils';
@@ -44,9 +43,11 @@ import { getNodeErrorMessage } from '../lib/utils';
 import { MdCastConnected } from 'react-icons/md';
 import NodeStatus from '../components/UI/NodeStatus';
 import LatestBlocks from '../components/apollo/LatestBlocks';
+import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 
 const Node = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const intl = useIntl();
   const cardColor = useColorModeValue('white', 'brand.800');
   const statisticColor = useColorModeValue('transparent', 'brand.500');
   const bgMainIcon = useColorModeValue(
@@ -81,13 +82,28 @@ const Node = () => {
     timestamp = null,
     localaddresses = [],
     subversion = '',
+    verificationProgress = 0,
+    connectionsIn = 0,
+    connectionsOut = 0,
   } = dataNode || {};
 
   const { sentence: errorNodeSentence, type: errorNodeType } =
-    getNodeErrorMessage(errorNode);
+    getNodeErrorMessage(errorNode, intl);
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataNode);
+
+  // Calculate sync progress
+  const syncProgress = verificationProgress > 0 
+    ? verificationProgress * 100 
+    : blockHeader > 0 
+      ? (blocksCount / blockHeader) * 100 
+      : 0;
+
+  // Determine sync status
+  const isSynced = blockHeader === blocksCount;
+  const isSyncing = blockHeader > blocksCount;
+  const isInitializing = blocksCount === 0 && blockHeader === 0;
 
   useEffect(() => {
     // Store the current value directly when dataNode changes
@@ -179,8 +195,6 @@ const Node = () => {
 
   const isServiceError = nodeServiceStatus?.status === 'error';
 
-  const intl = useIntl();
-
   return (
     <Box mx="5">
       <Head>
@@ -249,9 +263,11 @@ const Node = () => {
             >
               <Flex direction="column" align="right">
                 <Text fontSize="2xl" fontWeight="bold" color="white">
-                  {blocksCount === 0 && blockHeader === 0 ? (
+                  {isInitializing ? (
                     <FormattedMessage id="node.title.pre_sync" />
-                  ) : blockHeader === blocksCount ? (
+                  ) : blockHeader > blocksCount ? (
+                    <FormattedMessage id="node.stats.verification_progress" />
+                  ) : isSynced ? (
                     <FormattedMessage id="node.title.up_to_date" />
                   ) : (
                     <FormattedMessage id="node.title.syncing" />
@@ -265,16 +281,16 @@ const Node = () => {
                   mt="0"
                   align={'right'}
                 >
-                  {blocksCount === 0 && blockHeader === 0 ? (
+                  {isInitializing ? (
                     <FormattedMessage id="node.stats.initializing" />
-                  ) : blockHeader === blocksCount ? (
+                  ) : blockHeader > blocksCount ? (
+                    `${syncProgress.toFixed(2)}%`
+                  ) : isSynced ? (
                     <FormattedMessage id="node.stats.synched" />
                   ) : (
                     <FormattedMessage
                       id="node.stats.synching"
-                      values={{
-                        percentage: ((blocksCount / blockHeader) * 100).toFixed(2),
-                      }}
+                      values={{ percentage: syncProgress.toFixed(2) }}
                     />
                   )}
                 </Text>
@@ -382,13 +398,13 @@ const Node = () => {
                         />
                       }
                       name={
-                        blockHeader === blocksCount ? (
+                        isSynced ? (
                           <FormattedMessage id="node.stats.last_block" />
-                        ) : blockHeader > blocksCount ? (
+                        ) : isSyncing ? (
                           <FormattedMessage
                             id="node.stats.percentage_completed"
                             values={{
-                              percentage: ((blocksCount * 100) / blockHeader).toFixed(2),
+                              percentage: syncProgress.toFixed(2),
                             }}
                           />
                         ) : (
@@ -396,9 +412,9 @@ const Node = () => {
                         )
                       }
                       value={
-                        blockHeader === blocksCount
+                        isSynced
                           ? lastBlockTime
-                          : blockHeader > blocksCount
+                          : isSyncing
                           ? (
                             <FormattedMessage id="node.stats.processing_queue" />
                           )
@@ -474,20 +490,22 @@ const Node = () => {
                           }
                         />
                       }
-                      name={
-                        <FormattedMessage id="node.stats.connections" />
-                      }
                       value={
-                        <Flex>
-                          {connectionCount}
-                          <Text color="gray.400">
-                            /{nodeMaxConnections || 64}
+                        <Flex direction="column">
+                          <Text fontSize="2xl">
+                            {connectionsIn} in / {connectionsOut} out
+                          </Text>
+                          <Text fontSize="sm" color="secondaryGray.600" mb={2} fontWeight="500">
+                            <FormattedMessage id="node.stats.connections_in_out" />
+                          </Text>
+                          <Text fontSize="md">
+                            {connectionCount}/{nodeMaxConnections || 64}
+                          </Text>
+                          <Text fontSize="sm" color="secondaryGray.600" fontWeight="500">
+                            <FormattedMessage id="node.stats.total_connections" />
                           </Text>
                         </Flex>
                       }
-                      progress={true}
-                      progressValue={connectionCount}
-                      progressTotal={nodeMaxConnections || 64}
                       reversed={true}
                     />
                     <MiniStatistics
@@ -506,9 +524,7 @@ const Node = () => {
                           }
                         />
                       }
-                      name={
-                        <FormattedMessage id="node.stats.remaining_space" />
-                      }
+                      name={<FormattedMessage id="node.stats.remaining_space" />}
                       value={`${remainingSpace}%`}
                       progress={true}
                       progressPercent={remainingSpace}

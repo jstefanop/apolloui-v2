@@ -6,6 +6,7 @@ import {
   SimpleGrid,
   useColorModeValue,
   Tag,
+  Box,
 } from '@chakra-ui/react';
 import ActiveBadge from '../apollo/ActiveBadge';
 import { ErrorIcon } from './Icons/ErrorIcon';
@@ -121,13 +122,13 @@ const PanelGrid = ({
               <Flex align="center" mb="4" key={index}>
                 <Icon as={item.icon} me="3" w="18px" h="18px" />
                 {showName && (
-                  <Text fontWeight="400" color="gray.500" me="3">
+                  <Box fontWeight="400" color="gray.500" me="3">
                     {item.name}
-                  </Text>
+                  </Box>
                 )}
-                <Text fontWeight="600" minWidth="100px">
+                <Box fontWeight="600" minWidth="100px">
                   {item.value}
-                </Text>
+                </Box>
               </Flex>
             )
           )}

@@ -43,7 +43,7 @@ const NodeSettings = () => {
 
   // Node data from Redux
   const { data: dataNode, error: errorNode, loading: loadingNode } = useSelector(nodeSelector, shallowEqual);
-  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode);
+  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl);
 
   // Handle button click to open connect modal
   const handleButtonClick = () => {

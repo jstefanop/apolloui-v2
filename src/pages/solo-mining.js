@@ -226,7 +226,9 @@ const SoloMining = () => {
         name: 'Daily chance',
         value: (
           <Flex align="center" gap={2}>
-            <Text color={visualization.color}>{visualization.text}</Text>
+            <Box color={visualization.color}>
+              {visualization.text}
+            </Box>
             <ColorBars bars={visualization.bars} currentValue={dailyChance} />
           </Flex>
         ),
@@ -510,9 +512,9 @@ const SoloMining = () => {
                       value={
                         dailyChance && globalDailyChanceVisualization ? (
                           <Flex align="center" gap={2}>
-                            <Text color={globalDailyChanceVisualization.color}>
+                            <Box color={globalDailyChanceVisualization.color}>
                               {globalDailyChanceVisualization.text}
-                            </Text>
+                            </Box>
                             <ColorBars 
                               bars={globalDailyChanceVisualization.bars} 
                               currentValue={dailyChance} 

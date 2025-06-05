@@ -4,10 +4,26 @@ const initialState = {
       result: {
         stats: {
           timestamp: null,
-          blockchainInfo: null,
+          blockchainInfo: {
+            blocks: null,
+            blockTime: null,
+            headers: null,
+            sizeOnDisk: null,
+            verificationprogress: null,
+          },
           connectionCount: null,
-          miningInfo: null,
-          peerInfo: null,
+          miningInfo: {
+            difficulty: null,
+            networkhashps: null,
+          },
+          peerInfo: [],
+          networkInfo: {
+            version: null,
+            subversion: null,
+            localaddresses: [],
+            connections_in: null,
+            connections_out: null,
+          },
           error: null,
           __typename: 'NodeStats',
         },

@@ -97,7 +97,12 @@
       "synched": "100% sincronizado",
       "synching": "{percentage}% sincronizado",
       "details": "Detalles",
-      "connect": "Conectar"
+      "connect": "Conectar",
+      "connections_in_out": "Conexiones in/out",
+      "in": "Entrada: {count}",
+      "out": "Salida: {count}",
+      "total_connections": "Total conexiones",
+      "verification_progress": "Progreso de verificación"
     },
     "panel": {
       "connect_tooltip": "Conéctate a tu nodo",
