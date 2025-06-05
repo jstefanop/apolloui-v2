@@ -49,6 +49,9 @@ import {
   filterRecentShares,
   shortenBitcoinAddress,
   calculateDailyChance,
+  calculatePerBlockChance,
+  calculateMonthlyChance,
+  calculateYearlyChance,
   convertHashrateStringToValue,
   useDailyChanceVisualizations,
   useDailyChanceVisualization,
@@ -157,6 +160,15 @@ const SoloMining = () => {
     1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
 
   const dailyChance = calculateDailyChance(ckPoolHashrateInGhs, networkhashps);
+  const perBlockChance = calculatePerBlockChance(ckPoolHashrateInGhs, networkhashps);
+  const monthlyChance = calculateMonthlyChance(ckPoolHashrateInGhs, networkhashps);
+  const yearlyChance = calculateYearlyChance(ckPoolHashrateInGhs, networkhashps);
+
+  // Calculate visualizations for all time periods
+  const globalDailyChanceVisualization = useDailyChanceVisualization(dailyChance);
+  const globalPerBlockChanceVisualization = useDailyChanceVisualization(perBlockChance);
+  const globalMonthlyChanceVisualization = useDailyChanceVisualization(monthlyChance);
+  const globalYearlyChanceVisualization = useDailyChanceVisualization(yearlyChance);
 
   const desiredKeys = [
     'hashrate5m',
@@ -171,9 +183,6 @@ const SoloMining = () => {
 
   // Get all daily chance visualizations at once
   const dailyChanceVisualizations = useDailyChanceVisualizations(ckUsers, networkhashps);
-
-  // Calculate global daily chance visualization
-  const globalDailyChanceVisualization = useDailyChanceVisualization(dailyChance);
 
   const dataTableBoards = ckUsers.map((element, index) => {
     if (!element) return;
@@ -336,13 +345,13 @@ const SoloMining = () => {
 
           <Grid
             templateAreas={{
-              base: `'hashrate' 'bestshare' 'summary' 'info' 'users'`,
-              lg: `'hashrate hashrate summary summary' 'bestshare info users users'`,
-              '3xl': `'hashrate hashrate summary summary' 'bestshare bestshare info users'`,
+              base: `'chances' 'hashrate' 'bestshare' 'summary' 'info' 'users'`,
+              lg: `'chances chances chances chances' 'hashrate hashrate summary summary' 'bestshare info users users'`,
+              '3xl': `'chances chances chances chances' 'hashrate hashrate summary summary' 'bestshare bestshare info users'`,
             }}
             templateRows={{
-              base: 'auto auto auto auto auto',
-              lg: 'auto auto auto auto',
+              base: 'auto auto auto auto auto auto',
+              lg: 'auto auto auto',
             }}
             templateColumns={{
               base: '1fr',
@@ -351,6 +360,154 @@ const SoloMining = () => {
             gap={'20px'}
             mb={'10px'}
           >
+            <GridItem gridArea="chances">
+              <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
+                <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      {intl.formatMessage({ id: 'solo_mining.info.per_block_chance_title' })}
+                    </Text>
+                  </Flex>
+                  {loadingMiner ? (
+                    <BulletList />
+                  ) : (
+                    <Flex my="auto" direction="column">
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'transparent'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={GiDiamondTrophy}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name={intl.formatMessage({
+                          id: 'solo_mining.info.per_block_chance',
+                        })}
+                        value={
+                          perBlockChance && globalPerBlockChanceVisualization ? (
+                            <Flex align="center" gap={2}>
+                              <Box color={globalPerBlockChanceVisualization.color}>
+                                {globalPerBlockChanceVisualization.text}
+                              </Box>
+                              <ColorBars 
+                                bars={globalPerBlockChanceVisualization.bars} 
+                                currentValue={perBlockChance} 
+                              />
+                            </Flex>
+                          ) : 'N/A'
+                        }
+                        reversed={true}
+                      />
+                    </Flex>
+                  )}
+                </Card>
+
+                <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      {intl.formatMessage({ id: 'solo_mining.info.monthly_chance_title' })}
+                    </Text>
+                  </Flex>
+                  {loadingMiner ? (
+                    <BulletList />
+                  ) : (
+                    <Flex my="auto" direction="column">
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'transparent'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={GiDiamondTrophy}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name={intl.formatMessage({
+                          id: 'solo_mining.info.monthly_chance',
+                        })}
+                        value={
+                          monthlyChance && globalMonthlyChanceVisualization ? (
+                            <Flex align="center" gap={2}>
+                              <Box color={globalMonthlyChanceVisualization.color}>
+                                {globalMonthlyChanceVisualization.text}
+                              </Box>
+                              <ColorBars 
+                                bars={globalMonthlyChanceVisualization.bars} 
+                                currentValue={monthlyChance} 
+                              />
+                            </Flex>
+                          ) : 'N/A'
+                        }
+                        reversed={true}
+                      />
+                    </Flex>
+                  )}
+                </Card>
+
+                <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      {intl.formatMessage({ id: 'solo_mining.info.yearly_chance_title' })}
+                    </Text>
+                  </Flex>
+                  {loadingMiner ? (
+                    <BulletList />
+                  ) : (
+                    <Flex my="auto" direction="column">
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'transparent'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={GiDiamondTrophy}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name={intl.formatMessage({
+                          id: 'solo_mining.info.yearly_chance',
+                        })}
+                        value={
+                          yearlyChance && globalYearlyChanceVisualization ? (
+                            <Flex align="center" gap={2}>
+                              <Box color={globalYearlyChanceVisualization.color}>
+                                {globalYearlyChanceVisualization.text}
+                              </Box>
+                              <ColorBars 
+                                bars={globalYearlyChanceVisualization.bars} 
+                                currentValue={yearlyChance} 
+                              />
+                            </Flex>
+                          ) : 'N/A'
+                        }
+                        reversed={true}
+                      />
+                    </Flex>
+                  )}
+                </Card>
+              </SimpleGrid>
+            </GridItem>
+
             <GridItem gridArea="hashrate">
               <HashrateCard
                 loading={loadingMiner}

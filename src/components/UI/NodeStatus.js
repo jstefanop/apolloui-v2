@@ -39,6 +39,7 @@ const NodeStatus = ({ serviceStatus }) => {
         title={intl.formatMessage({ id: 'node.status.unavailable.title' })}
         description={intl.formatMessage({ id: 'node.status.unavailable.description' })}
         status="error"
+        variant="horizontal"
       />
     );
   }

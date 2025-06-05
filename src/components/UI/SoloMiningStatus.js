@@ -160,6 +160,7 @@ const SoloMiningStatus = ({
           title={intl.formatMessage({ id: 'solo_mining.status.node_not_synced.title' })}
           description={intl.formatMessage({ id: 'solo_mining.status.node_not_synced.description' })}
           status="warning"
+          variant="horizontal"
         />
       );
     }

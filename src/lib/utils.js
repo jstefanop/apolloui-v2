@@ -369,12 +369,42 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
   return `${tempCelsius.toFixed(precision)}°C`;
 };
 
+export const calculatePerBlockChance = (
+  hashrateInGhs,
+  networkHashrateInHashes
+) => {
+  if (!hashrateInGhs || !networkHashrateInHashes) return null;
+  // Convert hashrate to hashes per second
+  const hashrateInHashes = hashrateInGhs * 1e9;
+  // Calculate probability (1 in X format)
+  return (networkHashrateInHashes / hashrateInHashes);
+};
+
 export const calculateDailyChance = (
   hashrateInGhs,
   networkHashrateInHashes
 ) => {
   if (!hashrateInGhs || !networkHashrateInHashes) return null;
-  return 1 / (((hashrateInGhs * 1e9) / networkHashrateInHashes) * 144);
+  const perBlockChance = calculatePerBlockChance(hashrateInGhs, networkHashrateInHashes);
+  return perBlockChance / 144; // 144 blocks per day
+};
+
+export const calculateMonthlyChance = (
+  hashrateInGhs,
+  networkHashrateInHashes
+) => {
+  if (!hashrateInGhs || !networkHashrateInHashes) return null;
+  const perBlockChance = calculatePerBlockChance(hashrateInGhs, networkHashrateInHashes);
+  return perBlockChance / (144 * 30); // 144 blocks per day * 30 days
+};
+
+export const calculateYearlyChance = (
+  hashrateInGhs,
+  networkHashrateInHashes
+) => {
+  if (!hashrateInGhs || !networkHashrateInHashes) return null;
+  const perBlockChance = calculatePerBlockChance(hashrateInGhs, networkHashrateInHashes);
+  return perBlockChance / (144 * 365); // 144 blocks per day * 365 days
 };
 
 export const flattenMessages = (nestedMessages, prefix = '') => {
@@ -404,17 +434,17 @@ export const dailyChanceRanges = [
   { max: Infinity, color: 'red.600', bars: 1 },
 ];
 
-export const useDailyChanceVisualization = (dailyChance) => {
+export const useDailyChanceVisualization = (chance) => {
   const textColor = useColorModeValue('brand.900', 'white');
   
-  if (!dailyChance)
+  if (!chance)
     return { text: 'N/A', color: 'gray.500', bars: Array(5).fill('gray.500') };
 
-  const formattedValue = `1 in ${dailyChance.toLocaleString('en-US', {
+  const formattedValue = `1 in ${chance.toLocaleString('en-US', {
     maximumFractionDigits: 0,
   })}`;
 
-  const range = dailyChanceRanges.find(r => dailyChance <= r.max);
+  const range = dailyChanceRanges.find(r => chance <= r.max) || dailyChanceRanges[dailyChanceRanges.length - 1];
   const activeBars = range.bars;
   const activeColor = range.color;
 

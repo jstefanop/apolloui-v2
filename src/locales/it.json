@@ -242,6 +242,12 @@
     "info": {
       "title": "Info Solo",
       "daily_chance": "Probabilità giornaliera di risolvere un blocco in Solo",
+      "per_block_chance": "Probabilità di risolvere il prossimo blocco",
+      "monthly_chance": "Probabilità mensile di risolvere un blocco in Solo",
+      "yearly_chance": "Probabilità annuale di risolvere un blocco in Solo",
+      "per_block_chance_title": "Chance prossimo blocco",
+      "monthly_chance_title": "Chance al mese",
+      "yearly_chance_title": "Chance all'anno",
       "users": "Utenti",
       "workers": "Worker",
       "idle": "Inattivo"

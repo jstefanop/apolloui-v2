@@ -242,6 +242,12 @@
     "info": {
       "title": "Solo Info",
       "daily_chance": "Tägliche Chance, einen Solo-Block zu lösen",
+      "per_block_chance": "Chance, den nächsten Block zu lösen",
+      "monthly_chance": "Monatliche Chance, einen Solo-Block zu lösen",
+      "yearly_chance": "Jährliche Chance, einen Solo-Block zu lösen",
+      "per_block_chance_title": "Chance nächster Block",
+      "monthly_chance_title": "Chance pro Monat",
+      "yearly_chance_title": "Chance pro Jahr",
       "users": "Benutzer",
       "workers": "Worker",
       "idle": "Inaktiv"

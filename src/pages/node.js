@@ -11,6 +11,7 @@ import {
   Code,
   useDisclosure,
   Center,
+  Icon,
 } from '@chakra-ui/react';
 import moment from 'moment';
 import CountUp from 'react-countup';
@@ -40,7 +41,7 @@ import BannerNode from '../assets/img/node_banner.png';
 import { settingsSelector } from '../redux/reselect/settings';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
 import { getNodeErrorMessage } from '../lib/utils';
-import { MdCastConnected } from 'react-icons/md';
+import { MdCastConnected, MdArrowDownward, MdArrowUpward } from 'react-icons/md';
 import NodeStatus from '../components/UI/NodeStatus';
 import LatestBlocks from '../components/apollo/LatestBlocks';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
@@ -62,6 +63,7 @@ const Node = () => {
   const [lastBlockTime, setLastBlockTime] = useState();
   const [remainingSpace, setRemainingSpace] = useState(0);
   const [dataTable, setDataTable] = useState([]);
+  const [hadValidData, setHadValidData] = useState(false);
 
   // Node data
   const {
@@ -193,7 +195,19 @@ const Node = () => {
     },
   ];
 
+  // Determine if current data is valid
+  const isDataValid = !errorNode?.length && (connectionCount > 0 || blocksCount > 0);
+
+  useEffect(() => {
+    if (isDataValid) {
+      setHadValidData(true);
+    }
+  }, [isDataValid]);
+
   const isServiceError = nodeServiceStatus?.status === 'error';
+  const isBackendDown = !servicesStatus;
+
+  const shouldShowStats = (!isServiceError && !isBackendDown) || (isServiceError && hadValidData && !isBackendDown);
 
   return (
     <Box mx="5">
@@ -219,32 +233,32 @@ const Node = () => {
       />
       <NodeStatus serviceStatus={servicesStatus} />
 
-      {/* Render error alert if service status is in error state */}
-      {isServiceError && (
-        <Center>
-          <Alert
-            status="error"
-            borderRadius="10px"
-            mb="5"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            textAlign="center"
-            maxWidth="xl"
-          >
-            <AlertIcon boxSize="40px" mr={0} />
-            <AlertTitle mt={4} mb={1} fontSize="xl">
+      {/* Render error alert if service status is in error state or backend is down */}
+      {(isServiceError) && (
+        <Alert
+          status="error"
+          borderRadius="10px"
+          mb="5"
+          flexDirection="row"
+          alignItems="center"
+          textAlign="left"
+          width="100%"
+          px={6}
+        >
+          <Flex alignItems="center" minW="200px">
+            <AlertIcon boxSize="40px" mr={4} />
+            <AlertTitle fontSize="xl">
               <FormattedMessage id="node.status.error.title" />
             </AlertTitle>
-            <AlertDescription maxWidth="sm">
-              <FormattedMessage id="node.status.error.description" />
-            </AlertDescription>
-          </Alert>
-        </Center>
+          </Flex>
+          <AlertDescription>
+            <FormattedMessage id="node.status.error.description" />
+          </AlertDescription>
+        </Alert>
       )}
 
-      {/* Only render the main content if service is not in error state and is online */}
-      {!isServiceError && servicesStatus?.node?.status === 'online' && (
+      {/* Show stats if service is online or if we had valid data before */}
+      {shouldShowStats && (
         <Flex direction="column">
           <LatestBlocks mb="5" />
           <Card
@@ -493,7 +507,13 @@ const Node = () => {
                       value={
                         <Flex direction="column">
                           <Text fontSize="2xl">
-                            {connectionsIn} in / {connectionsOut} out
+                            <Flex align="center" gap={2}>
+                              <Icon as={MdArrowDownward} color="green.200" />
+                              {connectionsIn}
+                              <Text mx={2}>/</Text>
+                              <Icon as={MdArrowUpward} color="green.500" />
+                              {connectionsOut}
+                            </Flex>
                           </Text>
                           <Text fontSize="sm" color="secondaryGray.600" mb={2} fontWeight="500">
                             <FormattedMessage id="node.stats.connections_in_out" />
@@ -551,7 +571,7 @@ const Node = () => {
                       name={
                         <FormattedMessage id="node.stats.node_address" />
                       }
-                      value={nodeAddress}
+                      value={nodeAddress || '...'}
                       reversed={true}
                       fontSize="md"
                       button={
@@ -579,7 +599,7 @@ const Node = () => {
                       name={
                         <FormattedMessage id="node.stats.node_version" />
                       }
-                      value={subversion}
+                      value={subversion || '...'}
                       reversed={true}
                       fontSize="md"
                     />
