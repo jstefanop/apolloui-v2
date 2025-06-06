@@ -311,6 +311,8 @@
   },
   "system": {
     "title": "Sistema Apollo BTC",
+    "dashboard": "Panel de control",
+    "memory_stats": "Estadísticas de Memoria",
     "stats": {
       "architecture": "Arquitectura",
       "hostname": "Nombre del host",
@@ -325,7 +327,16 @@
       "memory_usage": "Uso de memoria",
       "system_disk_usage": "Uso del disco del sistema",
       "node_disk_usage": "Uso del disco del nodo",
-      "cores": "núcleos"
+      "cores": "núcleos",
+      "copied": "Dirección IP copiada al portapapeles",
+      "copy_failed": "Error al copiar la dirección IP",
+      "temperature": "Temperatura",
+      "load_average": "Carga Media",
+      "memory_total": "Memoria Total",
+      "memory_used": "Memoria Usada",
+      "memory_available": "Memoria Disponible",
+      "memory_cache": "Memoria Cache",
+      "available": "Disponible"
     }
   },
   "settings": {
@@ -338,9 +349,11 @@
     },
     "tabs": {
       "pools": "Pools",
-      "miner": "Minero",
+      "miner": "Miner",
       "node": "Nodo",
-      "system": "Sistema"
+      "system": "Sistema",
+      "logs": "Registros",
+      "extra": "Extra"
     },
     "sections": {
       "miner": {
@@ -460,6 +473,10 @@
           "right": {
             "visibility": "Visibilidad de la barra lateral derecha"
           }
+        },
+        "logs": {
+          "title": "Registros del Sistema",
+          "description": "Ver y monitorear los registros del sistema para diferentes componentes"
         }
       },
       "extra": {

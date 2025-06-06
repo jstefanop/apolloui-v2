@@ -132,20 +132,6 @@ export default function HeaderLinks({
 
       {!loading && (
         <Center>
-          {/* Logs Button */}
-          <Tooltip label="View System Logs">
-            <IconButton
-              aria-label="View System Logs"
-              icon={<MdOutlineDescription />}
-              size="md"
-              variant="outline"
-              mr={2}
-              borderRadius="full"
-              _hover={{ bg: 'navy.50', color: 'navy.600' }}
-              onClick={onLogsModalOpen}
-            />
-          </Tooltip>
-
           {/* NODE */}
           <Flex
             bg={badgeBg}

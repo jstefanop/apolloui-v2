@@ -2,10 +2,13 @@ import {
   Box,
   useColorModeValue,
   Grid,
-  GridItem,
+  SimpleGrid,
   Flex,
   Icon,
-  SimpleGrid,
+  Text,
+  Circle,
+  IconButton,
+  useToast,
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import { useIntl } from 'react-intl';
@@ -19,8 +22,6 @@ import { CpuIcon } from '../components/UI/Icons/CpuIcon';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 import { MemoryIcon } from '../components/UI/Icons/MemoryIcon';
 import Head from 'next/head';
-import ParticlesCard from '../components/UI/ParticlesCard';
-import MiniStatistics from '../components/UI/MiniStatistics';
 import { ArchIcon } from '../components/UI/Icons/ArchIcon';
 import { HostnameIcon } from '../components/UI/Icons/HostnameIcon';
 import { LinuxIcon } from '../components/UI/Icons/LinuxIcon';
@@ -28,12 +29,35 @@ import { TimeIcon } from '../components/UI/Icons/TimeIcon';
 import moment from 'moment';
 import MultiStatistics from '../components/UI/MultiStatistics';
 import { NetworkIcon } from '../components/UI/Icons/NetworkIcon';
+import { FaWifi, FaEthernet, FaCopy, FaThermometerHalf, FaServer } from 'react-icons/fa';
 
 const System = () => {
   const intl = useIntl();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
+  const toast = useToast();
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(
+      () => {
+        toast({
+          title: intl.formatMessage({ id: 'system.stats.copied' }),
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      },
+      () => {
+        toast({
+          title: intl.formatMessage({ id: 'system.stats.copy_failed' }),
+          status: 'error',
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    );
+  };
 
   // Mcu data
   const {
@@ -54,6 +78,7 @@ const System = () => {
     operatingSystem,
     temperature,
     uptime,
+    loadAverage,
   } = dataMcu;
 
   const wifi = activeWifi && activeWifi.split(',')[0];
@@ -73,246 +98,329 @@ const System = () => {
       <Head>
         <title>{intl.formatMessage({ id: 'system.title' })}</title>
       </Head>
-      <Card py="15px" bgColor={cardColor}>
-        <Grid
-          templateAreas={{
-            base: `'Illustration' 'MainData' 'Bottom'`,
-            lg: `'Illustration MainData MainData' 'Bottom Bottom Bottom'`,
-          }}
-          templateRows={{
-            base: 'auto auto auto',
-            lg: 'auto auto',
-          }}
-          templateColumns={{
-            base: '1fr',
-            lg: '1fr 1fr',
-          }}
-          gap={'20px'}
-          mb={'10px'}
-        >
-          <GridItem
-            gridArea="Illustration"
-            display={{ base: 'none', md: 'block' }}
-          >
-            <ParticlesCard />
-          </GridItem>
+      
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing="20px" mb="20px">
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={'transparent'}
+              icon={<ArchIcon w="32px" h="32px" color={iconColorReversed} />}
+            />
+            <Text fontSize="sm" color="gray.500" mt="10px">
+              {intl.formatMessage({ id: 'system.stats.architecture' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {architecture}
+            </Text>
+          </Flex>
+        </Card>
 
-          <GridItem gridArea="MainData">
-            <SimpleGrid rows="2" columns={{ base: 1, md: 2 }} spacing="20px">
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <ArchIcon w="32px" h="32px" color={iconColorReversed} />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'system.stats.architecture' })}
-                value={architecture}
-                reversed={true}
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={'transparent'}
+              icon={<HostnameIcon w="32px" h="32px" color={iconColorReversed} />}
+            />
+            <Text fontSize="sm" color="gray.500" mt="10px">
+              {intl.formatMessage({ id: 'system.stats.hostname' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {hostname}
+            </Text>
+          </Flex>
+        </Card>
+
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={'transparent'}
+              icon={<LinuxIcon w="32px" h="32px" color={iconColorReversed} />}
+            />
+            <Text fontSize="sm" color="gray.500" mt="10px">
+              {intl.formatMessage({ id: 'system.stats.operating_system' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {operatingSystem}
+            </Text>
+          </Flex>
+        </Card>
+
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={'transparent'}
+              icon={<TimeIcon w="32px" h="32px" color={iconColorReversed} />}
+            />
+            <Text fontSize="sm" color="gray.500" mt="10px">
+              {intl.formatMessage({ id: 'system.stats.system_uptime' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {moment(uptime).fromNow()}
+            </Text>
+          </Flex>
+        </Card>
+
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <Flex alignItems="center" mb="10px">
+              <IconBox
+                w="56px"
+                h="56px"
+                bg={'transparent'}
+                icon={<FaWifi size="32px" color={iconColorReversed} />}
               />
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <HostnameIcon
-                        w="32px"
-                        h="32px"
-                        color={iconColorReversed}
-                      />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'system.stats.hostname' })}
-                value={hostname}
-                reversed={true}
-              />
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <LinuxIcon w="32px" h="32px" color={iconColorReversed} />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'system.stats.operating_system' })}
-                value={operatingSystem}
-                reversed={true}
-              />
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <TimeIcon w="32px" h="32px" color={iconColorReversed} />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'system.stats.system_uptime' })}
-                value={moment(uptime).fromNow()}
-                reversed={true}
-              />
-            </SimpleGrid>
-            <Flex mt="20px">
-              <MultiStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <NetworkIcon
-                        w="32px"
-                        h="32px"
-                        color={iconColorReversed}
-                      />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'system.stats.active_wifi' })}
-                value={wlan0 && wlan0.address ? wifi : intl.formatMessage({ id: 'system.stats.disconnected' })}
-                name2={intl.formatMessage({ id: 'system.stats.ethernet' })}
-                value2={eth0 && eth0.address ? intl.formatMessage({ id: 'system.stats.connected' }) : intl.formatMessage({ id: 'system.stats.disconnected' })}
-                name3={intl.formatMessage({ id: 'system.stats.network_data' })}
-                value3={
-                  eth0 && eth0.address
-                    ? `${eth0.address} - ${eth0.mac}`
-                    : wlan0 && wlan0.address
-                    ? `${wlan0.address} - ${wlan0.mac}`
-                    : intl.formatMessage({ id: 'system.stats.disconnected' })
-                }
-                reversed={true}
+              <Circle
+                size="12px"
+                bg={wlan0 && wlan0.address ? 'green.500' : 'red.500'}
+                ml="10px"
               />
             </Flex>
-          </GridItem>
+            <Text fontSize="sm" color="gray.500">
+              {intl.formatMessage({ id: 'system.stats.active_wifi' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {wlan0 && wlan0.address ? wifi : intl.formatMessage({ id: 'system.stats.disconnected' })}
+            </Text>
+            {wlan0 && wlan0.address && (
+              <Flex alignItems="center" mt="5px">
+                <Text fontSize="sm" color="gray.500">
+                  {`${wlan0.address} - ${wlan0.mac}`}
+                </Text>
+                <IconButton
+                  aria-label="Copy IP"
+                  icon={<FaCopy />}
+                  size="xs"
+                  ml="2"
+                  variant="ghost"
+                  onClick={() => copyToClipboard(wlan0.address)}
+                />
+              </Flex>
+            )}
+          </Flex>
+        </Card>
 
-          <GridItem gridArea="Bottom">
-            <SimpleGrid
-              columns={{ base: 1, md: mcuNoderyDisk ? 4 : 3 }}
-              gap="20px"
-            >
-              <NoCardStatisticsGauge
-                id="minerTemp"
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    icon={
-                      <Icon
-                        w="32px"
-                        h="32px"
-                        as={CpuIcon}
-                        color={iconColorReversed}
-                      />
-                    }
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <Flex alignItems="center" mb="10px">
+              <IconBox
+                w="56px"
+                h="56px"
+                bg={'transparent'}
+                icon={<FaEthernet size="32px" color={iconColorReversed} />}
+              />
+              <Circle
+                size="12px"
+                bg={eth0 && eth0.address ? 'green.500' : 'red.500'}
+                ml="10px"
+              />
+            </Flex>
+            <Text fontSize="sm" color="gray.500">
+              {intl.formatMessage({ id: 'system.stats.ethernet' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {eth0 && eth0.address ? intl.formatMessage({ id: 'system.stats.connected' }) : intl.formatMessage({ id: 'system.stats.disconnected' })}
+            </Text>
+            {eth0 && eth0.address && (
+              <Flex alignItems="center" mt="5px">
+                <Text fontSize="sm" color="gray.500">
+                  {`${eth0.address} - ${eth0.mac}`}
+                </Text>
+                <IconButton
+                  aria-label="Copy IP"
+                  icon={<FaCopy />}
+                  size="xs"
+                  ml="2"
+                  variant="ghost"
+                  onClick={() => copyToClipboard(eth0.address)}
+                />
+              </Flex>
+            )}
+          </Flex>
+        </Card>
+
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={'transparent'}
+              icon={<FaThermometerHalf size="32px" color={iconColorReversed} />}
+            />
+            <Text fontSize="sm" color="gray.500" mt="10px">
+              {intl.formatMessage({ id: 'system.stats.temperature' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {(temperature / 1000).toFixed(1)}°C
+            </Text>
+          </Flex>
+        </Card>
+
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={'transparent'}
+              icon={<FaServer size="32px" color={iconColorReversed} />}
+            />
+            <Text fontSize="sm" color="gray.500" mt="10px">
+              {intl.formatMessage({ id: 'system.stats.load_average' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {loadAverage.split(' ')[0]}
+            </Text>
+            <Text fontSize="xs" color="gray.500" mt="2px">
+              {loadAverage.split(' ').slice(1, 3).join(' ')}
+            </Text>
+          </Flex>
+        </Card>
+
+        <Card py="15px" bgColor={cardColor}>
+          <Flex direction="column" h="100%">
+            <IconBox
+              w="56px"
+              h="56px"
+              bg={'transparent'}
+              icon={<MemoryIcon w="32px" h="32px" color={iconColorReversed} />}
+            />
+            <Text fontSize="sm" color="gray.500" mt="10px">
+              {intl.formatMessage({ id: 'system.stats.memory_usage' })}
+            </Text>
+            <Text fontSize="lg" fontWeight="bold" mt="5px">
+              {bytesToSize(memoryUsed * 1024, 0)}
+            </Text>
+            <Text fontSize="xs" color="gray.500" mt="2px">
+              {bytesToSize(memory.available * 1024, 0)} {intl.formatMessage({ id: 'system.stats.available' })}
+            </Text>
+          </Flex>
+        </Card>
+      </SimpleGrid>
+
+      <Card py="15px" bgColor={cardColor}>
+        <Text fontSize="xl" fontWeight="bold" mb="20px">
+          {intl.formatMessage({ id: 'system.dashboard' })}
+        </Text>
+        <SimpleGrid
+          columns={{ base: 1, md: mcuNoderyDisk ? 4 : 3 }}
+          gap="20px"
+        >
+          <NoCardStatisticsGauge
+            id="minerTemp"
+            startContent={
+              <IconBox
+                w="56px"
+                h="56px"
+                icon={
+                  <Icon
+                    w="32px"
+                    h="32px"
+                    as={CpuIcon}
+                    color={iconColorReversed}
                   />
                 }
-                name={intl.formatMessage({ id: 'system.stats.cpu_usage' })}
-                value={`${cpuUsage}%`}
-                legendValue={`${cpuCores} ${intl.formatMessage({ id: 'system.stats.cores' })}`}
-                percent={cpuUsage}
-                gauge={true}
-                loading={loadingMcu}
               />
+            }
+            name={intl.formatMessage({ id: 'system.stats.cpu_usage' })}
+            value={`${cpuUsage}%`}
+            legendValue={`${cpuCores} ${intl.formatMessage({ id: 'system.stats.cores' })}`}
+            percent={cpuUsage}
+            gauge={true}
+            loading={loadingMcu}
+          />
 
-              <NoCardStatisticsGauge
-                id="hwErr"
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    icon={
-                      <Icon
-                        w="32px"
-                        h="32px"
-                        as={MemoryIcon}
-                        color={iconColorReversed}
-                      />
-                    }
+          <NoCardStatisticsGauge
+            id="hwErr"
+            startContent={
+              <IconBox
+                w="56px"
+                h="56px"
+                icon={
+                  <Icon
+                    w="32px"
+                    h="32px"
+                    as={MemoryIcon}
+                    color={iconColorReversed}
                   />
                 }
-                name={intl.formatMessage({ id: 'system.stats.memory_usage' })}
-                legendValue={`${bytesToSize(
-                  memoryUsed * 1024,
-                  0
-                )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
-                rawValue={memoryUsed}
-                total={memoryTotal}
-                gauge={true}
-                loading={loadingMcu}
               />
+            }
+            name={intl.formatMessage({ id: 'system.stats.memory_usage' })}
+            legendValue={`${bytesToSize(
+              memoryUsed * 1024,
+              0
+            )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
+            rawValue={memoryUsed}
+            total={memoryTotal}
+            gauge={true}
+            loading={loadingMcu}
+          />
 
-              <NoCardStatisticsGauge
-                id="systemTemp"
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    icon={
-                      <Icon
-                        w="32px"
-                        h="32px"
-                        as={DatabaseIcon}
-                        color={iconColorReversed}
-                      />
-                    }
+          <NoCardStatisticsGauge
+            id="systemTemp"
+            startContent={
+              <IconBox
+                w="56px"
+                h="56px"
+                icon={
+                  <Icon
+                    w="32px"
+                    h="32px"
+                    as={DatabaseIcon}
+                    color={iconColorReversed}
                   />
                 }
-                name={intl.formatMessage({ id: 'system.stats.system_disk_usage' })}
-                legendValue={`${bytesToSize(
-                  diskUsed * 1024,
-                  0,
-                  false
-                )} / ${bytesToSize(diskTotal * 1024, 0)}`}
-                rawValue={diskUsed}
-                total={diskTotal}
-                gauge={true}
-                loading={loadingMcu}
               />
+            }
+            name={intl.formatMessage({ id: 'system.stats.system_disk_usage' })}
+            legendValue={`${bytesToSize(
+              diskUsed * 1024,
+              0,
+              false
+            )} / ${bytesToSize(diskTotal * 1024, 0)}`}
+            rawValue={diskUsed}
+            total={diskTotal}
+            gauge={true}
+            loading={loadingMcu}
+          />
 
-              {mcuNoderyDisk && (
-                <NoCardStatisticsGauge
-                  id="systemTemp"
-                  startContent={
-                    <IconBox
-                      w="56px"
-                      h="56px"
-                      icon={
-                        <Icon
-                          w="32px"
-                          h="32px"
-                          as={DatabaseIcon}
-                          color={iconColorReversed}
-                        />
-                      }
+          {mcuNoderyDisk && (
+            <NoCardStatisticsGauge
+              id="systemTemp"
+              startContent={
+                <IconBox
+                  w="56px"
+                  h="56px"
+                  icon={
+                    <Icon
+                      w="32px"
+                      h="32px"
+                      as={DatabaseIcon}
+                      color={iconColorReversed}
                     />
                   }
-                  name={intl.formatMessage({ id: 'system.stats.node_disk_usage' })}
-                  legendValue={`${bytesToSize(
-                    nodeDiskUsed * 1024,
-                    0,
-                    false
-                  )} / ${bytesToSize(nodeDiskTotal * 1024, 0)}`}
-                  rawValue={nodeDiskUsed}
-                  total={nodeDiskTotal}
-                  gauge={true}
-                  loading={loadingMcu}
                 />
-              )}
-            </SimpleGrid>
-          </GridItem>
-        </Grid>
+              }
+              name={intl.formatMessage({ id: 'system.stats.node_disk_usage' })}
+              legendValue={`${bytesToSize(
+                nodeDiskUsed * 1024,
+                0,
+                false
+              )} / ${bytesToSize(nodeDiskTotal * 1024, 0)}`}
+              rawValue={nodeDiskUsed}
+              total={nodeDiskTotal}
+              gauge={true}
+              loading={loadingMcu}
+            />
+          )}
+        </SimpleGrid>
       </Card>
     </Box>
   );

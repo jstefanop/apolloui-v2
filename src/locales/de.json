@@ -311,6 +311,8 @@
   },
   "system": {
     "title": "Apollo BTC System",
+    "dashboard": "Dashboard",
+    "memory_stats": "Speicherstatistiken",
     "stats": {
       "architecture": "Architektur",
       "hostname": "Hostname",
@@ -325,7 +327,16 @@
       "memory_usage": "Speichernutzung",
       "system_disk_usage": "System-Festplattennutzung",
       "node_disk_usage": "Node-Festplattennutzung",
-      "cores": "Kerne"
+      "cores": "Kerne",
+      "copied": "IP-Adresse in die Zwischenablage kopiert",
+      "copy_failed": "IP-Adresse konnte nicht kopiert werden",
+      "temperature": "Temperatur",
+      "load_average": "Durchschnittslast",
+      "memory_total": "Gesamtspeicher",
+      "memory_used": "Verwendeter Speicher",
+      "memory_available": "Verfügbarer Speicher",
+      "memory_cache": "Cache-Speicher",
+      "available": "Verfügbar"
     }
   },
   "settings": {
@@ -340,7 +351,9 @@
       "pools": "Pools",
       "miner": "Miner",
       "node": "Node",
-      "system": "System"
+      "system": "System",
+      "logs": "Protokolle",
+      "extra": "Extra"
     },
     "sections": {
       "miner": {
@@ -460,6 +473,10 @@
           "right": {
             "visibility": "Sichtbarkeit der rechten Seitenleiste"
           }
+        },
+        "logs": {
+          "title": "Systemprotokolle",
+          "description": "Systemprotokolle für verschiedene Komponenten anzeigen und überwachen"
         }
       },
       "extra": {

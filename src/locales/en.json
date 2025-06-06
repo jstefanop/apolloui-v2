@@ -102,7 +102,9 @@
       "in": "In: {count}",
       "out": "Out: {count}",
       "total_connections": "Total connections",
-      "verification_progress": "Verification Progress"
+      "verification_progress": "Verification Progress",
+      "accepted_shares": "Accepted shares",
+      "rejected_shares": "Rejected shares"
     },
     "panel": {
       "connect_tooltip": "Connect to your node",
@@ -140,8 +142,8 @@
       "difficulty": "Difficulty",
       "shares": {
         "sent": "Shares sent",
-        "accepted": "Shares accepted",
-        "rejected": "Shares rejected"
+        "accepted": "Accepted shares",
+        "rejected": "Rejected shares"
       },
       "last_share": "Last share",
       "uptime": "Uptime",
@@ -311,6 +313,8 @@
   },
   "system": {
     "title": "Apollo BTC System",
+    "dashboard": "Dashboard",
+    "memory_stats": "Memory Statistics",
     "stats": {
       "architecture": "Architecture",
       "hostname": "Hostname",
@@ -325,7 +329,16 @@
       "memory_usage": "Memory usage",
       "system_disk_usage": "System disk usage",
       "node_disk_usage": "Node disk usage",
-      "cores": "cores"
+      "cores": "cores",
+      "copied": "IP address copied to clipboard",
+      "copy_failed": "Failed to copy IP address",
+      "temperature": "Temperature",
+      "load_average": "Load Average",
+      "memory_total": "Total Memory",
+      "memory_used": "Used Memory",
+      "memory_available": "Available Memory",
+      "memory_cache": "Cache Memory",
+      "available": "Available"
     }
   },
   "settings": {
@@ -340,7 +353,9 @@
       "pools": "Pools",
       "miner": "Miner",
       "node": "Node",
-      "system": "System"
+      "system": "System",
+      "logs": "Logs",
+      "extra": "Extra"
     },
     "sections": {
       "miner": {
@@ -460,6 +475,10 @@
           "right": {
             "visibility": "Right sidebar visibility"
           }
+        },
+        "logs": {
+          "title": "System Logs",
+          "description": "View and monitor system logs for different components"
         }
       },
       "extra": {

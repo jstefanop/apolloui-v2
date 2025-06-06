@@ -160,15 +160,28 @@ const SoloMining = () => {
     1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
 
   const dailyChance = calculateDailyChance(ckPoolHashrateInGhs, networkhashps);
-  const perBlockChance = calculatePerBlockChance(ckPoolHashrateInGhs, networkhashps);
-  const monthlyChance = calculateMonthlyChance(ckPoolHashrateInGhs, networkhashps);
-  const yearlyChance = calculateYearlyChance(ckPoolHashrateInGhs, networkhashps);
+  const perBlockChance = calculatePerBlockChance(
+    ckPoolHashrateInGhs,
+    networkhashps
+  );
+  const monthlyChance = calculateMonthlyChance(
+    ckPoolHashrateInGhs,
+    networkhashps
+  );
+  const yearlyChance = calculateYearlyChance(
+    ckPoolHashrateInGhs,
+    networkhashps
+  );
 
   // Calculate visualizations for all time periods
-  const globalDailyChanceVisualization = useDailyChanceVisualization(dailyChance);
-  const globalPerBlockChanceVisualization = useDailyChanceVisualization(perBlockChance);
-  const globalMonthlyChanceVisualization = useDailyChanceVisualization(monthlyChance);
-  const globalYearlyChanceVisualization = useDailyChanceVisualization(yearlyChance);
+  const globalDailyChanceVisualization =
+    useDailyChanceVisualization(dailyChance);
+  const globalPerBlockChanceVisualization =
+    useDailyChanceVisualization(perBlockChance);
+  const globalMonthlyChanceVisualization =
+    useDailyChanceVisualization(monthlyChance);
+  const globalYearlyChanceVisualization =
+    useDailyChanceVisualization(yearlyChance);
 
   const desiredKeys = [
     'hashrate5m',
@@ -182,7 +195,10 @@ const SoloMining = () => {
   const boardNames = [];
 
   // Get all daily chance visualizations at once
-  const dailyChanceVisualizations = useDailyChanceVisualizations(ckUsers, networkhashps);
+  const dailyChanceVisualizations = useDailyChanceVisualizations(
+    ckUsers,
+    networkhashps
+  );
 
   const dataTableBoards = ckUsers.map((element, index) => {
     if (!element) return;
@@ -229,15 +245,16 @@ const SoloMining = () => {
     // Add daily chance visualization if available
     const visualization = dailyChanceVisualizations[index];
     if (visualization) {
-      const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
+      const hashrateValue = convertHashrateStringToValue(
+        element.hashrate5m,
+        'GH/s'
+      );
       const dailyChance = calculateDailyChance(hashrateValue, networkhashps);
       mappedArray.push({
         name: 'Daily chance',
         value: (
           <Flex align="center" gap={2}>
-            <Box color={visualization.color}>
-              {visualization.text}
-            </Box>
+            <Box color={visualization.color}>{visualization.text}</Box>
             <ColorBars bars={visualization.bars} currentValue={dailyChance} />
           </Flex>
         ),
@@ -363,11 +380,6 @@ const SoloMining = () => {
             <GridItem gridArea="chances">
               <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
                 <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  <Flex m="2">
-                    <Text fontSize="lg" fontWeight="800">
-                      {intl.formatMessage({ id: 'solo_mining.info.per_block_chance_title' })}
-                    </Text>
-                  </Flex>
                   {loadingMiner ? (
                     <BulletList />
                   ) : (
@@ -392,17 +404,22 @@ const SoloMining = () => {
                           id: 'solo_mining.info.per_block_chance',
                         })}
                         value={
-                          perBlockChance && globalPerBlockChanceVisualization ? (
+                          perBlockChance &&
+                          globalPerBlockChanceVisualization ? (
                             <Flex align="center" gap={2}>
-                              <Box color={globalPerBlockChanceVisualization.color}>
+                              <Box
+                                color={globalPerBlockChanceVisualization.color}
+                              >
                                 {globalPerBlockChanceVisualization.text}
                               </Box>
-                              <ColorBars 
-                                bars={globalPerBlockChanceVisualization.bars} 
-                                currentValue={perBlockChance} 
+                              <ColorBars
+                                bars={globalPerBlockChanceVisualization.bars}
+                                currentValue={perBlockChance}
                               />
                             </Flex>
-                          ) : 'N/A'
+                          ) : (
+                            'N/A'
+                          )
                         }
                         reversed={true}
                       />
@@ -411,11 +428,6 @@ const SoloMining = () => {
                 </Card>
 
                 <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  <Flex m="2">
-                    <Text fontSize="lg" fontWeight="800">
-                      {intl.formatMessage({ id: 'solo_mining.info.monthly_chance_title' })}
-                    </Text>
-                  </Flex>
                   {loadingMiner ? (
                     <BulletList />
                   ) : (
@@ -442,15 +454,19 @@ const SoloMining = () => {
                         value={
                           monthlyChance && globalMonthlyChanceVisualization ? (
                             <Flex align="center" gap={2}>
-                              <Box color={globalMonthlyChanceVisualization.color}>
+                              <Box
+                                color={globalMonthlyChanceVisualization.color}
+                              >
                                 {globalMonthlyChanceVisualization.text}
                               </Box>
-                              <ColorBars 
-                                bars={globalMonthlyChanceVisualization.bars} 
-                                currentValue={monthlyChance} 
+                              <ColorBars
+                                bars={globalMonthlyChanceVisualization.bars}
+                                currentValue={monthlyChance}
                               />
                             </Flex>
-                          ) : 'N/A'
+                          ) : (
+                            'N/A'
+                          )
                         }
                         reversed={true}
                       />
@@ -459,11 +475,6 @@ const SoloMining = () => {
                 </Card>
 
                 <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  <Flex m="2">
-                    <Text fontSize="lg" fontWeight="800">
-                      {intl.formatMessage({ id: 'solo_mining.info.yearly_chance_title' })}
-                    </Text>
-                  </Flex>
                   {loadingMiner ? (
                     <BulletList />
                   ) : (
@@ -490,15 +501,19 @@ const SoloMining = () => {
                         value={
                           yearlyChance && globalYearlyChanceVisualization ? (
                             <Flex align="center" gap={2}>
-                              <Box color={globalYearlyChanceVisualization.color}>
+                              <Box
+                                color={globalYearlyChanceVisualization.color}
+                              >
                                 {globalYearlyChanceVisualization.text}
                               </Box>
-                              <ColorBars 
-                                bars={globalYearlyChanceVisualization.bars} 
-                                currentValue={yearlyChance} 
+                              <ColorBars
+                                bars={globalYearlyChanceVisualization.bars}
+                                currentValue={yearlyChance}
                               />
                             </Flex>
-                          ) : 'N/A'
+                          ) : (
+                            'N/A'
+                          )
                         }
                         reversed={true}
                       />
@@ -672,12 +687,14 @@ const SoloMining = () => {
                             <Box color={globalDailyChanceVisualization.color}>
                               {globalDailyChanceVisualization.text}
                             </Box>
-                            <ColorBars 
-                              bars={globalDailyChanceVisualization.bars} 
-                              currentValue={dailyChance} 
+                            <ColorBars
+                              bars={globalDailyChanceVisualization.bars}
+                              currentValue={dailyChance}
                             />
                           </Flex>
-                        ) : 'N/A'
+                        ) : (
+                          'N/A'
+                        )
                       }
                       reversed={true}
                     />

@@ -10,6 +10,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Tooltip,
 } from '@chakra-ui/react';
 import { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
@@ -51,7 +52,7 @@ const BlockCard = ({ block, isLatest }) => {
       <Text 
         fontSize="lg" 
         fontWeight="bold" 
-        color={valueColor}
+        color={textColor}
         mb="2"
         position="relative"
         zIndex="2"
@@ -78,21 +79,26 @@ const BlockCard = ({ block, isLatest }) => {
         )}
         <Link href={`https://mempool.space/block/${block.id}`} isExternal>
           <Flex direction="column" gap="3" align="center">
-            <Text fontSize="xs" color={valueColor}>
+            {/* <Text fontSize="xs" color={valueColor}>
               {(block.size / 1024 / 1024).toFixed(2)} MB
-            </Text>
+            </Text> */}
             
             <Text fontSize="lg" fontWeight="bold" color={valueColor}>
               {(block.extras?.totalFees / 100000000).toFixed(4)} BTC
             </Text>
+            <Text fontSize="xs" color={textColor} mt="-4">
+              Fees
+            </Text>
 
-            <Text fontSize="xs" color={valueColor}>
+            {/* <Text fontSize="xs" color={valueColor}>
               {block.tx_count} txs
-            </Text>
+            </Text> */}
 
-            <Text fontSize="md" color={valueColor}>
-              {moment.unix(block.timestamp).fromNow()}
-            </Text>
+            <Tooltip label={moment.unix(block.timestamp).format('MMMM D, YYYY HH:mm:ss')}>
+              <Text fontSize="md" color={valueColor}>
+                {moment.unix(block.timestamp).fromNow()}
+              </Text>
+            </Tooltip>
           </Flex>
         </Link>
       </Card>
@@ -167,7 +173,7 @@ const LatestBlocks = () => {
         let updatedBlocks = [...data];
         
         // Add fake FutureBit block only in development
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === 'developmentTEST') {
           const futureBitBlock = {
             id: 'futurebit-block',
             height: data[0].height + 1,

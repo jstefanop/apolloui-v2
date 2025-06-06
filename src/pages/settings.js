@@ -23,7 +23,7 @@ import { PoolIcon } from '../components/UI/Icons/PoolIcon';
 import { MinerIcon } from '../components/UI/Icons/MinerIcon';
 import { NodeIcon } from '../components/UI/Icons/NodeIcon';
 import { SystemIcon } from '../components/UI/Icons/SystemIcon';
-import { MdSettings } from 'react-icons/md';
+import { MdSettings, MdHistory } from 'react-icons/md';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../graphql/settings';
 import { GET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../graphql/pools';
 import { MINER_RESTART_QUERY } from '../graphql/miner';
@@ -39,6 +39,7 @@ import MinerTab from '../components/settings/tabs/MinerTab';
 import NodeTab from '../components/settings/tabs/NodeTab';
 import SystemTab from '../components/settings/tabs/SystemTab';
 import ExtraTab from '../components/settings/tabs/ExtraTab';
+import LogsTab from '../components/settings/tabs/LogsTab';
 import ModalRestore from '../components/apollo/ModalRestore';
 import ModalFormat from '../components/apollo/ModalFormat';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
@@ -590,56 +591,42 @@ const Settings = () => {
             index={tabIndex}
             onChange={(index) => setTabIndex(index)}
           >
-            <TabList ml="5">
+            <TabList>
               <Tab>
-                <Text
-                  fontWeight={600}
-                  me="2"
-                  display={{ base: 'none', md: 'block' }}
-                >
-                  {intl.formatMessage({ id: 'settings.tabs.pools' })}
-                </Text>
-                <PoolIcon display={{ base: 'block' }} />
+                <Flex align="center" gap="10px">
+                  <PoolIcon />
+                  <Text>{intl.formatMessage({ id: 'settings.tabs.pools' })}</Text>
+                </Flex>
               </Tab>
               <Tab>
-                <Text
-                  fontWeight={600}
-                  me="2"
-                  display={{ base: 'none', md: 'block' }}
-                >
-                  {intl.formatMessage({ id: 'settings.tabs.miner' })}
-                </Text>
-                <MinerIcon display={{ base: 'block' }} />
+                <Flex align="center" gap="10px">
+                  <MinerIcon />
+                  <Text>{intl.formatMessage({ id: 'settings.tabs.miner' })}</Text>
+                </Flex>
               </Tab>
               <Tab>
-                <Text
-                  fontWeight={600}
-                  me="2"
-                  display={{ base: 'none', md: 'block' }}
-                >
-                  {intl.formatMessage({ id: 'settings.tabs.node' })}
-                </Text>
-                <NodeIcon display={{ base: 'block' }} />
+                <Flex align="center" gap="10px">
+                  <NodeIcon />
+                  <Text>{intl.formatMessage({ id: 'settings.tabs.node' })}</Text>
+                </Flex>
               </Tab>
               <Tab>
-                <Text
-                  fontWeight={600}
-                  me="2"
-                  display={{ base: 'none', md: 'block' }}
-                >
-                  {intl.formatMessage({ id: 'settings.tabs.system' })}
-                </Text>
-                <SystemIcon display={{ base: 'block' }} />
+                <Flex align="center" gap="10px">
+                  <SystemIcon />
+                  <Text>{intl.formatMessage({ id: 'settings.tabs.system' })}</Text>
+                </Flex>
               </Tab>
               <Tab>
-                <Text
-                  fontWeight={600}
-                  me="2"
-                  display={{ base: 'none', md: 'block' }}
-                >
-                  Extra
-                </Text>
-                <MdSettings display={{ base: 'block' }} />
+                <Flex align="center" gap="10px">
+                  <MdHistory />
+                  <Text>{intl.formatMessage({ id: 'settings.tabs.logs' })}</Text>
+                </Flex>
+              </Tab>
+              <Tab>
+                <Flex align="center" gap="10px">
+                  <MdSettings />
+                  <Text>{intl.formatMessage({ id: 'settings.tabs.extra' })}</Text>
+                </Flex>
               </Tab>
             </TabList>
 
@@ -662,6 +649,9 @@ const Settings = () => {
               </TabPanel>
               <TabPanel>
                 <SystemTab />
+              </TabPanel>
+              <TabPanel>
+                <LogsTab />
               </TabPanel>
               <TabPanel>
                 <ExtraTab />

@@ -24,7 +24,10 @@
       "cpu_usage": "Utilizzo CPU",
       "memory_usage": "Utilizzo memoria",
       "disk_usage": "Utilizzo disco di sistema",
-      "cores": "core"
+      "cores": "core",
+      "stats": {
+        "available": "Disponibile"
+      }
     }
   },
   "node": {
@@ -102,7 +105,9 @@
       "in": "In: {count}",
       "out": "Out: {count}",
       "total_connections": "Totale connessioni",
-      "verification_progress": "Progresso verifica"
+      "verification_progress": "Progresso verifica",
+      "accepted_shares": "Share accettate",
+      "rejected_shares": "Share rifiutate"
     },
     "panel": {
       "connect_tooltip": "Connetti al tuo nodo",
@@ -311,6 +316,8 @@
   },
   "system": {
     "title": "Sistema Apollo BTC",
+    "dashboard": "Dashboard",
+    "memory_stats": "Statistiche Memoria",
     "stats": {
       "architecture": "Architettura",
       "hostname": "Nome host",
@@ -325,7 +332,15 @@
       "memory_usage": "Utilizzo memoria",
       "system_disk_usage": "Utilizzo disco di sistema",
       "node_disk_usage": "Utilizzo disco del nodo",
-      "cores": "core"
+      "cores": "core",
+      "copied": "Indirizzo IP copiato negli appunti",
+      "copy_failed": "Impossibile copiare l'indirizzo IP",
+      "temperature": "Temperatura",
+      "load_average": "Carico Medio",
+      "memory_total": "Memoria Totale",
+      "memory_used": "Memoria Utilizzata",
+      "memory_available": "Memoria Disponibile",
+      "memory_cache": "Memoria Cache"
     }
   },
   "settings": {
@@ -340,7 +355,9 @@
       "pools": "Pool",
       "miner": "Miner",
       "node": "Nodo",
-      "system": "Sistema"
+      "system": "Sistema",
+      "logs": "Log",
+      "extra": "Extra"
     },
     "sections": {
       "miner": {
@@ -460,6 +477,10 @@
           "right": {
             "visibility": "Visibilità barra laterale destra"
           }
+        },
+        "logs": {
+          "title": "Log di Sistema",
+          "description": "Visualizza e monitora i log di sistema per i vari componenti"
         }
       },
       "extra": {

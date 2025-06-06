@@ -118,11 +118,11 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
             icon = SharesSentIcon;
             break;
           case 'sharesAccepted':
-            name = 'Shares Accepted';
+            name = 'Accepted shares';
             icon = SharesAcceptedIcon;
             break;
           case 'sharesRejected':
-            name = 'Shares Rejected';
+            name = 'Rejected shares';
             icon = SharesRejectedIcon;
             break;
         }
