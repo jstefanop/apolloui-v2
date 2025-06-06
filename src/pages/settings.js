@@ -591,44 +591,52 @@ const Settings = () => {
             index={tabIndex}
             onChange={(index) => setTabIndex(index)}
           >
-            <TabList>
-              <Tab>
-                <Flex align="center" gap="10px">
-                  <PoolIcon />
-                  <Text>{intl.formatMessage({ id: 'settings.tabs.pools' })}</Text>
-                </Flex>
-              </Tab>
-              <Tab>
-                <Flex align="center" gap="10px">
-                  <MinerIcon />
-                  <Text>{intl.formatMessage({ id: 'settings.tabs.miner' })}</Text>
-                </Flex>
-              </Tab>
-              <Tab>
-                <Flex align="center" gap="10px">
-                  <NodeIcon />
-                  <Text>{intl.formatMessage({ id: 'settings.tabs.node' })}</Text>
-                </Flex>
-              </Tab>
-              <Tab>
-                <Flex align="center" gap="10px">
-                  <SystemIcon />
-                  <Text>{intl.formatMessage({ id: 'settings.tabs.system' })}</Text>
-                </Flex>
-              </Tab>
-              <Tab>
-                <Flex align="center" gap="10px">
-                  <MdHistory />
-                  <Text>{intl.formatMessage({ id: 'settings.tabs.logs' })}</Text>
-                </Flex>
-              </Tab>
-              <Tab>
-                <Flex align="center" gap="10px">
-                  <MdSettings />
-                  <Text>{intl.formatMessage({ id: 'settings.tabs.extra' })}</Text>
-                </Flex>
-              </Tab>
-            </TabList>
+            <Box overflowX="auto" css={{
+              '&::-webkit-scrollbar': {
+                display: 'none'
+              },
+              '-ms-overflow-style': 'none',
+              'scrollbar-width': 'none'
+            }}>
+              <TabList>
+                <Tab>
+                  <Flex align="center" gap="10px">
+                    <PoolIcon />
+                    <Text>{intl.formatMessage({ id: 'settings.tabs.pools' })}</Text>
+                  </Flex>
+                </Tab>
+                <Tab>
+                  <Flex align="center" gap="10px">
+                    <MinerIcon />
+                    <Text>{intl.formatMessage({ id: 'settings.tabs.miner' })}</Text>
+                  </Flex>
+                </Tab>
+                <Tab>
+                  <Flex align="center" gap="10px">
+                    <NodeIcon />
+                    <Text>{intl.formatMessage({ id: 'settings.tabs.node' })}</Text>
+                  </Flex>
+                </Tab>
+                <Tab>
+                  <Flex align="center" gap="10px">
+                    <SystemIcon />
+                    <Text>{intl.formatMessage({ id: 'settings.tabs.system' })}</Text>
+                  </Flex>
+                </Tab>
+                <Tab>
+                  <Flex align="center" gap="10px">
+                    <MdHistory />
+                    <Text>{intl.formatMessage({ id: 'settings.tabs.logs' })}</Text>
+                  </Flex>
+                </Tab>
+                <Tab>
+                  <Flex align="center" gap="10px">
+                    <MdSettings />
+                    <Text>{intl.formatMessage({ id: 'settings.tabs.extra' })}</Text>
+                  </Flex>
+                </Tab>
+              </TabList>
+            </Box>
 
             {errorForm && (
               <Alert my="5" borderRadius={'10px'} status={'error'}>

@@ -200,10 +200,13 @@ const Overview = () => {
           }}
           templateColumns={{
             base: '1fr',
-            lg: '1fr 1fr 1fr 1fr',
+            lg: 'repeat(4, 1fr)',
           }}
           gap={'20px'}
           mb={'10px'}
+          transition="all 0.3s ease-in-out"
+          width="100%"
+          position="relative"
         >
           <GridItem gridArea="hashrate">
             <HashrateCard
