@@ -38,14 +38,16 @@ const PowerCard = ({
 
   // Determine what to display in the main data section
   const mainDataContent = (() => {
-    if (status === 'online') {
+    if (status === 'online' && data != null) {
       return (
         <CountUp
           start={prevData || 0}
           end={data}
-          duration="1"
-          decimals="0"
+          duration={1}
+          decimals={0}
           suffix={` Watts`}
+          enableScrollSpy
+          scrollSpyOnce
         />
       );
     } else if (status === 'offline') {
@@ -70,12 +72,14 @@ const PowerCard = ({
       mainData={mainDataContent}
       secondaryData={
         status === 'online' &&
-        avgData && (
+        avgData != null && (
           <CountUp
             start={prevAvgData || 0}
-            end={avgData || 0}
-            duration="1"
-            decimals="0"
+            end={avgData}
+            duration={1}
+            decimals={0}
+            enableScrollSpy
+            scrollSpyOnce
           />
         )
       }

@@ -19,7 +19,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useLazyQuery } from '@apollo/client';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { LOGS_READ_QUERY } from '../../graphql/logs';
 import { updateLogs } from '../../redux/slices/logsSlice';
 import { MdRefresh, MdContentCopy } from 'react-icons/md';
@@ -42,14 +42,16 @@ const LogsViewer = ({
   const [logType, setLogType] = useState(initialLogType);
   const [lines, setLines] = useState(initialLines);
   const [autoRefresh, setAutoRefresh] = useState(initialAutoRefresh);
-  const [copied, setCopied] = useState(false);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+  const [copied, setCopied] = useState(false);
   const logContainerRef = useRef(null);
   const dispatch = useDispatch();
+  const { data, loading, error } = useSelector((state) => state.logs);
+  const codeBackground = useColorModeValue('gray.200', 'gray.700');
+  const inputTextColor = useColorModeValue('gray.900', 'gray.100');
+  const placeholderColor = useColorModeValue('gray.500', 'gray.500');
 
-  const codeBackground = useColorModeValue('gray.50', 'gray.700');
-
-  const [getLogs, { loading, error, data }] = useLazyQuery(LOGS_READ_QUERY, {
+  const [getLogs, { loading: queryLoading, error: queryError, data: queryData }] = useLazyQuery(LOGS_READ_QUERY, {
     fetchPolicy: 'no-cache',
     onCompleted: (data) => {
       dispatch(
@@ -123,7 +125,7 @@ const LogsViewer = ({
   }, [data]);
 
   const handleCopyLogs = () => {
-    const content = data?.Logs?.read?.result?.content;
+    const content = queryData?.Logs?.read?.result?.content;
     if (content) {
       navigator.clipboard.writeText(content);
       setCopied(true);
@@ -131,9 +133,9 @@ const LogsViewer = ({
     }
   };
 
-  const logContent = data?.Logs?.read?.result?.content || '';
-  const timestamp = data?.Logs?.read?.result?.timestamp
-    ? moment(data.Logs.read.result.timestamp).format('YYYY-MM-DD HH:mm:ss')
+  const logContent = queryData?.Logs?.read?.result?.content || '';
+  const timestamp = queryData?.Logs?.read?.result?.timestamp
+    ? moment(queryData.Logs.read.result.timestamp).format('YYYY-MM-DD HH:mm:ss')
     : '';
 
   return (
@@ -167,9 +169,9 @@ const LogsViewer = ({
             >
               <NumberInputField
                 placeholder="Lines"
-                color={useColorModeValue('gray.900', 'gray.100')}
+                color={inputTextColor}
                 _placeholder={{
-                  color: useColorModeValue('gray.500', 'gray.500'),
+                  color: placeholderColor,
                 }}
               />
               <NumberInputStepper>

@@ -39,14 +39,16 @@ const HashrateCard = ({
 
   // Determine what to display in the main data section
   const mainDataContent = (() => {
-    if (status === 'online') {
+    if (status === 'online' && data?.value != null) {
       return (
         <CountUp
           start={prevData?.value || 0}
-          end={data?.value}
-          duration="1"
-          decimals="2"
-          suffix={` ${data?.unit}`}
+          end={data.value}
+          duration={1}
+          decimals={2}
+          suffix={` ${data.unit || ''}`}
+          enableScrollSpy
+          scrollSpyOnce
         />
       );
     } else if (status === 'offline') {
@@ -82,13 +84,15 @@ const HashrateCard = ({
       mainData={mainDataContent}
       secondaryData={
         status === 'online' &&
-        avgData && (
+        avgData?.value != null && (
           <CountUp
             start={prevAvgData?.value || 0}
-            end={avgData?.value}
-            duration="1"
-            decimals="2"
-            suffix={` ${avgData?.unit}`}
+            end={avgData.value}
+            duration={1}
+            decimals={2}
+            suffix={` ${avgData.unit || ''}`}
+            enableScrollSpy
+            scrollSpyOnce
           />
         )
       }

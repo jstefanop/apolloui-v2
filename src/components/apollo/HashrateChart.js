@@ -1,29 +1,10 @@
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import React from 'react';
+import dynamic from 'next/dynamic';
 import moment from '../../lib/moment';
 import { displayHashrate } from '../../lib/utils';
 import { useTheme, useColorModeValue, Box } from '@chakra-ui/react';
-import React from 'react';
 
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 const HashrateChart = ({ dataAnalytics }) => {
   const theme = useTheme();
@@ -48,81 +29,116 @@ const HashrateChart = ({ dataAnalytics }) => {
   const hashrates = limitedData.map((item) => item.hashrate);
   const poolhashrates = limitedData.map((item) => item.poolHashrate);
 
-  // Create data for the chart
-  const chartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: 'Miner',
-        data: hashrates,
-        fill: false,
-        borderColor: minerColor,
-        tension: 0.4,
-        pointRadius: 4,
-        pointHoverRadius: 12,
-      },
-      {
-        label: 'Pool',
-        data: poolhashrates,
-        fill: false,
-        borderColor: poolColor,
-        tension: 0.4,
-        pointRadius: 4,
-        pointHoverRadius: 12,
-      },
-    ],
-  };
-
-  // Chart options
   const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        grid: {
-          color: gridColor,
-        },
-        ticks: {
-          color: textColor,
-        },
+    chart: {
+      type: 'line',
+      toolbar: {
+        show: false
       },
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: (value) => displayHashrate(value, 'GH/s', true, 2),
-          color: textColor,
-        },
-        grid: {
-          color: gridColor,
+      animations: {
+        enabled: true,
+        easing: 'linear',
+        dynamicAnimation: {
+          speed: 1000
         }
       },
+      zoom: {
+        enabled: false
+      }
     },
-    plugins: {
-      tooltip: {
-        backgroundColor: theme.colors.gray[600],
-        bodyColor: gridColor,
-        callbacks: {
-          title: (context) => {
-            return `Average at start of ${context[0].label}`;
-          },
-          label: (context) => {
-            return `${context.dataset.label} ${displayHashrate(context.parsed.y, 'GH/s', true, 2)}`;
-          },
-        },
+    stroke: {
+      curve: 'smooth',
+      width: 2
+    },
+    grid: {
+      borderColor: gridColor,
+      strokeDashArray: 4,
+      xaxis: {
+        lines: {
+          show: true
+        }
       },
-      legend: {
-        labels: {
-          color: textColor,
+      yaxis: {
+        lines: {
+          show: true
         }
       }
     },
+    xaxis: {
+      categories: labels,
+      labels: {
+        style: {
+          colors: textColor
+        }
+      },
+      axisBorder: {
+        show: false
+      },
+      axisTicks: {
+        show: false
+      }
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => displayHashrate(value, 'GH/s', true, 2),
+        style: {
+          colors: textColor
+        }
+      },
+      min: 0
+    },
+    tooltip: {
+      theme: 'dark',
+      x: {
+        format: 'HH:mm'
+      },
+      y: {
+        formatter: (value, { seriesIndex }) => {
+          const label = seriesIndex === 0 ? 'Miner' : 'Pool';
+          return `${label} ${displayHashrate(value, 'GH/s', true, 2)}`;
+        }
+      }
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'right',
+      labels: {
+        colors: textColor
+      }
+    },
+    colors: [minerColor, poolColor],
+    markers: {
+      size: 4,
+      hover: {
+        size: 8
+      },
+      fillColors: [minerColor, poolColor],
+      strokeColors: [minerColor, poolColor],
+      strokeWidth: 2,
+      strokeOpacity: 0.8,
+      fillOpacity: 0.8
+    }
   };
 
+  const series = [
+    {
+      name: 'Miner',
+      data: hashrates
+    },
+    {
+      name: 'Pool',
+      data: poolhashrates
+    }
+  ];
+
   return (
-    <Box w="100%" h="300px" p="20px" >
-      <Line
-        data={chartData}
+    <Box w="100%" h="300px" p="20px">
+      <ReactApexChart
         options={chartOptions}
+        series={series}
+        type="line"
+        height="100%"
+        width="100%"
       />
     </Box>
   );

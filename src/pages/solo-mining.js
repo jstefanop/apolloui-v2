@@ -42,7 +42,6 @@ import ActiveBadge from '../components/apollo/ActiveBadge';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import moment from '../lib/moment';
-import Cookies from 'js-cookie';
 import _ from 'lodash';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import {
@@ -78,7 +77,7 @@ const SoloMining = () => {
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
 
-  const isBannerDisabled = Cookies.get('solo-mining-banner-disabled');
+  const isBannerDisabled = typeof window !== 'undefined' ? localStorage.getItem('solo-mining-banner-disabled') : null;
   const [showBanner, setShowBanner] = useState(!isBannerDisabled);
 
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
@@ -289,12 +288,12 @@ const SoloMining = () => {
   const handleCloseBanner = () => {
     onCLoseBanner();
     setShowBanner(false);
-    Cookies.set('solo-mining-banner-disabled', true);
+    localStorage.setItem('solo-mining-banner-disabled', 'true');
   };
   const handleOpenBanner = () => {
     onOpenBanner();
     setShowBanner(true);
-    Cookies.remove('solo-mining-banner-disabled');
+    localStorage.removeItem('solo-mining-banner-disabled');
   };
 
   return (
