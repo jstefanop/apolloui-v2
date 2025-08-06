@@ -158,7 +158,7 @@ const NoCardStatisticsGauge = ({
             <Box>
               <GaugeChart
                 chartOptions={chartOptions}
-                chartData={[roundedPercentage]}
+                chartData={[parseFloat(roundedPercentage)]}
                 id={id}
               />
             </Box>

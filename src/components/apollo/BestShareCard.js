@@ -41,9 +41,10 @@ const BestShare = ({
             duration={1}
             decimals={0}
             suffix={``}
-            enableScrollSpy
             scrollSpyOnce
-          />
+          >
+            {({ countUpRef }) => <span ref={countUpRef} />}
+          </CountUp>
         ) : (
           <span>N/A</span>
         )

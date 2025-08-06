@@ -49,7 +49,9 @@ const HashrateCard = ({
           suffix={` ${data.unit || ''}`}
           enableScrollSpy
           scrollSpyOnce
-        />
+        >
+          {({ countUpRef }) => <span ref={countUpRef} />}
+        </CountUp>
       );
     } else if (status === 'offline') {
       return (
@@ -96,7 +98,9 @@ const HashrateCard = ({
             suffix={` ${avgData.unit || ''}`}
             enableScrollSpy
             scrollSpyOnce
-          />
+          >
+            {({ countUpRef }) => <span ref={countUpRef} />}
+          </CountUp>
         ) : (
           <span>N/A</span>
         )

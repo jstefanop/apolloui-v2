@@ -48,7 +48,9 @@ const PowerCard = ({
           suffix={` Watts`}
           enableScrollSpy
           scrollSpyOnce
-        />
+        >
+          {({ countUpRef }) => <span ref={countUpRef} />}
+        </CountUp>
       );
     } else if (status === 'offline') {
       return <span><FormattedMessage id="miner.status.offline.tag" /></span>;
@@ -80,7 +82,9 @@ const PowerCard = ({
             suffix=""
             enableScrollSpy
             scrollSpyOnce
-          />
+          >
+            {({ countUpRef }) => <span ref={countUpRef} />}
+          </CountUp>
         ) : (
           <span>N/A</span>
         )

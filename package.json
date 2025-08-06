@@ -25,7 +25,7 @@
     "docker:run:arm": "docker run --platform linux/arm64 -p 3000:3000 apolloui-v2"
   },
   "dependencies": {
-    "@apollo/client": "^3.9.5",
+    "@apollo/client": "^3.13.9",
     "@chakra-ui/anatomy": "^2.2.0",
     "@chakra-ui/icons": "^2.2.4",
     "@chakra-ui/react": "^2.8.2",
@@ -33,26 +33,26 @@
     "@chakra-ui/system": "^2.6.2",
     "@chakra-ui/theme-tools": "^2.2.6",
     "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
+    "@emotion/styled": "^11.14.1",
     "@reduxjs/toolkit": "^2.2.1",
     "animate.css": "^4.1.1",
-    "apexcharts": "^4.7.0",
-    "axios": "^1.6.7",
+    "apexcharts": "^5.3.2",
+    "axios": "^1.11.0",
     "deepmerge": "^4.3.1",
-    "framer-motion": "^12.16.0",
+    "framer-motion": "^12.23.12",
     "graphql": "^16.8.1",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
-    "next": "15.3.3",
+    "next": "15.4.5",
     "next-auth": "^4.24.10",
     "next-redux-wrapper": "^8.1.0",
     "prop-types": "^15.8.1",
-    "react": "19.1.0",
+    "react": "19.1.1",
     "react-apexcharts": "^1.5.0",
-    "react-content-loader": "^7.0.2",
+    "react-content-loader": "^7.1.1",
     "react-countup": "^6.5.3",
     "react-custom-scrollbars-2": "^4.5.0",
-    "react-dom": "19.1.0",
+    "react-dom": "19.1.1",
     "react-dropzone": "^14.3.8",
     "react-icons": "^5.0.1",
     "react-intl": "^7.1.11",
@@ -63,7 +63,7 @@
     "redux-thunk": "^3.1.0"
   },
   "devDependencies": {
-    "eslint": "^9.28.0",
-    "eslint-config-next": "^15.3.3"
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^15.4.5"
   }
 }

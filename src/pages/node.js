@@ -340,7 +340,9 @@ const Node = () => {
                         duration="1"
                         decimals="0"
                         separator=","
-                      />
+                      >
+                        {({ countUpRef }) => <span ref={countUpRef} />}
+                      </CountUp>
                       <Text
                         fontSize="sm"
                         fontWeight={500}
