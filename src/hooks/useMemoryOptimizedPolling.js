@@ -44,7 +44,7 @@ export const useMemoryOptimizedPolling = (callback, interval, dependencies = [])
         intervalRef.current = null;
       }
     };
-  }, dependencies);
+  }, [dependencies]);
 
   return { startPolling, stopPolling };
 }; 

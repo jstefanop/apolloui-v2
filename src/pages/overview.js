@@ -16,7 +16,7 @@ import {
 import _ from 'lodash';
 import Head from 'next/head';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { setAnalyticsLoading } from '../redux/slices/analyticsSlice';
 import { BulletList, List } from 'react-content-loader';
@@ -72,7 +72,10 @@ const Overview = () => {
     error: errorMiner,
   } = useSelector(minerSelector, shallowEqual);
 
-  const dataMiner = minerData?.stats || minerData || {};
+  const dataMiner = useMemo(() => 
+    minerData?.stats || minerData || {}, 
+    [minerData]
+  );
 
   // Mcu data
   const {

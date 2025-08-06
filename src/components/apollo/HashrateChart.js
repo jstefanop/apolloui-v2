@@ -14,6 +14,13 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false }) => {
   const textColor = useColorModeValue(theme.colors.secondaryGray[700], theme.colors.secondaryGray[700]);
   const minerColor = useColorModeValue(theme.colors.blue[500], theme.colors.blue[500]);
   const poolColor = useColorModeValue(theme.colors.brand[600], theme.colors.brand[600]);
+  
+  // Pre-compute color values for animations to avoid calling hooks in callbacks
+  const progressBgColor = useColorModeValue('gray.200', 'gray.600');
+  const progressGradientStart = useColorModeValue('#3182ce', '#63b3ed');
+  const progressGradientEnd = useColorModeValue('#63b3ed', '#90cdf4');
+  const loadingBgColor = useColorModeValue('rgba(255, 255, 255, 0.9)', 'rgba(45, 55, 72, 0.9)');
+  const loadingTextColor = useColorModeValue('gray.600', 'gray.300');
 
   // Use the optimized analytics data hook
   const { data: limitedData, chartData } = useAnalyticsData(dataAnalytics);
@@ -151,43 +158,43 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false }) => {
             gap={2}
           >
             {/* Multiple animated progress lines */}
-            {[0, 1, 2].map((index) => (
-              <Box
-                key={index}
-                w="100%"
-                h="3px"
-                bg={useColorModeValue('gray.200', 'gray.600')}
-                borderRadius="full"
-                overflow="hidden"
-                position="relative"
-              >
-                <Box
-                  w="40%"
-                  h="100%"
-                  bg={`linear-gradient(90deg, ${useColorModeValue('#3182ce', '#63b3ed')}, ${useColorModeValue('#63b3ed', '#90cdf4')})`}
-                  borderRadius="full"
-                  position="absolute"
-                  top="0"
-                  left="0"
-                  animation={`progressPulse${index} ${1.5 + index * 0.3}s ease-in-out infinite`}
-                  sx={{
-                    [`@keyframes progressPulse${index}`]: {
-                      '0%': {
-                        left: '-40%',
-                        opacity: 0.6
-                      },
-                      '50%': {
-                        opacity: 1
-                      },
-                      '100%': {
-                        left: '100%',
-                        opacity: 0.6
-                      }
-                    }
-                  }}
-                />
-              </Box>
-            ))}
+                            {[0, 1, 2].map((index) => (
+                  <Box
+                    key={index}
+                    w="100%"
+                    h="3px"
+                    bg={progressBgColor}
+                    borderRadius="full"
+                    overflow="hidden"
+                    position="relative"
+                  >
+                    <Box
+                      w="40%"
+                      h="100%"
+                      bg={`linear-gradient(90deg, ${progressGradientStart}, ${progressGradientEnd})`}
+                      borderRadius="full"
+                      position="absolute"
+                      top="0"
+                      left="0"
+                      animation={`progressPulse${index} ${1.5 + index * 0.3}s ease-in-out infinite`}
+                      sx={{
+                        [`@keyframes progressPulse${index}`]: {
+                          '0%': {
+                            left: '-40%',
+                            opacity: 0.6
+                          },
+                          '50%': {
+                            opacity: 1
+                          },
+                          '100%': {
+                            left: '100%',
+                            opacity: 0.6
+                          }
+                        }
+                      }}
+                    />
+                  </Box>
+                ))}
           </Box>
           <Text fontSize="sm" color={textColor} mt={2}>
             Waiting for data...
@@ -207,14 +214,14 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false }) => {
           zIndex={10}
           align="center"
           gap={2}
-          bg={useColorModeValue('rgba(255, 255, 255, 0.9)', 'rgba(45, 55, 72, 0.9)')}
+          bg={loadingBgColor}
           px={2}
           py={1}
           borderRadius="md"
           boxShadow="sm"
         >
           <Spinner size="sm" color="blue.500" />
-          <Text fontSize="xs" color={useColorModeValue('gray.600', 'gray.300')}>
+          <Text fontSize="xs" color={loadingTextColor}>
             {limitedData.length > 0 ? 'Updating...' : 'Loading...'}
           </Text>
         </Flex>
