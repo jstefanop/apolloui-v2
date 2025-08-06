@@ -235,13 +235,17 @@ const Layout = ({ children, routes }) => {
         interval: 'hour',
       },
     },
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first'
+    fetchPolicy: 'cache-and-network', // Use cache first, then network
+    nextFetchPolicy: 'cache-first',
+    // Add error policy to prevent memory leaks
+    errorPolicy: 'all',
+    // Add notifyOnNetworkStatusChange to optimize re-renders
+    notifyOnNetworkStatusChange: false,
+    // Execute query immediately without waiting for polling
+    pollInterval: 0
   });
 
   useEffect(() => {
-    startPollingAnalytics(nodePollingTime);
-    
     // Only dispatch if we have data or if the error is not an authentication error
     if (dataAnalytics || (errorAnalytics && !isAuthError(errorAnalytics))) {
       // Create a serializable error object
@@ -255,18 +259,29 @@ const Layout = ({ children, routes }) => {
         })
       );
     }
+  }, [
+    dispatch,
+    loadingAnalytics,
+    errorAnalytics,
+    dataAnalytics
+  ]);
+
+  // Separate effect for polling to start after initial data load
+  useEffect(() => {
+    // Start polling only after we have initial data or error
+    if (dataAnalytics || errorAnalytics) {
+      startPollingAnalytics(nodePollingTime);
+    }
 
     return () => {
       stopPollingAnalytics(); // Stop polling
     };
   }, [
     startPollingAnalytics,
-    dispatch,
-    loadingAnalytics,
-    errorAnalytics,
+    stopPollingAnalytics,
     dataAnalytics,
-    nodePollingTime,
-    stopPollingAnalytics
+    errorAnalytics,
+    nodePollingTime
   ]);
 
   // Services data

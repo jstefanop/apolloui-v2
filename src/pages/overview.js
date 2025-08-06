@@ -17,6 +17,8 @@ import _ from 'lodash';
 import Head from 'next/head';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { setAnalyticsLoading } from '../redux/slices/analyticsSlice';
 import { BulletList, List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
@@ -51,6 +53,7 @@ import { MdOfflineBolt } from 'react-icons/md';
 
 const Overview = () => {
   const intl = useIntl();
+  const dispatch = useDispatch();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
@@ -180,6 +183,18 @@ const Overview = () => {
     prevGlobalHashrate?.value || prevGlobalHashrate || 0
   );
 
+  // Set loading state when component mounts to show cached data
+  useEffect(() => {
+    // Set loading to true to show cached data while fetching new data
+    dispatch(setAnalyticsLoading(true));
+    
+    return () => {
+      // Don't clear data on unmount, let it stay in cache
+      // Only set loading to false to indicate we're not actively loading
+      dispatch(setAnalyticsLoading(false));
+    };
+  }, [dispatch]);
+
   return (
     <Box>
       <Head>
@@ -257,6 +272,7 @@ const Overview = () => {
                       ? dataAnalytics
                       : null
                   }
+                  loading={loadingAnalytics}
                 />
               </Flex>
             </Card>

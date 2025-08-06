@@ -9,13 +9,13 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { percentColor } from '../../lib/utils';
 import GaugeChart from '../charts/GaugeCharts';
 import ChartLoader from './Loaders/ChartLoader';
 import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 
-const NoCardStatisticsGauge = ({
+const NoCardStatisticsGauge = React.memo(({
   id,
   startContent,
   name,
@@ -167,6 +167,8 @@ const NoCardStatisticsGauge = ({
       )}
     </Flex>
   );
-};
+});
+
+NoCardStatisticsGauge.displayName = 'NoCardStatisticsGauge';
 
 export default NoCardStatisticsGauge;

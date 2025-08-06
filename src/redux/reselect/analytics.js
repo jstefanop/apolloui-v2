@@ -10,24 +10,36 @@ export const analyticsSelector = createSelector(
   analyticsErrorSelector,
   analyticsLoadingSelector,
   (analyticsData, analyticsError, analyticsLoading) => {
+    // Early return if no data
+    if (!analyticsData) {
+      return {
+        loading: analyticsLoading,
+        error: analyticsError ? [analyticsError] : [],
+        data: null,
+      };
+    }
+
     const {
       TimeSeries: {
         stats: { error: errorStats, result },
       },
-    } = analyticsData || initialState;
+    } = analyticsData;
 
     // Get data and ensure it's limited to the most recent 24 elements
     let data = result?.data || [];
-    if (data.length > 24) {
+    
+    // Additional safety check to prevent memory accumulation
+    if (Array.isArray(data) && data.length > 24) {
       data = data.slice(-24);
     }
 
-    const errors = [...[analyticsError, errorStats].filter(Boolean)];
+    // Filter out any null/undefined errors
+    const errors = [analyticsError, errorStats].filter(Boolean);
 
     return {
       loading: analyticsLoading,
       error: errors,
-      data: !errors.length && data,
+      data: !errors.length && data.length > 0 ? data : null,
     };
   }
 );
