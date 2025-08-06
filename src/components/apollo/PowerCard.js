@@ -38,11 +38,11 @@ const PowerCard = ({
 
   // Determine what to display in the main data section
   const mainDataContent = (() => {
-    if (status === 'online' && data != null) {
+    if (status === 'online' && data !== null && data !== undefined) {
       return (
         <CountUp
           start={prevData || 0}
-          end={data}
+          end={data || 0}
           duration={1}
           decimals={0}
           suffix={` Watts`}
@@ -55,7 +55,7 @@ const PowerCard = ({
     } else if (status === 'pending') {
       return <span><FormattedMessage id="miner.status.pending" /></span>;
     }
-    return null;
+    return <span><FormattedMessage id="miner.status.pending" /></span>;
   })();
 
   return (
@@ -71,16 +71,18 @@ const PowerCard = ({
       secondaryText={<FormattedMessage id="miner.power.watts_per_th" />}
       mainData={mainDataContent}
       secondaryData={
-        status === 'online' &&
-        avgData != null && (
+        status === 'online' && avgData !== null && avgData !== undefined ? (
           <CountUp
             start={prevAvgData || 0}
-            end={avgData}
+            end={avgData || 0}
             duration={1}
-            decimals={0}
+            decimals={2}
+            suffix=""
             enableScrollSpy
             scrollSpyOnce
           />
+        ) : (
+          <span>N/A</span>
         )
       }
       loading={loading}

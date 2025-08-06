@@ -18,7 +18,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "docker:build": "docker build -t apolloui-v2 .",
+    "docker:run": "docker run -p 3000:3000 apolloui-v2",
+    "docker:build:arm": "docker buildx build --platform linux/arm64 -t apolloui-v2 .",
+    "docker:run:arm": "docker run --platform linux/arm64 -p 3000:3000 apolloui-v2"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",

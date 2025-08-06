@@ -39,11 +39,11 @@ const HashrateCard = ({
 
   // Determine what to display in the main data section
   const mainDataContent = (() => {
-    if (status === 'online' && data?.value != null) {
+    if (status === 'online' && data?.value !== null && data?.value !== undefined) {
       return (
         <CountUp
           start={prevData?.value || 0}
-          end={data.value}
+          end={data.value || 0}
           duration={1}
           decimals={2}
           suffix={` ${data.unit || ''}`}
@@ -64,7 +64,11 @@ const HashrateCard = ({
         </span>
       );
     }
-    return null;
+    return (
+      <span>
+        <FormattedMessage id="miner.status.pending" />
+      </span>
+    );
   })();
 
   return (
@@ -83,17 +87,18 @@ const HashrateCard = ({
       errors={errors}
       mainData={mainDataContent}
       secondaryData={
-        status === 'online' &&
-        avgData?.value != null && (
+        status === 'online' && avgData?.value !== null && avgData?.value !== undefined ? (
           <CountUp
             start={prevAvgData?.value || 0}
-            end={avgData.value}
+            end={avgData.value || 0}
             duration={1}
             decimals={2}
             suffix={` ${avgData.unit || ''}`}
             enableScrollSpy
             scrollSpyOnce
           />
+        ) : (
+          <span>N/A</span>
         )
       }
     />

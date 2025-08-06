@@ -27,6 +27,7 @@ import {
   bytesToSize,
   getNodeErrorMessage,
   formatTemperature,
+  calculateWattsPerTh,
 } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
@@ -64,9 +65,11 @@ const Overview = () => {
   // Miner data
   const {
     loading: loadingMiner,
-    data: { stats: dataMiner },
+    data: minerData,
     error: errorMiner,
   } = useSelector(minerSelector, shallowEqual);
+
+  const dataMiner = minerData?.stats || minerData || {};
 
   // Mcu data
   const {
@@ -167,6 +170,16 @@ const Overview = () => {
   const { connectionCount: prevConnectionCount, blocksCount: prevBlocksCount } =
     prevDataNode.current || {};
 
+  // Calculate watts per TH/s
+  const wattsPerTh = calculateWattsPerTh(
+    minerPower?.value || minerPower || 0,
+    globalHashrate?.value || globalHashrate || 0
+  );
+  const prevWattsPerTh = calculateWattsPerTh(
+    prevMinerPower?.value || prevMinerPower || 0,
+    prevGlobalHashrate?.value || prevGlobalHashrate || 0
+  );
+
   return (
     <Box>
       <Head>
@@ -212,10 +225,10 @@ const Overview = () => {
             <HashrateCard
               loading={loadingMiner}
               errors={errorMiner}
-              data={globalHashrate}
-              avgData={globalAvgHashrate}
-              prevData={prevGlobalHashrate}
-              prevAvgData={prevGlobalAvgHashrate}
+              data={globalHashrate || { value: 0, unit: 'TH/s' }}
+              avgData={globalAvgHashrate || { value: 0, unit: 'TH/s' }}
+              prevData={prevGlobalHashrate || { value: 0, unit: 'TH/s' }}
+              prevAvgData={prevGlobalAvgHashrate || { value: 0, unit: 'TH/s' }}
               shadow={shadow}
               iconColor={iconColor}
               serviceStatus={servicesStatus}
@@ -376,8 +389,10 @@ const Overview = () => {
             <PowerCard
               loading={loadingMiner}
               errors={errorMiner}
-              data={minerPower}
-              prevData={prevMinerPower}
+              data={minerPower || 0}
+              avgData={wattsPerTh || 0}
+              prevData={prevMinerPower || 0}
+              prevAvgData={prevWattsPerTh || 0}
               shadow={shadow}
               iconColor={iconColor}
               serviceStatus={servicesStatus}

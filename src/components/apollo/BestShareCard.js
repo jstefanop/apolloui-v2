@@ -34,20 +34,24 @@ const BestShare = ({
       secondaryTextColor={secondaryColor}
       secondaryText=""
       mainData={
-        data != null ? (
+        data !== null && data !== undefined ? (
           <CountUp
             start={prevData || 0}
-            end={data}
+            end={data || 0}
             duration={1}
             decimals={0}
             suffix={``}
             enableScrollSpy
             scrollSpyOnce
           />
-        ) : null
+        ) : (
+          <span>N/A</span>
+        )
       }
       secondaryData={
-        data != null ? numberToText(data, intl) : null
+        data != null ? numberToText(data, intl) : (
+          <span>N/A</span>
+        )
       }
       loading={loading}
       errors={errors}

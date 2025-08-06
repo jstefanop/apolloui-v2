@@ -369,6 +369,13 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
   return `${tempCelsius.toFixed(precision)}°C`;
 };
 
+export const calculateWattsPerTh = (powerWatts, hashrateTh) => {
+  if (!powerWatts || !hashrateTh || hashrateTh === 0) return 0;
+  
+  const wattsPerTh = powerWatts / hashrateTh;
+  return Math.round(wattsPerTh * 100) / 100; // Round to 2 decimal places
+};
+
 export const calculatePerBlockChance = (
   hashrateInGhs,
   networkHashrateInHashes

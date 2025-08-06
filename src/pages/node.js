@@ -336,7 +336,7 @@ const Node = () => {
                     <Flex direction="row" alignItems="baseline">
                       <CountUp
                         start={prevData?.blocksCount || 0}
-                        end={blocksCount}
+                        end={blocksCount || 0}
                         duration="1"
                         decimals="0"
                         separator=","
@@ -506,15 +506,13 @@ const Node = () => {
                       }
                       value={
                         <Flex direction="column">
-                          <Text fontSize="2xl">
-                            <Flex align="center" gap={2}>
-                              <Icon as={MdArrowDownward} color="green.200" />
-                              {connectionsIn}
-                              <Text mx={2}>/</Text>
-                              <Icon as={MdArrowUpward} color="green.500" />
-                              {connectionsOut}
-                            </Flex>
-                          </Text>
+                          <Flex align="center" gap={2} fontSize="2xl">
+                            <Icon as={MdArrowDownward} color="green.200" />
+                            {connectionsIn}
+                            <Box as="span" mx={2}>/</Box>
+                            <Icon as={MdArrowUpward} color="green.500" />
+                            {connectionsOut}
+                          </Flex>
                           <Text fontSize="sm" color="secondaryGray.600" mb={2} fontWeight="500">
                             <FormattedMessage id="node.stats.connections_in_out" />
                           </Text>
