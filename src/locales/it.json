@@ -94,6 +94,8 @@
       "last_block": "Minuti dall'ultimo blocco",
       "node_address": "Indirizzo nodo locale",
       "node_version": "Versione Nodo Bitcoin",
+      "configured_core-latest": "Configurato: Bitcoin Core",
+      "configured_knots-latest": "Configurato: Bitcoin Knots",
       "percentage_completed": "Percentuale completata {percentage}%",
       "processing_queue": "Elaborazione coda...",
       "initializing": "Inizializzazione...",

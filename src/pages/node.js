@@ -602,6 +602,16 @@ const Node = () => {
                       value={subversion || '...'}
                       reversed={true}
                       fontSize="md"
+                      secondaryText={
+                        settings?.nodeSoftware ? (
+                          <Text fontSize="xs" color="gray.500" mt="1">
+                            <FormattedMessage 
+                              id={`node.stats.configured_${settings.nodeSoftware}`} 
+                              defaultMessage={`Configured: ${settings.nodeSoftware === 'core-latest' ? 'Bitcoin Core' : 'Bitcoin Knots'}`}
+                            />
+                          </Text>
+                        ) : null
+                      }
                     />
                   </SimpleGrid>
                 </Box>

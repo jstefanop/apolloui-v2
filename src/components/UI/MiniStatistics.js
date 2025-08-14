@@ -54,7 +54,7 @@ const MiniStatistics = ({
 
   return (
     <Card py="15px" bg={bgColor} shadow={shadow} {...props}>
-      <Flex justify={{ base: 'center', xl: 'center' }}>
+      <Flex justify={{ base: 'center', xl: 'center' }} w="100%">
         {startContent}
 
         <Tooltip
@@ -64,7 +64,11 @@ const MiniStatistics = ({
           placement="top"
           label={value}
         >
-          <Stat ms={startContent ? '18px' : '0px'}>
+          <Stat 
+            ms={startContent ? '18px' : '0px'} 
+            flex="1"
+            minW="0"
+          >
             {reversed && (
               <StatNumber
                 color={textColor}
@@ -72,7 +76,10 @@ const MiniStatistics = ({
                   base: fontSize || '2xl',
                 }}
                 noOfLines={1}
-                maxWidth={{ base: '300px', xl: '300px' }}
+                maxW="100%"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
               >
                 {value}
               </StatNumber>
@@ -84,6 +91,10 @@ const MiniStatistics = ({
                 base: 'sm',
               }}
               noOfLines={1}
+              maxW="100%"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
             >
               {name}
             </StatLabel>
@@ -94,6 +105,10 @@ const MiniStatistics = ({
                   base: fontSize || '2xl',
                 }}
                 noOfLines={1}
+                maxW="100%"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
               >
                 {value}
               </StatNumber>
@@ -110,6 +125,10 @@ const MiniStatistics = ({
                   base: 'sm',
                 }}
                 noOfLines={1}
+                maxW="100%"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
               >
                 {secondaryDescription}
               </StatLabel>
@@ -117,12 +136,12 @@ const MiniStatistics = ({
           </Stat>
         </Tooltip>
         {button && (
-          <Flex align="center" ms="18px" >
+          <Flex align="center" ms="18px" flexShrink="0">
             <Button leftIcon={buttonIcon} onClick={buttonHandler} size="sm">{button}</Button>
           </Flex>
         )}
         {endContent && (
-          <Flex ms="auto" w="max-content">
+          <Flex ms="auto" w="max-content" flexShrink="0">
             {endContent}
           </Flex>
         )}

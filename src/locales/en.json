@@ -91,6 +91,8 @@
       "last_block": "Minutes since last block",
       "node_address": "Local node address",
       "node_version": "Bitcoin Node Version",
+      "configured_core-latest": "Configured: Bitcoin Core",
+      "configured_knots-latest": "Configured: Bitcoin Knots",
       "percentage_completed": "Percentage completed {percentage}%",
       "processing_queue": "Processing queue...",
       "initializing": "Initializing...",
