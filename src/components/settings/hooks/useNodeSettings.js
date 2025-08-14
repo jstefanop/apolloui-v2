@@ -27,6 +27,9 @@ export const useNodeSettings = () => {
     description: intl.formatMessage({ id: 'settings.sections.node.allow_lan.description' }),
   });
 
+  // Node software selection
+  const [nodeSoftware, setNodeSoftware] = useState('bitcoin-core');
+
   // Node max connections
   const [nodeMaxConnections, setNodeMaxConnections] = useState(32);
 
@@ -59,6 +62,8 @@ export const useNodeSettings = () => {
       selected: settings.nodeAllowLan || false,
     }));
 
+    setNodeSoftware(settings.nodeSoftware || 'bitcoin-core');
+
     setNodeMaxConnections(settings.nodeMaxConnections || 32);
 
     setNodeUserConf(settings.nodeUserConf || '');
@@ -78,6 +83,14 @@ export const useNodeSettings = () => {
     const v = e.target.value === 'true' ? true : false;
     setNodeAllowLan({ ...nodeAllowLan, selected: !v });
     setSettings({ ...settings, nodeAllowLan: !v });
+  };
+
+  // Handle Node Software change
+  const handleNodeSoftwareChange = (e) => {
+    setErrorForm(null);
+    const newSoftware = e.target.value;
+    setNodeSoftware(newSoftware);
+    setSettings({ ...settings, nodeSoftware: newSoftware });
   };
 
   // Handle Max Connections change
@@ -131,11 +144,13 @@ export const useNodeSettings = () => {
   return {
     nodeTorMode,
     nodeAllowLan,
+    nodeSoftware,
     nodeMaxConnections,
     nodeUserConf,
     errorDisallowedNodeConf,
     handleSwitchNodeTorMode,
     handleNodeAllowLan,
+    handleNodeSoftwareChange,
     handleNodeMaxConnections,
     handleUserConfChange,
     handleOpenConnectModal,

@@ -419,6 +419,10 @@
         "title": "Bitcoin-Node-Einstellungen",
         "description": "Bitcoin-Node-Konfiguration verwalten",
         "connect": "Verbinden",
+        "software": {
+          "title": "Node-Software",
+          "description": "Wählen Sie zwischen Bitcoin Core und Bitcoin Knots"
+        },
         "tor_mode": {
           "title": "TOR-Modus",
           "description": "Verbinden Sie Ihre Bitcoin-Node über das Tor-Netzwerk, um die Sicherheit und Anonymität zu erhöhen. Hinweis: Ihre Node wird neu gestartet, um dies anzuwenden."

@@ -423,6 +423,10 @@
         "title": "Impostazioni del nodo Bitcoin",
         "description": "Gestisci la configurazione del nodo Bitcoin",
         "connect": "Connetti",
+        "software": {
+          "title": "Software del Nodo",
+          "description": "Scegli tra Bitcoin Core e Bitcoin Knots"
+        },
         "tor_mode": {
           "title": "Modalità TOR",
           "description": "Connetti il nodo Bitcoin tramite la rete Tor per aumentare la sicurezza e l'anonimato. Nota: il nodo verrà riavviato per applicare le modifiche."

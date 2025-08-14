@@ -421,6 +421,10 @@
         "title": "Bitcoin node settings",
         "description": "Manage Bitcoin Node Configuration",
         "connect": "Connect",
+        "software": {
+          "title": "Node Software",
+          "description": "Choose between Bitcoin Core and Bitcoin Knots"
+        },
         "tor_mode": {
           "title": "TOR mode",
           "description": "Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply."

@@ -29,6 +29,7 @@ export const GET_SETTINGS_QUERY = gql`
             nodeMaxConnections
             nodeAllowLan
             btcsig
+            nodeSoftware
           }
         }
         error {
@@ -67,6 +68,7 @@ export const SET_SETTINGS_QUERY = gql`
             nodeMaxConnections
             nodeAllowLan
             btcsig
+            nodeSoftware
           }
         }
         error {
@@ -103,6 +105,7 @@ export const initialState = {
           nodeMaxConnections: null,
           nodeAllowLan: null,
           btcsig: null,
+          nodeSoftware: null,
         },
       },
     },

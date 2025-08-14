@@ -419,6 +419,10 @@
         "title": "Configuración del nodo Bitcoin",
         "description": "Gestionar configuración del nodo Bitcoin",
         "connect": "Conectar",
+        "software": {
+          "title": "Software del Nodo",
+          "description": "Elige entre Bitcoin Core y Bitcoin Knots"
+        },
         "tor_mode": {
           "title": "Modo TOR",
           "description": "Conecta tu nodo Bitcoin mediante la red Tor para aumentar seguridad y anonimato. Nota: el nodo se reiniciará para aplicar los cambios."
@@ -433,7 +437,7 @@
           "title": "Configuración avanzada del nodo",
           "description": "Agrega líneas adicionales al archivo bitcoin.conf. (Nota: esta sección es para usuarios avanzados, no se realiza validación. Consulta la documentación de Bitcoin Core para ver las opciones válidas.)"
         },
-        "solo_mining_warning": "Tienes activada la minería solo. Se recomienda desactivar Tor para este modo. Los nodos Bitcoin en Tor propagan los bloques más lentamente, lo que aumenta el riesgo de bloques huérfanos."
+        "solo_mining_warning": "Tienes activada la minería solo. Se recomienda desactivar Tor para este modo. Los nodos Bitcoin en Tor propagan los blocos más lentamente, lo que aumenta el riesgo de bloques huérfanos."
       },
       "system": {
         "title": "Configuración del sistema",

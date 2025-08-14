@@ -199,6 +199,7 @@ const Settings = () => {
       'nodeUserConf',
       'nodeMaxConnections',
       'nodeAllowLan',
+      'nodeSoftware',
     ];
     const isEqual = _.isEqual(settings, currentSettings);
     const restartMinerNeeded = !_.isEqual(
@@ -332,6 +333,7 @@ const Settings = () => {
         nodeEnableSoloMining,
         nodeMaxConnections,
         nodeAllowLan,
+        nodeSoftware,
         powerLedOff,
         pool,
         btcsig,
@@ -377,6 +379,7 @@ const Settings = () => {
         nodeEnableSoloMining,
         nodeMaxConnections,
         nodeAllowLan,
+        nodeSoftware,
         powerLedOff,
         btcsig,
       };
