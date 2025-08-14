@@ -83,15 +83,6 @@ const Node = () => {
     }
   }, []); // Empty dependency array - only run on mount
 
-  // Detect and handle stale data
-  useEffect(() => {
-    // If we have a timestamp but blocksCount is 0, the data might be stale
-    if (timestamp && blocksCount === 0 && blockHeader === 0) {
-      console.log('Detected potentially stale data - blocksCount is 0 but timestamp exists');
-      // This could indicate that the data is stale and needs refresh
-    }
-  }, [timestamp, blocksCount, blockHeader]);
-
   const {
     connectionCount = 0,
     networkhashps = 0,
@@ -108,6 +99,15 @@ const Node = () => {
     connectionsIn = 0,
     connectionsOut = 0,
   } = dataNode || {};
+
+  // Detect and handle stale data
+  useEffect(() => {
+    // If we have a timestamp but blocksCount is 0, the data might be stale
+    if (timestamp && blocksCount === 0 && blockHeader === 0) {
+      console.log('Detected potentially stale data - blocksCount is 0 but timestamp exists');
+      // This could indicate that the data is stale and needs refresh
+    }
+  }, [timestamp, blocksCount, blockHeader]);
 
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode, intl);
