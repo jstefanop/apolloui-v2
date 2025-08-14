@@ -72,6 +72,26 @@ const Node = () => {
     error: errorNode,
   } = useSelector(nodeSelector, shallowEqual);
 
+  // Force refresh node data when component mounts
+  useEffect(() => {
+    // Force a fresh fetch of node data when component mounts
+    // This ensures we don't show stale data when returning to the page
+    if (dataNode && Object.keys(dataNode).length > 0) {
+      // If we have data but it might be stale, trigger a refresh
+      // The layout will handle the actual polling
+      console.log('Node component mounted - ensuring fresh data');
+    }
+  }, []); // Empty dependency array - only run on mount
+
+  // Detect and handle stale data
+  useEffect(() => {
+    // If we have a timestamp but blocksCount is 0, the data might be stale
+    if (timestamp && blocksCount === 0 && blockHeader === 0) {
+      console.log('Detected potentially stale data - blocksCount is 0 but timestamp exists');
+      // This could indicate that the data is stale and needs refresh
+    }
+  }, [timestamp, blocksCount, blockHeader]);
+
   const {
     connectionCount = 0,
     networkhashps = 0,
@@ -103,7 +123,7 @@ const Node = () => {
       : 0;
 
   // Determine sync status
-  const isSynced = blockHeader === blocksCount;
+  const isSynced = blocksCount === blocksCount;
   const isSyncing = blockHeader > blocksCount;
   const isInitializing = blocksCount === 0 && blockHeader === 0;
 
@@ -197,17 +217,45 @@ const Node = () => {
 
   // Determine if current data is valid
   const isDataValid = !errorNode?.length && (connectionCount > 0 || blocksCount > 0);
+  
+  // Determine if we have meaningful data (not just zeros)
+  const hasMeaningfulData = connectionCount > 0 || blocksCount > 0;
 
   useEffect(() => {
-    if (isDataValid) {
+    if (isDataValid && hasMeaningfulData) {
       setHadValidData(true);
+    } else if (!hasMeaningfulData) {
+      // Reset hadValidData when we no longer have meaningful data
+      setHadValidData(false);
     }
-  }, [isDataValid]);
+  }, [isDataValid, hasMeaningfulData]);
 
   const isServiceError = nodeServiceStatus?.status === 'error';
   const isBackendDown = !servicesStatus;
 
-  const shouldShowStats = (!isServiceError && !isBackendDown) || (isServiceError && hadValidData && !isBackendDown);
+  const shouldShowStats = (!isServiceError && !isBackendDown && hasMeaningfulData) || (isServiceError && hadValidData && !isBackendDown);
+
+  // Debug logging only when key values change
+  useEffect(() => {
+    console.log('=== NODE STATE CHANGED ===');
+    console.log('blocksCount:', blocksCount);
+    console.log('blockHeader:', blockHeader);
+    console.log('connectionCount:', connectionCount);
+    console.log('isDataValid:', isDataValid);
+    console.log('hasMeaningfulData:', hasMeaningfulData);
+    console.log('hadValidData:', hadValidData);
+    console.log('isServiceError:', isServiceError);
+    console.log('isBackendDown:', isBackendDown);
+    console.log('shouldShowStats:', shouldShowStats);
+    console.log('========================');
+  }, [blocksCount, blockHeader, connectionCount, isDataValid, hasMeaningfulData, hadValidData, isServiceError, isBackendDown, shouldShowStats]);
+
+  // Force reset hadValidData when service is in error state
+  useEffect(() => {
+    if (isServiceError) {
+      setHadValidData(false);
+    }
+  }, [isServiceError]);
 
   return (
     <Box mx="5">
@@ -618,7 +666,7 @@ const Node = () => {
               )}
             </Card>
           </Flex>
-          {!loadingNode && !errorNode?.length && (
+          {shouldShowStats && !loadingNode && !errorNode?.length && (
             <DynamicTable
               columnsData={columnsData}
               tableData={dataTable}

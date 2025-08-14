@@ -146,8 +146,8 @@ const Layout = ({ children, routes }) => {
     startPolling: startPollingNode,
     stopPolling: stopPollingNode,
   } = useQuery(NODE_STATS_QUERY, {
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first'
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-and-network'
   });
 
   useEffect(() => {
