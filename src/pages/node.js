@@ -123,13 +123,17 @@ const Node = () => {
       : 0;
 
   // Determine sync status
-  const isSynced = blocksCount === blocksCount;
+  const isSynced = blocksCount === blockHeader;
   const isSyncing = blockHeader > blocksCount;
   const isInitializing = blocksCount === 0 && blockHeader === 0;
 
   useEffect(() => {
     // Store the current value directly when dataNode changes
-    prevData.current = dataNode;
+    // Only update if we have meaningful data to avoid undefined values
+    if (dataNode && dataNode.stats && dataNode.stats.result && dataNode.stats.result.stats) {
+      prevData.current = dataNode;
+      console.log('prevData updated:', dataNode.stats.result.stats);
+    }
   }, [dataNode]);
 
   // Mcu data
@@ -247,8 +251,13 @@ const Node = () => {
     console.log('isServiceError:', isServiceError);
     console.log('isBackendDown:', isBackendDown);
     console.log('shouldShowStats:', shouldShowStats);
+    console.log('isSynced:', isSynced);
+    console.log('isSyncing:', isSyncing);
+    console.log('isInitializing:', isInitializing);
+    console.log('syncProgress:', syncProgress);
+    console.log('prevData.current:', prevData.current);
     console.log('========================');
-  }, [blocksCount, blockHeader, connectionCount, isDataValid, hasMeaningfulData, hadValidData, isServiceError, isBackendDown, shouldShowStats]);
+  }, [blocksCount, blockHeader, connectionCount, isDataValid, hasMeaningfulData, hadValidData, isServiceError, isBackendDown, shouldShowStats, isSynced, isSyncing, isInitializing, syncProgress]);
 
   // Force reset hadValidData when service is in error state
   useEffect(() => {
@@ -327,7 +336,7 @@ const Node = () => {
                 <Text fontSize="2xl" fontWeight="bold" color="white">
                   {isInitializing ? (
                     <FormattedMessage id="node.title.pre_sync" />
-                  ) : blockHeader > blocksCount ? (
+                  ) : isSyncing ? (
                     <FormattedMessage id="node.stats.verification_progress" />
                   ) : isSynced ? (
                     <FormattedMessage id="node.title.up_to_date" />
@@ -345,7 +354,7 @@ const Node = () => {
                 >
                   {isInitializing ? (
                     <FormattedMessage id="node.stats.initializing" />
-                  ) : blockHeader > blocksCount ? (
+                  ) : isSyncing ? (
                     `${syncProgress.toFixed(2)}%`
                   ) : isSynced ? (
                     <FormattedMessage id="node.stats.synched" />
@@ -368,7 +377,7 @@ const Node = () => {
                 <Text
                   color="white"
                   fontSize={{
-                    base: blockHeader === blocksCount ? '4xl' : '2xl',
+                    base: isSynced ? '4xl' : '2xl',
                   }}
                   fontWeight="800"
                   minW="180px"
@@ -380,7 +389,7 @@ const Node = () => {
                   }
                   as="span"
                 >
-                  {blockHeader === blocksCount ? (
+                  {isSynced ? (
                     <Flex direction="row" alignItems="baseline">
                       <CountUp
                         start={prevData?.blocksCount || 0}
@@ -388,6 +397,8 @@ const Node = () => {
                         duration="1"
                         decimals="0"
                         separator=","
+                        enableScrollSpy
+                        scrollSpyOnce
                       >
                         {({ countUpRef }) => <span ref={countUpRef} />}
                       </CountUp>
