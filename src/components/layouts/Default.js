@@ -13,6 +13,8 @@ import { updateNodeStats } from '../../redux/slices/nodeSlice';
 import { NODE_STATS_QUERY } from '../../graphql/node';
 import { MINER_STATS_QUERY } from '../../graphql/miner';
 import { updateMinerStats } from '../../redux/slices/minerSlice';
+import { SOLO_STATS_QUERY } from '../../graphql/solo';
+import { updateSoloStats } from '../../redux/slices/soloSlice';
 import { MCU_STATS_QUERY } from '../../graphql/mcu';
 import { updateMcuStats } from '../../redux/slices/mcuSlice';
 import { GET_SETTINGS_QUERY } from '../../graphql/settings';
@@ -94,6 +96,46 @@ const Layout = ({ children, routes }) => {
     dataMiner,
     minerPollingTime,
     stopPollingMiner
+  ]);
+
+  // Solo data
+  const {
+    loading: loadingSolo,
+    error: errorSolo,
+    data: dataSolo,
+    startPolling: startPollingSolo,
+    stopPolling: stopPollingSolo,
+  } = useQuery(SOLO_STATS_QUERY, {
+    fetchPolicy: 'network-only',
+    nextFetchPolicy: 'cache-and-network'
+  });
+
+  useEffect(() => {
+    startPollingSolo(minerPollingTime);
+
+    // Create a serializable error object
+    const serializableError = createSerializableError(errorSolo);
+
+    // Single dispatch with current state
+    dispatch(
+      updateSoloStats({
+        loading: loadingSolo,
+        error: serializableError,
+        data: dataSolo,
+      })
+    );
+
+    return () => {
+      stopPollingSolo(); // Stop polling
+    };
+  }, [
+    startPollingSolo,
+    dispatch,
+    loadingSolo,
+    errorSolo,
+    dataSolo,
+    minerPollingTime,
+    stopPollingSolo
   ]);
 
   // Mcu data
