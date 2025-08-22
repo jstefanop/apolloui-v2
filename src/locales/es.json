@@ -25,6 +25,15 @@
       "memory_usage": "Uso de memoria",
       "disk_usage": "Uso del disco del sistema",
       "cores": "núcleos"
+    },
+    "solo": {
+      "title": "Estado Solo",
+      "hashrate": "Hashrate Solo",
+      "best_share": "Mejor Share Solo",
+      "daily_chance": "Probabilidad Diaria",
+      "pending": "Pendiente... Por favor espera.",
+      "offline": "El servicio Solo está fuera de línea.",
+      "unknown": "Estado del servicio Solo desconocido."
     }
   },
   "node": {

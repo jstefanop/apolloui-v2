@@ -28,6 +28,15 @@
       "stats": {
         "available": "Disponibile"
       }
+    },
+    "solo": {
+      "title": "Stato Solo",
+      "hashrate": "Hashrate Solo",
+      "best_share": "Migliore Share Solo",
+      "daily_chance": "Probabilità Giornaliera",
+      "pending": "In attesa... Attendere prego.",
+      "offline": "Il servizio Solo è offline.",
+      "unknown": "Stato del servizio Solo sconosciuto."
     }
   },
   "node": {

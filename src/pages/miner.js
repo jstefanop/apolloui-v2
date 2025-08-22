@@ -215,177 +215,199 @@ const Miner = () => {
         placement="right"
         data={boards}
       />
-      {!loadingMiner && <MinerStatus serviceStatus={servicesStatus} />}
-      {servicesStatus?.miner?.status === 'online' && (
-        <Grid
-          templateAreas={{
-            base: `'hashrate' 'power' 'summary' 'device' 'totals' 'gauges'`,
-            lg: `'hashrate hashrate summary summary' 'power device totals totals' 'gauges gauges gauges gauges'`,
-            '3xl': `'hashrate hashrate summary summary' 'hashrate hashrate device totals' 'power power gauges gauges'`,
-          }}
-          templateRows={{
-            base: 'auto auto auto auto auto auto',
-            lg: 'auto auto auto auto',
-          }}
-          templateColumns={{
-            base: '1fr',
-            lg: '1fr 1fr 1fr 1fr',
-          }}
-          gap={'20px'}
-          mb={'10px'}
-        >
-          <GridItem gridArea="hashrate">
-            <HashrateCard
-              loading={loadingMiner}
-              errors={errorMiner}
-              data={globalHashrate}
-              avgData={globalAvgHashrate}
-              prevData={prevGlobalHashrate}
-              prevAvgData={prevGlobalAvgHashrate}
-              shadow={shadow}
-              iconColor={iconColor}
-              status={servicesStatus?.miner?.status}
-            />
-          </GridItem>
-
-          <GridItem gridArea="power">
-            <PowerCard
-              loading={loadingMiner}
-              errors={errorMiner}
-              data={minerPower}
-              avgData={avgBoardEfficiency || 0}
-              prevData={prevMinerPower}
-              prevAvgData={prevAvgBoardEfficiency}
-              shadow={shadow}
-              iconColor={iconColor}
-              serviceStatus={servicesStatus}
-            />
-          </GridItem>
-          {/* TOP */}
-
-          <GridItem gridArea="summary">
-            <SimpleGrid
-              columns={{ base: 1, md: 2, lg: 1, '3xl': 2 }}
-              gap="20px"
-            >
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <Icon
-                        as={SharesAcceptedIcon}
-                        w="32px"
-                        h="32px"
-                        color={iconColorReversed}
-                      />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'miner.stats.shares.accepted' })}
-                value={
-                  <span
-                    className={
-                      totalBoardAccepted !== prevTotalBoardAccepted
-                        ? 'animate__animated animate__flash'
-                        : undefined
-                    }
-                  >
-                    {totalBoardAccepted}
-                  </span>
-                }
-                reversed={true}
+      
+      {servicesStatus?.miner?.status === 'online' ? (
+        <>
+          <Grid
+            templateAreas={{
+              base: `'hashrate' 'power' 'summary' 'device' 'totals' 'gauges'`,
+              lg: `'hashrate hashrate summary summary' 'power device totals totals' 'gauges gauges gauges gauges'`,
+              '3xl': `'hashrate hashrate summary summary' 'hashrate hashrate device totals' 'power power gauges gauges'`,
+            }}
+            templateRows={{
+              base: 'auto auto auto auto auto auto',
+              lg: 'auto auto auto auto',
+            }}
+            templateColumns={{
+              base: '1fr',
+              lg: '1fr 1fr 1fr 1fr',
+            }}
+            gap={'20px'}
+            mb={'10px'}
+          >
+            <GridItem gridArea="hashrate">
+              <HashrateCard
+                loading={loadingMiner}
+                errors={errorMiner}
+                data={globalHashrate}
+                avgData={globalAvgHashrate}
+                prevData={prevGlobalHashrate}
+                prevAvgData={prevGlobalAvgHashrate}
+                shadow={shadow}
+                iconColor={iconColor}
+                status={servicesStatus?.miner?.status}
               />
+            </GridItem>
 
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <Icon
-                        as={SharesRejectedIcon}
-                        w="32px"
-                        h="32px"
-                        color={iconColorReversed}
-                      />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'miner.stats.shares.rejected' })}
-                value={
-                  <span
-                    className={
-                      totalBoardRejected !== prevAvgBoardRejected
-                        ? 'animate__animated animate__flash'
-                        : undefined
-                    }
-                  >
-                    {totalBoardRejected}
-                  </span>
-                }
-                reversed={true}
+            <GridItem gridArea="power">
+              <PowerCard
+                loading={loadingMiner}
+                errors={errorMiner}
+                data={minerPower}
+                avgData={avgBoardEfficiency || 0}
+                prevData={prevMinerPower}
+                prevAvgData={prevAvgBoardEfficiency}
+                shadow={shadow}
+                iconColor={iconColor}
+                serviceStatus={servicesStatus}
               />
+            </GridItem>
+            {/* TOP */}
 
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <LastShareIcon
-                        w="32px"
-                        h="32px"
-                        color={iconColorReversed}
+            <GridItem gridArea="summary">
+              <SimpleGrid
+                columns={{ base: 1, md: 2, lg: 1, '3xl': 2 }}
+                gap="20px"
+              >
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <Icon
+                          as={SharesAcceptedIcon}
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name={intl.formatMessage({ id: 'miner.stats.shares.accepted' })}
+                  value={
+                    <span
+                      className={
+                        totalBoardAccepted !== prevTotalBoardAccepted
+                          ? 'animate__animated animate__flash'
+                          : undefined
+                      }
+                    >
+                      {totalBoardAccepted}
+                    </span>
+                  }
+                  reversed={true}
+                />
+
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <Icon
+                          as={SharesRejectedIcon}
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name={intl.formatMessage({ id: 'miner.stats.shares.rejected' })}
+                  value={
+                    <span
+                      className={
+                        totalBoardRejected !== prevAvgBoardRejected
+                          ? 'animate__animated animate__flash'
+                          : undefined
+                      }
+                    >
+                      {totalBoardRejected}
+                    </span>
+                  }
+                  reversed={true}
+                />
+
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <LastShareIcon
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name={intl.formatMessage({ id: 'miner.stats.last_share' })}
+                  value={
+                    lastShareTime || 'N/A'
+                  }
+                  reversed={true}
+                />
+
+                <MiniStatistics
+                  startContent={
+                    <IconBox
+                      w="56px"
+                      h="56px"
+                      bg={'transparent'}
+                      icon={
+                        <PowerOffSolidIcon
+                          w="32px"
+                          h="32px"
+                          color={iconColorReversed}
+                        />
+                      }
+                    />
+                  }
+                  name={intl.formatMessage({ id: 'miner.stats.uptime' })}
+                  value={minerUptime}
+                  reversed={true}
+                />
+              </SimpleGrid>
+            </GridItem>
+
+            <GridItem gridArea="device">
+              <Card py="15px" pr="40px" bgColor={cardColor} boxShadow={shadow}>
+                <Flex m="2">
+                  <Text fontSize="lg" fontWeight="800">
+                    {intl.formatMessage({ id: 'miner.device_presets' })}
+                  </Text>
+                </Flex>
+                {loadingMiner ? (
+                  <BulletList />
+                ) : (
+                  <Flex my="auto" direction="column">
+                    {soloMining && (
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'transparent'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={GrUserWorker}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name={intl.formatMessage({ id: 'miner.solo_mining' })}
+                        value={intl.formatMessage({ id: 'miner.enabled' })}
+                        reversed={true}
                       />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'miner.stats.last_share' })}
-                value={
-                  lastShareTime || 'N/A'
-                }
-                reversed={true}
-              />
-
-              <MiniStatistics
-                startContent={
-                  <IconBox
-                    w="56px"
-                    h="56px"
-                    bg={'transparent'}
-                    icon={
-                      <PowerOffSolidIcon
-                        w="32px"
-                        h="32px"
-                        color={iconColorReversed}
-                      />
-                    }
-                  />
-                }
-                name={intl.formatMessage({ id: 'miner.stats.uptime' })}
-                value={minerUptime}
-                reversed={true}
-              />
-            </SimpleGrid>
-          </GridItem>
-
-          <GridItem gridArea="device">
-            <Card py="15px" pr="40px" bgColor={cardColor} boxShadow={shadow}>
-              <Flex m="2">
-                <Text fontSize="lg" fontWeight="800">
-                  {intl.formatMessage({ id: 'miner.device_presets' })}
-                </Text>
-              </Flex>
-              {loadingMiner ? (
-                <BulletList />
-              ) : (
-                <Flex my="auto" direction="column">
-                  {soloMining && (
+                    )}
                     <NoCardStatistics
                       startContent={
                         <IconBox
@@ -396,245 +418,229 @@ const Miner = () => {
                             <Icon
                               w="32px"
                               h="32px"
-                              as={GrUserWorker}
+                              as={ModeIcon}
                               color={iconColorReversed}
                             />
                           }
                         />
                       }
-                      name={intl.formatMessage({ id: 'miner.solo_mining' })}
-                      value={intl.formatMessage({ id: 'miner.enabled' })}
+                      name={intl.formatMessage({ id: 'miner.stats.mode' })}
+                      value={minerMode?.toUpperCase()}
                       reversed={true}
                     />
-                  )}
-                  <NoCardStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={ModeIcon}
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={intl.formatMessage({ id: 'miner.stats.mode' })}
-                    value={minerMode?.toUpperCase()}
-                    reversed={true}
-                  />
-                  <NoCardStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={PowerManagementIcon}
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={intl.formatMessage({ id: 'miner.stats.power' })}
-                    value={minerMode === 'custom' ? `${voltage}%` : intl.formatMessage({ id: 'miner.auto' })}
-                    reversed={true}
-                  />
-                  <NoCardStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={FrequencyIcon}
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={intl.formatMessage({ id: 'miner.stats.frequency' })}
-                    value={minerMode === 'custom' ? `${frequency}MHz` : intl.formatMessage({ id: 'miner.auto' })}
-                    reversed={true}
-                  />
-                  <NoCardStatistics
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        bg={'transparent'}
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={FanIcon}
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
-                    value={
-                      fanLow !== 40 && fanHigh !== 60
-                        ? `${fanLow}°C / ${fanHigh}°C`
-                        : intl.formatMessage({ id: 'miner.auto' })
-                    }
-                    reversed={true}
-                  />
-                </Flex>
-              )}
-            </Card>
-          </GridItem>
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={PowerManagementIcon}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name={intl.formatMessage({ id: 'miner.stats.power' })}
+                      value={minerMode === 'custom' ? `${voltage}%` : intl.formatMessage({ id: 'miner.auto' })}
+                      reversed={true}
+                    />
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={FrequencyIcon}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name={intl.formatMessage({ id: 'miner.stats.frequency' })}
+                      value={minerMode === 'custom' ? `${frequency}MHz` : intl.formatMessage({ id: 'miner.auto' })}
+                      reversed={true}
+                    />
+                    <NoCardStatistics
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          bg={'transparent'}
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={FanIcon}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
+                      value={
+                        fanLow !== 40 && fanHigh !== 60
+                          ? `${fanLow}°C / ${fanHigh}°C`
+                          : intl.formatMessage({ id: 'miner.auto' })
+                      }
+                      reversed={true}
+                    />
+                  </Flex>
+                )}
+              </Card>
+            </GridItem>
 
-          <GridItem gridArea="totals">
-            <Card py="15px" bgColor={cardColor} boxShadow={shadow} h="100%">
-              <Flex
-                align={{ sm: 'flex-start', lg: 'center' }}
-                justify="space-between"
-              >
+            <GridItem gridArea="totals">
+              <Card py="15px" bgColor={cardColor} boxShadow={shadow} h="100%">
+                <Flex
+                  align={{ sm: 'flex-start', lg: 'center' }}
+                  justify="space-between"
+                >
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      {intl.formatMessage({ id: 'miner.total_pools_hashboards' })}
+                    </Text>
+                  </Flex>
+                  <Flex align-items="center">
+                    <Button
+                      bgColor="brand.700"
+                      color="white"
+                      variant="solid"
+                      size="sm"
+                      onClick={onOpen}
+                    >
+                      {intl.formatMessage({ id: 'miner.show_all_data' })}
+                    </Button>
+                  </Flex>
+                </Flex>
+                {loadingMiner ? (
+                  <BulletList />
+                ) : (
+                  <Box mt="3">
+                    <PanelGrid
+                      title={intl.formatMessage({ id: 'miner.hashboards' })}
+                      active={activeBoards}
+                      total={totalBoards}
+                      data={dataTableBoards}
+                    />
+                    <Center height="20px" mx="5">
+                      <Divider />
+                    </Center>
+                    <PanelGrid
+                      title={intl.formatMessage({ id: 'miner.pools' })}
+                      active={activePools}
+                      total={totalBoards}
+                      data={dataTablePools}
+                    />
+                  </Box>
+                )}
+              </Card>
+            </GridItem>
+
+            <GridItem gridArea="gauges">
+              <Card bgColor={cardColor} boxShadow={shadow}>
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
-                    {intl.formatMessage({ id: 'miner.total_pools_hashboards' })}
+                    {intl.formatMessage({ id: 'miner.boards_averages' })}
                   </Text>
                 </Flex>
-                <Flex align-items="center">
-                  <Button
-                    bgColor="brand.700"
-                    color="white"
-                    variant="solid"
-                    size="sm"
-                    onClick={onOpen}
-                  >
-                    {intl.formatMessage({ id: 'miner.show_all_data' })}
-                  </Button>
-                </Flex>
-              </Flex>
-              {loadingMiner ? (
-                <BulletList />
-              ) : (
-                <Box mt="3">
-                  <PanelGrid
-                    title={intl.formatMessage({ id: 'miner.hashboards' })}
-                    active={activeBoards}
-                    total={totalBoards}
-                    data={dataTableBoards}
-                  />
-                  <Center height="20px" mx="5">
-                    <Divider />
-                  </Center>
-                  <PanelGrid
-                    title={intl.formatMessage({ id: 'miner.pools' })}
-                    active={activePools}
-                    total={totalBoards}
-                    data={dataTablePools}
-                  />
-                </Box>
-              )}
-            </Card>
-          </GridItem>
+                {loadingMiner ? (
+                  <List />
+                ) : (
+                  <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
+                    <NoCardStatisticsGauge
+                      id="minerTemp"
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={MinerTempIcon}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name={intl.formatMessage({ id: 'miner.stats.temperature' })}
+                      value={
+                        avgBoardTemp ? `${formatTemperature(avgBoardTemp, temperatureUnit)}` : 'N/A'
+                      }
+                      rawValue={avgBoardTemp}
+                      legendValue={intl.formatMessage({ id: 'miner.stats.boards.average' })}
+                      total="100"
+                      gauge={true}
+                      loading={loadingMiner}
+                    />
 
-          <GridItem gridArea="gauges">
-            <Card bgColor={cardColor} boxShadow={shadow}>
-              <Flex m="2">
-                <Text fontSize="lg" fontWeight="800">
-                  {intl.formatMessage({ id: 'miner.boards_averages' })}
-                </Text>
-              </Flex>
-              {loadingMiner ? (
-                <List />
-              ) : (
-                <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
-                  <NoCardStatisticsGauge
-                    id="minerTemp"
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={MinerTempIcon}
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={intl.formatMessage({ id: 'miner.stats.temperature' })}
-                    value={
-                      avgBoardTemp ? `${formatTemperature(avgBoardTemp, temperatureUnit)}` : 'N/A'
-                    }
-                    rawValue={avgBoardTemp}
-                    legendValue={intl.formatMessage({ id: 'miner.stats.boards.average' })}
-                    total="100"
-                    gauge={true}
-                    loading={loadingMiner}
-                  />
+                    <NoCardStatisticsGauge
+                      id="chipSpeed"
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={ChipSpeedIcon}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name={intl.formatMessage({ id: 'miner.stats.chip_speed' })}
+                      value={avgChipSpeed ? avgChipSpeed.toFixed(2) : 'N/A'}
+                      rawValue={avgChipSpeed}
+                      total={240}
+                      gauge={true}
+                      loading={loadingMiner}
+                    />
 
-                  <NoCardStatisticsGauge
-                    id="chipSpeed"
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={ChipSpeedIcon}
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={intl.formatMessage({ id: 'miner.stats.chip_speed' })}
-                    value={avgChipSpeed ? avgChipSpeed.toFixed(2) : 'N/A'}
-                    rawValue={avgChipSpeed}
-                    total={240}
-                    gauge={true}
-                    loading={loadingMiner}
-                  />
-
-                  <NoCardStatisticsGauge
-                    id="fanSpeed"
-                    startContent={
-                      <IconBox
-                        w="56px"
-                        h="56px"
-                        icon={
-                          <Icon
-                            w="32px"
-                            h="32px"
-                            as={FanIcon}
-                            color={iconColorReversed}
-                          />
-                        }
-                      />
-                    }
-                    name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
-                    value={
-                      avgFanSpeed ? `${avgFanSpeed.toFixed(0)} rpm` : 'N/A'
-                    }
-                    rawValue={avgFanSpeed}
-                    total={6000}
-                    gauge={true}
-                    loading={loadingMiner}
-                  />
-                </SimpleGrid>
-              )}
-            </Card>
-          </GridItem>
-        </Grid>
+                    <NoCardStatisticsGauge
+                      id="fanSpeed"
+                      startContent={
+                        <IconBox
+                          w="56px"
+                          h="56px"
+                          icon={
+                            <Icon
+                              w="32px"
+                              h="32px"
+                              as={FanIcon}
+                              color={iconColorReversed}
+                            />
+                          }
+                        />
+                      }
+                      name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
+                      value={
+                        avgFanSpeed ? `${avgFanSpeed.toFixed(0)} rpm` : 'N/A'
+                      }
+                      rawValue={avgFanSpeed}
+                      total={6000}
+                      gauge={true}
+                      loading={loadingMiner}
+                    />
+                  </SimpleGrid>
+                )}
+              </Card>
+            </GridItem>
+          </Grid>
+        </>
+      ) : (
+        <Flex height="60vh" align="center" justify="center">
+          <MinerStatus serviceStatus={servicesStatus} />
+        </Flex>
       )}
     </Box>
   );

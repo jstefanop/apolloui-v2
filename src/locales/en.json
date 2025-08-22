@@ -25,6 +25,15 @@
       "memory_usage": "Memory usage",
       "disk_usage": "System disk usage",
       "cores": "cores"
+    },
+    "solo": {
+      "title": "Solo Status",
+      "hashrate": "Solo Hashrate",
+      "best_share": "Solo Best Share",
+      "daily_chance": "Daily Chance",
+      "pending": "Pending... Please wait.",
+      "offline": "Solo service is offline.",
+      "unknown": "Solo service status unknown."
     }
   },
   "node": {

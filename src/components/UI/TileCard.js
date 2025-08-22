@@ -70,12 +70,16 @@ const TileCard = ({
                 color="white"
                 fontSize={{
                   base: '4xl',
+                  md: '3xl',
+                  lg: '3xl',
                   xl: bigFont ? '6xl' : '4xl',
                 }}
                 fontWeight="800"
-                minW="180px"
+                minW={{ base: '180px', md: '120px', lg: '120px' }}
                 my="auto"
                 textAlign="center"
+                wordBreak="break-word"
+                overflow="hidden"
               >
                 {loading ? <LoadingIcon /> : mainData}
               </Text>
@@ -86,7 +90,15 @@ const TileCard = ({
         <Flex mx="auto" mt={'auto'} pb={'5'} flexDirection="column">
           {secondaryData && (
             <>
-              <Text mx="auto" color="white" fontSize="2xl" fontWeight="800">
+              <Text 
+                mx="auto" 
+                color="white" 
+                fontSize={{ base: 'lg', md: 'xl', lg: '2xl' }} 
+                fontWeight="800"
+                textAlign="center"
+                wordBreak="break-word"
+                overflow="hidden"
+              >
                 {loading ? <LoadingIcon /> : secondaryData}
               </Text>
               <Text color={secondaryTextColor} fontSize="xs" fontWeight="800">

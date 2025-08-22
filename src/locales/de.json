@@ -25,6 +25,15 @@
       "memory_usage": "Speichernutzung",
       "disk_usage": "System-Festplattennutzung",
       "cores": "Kerne"
+    },
+    "solo": {
+      "title": "Solo-Status",
+      "hashrate": "Solo-Hashrate",
+      "best_share": "Beste Solo-Share",
+      "daily_chance": "Tägliche Chance",
+      "pending": "Ausstehend... Bitte warten.",
+      "offline": "Der Solo-Dienst ist offline.",
+      "unknown": "Solo-Dienststatus unbekannt."
     }
   },
   "node": {

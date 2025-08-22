@@ -326,14 +326,17 @@ const SoloMining = () => {
         </title>
       </Head>
 
-      {!loadingSolo && (
-        <SoloMiningStatus
-          serviceStatus={servicesStatus}
-          ckPoolLastUpdate={ckPoolLastUpdate}
-          ckDisconnected={ckDisconnected}
-          blocksCount={blocksCount}
-          blockHeader={blockHeader}
-        />
+      {/* Show SoloMiningStatus when solo service is not online */}
+      {servicesStatus?.solo?.status !== 'online' && (
+        <Flex height="60vh" align="center" justify="center">
+          <SoloMiningStatus
+            serviceStatus={servicesStatus}
+            ckPoolLastUpdate={ckPoolLastUpdate}
+            ckDisconnected={ckDisconnected}
+            blocksCount={blocksCount}
+            blockHeader={blockHeader}
+          />
+        </Flex>
       )}
       
       {/* Show content only when solo service is online */}
