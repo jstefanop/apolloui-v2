@@ -267,38 +267,39 @@
       "active": "Attivo"
     },
     "status": {
-      "unavailable": {
-        "title": "Stato del miner non disponibile",
-        "description": "Impossibile recuperare lo stato del miner. Riprova più tardi."
+      "solo_unavailable": {
+        "title": "Servizio solo non disponibile",
+        "description": "Impossibile recuperare lo stato del servizio solo. Riprova più tardi."
       },
-      "stopping": {
-        "title": "Arresto del miner",
-        "description": "Il miner si sta arrestando. Attendere un momento."
+      "solo_stopping": {
+        "title": "Arresto del servizio solo",
+        "description": "Il servizio solo si sta arrestando. Attendere un momento."
       },
-      "stop_delay": {
-        "title": "Arresto più lungo del previsto",
-        "description": "Il miner impiega più tempo del previsto per arrestarsi. Attendere ancora un po' o controllare la connessione."
+      "solo_stop_delay": {
+        "title": "Arresto del servizio solo più lungo del previsto",
+        "description": "Il servizio solo impiega più tempo del previsto per arrestarsi. Attendere ancora un po' o controllare la connessione."
       },
-      "starting": {
-        "title": "Avvio del miner",
-        "description": "Il miner si sta avviando. Attendere un momento."
+      "solo_starting": {
+        "title": "Avvio del servizio solo",
+        "description": "Il servizio solo si sta avviando. Attendere un momento."
       },
-      "start_delay": {
-        "title": "Avvio più lungo del previsto",
-        "description": "Il miner impiega più tempo del previsto per avviarsi. Attendere ancora un po' o controllare la connessione."
+      "solo_start_delay": {
+        "title": "Avvio del servizio solo più lungo del previsto",
+        "description": "Il servizio solo impiega più tempo del previsto per avviarsi. Attendere ancora un po' o controllare la connessione."
       },
-      "offline": {
-        "title": "Il miner è offline",
-        "description": "Il miner è attualmente offline. Puoi avviarlo dal menu in alto se necessario."
+      "solo_offline": {
+        "title": "Il servizio solo è offline",
+        "description": "Il servizio solo è attualmente offline. Puoi avviarlo dal menu in alto se necessario."
       },
-      "connection_issue": {
-        "title": "Problema di connessione del miner",
-        "description": "Il miner è attualmente offline, ma dovrebbe essere online. Controlla la connessione o prova a riavviare."
+      "solo_connection_issue": {
+        "title": "Problema di connessione del servizio solo",
+        "description": "Il servizio solo è attualmente offline, ma dovrebbe essere online. Controlla la connessione o prova a riavviare."
       },
-      "unexpected": {
-        "title": "Stato inatteso del miner",
-        "description": "Il miner è online, ma è stato richiesto di arrestarlo. Verifica il suo stato o riavvia."
+      "solo_unexpected": {
+        "title": "Stato inatteso del servizio solo",
+        "description": "Il servizio solo è online, ma è stato richiesto di arrestarlo. Verifica il suo stato o riavvia."
       },
+
       "waiting_share": {
         "title": "In attesa della prima share",
         "description": "Attendere fino a quando non viene ricevuta la prima share."
@@ -312,7 +313,7 @@
         "description": "Il nodo deve essere sincronizzato per minare correttamente in modalità SOLO. Controlla eventuali problemi del nodo."
       },
       "online": {
-        "message": "Il tuo miner è <strong>online</strong> e operativo."
+        "message": "Il tuo servizio solo mining è <strong>online</strong> e operativo."
       }
     }
   },
@@ -588,6 +589,24 @@
       "offline": {
         "title": "Miner offline",
         "description": "Il miner è ora offline."
+      }
+    },
+    "solo": {
+      "stopping": {
+        "title": "Arresto servizio solo",
+        "description": "Il servizio solo si sta arrestando. Attendere un momento."
+      },
+      "starting": {
+        "title": "Avvio servizio solo",
+        "description": "Il servizio solo si sta avviando. Attendere un momento."
+      },
+      "online": {
+        "title": "Servizio solo online",
+        "description": "Il servizio solo è ora online e operativo."
+      },
+      "offline": {
+        "title": "Servizio solo offline",
+        "description": "Il servizio solo è ora offline."
       }
     }
   },

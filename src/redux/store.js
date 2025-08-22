@@ -63,7 +63,7 @@ const persistConfig = {
   key: 'root',
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ['auth', 'minerAction'],
+  whitelist: ['auth', 'minerAction', 'solo'],
   timeout: null,
 };
 
@@ -109,6 +109,7 @@ const makeStore = () => {
             resetFeedback.type,
             'miner/updateMinerStats',
             'node/updateNodeStats',
+            'solo/updateSoloStats',
           ],
           // Mantieni alcune ignoredPaths per sicurezza
           ignoredPaths: [

@@ -16,7 +16,7 @@ const HashrateCard = ({
   avgData,
   prevData,
   prevAvgData,
-  serviceStatus,
+  status, // Required status parameter
 }) => {
   const hashCardColor = useColorModeValue(
     'linear-gradient(135deg, #040406 0%, #4B5381 100%)',
@@ -28,7 +28,28 @@ const HashrateCard = ({
     'secondaryGray.200'
   );
 
-  const { status } = serviceStatus?.miner || {};
+  // Status is required - show error message in the card if not provided
+  if (!status) {
+    console.error('HashrateCard: status parameter is required');
+    return (
+      <TileCard
+        bannerImage={BannerHashrate}
+        boxShadow={shadow}
+        bgGradient={hashCardColor}
+        icon={MinerIcon}
+        iconColor={iconColor}
+        iconBgColor={'linear-gradient(290.56deg, #454D76 7.51%, #25283E 60.45%)'}
+        secondaryTextColor={hashSecondaryColor}
+        secondaryText="Error"
+        title="Hashrate Status"
+        bigFont={true}
+        loading={false}
+        errors={['Status parameter is missing']}
+        mainData="Status Error"
+        secondaryData="N/A"
+      />
+    );
+  }
 
   // Determine the appropriate icon for the TileCard
   const tileCardIcon = (() => {

@@ -22,7 +22,7 @@ import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import IconBox from '../components/icons/IconBox';
 import Card from '../components/card/Card';
-import { minerSelector } from '../redux/reselect/miner';
+import { soloSelector } from '../redux/reselect/solo';
 import { nodeSelector } from '../redux/reselect/node';
 import { servicesSelector } from '../redux/reselect/services';
 import HashrateCard from '../components/apollo/HashrateCard';
@@ -52,6 +52,7 @@ import {
   calculateMonthlyChance,
   calculateYearlyChance,
   convertHashrateStringToValue,
+  displayHashrate,
   useDailyChanceVisualizations,
   useDailyChanceVisualization,
 } from '../lib/utils';
@@ -91,12 +92,12 @@ const SoloMining = () => {
 
   const { nodeEnableSoloMining } = dataSettings;
 
-  // Miner data
+  // Solo data
   const {
-    loading: loadingMiner,
-    data: { online: minerOnline, stats: dataMiner },
-    error: errorMiner,
-  } = useSelector(minerSelector, shallowEqual);
+    loading: loadingSolo,
+    data: soloData,
+    error: errorSolo,
+  } = useSelector(soloSelector, shallowEqual);
 
   // Node data
   const {
@@ -122,38 +123,46 @@ const SoloMining = () => {
   const localAddress = wlan0?.address || eth0?.address;
 
   // Set Previous state for CountUp component
-  const prevData = useRef(dataMiner);
+  const prevData = useRef(soloData);
 
   useEffect(() => {
-    // Store the current value directly when dataMiner changes
-    prevData.current = dataMiner;
-  }, [dataMiner]);
+    // Store the current value directly when soloData changes
+    prevData.current = soloData;
+  }, [soloData]);
 
   useEffect(() => {
     if (!loadingSettings && !nodeEnableSoloMining) router.push('/miner');
   }, [nodeEnableSoloMining, loadingSettings, router]);
 
-  const {
-    ckPoolGlobalHashrate: prevCkPoolGlobalHashrate,
-    ckPoolGlobalAvgHashrate: prevCkPoolGlobalAvgHashrate,
-    ckPoolGlobalBestshare: prevCkPoolGlobalBestshare,
-  } = prevData.current || {};
+  // Extract previous data for animations
+  const prevPoolData = prevData.current?.pool || {};
+  const prevCkPoolGlobalHashrate = prevPoolData.hashrate1m ? displayHashrate(convertHashrateStringToValue(prevPoolData.hashrate1m, 'GH/s'), 'GH/s', false, 2, true) : null;
+  const prevCkPoolGlobalAvgHashrate = prevPoolData.hashrate1hr ? displayHashrate(convertHashrateStringToValue(prevPoolData.hashrate1hr, 'GH/s'), 'GH/s', false, 2, true) : null;
+  const prevCkPoolGlobalBestshare = prevPoolData.bestshare || 0;
 
+  // Extract data from solo service
   const {
-    ckPoolHashrate1m: ckPoolGlobalHashrate,
-    ckPoolHashrate1h: ckPoolGlobalAvgHashrate,
-    ckPoolBestshare: ckPoolGlobalBestshare,
-    ckPoolHashrateInGhs,
-    ckUsersCount,
-    ckWorkersCount,
-    ckIdle,
-    ckPoolLastUpdate,
-    ckRuntime,
-    ckDisconnected,
-    ckSharesAccepted,
-    ckSharesRejected,
-    ckUsers = [],
-  } = dataMiner;
+    pool: poolData,
+    users: soloUsers = [],
+    summary: poolSummary,
+    blockFound,
+    timestamp,
+  } = soloData || {};
+
+  // Map solo service data to original variable names for compatibility
+  const ckPoolGlobalHashrate = poolData?.hashrate1m ? displayHashrate(convertHashrateStringToValue(poolData.hashrate1m, 'GH/s'), 'GH/s', false, 2, true) : null;
+  const ckPoolGlobalAvgHashrate = poolData?.hashrate1hr ? displayHashrate(convertHashrateStringToValue(poolData.hashrate1hr, 'GH/s'), 'GH/s', false, 2, true) : null;
+  const ckPoolGlobalBestshare = poolData?.bestshare || 0;
+  const ckPoolHashrateInGhs = poolData?.hashrate1m ? convertHashrateStringToValue(poolData.hashrate1m, 'GH/s') : 0;
+  const ckUsersCount = poolData?.Users || 0;
+  const ckWorkersCount = poolData?.Workers || 0;
+  const ckIdle = poolData?.Idle || 0;
+  const ckPoolLastUpdate = poolData?.lastupdate ? moment.unix(poolData.lastupdate).fromNow() : null;
+  const ckRuntime = poolData?.runtime ? moment().to(moment().subtract(poolData.runtime, 'seconds'), true) : null;
+  const ckDisconnected = poolData?.lastupdate ? moment().diff(moment.unix(poolData.lastupdate), 'seconds') > 90 : true;
+  const ckSharesAccepted = poolData?.accepted || 0;
+  const ckSharesRejected = poolData?.rejected || 0;
+  const ckUsers = soloUsers || [];
 
   const prevBestSharePerc =
     1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
@@ -304,7 +313,7 @@ const SoloMining = () => {
             ? intl.formatMessage(
                 {
                   id: 'solo_mining.title',
-                  defaultMessage: 'Apollo BTC Miner {hashrate}',
+                  defaultMessage: 'Apollo Solo Mining {hashrate}',
                 },
                 {
                   hashrate: `${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}`,
@@ -312,12 +321,12 @@ const SoloMining = () => {
               )
             : intl.formatMessage({
                 id: 'solo_mining.title',
-                defaultMessage: 'Apollo BTC Miner',
+                defaultMessage: 'Apollo Solo Mining',
               })}
         </title>
       </Head>
 
-      {!loadingMiner && (
+      {!loadingSolo && (
         <SoloMiningStatus
           serviceStatus={servicesStatus}
           ckPoolLastUpdate={ckPoolLastUpdate}
@@ -326,7 +335,9 @@ const SoloMining = () => {
           blockHeader={blockHeader}
         />
       )}
-      {servicesStatus?.miner?.status === 'online' && (
+      
+      {/* Show content only when solo service is online */}
+      {servicesStatus?.solo?.status === 'online' && (
         <>
           {showBanner || isVisibleBanner ? (
             <Alert mb="5" borderRadius={'10px'} status={'info'}>
@@ -379,7 +390,7 @@ const SoloMining = () => {
             <GridItem gridArea="chances">
               <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
                 <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  {loadingMiner ? (
+                  {loadingSolo ? (
                     <BulletList />
                   ) : (
                     <Flex my="auto" direction="column">
@@ -427,7 +438,7 @@ const SoloMining = () => {
                 </Card>
 
                 <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  {loadingMiner ? (
+                  {loadingSolo ? (
                     <BulletList />
                   ) : (
                     <Flex my="auto" direction="column">
@@ -474,7 +485,7 @@ const SoloMining = () => {
                 </Card>
 
                 <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  {loadingMiner ? (
+                  {loadingSolo ? (
                     <BulletList />
                   ) : (
                     <Flex my="auto" direction="column">
@@ -524,22 +535,22 @@ const SoloMining = () => {
 
             <GridItem gridArea="hashrate">
               <HashrateCard
-                loading={loadingMiner}
-                errors={errorMiner}
+                loading={loadingSolo}
+                errors={errorSolo}
                 data={ckPoolGlobalHashrate}
                 avgData={ckPoolGlobalAvgHashrate}
                 prevData={prevCkPoolGlobalHashrate}
                 prevAvgData={prevCkPoolGlobalAvgHashrate}
                 shadow={shadow}
                 iconColor={iconColor}
-                serviceStatus={servicesStatus}
+                status={servicesStatus?.solo?.status}
               />
             </GridItem>
 
             <GridItem gridArea="bestshare">
               <BestShare
-                loading={loadingMiner && loadingNode}
-                errors={errorMiner}
+                loading={loadingSolo && loadingNode}
+                errors={errorSolo}
                 data={ckPoolGlobalBestshare}
                 prevData={prevCkPoolGlobalBestshare}
                 shadow={shadow}
@@ -657,7 +668,7 @@ const SoloMining = () => {
                     {intl.formatMessage({ id: 'solo_mining.info.title' })}
                   </Text>
                 </Flex>
-                {loadingMiner ? (
+                {loadingSolo ? (
                   <BulletList />
                 ) : (
                   <Flex my="auto" direction="column">
@@ -753,7 +764,6 @@ const SoloMining = () => {
                               h="32px"
                               as={FaUserCog}
                               color={iconColorReversed}
-                              opacity={'30%'}
                             />
                           }
                         />
@@ -778,7 +788,7 @@ const SoloMining = () => {
                     </Text>
                   </Flex>
                 </Flex>
-                {loadingMiner ? (
+                {loadingSolo ? (
                   <BulletList />
                 ) : !dataTableBoards.length ? (
                   <Text m="3">

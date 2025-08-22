@@ -249,7 +249,7 @@ const Overview = () => {
               prevAvgData={prevGlobalAvgHashrate || { value: 0, unit: 'TH/s' }}
               shadow={shadow}
               iconColor={iconColor}
-              serviceStatus={servicesStatus}
+              status={servicesStatus?.miner?.status}
             />
           </GridItem>
 

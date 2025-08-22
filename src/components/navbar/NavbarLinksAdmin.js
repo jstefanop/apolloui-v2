@@ -15,7 +15,6 @@ import {
   Spinner,
   Box,
   useDisclosure,
-  Tooltip,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import { signOut } from 'next-auth/react';
@@ -35,7 +34,6 @@ import { StartIcon } from '../UI/Icons/StartIcon';
 import { GrUserWorker } from 'react-icons/gr';
 import { GoVersions } from 'react-icons/go';
 import { TbAlertHexagonFilled } from 'react-icons/tb';
-import { MdOutlineDescription } from 'react-icons/md';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import NavbarLogsModal from './NavbarLogsModal';
@@ -47,12 +45,16 @@ import {
 import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
 import NavbarUpdateModal from './NavbarUpdateModal';
+import { useSelector, shallowEqual } from 'react-redux';
+import { soloSelector } from '../../redux/reselect/solo';
+import moment from '../../lib/moment';
 
 export default function HeaderLinks({
   secondary,
   routes,
   minerStats,
   minerOnline,
+  soloOnline,
   settings,
   nodeOnline,
   error,
@@ -95,8 +97,21 @@ export default function HeaderLinks({
     onOpen();
   };
 
+  // Solo data for pool connection status
+  const {
+    loading: loadingSolo,
+    data: soloData,
+    error: errorSolo,
+  } = useSelector(soloSelector, shallowEqual);
+
+  // Extract ckpool disconnected status from solo service
+  const { pool: poolData } = soloData || {};
+  const ckPoolDisconnected = poolData?.lastupdate ? 
+    moment().diff(moment.unix(poolData.lastupdate), 'seconds') > 90 : 
+    true;
+
   // Parse stats
-  const { globalHashrate, avgBoardTemp, ckPoolDisconnected } = minerStats || {};
+  const { globalHashrate, avgBoardTemp } = minerStats || {};
 
   const { nodeEnableSoloMining, temperatureUnit } = settings || {};
 
@@ -228,9 +243,9 @@ export default function HeaderLinks({
                 align="center"
                 justify="center"
                 bg={
-                  !ckPoolDisconnected && minerStatusLabel === 'Online'
+                  soloOnline === 'online' && !ckPoolDisconnected
                     ? 'green.500'
-                    : minerStatusLabel !== 'Online'
+                    : soloOnline === 'offline'
                     ? 'gray.400'
                     : 'orange.500'
                 }
@@ -243,9 +258,9 @@ export default function HeaderLinks({
                   h="12px"
                   color={badgeBox}
                   as={
-                    !ckPoolDisconnected && minerStatusLabel === 'Online'
+                    soloOnline === 'online' && !ckPoolDisconnected
                       ? CheckIcon
-                      : minerStatusLabel === 'Offline'
+                      : soloOnline === 'offline'
                       ? PowerIcon
                       : WarningIcon
                   }
@@ -438,6 +453,36 @@ export default function HeaderLinks({
                     onClick={() => handleSystemAction('stopNode')}
                   >
                     Stop
+                  </MenuItem>
+                </MenuGroup>
+                <MenuDivider />
+                <MenuGroup title="Solo Server">
+                  <MenuItem
+                    icon={<StartIcon />}
+                    isDisabled={
+                      soloOnline === 'online' || soloOnline === 'pending'
+                    }
+                    onClick={() => handleSystemAction('startSolo')}
+                  >
+                    Start
+                  </MenuItem>
+                  <MenuItem
+                    icon={<StopIcon />}
+                    isDisabled={
+                      soloOnline === 'offline' || soloOnline === 'pending'
+                    }
+                    onClick={() => handleSystemAction('stopSolo')}
+                  >
+                    Stop
+                  </MenuItem>
+                  <MenuItem
+                    icon={<RestartIcon />}
+                    isDisabled={
+                      soloOnline === 'offline' || soloOnline === 'pending'
+                    }
+                    onClick={() => handleSystemAction('restartSolo')}
+                  >
+                    Restart
                   </MenuItem>
                 </MenuGroup>
                 <MenuDivider />

@@ -42,7 +42,7 @@ const TileCard = ({
           justify={{ base: 'center' }}
           paddingBottom={secondaryData ? '8' : '0'}
         >
-          {errors.length ? (
+          {errors && errors.length ? (
             <>
               <Text color="white" fontSize={{ base: '4xl' }} fontWeight="800">
                 Error

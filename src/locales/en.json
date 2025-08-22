@@ -264,38 +264,39 @@
       "active": "Active"
     },
     "status": {
-      "unavailable": {
-        "title": "Miner status unavailable",
-        "description": "Could not fetch the miner status. Please try again later."
+      "solo_unavailable": {
+        "title": "Solo service unavailable",
+        "description": "Could not fetch the solo service status. Please try again later."
       },
-      "stopping": {
-        "title": "Stopping miner",
-        "description": "The miner is stopping. Please wait a moment."
+      "solo_stopping": {
+        "title": "Stopping solo service",
+        "description": "The solo service is stopping. Please wait a moment."
       },
-      "stop_delay": {
-        "title": "Stop taking longer than expected",
-        "description": "The miner is taking longer than expected to stop. Please wait a little more or check the connection."
+      "solo_stop_delay": {
+        "title": "Solo service stop taking longer than expected",
+        "description": "The solo service is taking longer than expected to stop. Please wait a little more or check the connection."
       },
-      "starting": {
-        "title": "Starting miner",
-        "description": "The miner is starting. Please wait a moment."
+      "solo_starting": {
+        "title": "Starting solo service",
+        "description": "The solo service is starting. Please wait a moment."
       },
-      "start_delay": {
-        "title": "Start taking longer than expected",
-        "description": "The miner is taking longer than expected to start. Please wait a little more or check the connection."
+      "solo_start_delay": {
+        "title": "Solo service start taking longer than expected",
+        "description": "The solo service is taking longer than expected to start. Please wait a little more or check the connection."
       },
-      "offline": {
-        "title": "Miner is offline",
-        "description": "The miner is currently offline. You can start it from the top menu if needed."
+      "solo_offline": {
+        "title": "Solo service is offline",
+        "description": "The solo service is currently offline. You can start it from the top menu if needed."
       },
-      "connection_issue": {
-        "title": "Miner connection issue",
-        "description": "The miner is currently offline, but it should be online. Please check the connection or try restarting."
+      "solo_connection_issue": {
+        "title": "Solo service connection issue",
+        "description": "The solo service is currently offline, but it should be online. Please check the connection or try restarting."
       },
-      "unexpected": {
-        "title": "Unexpected miner status",
-        "description": "The miner is online, but it was requested to stop. Please verify its state or restart."
+      "solo_unexpected": {
+        "title": "Unexpected solo service status",
+        "description": "The solo service is online, but it was requested to stop. Please verify its state or restart."
       },
+
       "waiting_share": {
         "title": "Waiting for first share",
         "description": "Please wait until the first share is received."
@@ -309,7 +310,7 @@
         "description": "Node needs to be synced to correctly mine on SOLO mode. Please check your node for problems."
       },
       "online": {
-        "message": "Your miner is {online} and operational."
+        "message": "Your solo mining service is {online} and operational."
       }
     }
   },
@@ -586,6 +587,24 @@
       "offline": {
         "title": "Node is offline",
         "description": "The node has been successfully stopped."
+      }
+    },
+    "solo": {
+      "stopping": {
+        "title": "Stopping solo service",
+        "description": "The solo service is stopping. Please wait a moment."
+      },
+      "starting": {
+        "title": "Starting solo service",
+        "description": "The solo service is starting. Please wait a moment."
+      },
+      "online": {
+        "title": "Solo service is online",
+        "description": "The solo service is online and operational."
+      },
+      "offline": {
+        "title": "Solo service is offline",
+        "description": "The solo service has been successfully stopped."
       }
     }
   },

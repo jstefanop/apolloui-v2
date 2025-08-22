@@ -15,18 +15,21 @@ const SoloMiningStatus = ({
 }) => {
   const intl = useIntl();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const miner = serviceStatus?.miner;
+  
+  // Get solo service status only
+  const soloService = serviceStatus?.solo;
 
   useEffect(() => {
     let timer;
-    if (miner?.status === 'online' && miner?.requestedStatus === 'online') {
+    
+    // Check for solo service success
+    if (soloService?.status === 'online' && soloService?.requestedStatus === 'online') {
       const timeSinceRequest = moment().diff(
-        moment(miner.requestedAt),
+        moment(soloService.requestedAt),
         'seconds'
       );
 
       if (timeSinceRequest <= config.thresholds.MINER_SUCCESS_THRESHOLD) {
-        // Show success alert only if within 2 minutes of the request
         setShowSuccessAlert(true);
         timer = setTimeout(() => setShowSuccessAlert(false), 5000);
       }
@@ -37,103 +40,105 @@ const SoloMiningStatus = ({
         clearTimeout(timer);
       }
     };
-  }, [miner?.status, miner?.requestedStatus, miner?.requestedAt]);
+  }, [soloService?.status, soloService?.requestedStatus, soloService?.requestedAt]);
 
-  if (!miner) {
+  // Check if solo service is available
+  if (!soloService) {
     return (
       <CustomAlert
-        title={intl.formatMessage({ id: 'solo_mining.status.unavailable.title' })}
-        description={intl.formatMessage({ id: 'solo_mining.status.unavailable.description' })}
+        title={intl.formatMessage({ id: 'solo_mining.status.solo_unavailable.title' })}
+        description={intl.formatMessage({ id: 'solo_mining.status.solo_unavailable.description' })}
         status="error"
       />
     );
   }
 
-  const { status, requestedStatus, requestedAt } = miner;
-  const timeSinceRequest = (new Date() - new Date(requestedAt)) / 1000; // Time in seconds
+  // Handle solo service status
+  const { status: soloStatus, requestedStatus: soloRequestedStatus, requestedAt: soloRequestedAt } = soloService;
+  const soloTimeSinceRequest = soloRequestedAt ? (new Date() - new Date(soloRequestedAt)) / 1000 : 0;
 
-  // Handle pending status
-  if (status === 'pending') {
-    if (requestedStatus === 'offline') {
-      if (timeSinceRequest <= config.thresholds.MINER_STOP_PENDING_THRESHOLD) {
+  // Handle solo service pending status
+  if (soloStatus === 'pending') {
+    if (soloRequestedStatus === 'offline') {
+      if (soloTimeSinceRequest <= config.thresholds.MINER_STOP_PENDING_THRESHOLD) {
         return (
           <CustomAlert
-            title={intl.formatMessage({ id: 'solo_mining.status.stopping.title' })}
-            description={intl.formatMessage({ id: 'solo_mining.status.stopping.description' })}
+            title={intl.formatMessage({ id: 'solo_mining.status.solo_stopping.title' })}
+            description={intl.formatMessage({ id: 'solo_mining.status.solo_stopping.description' })}
             status="info"
-            extraStatus={status}
+            extraStatus={soloStatus}
           />
         );
       } else {
         return (
           <CustomAlert
-            title={intl.formatMessage({ id: 'solo_mining.status.stop_delay.title' })}
-            description={intl.formatMessage({ id: 'solo_mining.status.stop_delay.description' })}
+            title={intl.formatMessage({ id: 'solo_mining.status.solo_stop_delay.title' })}
+            description={intl.formatMessage({ id: 'solo_mining.status.solo_stop_delay.description' })}
             status="warning"
-            extraStatus={status}
+            extraStatus={soloStatus}
           />
         );
       }
     }
 
-    if (requestedStatus === 'online') {
-      if (timeSinceRequest <= config.thresholds.MINER_START_PENDING_THRESHOLD) {
+    if (soloRequestedStatus === 'online') {
+      if (soloTimeSinceRequest <= config.thresholds.MINER_START_PENDING_THRESHOLD) {
         return (
           <CustomAlert
-            title={intl.formatMessage({ id: 'solo_mining.status.starting.title' })}
-            description={intl.formatMessage({ id: 'solo_mining.status.starting.description' })}
+            title={intl.formatMessage({ id: 'solo_mining.status.solo_starting.title' })}
+            description={intl.formatMessage({ id: 'solo_mining.status.solo_starting.description' })}
             status="info"
-            extraStatus={status}
+            extraStatus={soloStatus}
           />
         );
       } else {
         return (
           <CustomAlert
-            title={intl.formatMessage({ id: 'solo_mining.status.start_delay.title' })}
-            description={intl.formatMessage({ id: 'solo_mining.status.start_delay.description' })}
+            title={intl.formatMessage({ id: 'solo_mining.status.solo_start_delay.title' })}
+            description={intl.formatMessage({ id: 'solo_mining.status.solo_start_delay.description' })}
             status="warning"
-            extraStatus={status}
+            extraStatus={soloStatus}
           />
         );
       }
     }
   }
 
-  // Show info alert when the miner is offline and not requested to be online.
-  if (status === 'offline' && requestedStatus === 'offline') {
+  // Show info alert when the solo service is offline and not requested to be online
+  if (soloStatus === 'offline' && soloRequestedStatus === 'offline') {
     return (
       <CustomAlert
-        title={intl.formatMessage({ id: 'solo_mining.status.offline.title' })}
-        description={intl.formatMessage({ id: 'solo_mining.status.offline.description' })}
+        title={intl.formatMessage({ id: 'solo_mining.status.solo_offline.title' })}
+        description={intl.formatMessage({ id: 'solo_mining.status.solo_offline.description' })}
         status="info"
       />
     );
   }
 
-  // Show error alert when the miner is offline but requested to be online.
-  if (status === 'offline' && requestedStatus === 'online') {
+  // Show error alert when the solo service is offline but requested to be online
+  if (soloStatus === 'offline' && soloRequestedStatus === 'online') {
     return (
       <CustomAlert
-        title={intl.formatMessage({ id: 'solo_mining.status.connection_issue.title' })}
-        description={intl.formatMessage({ id: 'solo_mining.status.connection_issue.description' })}
+        title={intl.formatMessage({ id: 'solo_mining.status.solo_connection_issue.title' })}
+        description={intl.formatMessage({ id: 'solo_mining.status.solo_connection_issue.description' })}
         status="error"
       />
     );
   }
 
-  // Show warning alert when the miner is online but requested to be offline.
-  if (status === 'online' && requestedStatus === 'offline') {
+  // Show warning alert when the solo service is online but requested to be offline
+  if (soloStatus === 'online' && soloRequestedStatus === 'offline') {
     return (
       <CustomAlert
-        title={intl.formatMessage({ id: 'solo_mining.status.unexpected.title' })}
-        description={intl.formatMessage({ id: 'solo_mining.status.unexpected.description' })}
+        title={intl.formatMessage({ id: 'solo_mining.status.solo_unexpected.title' })}
+        description={intl.formatMessage({ id: 'solo_mining.status.solo_unexpected.description' })}
         status="warning"
       />
     );
   }
 
-  // Handle additional statuses for solo mining
-  if (status === 'online') {
+  // If solo service is online, check additional solo-specific statuses
+  if (soloStatus === 'online') {
     if (!ckPoolLastUpdate) {
       return (
         <CustomAlert
@@ -166,7 +171,7 @@ const SoloMiningStatus = ({
     }
   }
 
-  // Show success alert temporarily when the miner is online and operational.
+  // Show success alert temporarily when the solo service is online and operational
   return (
     <>
       {showSuccessAlert && (
@@ -176,7 +181,7 @@ const SoloMiningStatus = ({
               <Icon as={CheckIcon} mr="2" />
               <Text>
                 <FormattedMessage 
-                  id="miner.status.online.message"
+                  id="solo_mining.status.online.message"
                   values={{ online: <strong>online</strong> }}
                 />
               </Text>

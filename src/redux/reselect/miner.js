@@ -21,7 +21,6 @@ export const minerSelector = createSelector(
     } = minerData ?? initialState;
 
     const minerStats = resultStats?.stats ?? [];
-    const ckData = resultStats?.ckpool ?? null;
 
     let minerOnline = false;
     if (result?.online && result?.online?.status)
@@ -112,35 +111,12 @@ export const minerSelector = createSelector(
         };
       });
 
-      // ckPool data
-      const { pool: ckPool, users: ckUsers, blockFound } = ckData || {};
 
-      const filteredCkUsers = _.filter(ckUsers, (user) => {
-        return (
-          user.lastshare &&
-          user.lastshare > moment().subtract(1, 'days').format('X')
-        );
-      });
 
-      const {
-        runtime: ckRuntime,
-        lastupdate: ckLastUpdate,
-        Users: ckUsersCount,
-        Workers: ckWorkersCount,
-        hashrate1d: ckHashrate1d,
-        hashrate1hr: ckHashrate1h,
-        hashrate1m: ckHashrate1m,
-        bestshare: ckPoolBestshare,
-        bestever: ckPoolBestever,
-        Disconnected: ckDisconnected,
-        Idle: ckIdle,
-        accepted: ckSharesAccepted,
-        rejected: ckSharesRejected,
-      } = ckPool || {};
 
-      const ckPoolLastUpdate = ckLastUpdate
-        ? moment(ckLastUpdate, 'X').fromNow()
-        : null;
+
+
+
 
       const maxBoardDate = _.maxBy(boards, 'date');
 
@@ -331,51 +307,7 @@ export const minerSelector = createSelector(
         activeBoards,
         totalBoards,
         activePools,
-        soloMining: (ckData && true) || false,
-        ckRuntime: moment().to(moment().subtract(ckRuntime, 'seconds'), true),
-        ckPoolLastUpdate,
-        ckUsersCount,
-        ckWorkersCount,
-        ckPoolHashrateInGhs:
-          ckHashrate1m && convertHashrateStringToValue(ckHashrate1m),
-        ckPoolHashrate1m:
-          ckHashrate1m &&
-          displayHashrate(
-            convertHashrateStringToValue(ckHashrate1m),
-            'GH/s',
-            false,
-            2,
-            true
-          ),
-        ckPoolHashrate1h:
-          ckHashrate1h &&
-          displayHashrate(
-            convertHashrateStringToValue(ckHashrate1h),
-            'GH/s',
-            false,
-            2,
-            true
-          ),
-        ckPoolHashrate1d:
-          ckHashrate1d &&
-          displayHashrate(
-            convertHashrateStringToValue(ckHashrate1d),
-            'GH/s',
-            false,
-            2,
-            true
-          ),
-        ckPoolBestshare,
-        ckPoolBestever,
-        ckDisconnected:
-          moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90
-            ? true
-            : false,
-        ckIdle,
-        ckSharesAccepted,
-        ckSharesRejected,
-        ckUsers: filteredCkUsers,
-        blockFound,
+        soloMining: false,
       };
     }
 

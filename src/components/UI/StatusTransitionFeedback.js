@@ -164,7 +164,7 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
     const toastPosition = 'top-center';
 
     // Define dynamic labels based on type
-    const entity = type === 'miner' ? 'miner' : 'node';
+    const entity = type === 'miner' ? 'miner' : type === 'solo' ? 'solo' : 'node';
 
     // Handle transitions between states
     if (status === 'pending') {

@@ -13,12 +13,15 @@ export const soloSelector = createSelector(
   soloErrorSelector,
   soloLoadingSelector,
   (soloData, soloError, soloLoading) => {
-    const {
-      Solo: {
-        status: { error: errorStatus, result: resultStatus },
-        stats: { error: errorStats, result: resultStats },
-      },
-    } = soloData ?? initialState;
+    // Safe extraction with fallbacks
+    const soloDataSafe = soloData || initialState;
+    const soloStatusData = soloDataSafe?.Solo?.status || { error: null, result: { status: null } };
+    const soloStatsData = soloDataSafe?.Solo?.stats || { error: null, result: { status: null, pool: null, users: [], blockFound: false, timestamp: null } };
+    
+    const errorStatus = soloStatusData.error;
+    const resultStatus = soloStatusData.result;
+    const errorStats = soloStatsData.error;
+    const resultStats = soloStatsData.result;
 
     const soloStatus = resultStatus?.status ?? null;
     const poolData = resultStats?.pool ?? null;

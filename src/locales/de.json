@@ -260,38 +260,39 @@
       "active": "Aktiv"
     },
     "status": {
-      "unavailable": {
-        "title": "Miner-Status nicht verfügbar",
-        "description": "Der Miner-Status konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
+      "solo_unavailable": {
+        "title": "Solo-Service nicht verfügbar",
+        "description": "Der Solo-Service-Status konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
       },
-      "stopping": {
-        "title": "Miner wird angehalten",
-        "description": "Der Miner wird angehalten. Bitte warten Sie einen Moment."
+      "solo_stopping": {
+        "title": "Solo-Service wird angehalten",
+        "description": "Der Solo-Service wird angehalten. Bitte warten Sie einen Moment."
       },
-      "stop_delay": {
-        "title": "Stopp dauert länger als erwartet",
-        "description": "Das Anhalten des Miners dauert länger als erwartet. Bitte warten Sie noch etwas oder überprüfen Sie die Verbindung."
+      "solo_stop_delay": {
+        "title": "Stopp des Solo-Services dauert länger als erwartet",
+        "description": "Das Anhalten des Solo-Services dauert länger als erwartet. Bitte warten Sie noch etwas oder überprüfen Sie die Verbindung."
       },
-      "starting": {
-        "title": "Miner wird gestartet",
-        "description": "Der Miner wird gestartet. Bitte warten Sie einen Moment."
+      "solo_starting": {
+        "title": "Solo-Service wird gestartet",
+        "description": "Der Solo-Service wird gestartet. Bitte warten Sie einen Moment."
       },
-      "start_delay": {
-        "title": "Start dauert länger als erwartet",
-        "description": "Das Starten des Miners dauert länger als erwartet. Bitte warten Sie noch etwas oder überprüfen Sie die Verbindung."
+      "solo_start_delay": {
+        "title": "Start des Solo-Services dauert länger als erwartet",
+        "description": "Das Starten des Solo-Services dauert länger als erwartet. Bitte warten Sie noch etwas oder überprüfen Sie die Verbindung."
       },
-      "offline": {
-        "title": "Miner ist offline",
-        "description": "Der Miner ist derzeit offline. Sie können ihn bei Bedarf über das obere Menü starten."
+      "solo_offline": {
+        "title": "Solo-Service ist offline",
+        "description": "Der Solo-Service ist derzeit offline. Sie können ihn bei Bedarf über das obere Menü starten."
       },
-      "connection_issue": {
-        "title": "Miner-Verbindungsproblem",
-        "description": "Der Miner ist derzeit offline, sollte aber online sein. Bitte überprüfen Sie die Verbindung oder versuchen Sie einen Neustart."
+      "solo_connection_issue": {
+        "title": "Solo-Service-Verbindungsproblem",
+        "description": "Der Solo-Service ist derzeit offline, sollte aber online sein. Bitte überprüfen Sie die Verbindung oder versuchen Sie einen Neustart."
       },
-      "unexpected": {
-        "title": "Unerwarteter Miner-Status",
-        "description": "Der Miner ist online, sollte aber angehalten werden. Bitte überprüfen Sie seinen Status oder starten Sie ihn neu."
+      "solo_unexpected": {
+        "title": "Unerwarteter Solo-Service-Status",
+        "description": "Der Solo-Service ist online, sollte aber angehalten werden. Bitte überprüfen Sie seinen Status oder starten Sie ihn neu."
       },
+
       "waiting_share": {
         "title": "Warten auf ersten Share",
         "description": "Bitte warten Sie, bis der erste Share empfangen wird."
@@ -305,7 +306,7 @@
         "description": "Die Node muss synchronisiert sein, um korrekt im SOLO-Modus zu minen. Bitte überprüfen Sie Ihre Node auf Probleme."
       },
       "online": {
-        "message": "Ihr Miner ist <strong>online</strong> und betriebsbereit."
+        "message": "Ihr Solo-Mining-Service ist <strong>online</strong> und betriebsbereit."
       }
     }
   },
@@ -582,6 +583,24 @@
       "offline": {
         "title": "Node ist offline",
         "description": "Die Node wurde erfolgreich angehalten."
+      }
+    },
+    "solo": {
+      "stopping": {
+        "title": "Solo-Service wird angehalten",
+        "description": "Der Solo-Service wird angehalten. Bitte warten Sie einen Moment."
+      },
+      "starting": {
+        "title": "Solo-Service wird gestartet",
+        "description": "Der Solo-Service wird gestartet. Bitte warten Sie einen Moment."
+      },
+      "online": {
+        "title": "Solo-Service ist online",
+        "description": "Der Solo-Service ist online und betriebsbereit."
+      },
+      "offline": {
+        "title": "Solo-Service ist offline",
+        "description": "Der Solo-Service wurde erfolgreich angehalten."
       }
     }
   },

@@ -15,6 +15,7 @@ const NavbarSeconday = ({
   handleSystemAction,
   nodeOnline,
   minerOnline,
+  soloOnline, // Add solo service status
 }) => {
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.400', 'white');
@@ -113,6 +114,110 @@ const NavbarSeconday = ({
               bgColor={badgeBox}
               onClick={() => handleSystemAction('startMiner')}
               isDisabled={minerOnline === 'pending'}
+            >
+              <Flex
+                align="center"
+                justify="center"
+                bg={badgeBox}
+                h="32px"
+                w="32px"
+                borderRadius="30px"
+                me="7px"
+              >
+                <Icon w="18px" h="18px" color={iconColor} as={RestartIcon} />
+              </Flex>
+              <Text
+                w="max-content"
+                color={badgeColor}
+                fontSize="sm"
+                fontWeight="600"
+                me="6px"
+              >
+                Start
+              </Text>
+            </Button>
+          )}
+        </Center>
+      )}
+
+      {/* Solo Service */}
+      {type === 'solo' && (
+        <Center>
+          {(soloOnline === 'online' || soloOnline === 'pending') && (
+            <>
+              <Button
+                ms="auto"
+                p="6px"
+                align="center"
+                me="6px"
+                bgColor={badgeBox}
+                onClick={() => handleSystemAction('stopSolo')}
+                isDisabled={soloOnline === 'pending'}
+              >
+                <Flex
+                  align="center"
+                  justify="center"
+                  bg={badgeBox}
+                  h="32px"
+                  w="32px"
+                  borderRadius="30px"
+                  me="7px"
+                >
+                  <Icon w="18px" h="18px" color={iconColor} as={StopIcon} />
+                </Flex>
+                <Text
+                  w="max-content"
+                  color={badgeColor}
+                  fontSize="sm"
+                  fontWeight="600"
+                  me="6px"
+                >
+                  Stop
+                </Text>
+              </Button>
+
+              <Button
+                ms="auto"
+                p="6px"
+                align="center"
+                me="6px"
+                bgColor={badgeBox}
+                onClick={() => handleSystemAction('restartSolo')}
+                isDisabled={soloOnline === 'pending'}
+              >
+                <Flex
+                  align="center"
+                  justify="center"
+                  bg={badgeBox}
+                  h="32px"
+                  w="32px"
+                  borderRadius="30px"
+                  me="7px"
+                >
+                  <Icon w="18px" h="18px" color={iconColor} as={RestartIcon} />
+                </Flex>
+                <Text
+                  w="max-content"
+                  color={badgeColor}
+                  fontSize="sm"
+                  fontWeight="600"
+                  me="6px"
+                >
+                  Restart
+                </Text>
+              </Button>
+            </>
+          )}
+
+          {soloOnline === 'offline' && (
+            <Button
+              ms="auto"
+              p="6px"
+              align="center"
+              me="6px"
+              bgColor={badgeBox}
+              onClick={() => handleSystemAction('startSolo')}
+              isDisabled={soloOnline === 'pending'}
             >
               <Flex
                 align="center"

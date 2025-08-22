@@ -260,38 +260,39 @@
       "active": "Activo"
     },
     "status": {
-      "unavailable": {
-        "title": "Estado del minero no disponible",
-        "description": "No se pudo obtener el estado del minero. Por favor, intenta más tarde."
+      "solo_unavailable": {
+        "title": "Servicio solo no disponible",
+        "description": "No se pudo obtener el estado del servicio solo. Por favor, intenta más tarde."
       },
-      "stopping": {
-        "title": "Deteniendo el minero",
-        "description": "El minero se está deteniendo. Por favor, espera un momento."
+      "solo_stopping": {
+        "title": "Deteniendo el servicio solo",
+        "description": "El servicio solo se está deteniendo. Por favor, espera un momento."
       },
-      "stop_delay": {
-        "title": "La detención tarda más de lo esperado",
-        "description": "El minero está tardando más de lo esperado en detenerse. Espera un poco más o revisa la conexión."
+      "solo_stop_delay": {
+        "title": "La detención del servicio solo tarda más de lo esperado",
+        "description": "El servicio solo está tardando más de lo esperado en detenerse. Espera un poco más o revisa la conexión."
       },
-      "starting": {
-        "title": "Iniciando el minero",
-        "description": "El minero se está iniciando. Por favor, espera un momento."
+      "solo_starting": {
+        "title": "Iniciando el servicio solo",
+        "description": "El servicio solo se está iniciando. Por favor, espera un momento."
       },
-      "start_delay": {
-        "title": "El inicio tarda más de lo esperado",
-        "description": "El minero está tardando más de lo esperado en iniciar. Espera un poco más o revisa la conexión."
+      "solo_start_delay": {
+        "title": "El inicio del servicio solo tarda más de lo esperado",
+        "description": "El servicio solo está tardando más de lo esperado en iniciar. Espera un poco más o revisa la conexión."
       },
-      "offline": {
-        "title": "El minero está fuera de línea",
-        "description": "El minero está actualmente fuera de línea. Puedes iniciarlo desde el menú superior si es necesario."
+      "solo_offline": {
+        "title": "El servicio solo está fuera de línea",
+        "description": "El servicio solo está actualmente fuera de línea. Puedes iniciarlo desde el menú superior si es necesario."
       },
-      "connection_issue": {
-        "title": "Problema de conexión del minero",
-        "description": "El minero está actualmente fuera de línea, pero debería estar en línea. Verifica la conexión o intenta reiniciar."
+      "solo_connection_issue": {
+        "title": "Problema de conexión del servicio solo",
+        "description": "El servicio solo está actualmente fuera de línea, pero debería estar en línea. Verifica la conexión o intenta reiniciar."
       },
-      "unexpected": {
-        "title": "Estado inesperado del minero",
-        "description": "El minero está en línea, pero se solicitó detenerlo. Verifica su estado o reinícialo."
+      "solo_unexpected": {
+        "title": "Estado inesperado del servicio solo",
+        "description": "El servicio solo está en línea, pero se solicitó detenerlo. Verifica su estado o reinícialo."
       },
+
       "waiting_share": {
         "title": "Esperando la primera share",
         "description": "Espera hasta que se reciba la primera share."
@@ -305,7 +306,7 @@
         "description": "El nodo debe estar sincronizado para minar correctamente en modo SOLO. Revisa tu nodo."
       },
       "online": {
-        "message": "Tu minero está <strong>en línea</strong> y operativo."
+        "message": "Tu servicio solo mining está <strong>en línea</strong> y operativo."
       }
     }
   },
@@ -582,6 +583,24 @@
       "offline": {
         "title": "Nodo fuera de línea",
         "description": "El nodo ha sido detenido correctamente."
+      }
+    },
+    "solo": {
+      "stopping": {
+        "title": "Deteniendo servicio solo",
+        "description": "El servicio solo se está deteniendo. Por favor, espera un momento."
+      },
+      "starting": {
+        "title": "Iniciando servicio solo",
+        "description": "El servicio solo se está iniciando. Por favor, espera un momento."
+      },
+      "online": {
+        "title": "Servicio solo en línea",
+        "description": "El servicio solo está en línea y operativo."
+      },
+      "offline": {
+        "title": "Servicio solo fuera de línea",
+        "description": "El servicio solo ha sido detenido correctamente."
       }
     }
   },

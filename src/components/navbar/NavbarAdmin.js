@@ -24,6 +24,7 @@ import {
   MINER_STOP_QUERY,
 } from '../../graphql/miner';
 import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
+import { SOLO_START_QUERY, SOLO_STOP_QUERY, SOLO_RESTART_QUERY } from '../../graphql/solo';
 import { updateMinerAction } from '../../redux/slices/minerActionSlice';
 import { minerSelector } from '../../redux/reselect/miner';
 import { settingsSelector } from '../../redux/reselect/settings';
@@ -70,6 +71,18 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
 
   const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
     useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
+
+  // Solo actions
+  const [startSolo, { loading: loadingSoloStart, error: errorSoloStart }] =
+    useLazyQuery(SOLO_START_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [stopSolo, { loading: loadingSoloStop, error: errorSoloStop }] =
+    useLazyQuery(SOLO_STOP_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [
+    restartSolo,
+    { loading: loadingSoloRestart, error: errorSoloRestart },
+  ] = useLazyQuery(SOLO_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
   // MCU actions
   const [rebootMcu, { loading: loadingRebootMcu, error: errorRebootMcu }] =
@@ -130,6 +143,27 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         description = 'Your node will be available in a moment, please hold on';
         loadingAction = loadingNodeStop;
         errorAction = errorNodeStop;
+        break;
+      case 'stopSolo':
+        stopSolo();
+        title = 'Stopping Solo mining';
+        description = 'Your solo mining service will be stopped in a few seconds';
+        loadingAction = loadingSoloStop;
+        errorAction = errorSoloStop;
+        break;
+      case 'startSolo':
+        startSolo();
+        title = 'Starting Solo mining';
+        description = 'Your solo mining service will be available in a moment, please hold on';
+        loadingAction = loadingSoloStart;
+        errorAction = errorSoloStart;
+        break;
+      case 'restartSolo':
+        restartSolo();
+        title = 'Restarting Solo mining';
+        description = 'Your solo mining service will be available in a moment, please hold on';
+        loadingAction = loadingSoloRestart;
+        errorAction = errorSoloRestart;
         break;
       case 'rebootMcu':
         rebootMcu();
@@ -253,6 +287,11 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           type={'miner'}
         />
         <StatusTransitionFeedback
+          key={`solo-feedback-${intl.locale}`}
+          serviceStatus={servicesStatus}
+          type={'solo'}
+        />
+        <StatusTransitionFeedback
           key={`node-feedback-${intl.locale}`}
           serviceStatus={servicesStatus}
           type={'node'}
@@ -315,6 +354,16 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
             </Box>
           )}
 
+          {currentRoute && routeName === 'soloMining' && (
+            <Box ml="5" display={{ base: 'none', xl: 'block' }}>
+              <NavbarSeconday
+                type={'solo'}
+                handleSystemAction={handleSystemAction}
+                soloOnline={servicesStatus?.solo?.status}
+              />
+            </Box>
+          )}
+
           {currentRoute && routeName === 'node' && (
             <Box ml="5" display={{ base: 'none', xl: 'block' }}>
               <NavbarSeconday
@@ -335,6 +384,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               handleSystemAction={handleSystemAction}
               minerOnline={servicesStatus?.miner?.status}
               minerStats={stats || []}
+              soloOnline={servicesStatus?.solo?.status}
               nodeOnline={servicesStatus?.node?.status}
               settings={settings}
               error={error}

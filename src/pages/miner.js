@@ -244,7 +244,7 @@ const Miner = () => {
               prevAvgData={prevGlobalAvgHashrate}
               shadow={shadow}
               iconColor={iconColor}
-              serviceStatus={servicesStatus}
+              status={servicesStatus?.miner?.status}
             />
           </GridItem>
 
