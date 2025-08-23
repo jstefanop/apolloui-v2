@@ -547,6 +547,7 @@ const SoloMining = () => {
                 shadow={shadow}
                 iconColor={iconColor}
                 status={servicesStatus?.solo?.status}
+                title="SOLO Hashrate"
               />
             </GridItem>
 

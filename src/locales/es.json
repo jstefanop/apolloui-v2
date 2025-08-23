@@ -227,7 +227,7 @@
       "pending": "Pendiente"
     },
     "hashrate": {
-      "current": "Hashrate actual",
+      "current": "Hashrate del minero",
       "average": "Promedio de 1 hora"
     },
     "power": {

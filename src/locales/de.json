@@ -227,7 +227,7 @@
       "pending": "Ausstehend"
     },
     "hashrate": {
-      "current": "Aktuelle Hashrate",
+      "current": "Miner-Hashrate",
       "average": "1-Stunden-Durchschnitt"
     },
     "power": {

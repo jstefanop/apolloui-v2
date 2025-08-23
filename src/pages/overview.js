@@ -354,7 +354,7 @@ const Overview = () => {
                         />
                       </Text>
                       <Text
-                        fontSize="lg"
+                        fontSize="2xl"
                         fontWeight="800"
                         color={iconColorReversed}
                       >
@@ -412,7 +412,7 @@ const Overview = () => {
                         />
                       </Text>
                       <Text
-                        fontSize="lg"
+                        fontSize="2xl"
                         fontWeight="800"
                         color={iconColorReversed}
                       >
@@ -461,7 +461,7 @@ const Overview = () => {
                         />
                       </Text>
                       <Text
-                        fontSize="lg"
+                        fontSize="2xl"
                         fontWeight="800"
                         color={iconColorReversed}
                       >

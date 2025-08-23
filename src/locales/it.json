@@ -234,7 +234,7 @@
       "pending": "In attesa"
     },
     "hashrate": {
-      "current": "Hashrate attuale",
+      "current": "Hashrate del miner",
       "average": "Media 1 ora"
     },
     "power": {

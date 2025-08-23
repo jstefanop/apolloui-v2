@@ -17,6 +17,7 @@ const HashrateCard = ({
   prevData,
   prevAvgData,
   status, // Required status parameter
+  title, // Custom title parameter
 }) => {
   const hashCardColor = useColorModeValue(
     'linear-gradient(135deg, #040406 0%, #4B5381 100%)',
@@ -104,7 +105,7 @@ const HashrateCard = ({
       iconBgColor={'linear-gradient(290.56deg, #454D76 7.51%, #25283E 60.45%)'}
       secondaryTextColor={hashSecondaryColor}
       secondaryText={<FormattedMessage id="miner.hashrate.average" />}
-      title={<FormattedMessage id="miner.hashrate.current" />}
+      title={title || <FormattedMessage id="miner.hashrate.current" />}
       bigFont={true}
       loading={loading}
       errors={errors}

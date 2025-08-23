@@ -231,7 +231,7 @@
       "pending": "Pending"
     },
     "hashrate": {
-      "current": "Current hashrate",
+      "current": "Miner hashrate",
       "average": "1 hour average"
     },
     "power": {
