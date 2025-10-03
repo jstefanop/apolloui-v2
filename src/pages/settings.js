@@ -4,11 +4,13 @@ import { Box, Spinner, Flex } from '@chakra-ui/react';
 
 const Settings = () => {
   const router = useRouter();
+  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
 
   useEffect(() => {
-    // Redirect to the first tab (pools) when accessing /settings
-    router.replace('/settings/pools');
-  }, [router]);
+    // Redirect to the appropriate default tab based on device type
+    const defaultTab = deviceType === 'solo-node' ? 'node' : 'pools';
+    router.replace(`/settings/${defaultTab}`);
+  }, [router, deviceType]);
 
   return (
     <Box minH="calc(100vh - 80px)" display="flex" alignItems="center" justifyContent="center">

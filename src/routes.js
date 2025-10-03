@@ -7,6 +7,8 @@ import { SystemIcon } from './components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
 import { FormattedMessage } from 'react-intl';
 
+const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+
 const routes = [
   {
     name: <FormattedMessage id="routes.overview" />,
@@ -14,12 +16,13 @@ const routes = [
     path: '/overview',
     icon: <DashboardIcon width='20px' height='20px' color='inherit' />,
   },
-  {
+  // Hide miner route for solo-node devices
+  ...(deviceType !== 'solo-node' ? [{
     name: <FormattedMessage id="routes.miner" />,
     layout: '/admin',
     path: '/miner',
     icon: <MinerIcon width='20px' height='20px' color='inherit' />,
-  },
+  }] : []),
   {
     name: <FormattedMessage id="routes.soloMining" />,
     layout: '/admin',

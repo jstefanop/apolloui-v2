@@ -68,6 +68,7 @@ const Overview = () => {
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
+  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
 
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
@@ -577,12 +578,19 @@ const Overview = () => {
           )}
 
           <Grid
-            templateAreas={{
+            templateAreas={deviceType === 'solo-node' ? {
+              base: `'node' 'gauges'`,
+              lg: `'node node node node' 'gauges gauges gauges gauges'`,
+              '3xl': `'node node node node' 'gauges gauges gauges gauges'`,
+            } : {
               base: `'hashrate' 'chart' 'temperatures' 'power' 'node' 'gauges'`,
               lg: `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'gauges gauges gauges gauges' 'chart chart chart chart'`,
               '3xl': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'gauges gauges gauges gauges' 'chart chart chart chart'`,
             }}
-            templateRows={{
+            templateRows={deviceType === 'solo-node' ? {
+              base: 'auto auto',
+              lg: 'auto auto',
+            } : {
               base: 'auto auto auto auto auto auto',
               lg: 'auto auto auto auto',
             }}
@@ -596,186 +604,194 @@ const Overview = () => {
             width="100%"
             position="relative"
           >
-            <GridItem gridArea="hashrate">
-              <HashrateCard
-                loading={loadingMiner}
-                errors={errorMiner}
-                data={globalHashrate || { value: 0, unit: 'TH/s' }}
-                avgData={globalAvgHashrate || { value: 0, unit: 'TH/s' }}
-                prevData={prevGlobalHashrate || { value: 0, unit: 'TH/s' }}
-                prevAvgData={
-                  prevGlobalAvgHashrate || { value: 0, unit: 'TH/s' }
-                }
-                shadow={shadow}
-                iconColor={iconColor}
-                status={servicesStatus?.miner?.status}
-              />
-            </GridItem>
+            {deviceType !== 'solo-node' && (
+              <GridItem gridArea="hashrate">
+                <HashrateCard
+                  loading={loadingMiner}
+                  errors={errorMiner}
+                  data={globalHashrate || { value: 0, unit: 'TH/s' }}
+                  avgData={globalAvgHashrate || { value: 0, unit: 'TH/s' }}
+                  prevData={prevGlobalHashrate || { value: 0, unit: 'TH/s' }}
+                  prevAvgData={
+                    prevGlobalAvgHashrate || { value: 0, unit: 'TH/s' }
+                  }
+                  shadow={shadow}
+                  iconColor={iconColor}
+                  status={servicesStatus?.miner?.status}
+                />
+              </GridItem>
+            )}
 
-            <GridItem gridArea="chart">
-              <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
-                <Flex m="2">
-                  <Text fontSize="lg" fontWeight="800">
-                    <FormattedMessage
-                      id="overview.hashrate.title"
-                      defaultMessage="Last 24h Hashrate"
+            {deviceType !== 'solo-node' && (
+              <GridItem gridArea="chart">
+                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      <FormattedMessage
+                        id="overview.hashrate.title"
+                        defaultMessage="Last 24h Hashrate"
+                      />
+                    </Text>
+                  </Flex>
+                  <Flex
+                    my="auto"
+                    align={{ base: 'center', xl: 'start' }}
+                    justify={{ base: 'center', xl: 'center' }}
+                    direction={{ base: 'column', md: 'row' }}
+                  >
+                    <HashrateChart
+                      dataAnalytics={
+                        dataAnalytics && Array.isArray(dataAnalytics)
+                          ? dataAnalytics
+                          : null
+                      }
+                      loading={loadingAnalytics}
                     />
-                  </Text>
-                </Flex>
-                <Flex
-                  my="auto"
-                  align={{ base: 'center', xl: 'start' }}
-                  justify={{ base: 'center', xl: 'center' }}
-                  direction={{ base: 'column', md: 'row' }}
-                >
-                  <HashrateChart
-                    dataAnalytics={
-                      dataAnalytics && Array.isArray(dataAnalytics)
-                        ? dataAnalytics
-                        : null
-                    }
-                    loading={loadingAnalytics}
-                  />
-                </Flex>
-              </Card>
-            </GridItem>
+                  </Flex>
+                </Card>
+              </GridItem>
+            )}
 
-            <GridItem gridArea="temperatures">
-              <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow}>
-                <Flex direction="column" my="auto">
-                  {loadingMiner ? (
-                    <BulletList />
-                  ) : (
-                    <>
-                      <NoCardStatistics
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            bg={'transparent'}
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={MinerTempIcon}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name={
-                          <FormattedMessage
-                            id="overview.temperatures.miner"
-                            defaultMessage="Miner temperature"
-                          />
-                        }
-                        value={
-                          <span
-                            className={
-                              avgBoardTemp !== prevAvgBoardTemp &&
-                              servicesStatus?.miner?.status === 'online'
-                                ? 'animate__animated animate__flash'
-                                : undefined
-                            }
-                          >
-                            {servicesStatus?.miner?.status === 'online' &&
-                            avgBoardTemp !== null
+            {deviceType !== 'solo-node' && (
+              <GridItem gridArea="temperatures">
+                <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow}>
+                  <Flex direction="column" my="auto">
+                    {loadingMiner ? (
+                      <BulletList />
+                    ) : (
+                      <>
+                        <NoCardStatistics
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <Icon
+                                  w="32px"
+                                  h="32px"
+                                  as={MinerTempIcon}
+                                  color={iconColorReversed}
+                                />
+                              }
+                            />
+                          }
+                          name={
+                            <FormattedMessage
+                              id="overview.temperatures.miner"
+                              defaultMessage="Miner temperature"
+                            />
+                          }
+                          value={
+                            <span
+                              className={
+                                avgBoardTemp !== prevAvgBoardTemp &&
+                                servicesStatus?.miner?.status === 'online'
+                                  ? 'animate__animated animate__flash'
+                                  : undefined
+                              }
+                            >
+                              {servicesStatus?.miner?.status === 'online' &&
+                              avgBoardTemp !== null
+                                ? `${formatTemperature(
+                                    avgBoardTemp,
+                                    temperatureUnit
+                                  )}`
+                                : 'N/A'}
+                            </span>
+                          }
+                        />
+                        <NoCardStatistics
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <Icon
+                                  w="32px"
+                                  h="32px"
+                                  as={McuTempIcon}
+                                  color={iconColorReversed}
+                                />
+                              }
+                            />
+                          }
+                          name={
+                            <FormattedMessage
+                              id="overview.temperatures.system"
+                              defaultMessage="System temperature"
+                            />
+                          }
+                          value={
+                            typeof mcuTemperature !== 'undefined' &&
+                            mcuTemperature !== null
                               ? `${formatTemperature(
-                                  avgBoardTemp,
+                                  Math.round(mcuTemperature / 1000),
                                   temperatureUnit
-                                )}`
-                              : 'N/A'}
-                          </span>
-                        }
-                      />
-                      <NoCardStatistics
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            bg={'transparent'}
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={McuTempIcon}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name={
-                          <FormattedMessage
-                            id="overview.temperatures.system"
-                            defaultMessage="System temperature"
-                          />
-                        }
-                        value={
-                          typeof mcuTemperature !== 'undefined' &&
-                          mcuTemperature !== null
-                            ? `${formatTemperature(
-                                Math.round(mcuTemperature / 1000),
-                                temperatureUnit
-                              )} `
-                            : 'N/A'
-                        }
-                      />
-                      <NoCardStatistics
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            bg={'transparent'}
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={BugIcon}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name={
-                          <FormattedMessage
-                            id="overview.temperatures.hardware_errors"
-                            defaultMessage="Hardware errors"
-                          />
-                        }
-                        value={
-                          <span
-                            className={
-                              avgBoardErrors !== prevAvgBoardErrors
-                                ? 'animate__animated animate__flash'
-                                : undefined
-                            }
-                          >
-                            {servicesStatus?.miner?.status === 'online' &&
-                            avgBoardErrors !== null
-                              ? `${avgBoardErrors}%`
-                              : 'N/A'}
-                          </span>
-                        }
-                      />
-                    </>
-                  )}
-                </Flex>
-              </Card>
-            </GridItem>
+                                )} `
+                              : 'N/A'
+                          }
+                        />
+                        <NoCardStatistics
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <Icon
+                                  w="32px"
+                                  h="32px"
+                                  as={BugIcon}
+                                  color={iconColorReversed}
+                                />
+                              }
+                            />
+                          }
+                          name={
+                            <FormattedMessage
+                              id="overview.temperatures.hardware_errors"
+                              defaultMessage="Hardware errors"
+                            />
+                          }
+                          value={
+                            <span
+                              className={
+                                avgBoardErrors !== prevAvgBoardErrors
+                                  ? 'animate__animated animate__flash'
+                                  : undefined
+                              }
+                            >
+                              {servicesStatus?.miner?.status === 'online' &&
+                              avgBoardErrors !== null
+                                ? `${avgBoardErrors}%`
+                                : 'N/A'}
+                            </span>
+                          }
+                        />
+                      </>
+                    )}
+                  </Flex>
+                </Card>
+              </GridItem>
+            )}
 
-            <GridItem gridArea="power">
-              <PowerCard
-                loading={loadingMiner}
-                errors={errorMiner}
-                data={minerPower || 0}
-                avgData={wattsPerTh || 0}
-                prevData={prevMinerPower || 0}
-                prevAvgData={prevWattsPerTh || 0}
-                shadow={shadow}
-                iconColor={iconColor}
-                serviceStatus={servicesStatus}
-              />
-            </GridItem>
+            {deviceType !== 'solo-node' && (
+              <GridItem gridArea="power">
+                <PowerCard
+                  loading={loadingMiner}
+                  errors={errorMiner}
+                  data={minerPower || 0}
+                  avgData={wattsPerTh || 0}
+                  prevData={prevMinerPower || 0}
+                  prevAvgData={prevWattsPerTh || 0}
+                  shadow={shadow}
+                  iconColor={iconColor}
+                  serviceStatus={servicesStatus}
+                />
+              </GridItem>
+            )}
 
             <GridItem gridArea="node">
               <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow}>

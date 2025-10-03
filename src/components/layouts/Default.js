@@ -42,8 +42,9 @@ const Layout = ({ children, routes }) => {
   const dispatch = useDispatch();
   const minerPollingTime = process.env.NEXT_PUBLIC_POLLING_TIME;
   const nodePollingTime = process.env.NEXT_PUBLIC_POLLING_TIME_NODE;
+  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
 
-  // Miner data
+  // Miner data - only fetch if not solo-node device
   const {
     loading: loadingMiner,
     error: errorMiner,
@@ -52,10 +53,16 @@ const Layout = ({ children, routes }) => {
     stopPolling: stopPollingMiner,
   } = useQuery(MINER_STATS_QUERY, {
     fetchPolicy: 'network-only',
-    nextFetchPolicy: 'cache-and-network'
+    nextFetchPolicy: 'cache-and-network',
+    skip: deviceType === 'solo-node'
   });
 
   useEffect(() => {
+    // Skip miner polling and data processing for solo-node devices
+    if (deviceType === 'solo-node') {
+      return;
+    }
+
     startPollingMiner(minerPollingTime);
 
     // Create a serializable error object
@@ -95,7 +102,8 @@ const Layout = ({ children, routes }) => {
     errorMiner,
     dataMiner,
     minerPollingTime,
-    stopPollingMiner
+    stopPollingMiner,
+    deviceType
   ]);
 
   // Solo data

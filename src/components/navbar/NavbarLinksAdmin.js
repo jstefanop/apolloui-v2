@@ -61,6 +61,7 @@ export default function HeaderLinks({
   loading,
   handleSystemAction,
 }) {
+  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.600', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -270,116 +271,120 @@ export default function HeaderLinks({
           )}
 
           {/* HASHRATE */}
-          <Flex
-            bg={badgeBg}
-            display={secondary ? 'flex' : 'none'}
-            borderRadius="30px"
-            ms="auto"
-            p="6px"
-            align="center"
-            me="8px"
-            px="10px"
-          >
+          {deviceType !== 'solo-node' && (
             <Flex
-              align="center"
-              justify="center"
-              bg={badgeBox}
-              h="29px"
-              w="29px"
+              bg={badgeBg}
+              display={secondary ? 'flex' : 'none'}
               borderRadius="30px"
-              me="7px"
+              ms="auto"
+              p="6px"
+              align="center"
+              me="8px"
+              px="10px"
             >
-              <Link href="/miner">
-                <MinerIcon w="18px" h="18px" color={navbarIcon} />
-              </Link>
+              <Flex
+                align="center"
+                justify="center"
+                bg={badgeBox}
+                h="29px"
+                w="29px"
+                borderRadius="30px"
+                me="7px"
+              >
+                <Link href="/miner">
+                  <MinerIcon w="18px" h="18px" color={navbarIcon} />
+                </Link>
+              </Flex>
+              {globalHashrate?.value && minerStatusLabel === 'Online' && (
+                <Text
+                  align={'center'}
+                  w="max-content"
+                  color={badgeColor}
+                  fontSize="sm"
+                  fontWeight="700"
+                  me="6px"
+                  minW="70px"
+                  display={{
+                    base: nodeEnableSoloMining ? 'none' : 'block',
+                    md: 'block',
+                  }}
+                >
+                  {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
+                </Text>
+              )}
+              <Flex
+                align="center"
+                justify="center"
+                bg={
+                  minerStatusLabel === 'Online'
+                    ? 'green.500'
+                    : minerStatusLabel === 'Offline'
+                    ? 'gray.400'
+                    : minerStatusLabel === 'Error'
+                    ? 'orange.500'
+                    : minerStatusLabel === 'Pending'
+                    ? 'gray.300'
+                    : null
+                }
+                h="20px"
+                w="20px"
+                borderRadius="30px"
+              >
+                <Icon
+                  w="12px"
+                  h="12px"
+                  color={badgeBox}
+                  as={
+                    minerStatusLabel === 'Online'
+                      ? CheckIcon
+                      : minerStatusLabel === 'Offline'
+                      ? PowerIcon
+                      : minerStatusLabel === 'Error'
+                      ? WarningIcon
+                      : minerStatusLabel === 'Pending'
+                      ? Spinner
+                      : null
+                  }
+                />
+              </Flex>
             </Flex>
-            {globalHashrate?.value && minerStatusLabel === 'Online' && (
+          )}
+
+          {/* TEMPERATURE */}
+          {deviceType !== 'solo-node' && (
+            <Flex
+              bg={badgeBg}
+              display={secondary ? { base: 'none', md: 'flex' } : 'none'}
+              borderRadius="30px"
+              ms="auto"
+              p="6px"
+              align="center"
+              me="6px"
+            >
+              <Flex
+                align="center"
+                justify="center"
+                bg={badgeBox}
+                h="29px"
+                w="29px"
+                borderRadius="30px"
+                me="7px"
+              >
+                <MinerTempIcon w="18px" h="18px" color={navbarIcon} />
+              </Flex>
               <Text
-                align={'center'}
                 w="max-content"
                 color={badgeColor}
                 fontSize="sm"
                 fontWeight="700"
                 me="6px"
-                minW="70px"
-                display={{
-                  base: nodeEnableSoloMining ? 'none' : 'block',
-                  md: 'block',
-                }}
               >
-                {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
+                {minerStatusLabel === 'Online' && avgBoardTemp !== null
+                  ? `${formatTemperature(avgBoardTemp, temperatureUnit)}`
+                  : '-'}
               </Text>
-            )}
-            <Flex
-              align="center"
-              justify="center"
-              bg={
-                minerStatusLabel === 'Online'
-                  ? 'green.500'
-                  : minerStatusLabel === 'Offline'
-                  ? 'gray.400'
-                  : minerStatusLabel === 'Error'
-                  ? 'orange.500'
-                  : minerStatusLabel === 'Pending'
-                  ? 'gray.300'
-                  : null
-              }
-              h="20px"
-              w="20px"
-              borderRadius="30px"
-            >
-              <Icon
-                w="12px"
-                h="12px"
-                color={badgeBox}
-                as={
-                  minerStatusLabel === 'Online'
-                    ? CheckIcon
-                    : minerStatusLabel === 'Offline'
-                    ? PowerIcon
-                    : minerStatusLabel === 'Error'
-                    ? WarningIcon
-                    : minerStatusLabel === 'Pending'
-                    ? Spinner
-                    : null
-                }
-              />
             </Flex>
-          </Flex>
-
-          {/* TEMPERATURE */}
-          <Flex
-            bg={badgeBg}
-            display={secondary ? { base: 'none', md: 'flex' } : 'none'}
-            borderRadius="30px"
-            ms="auto"
-            p="6px"
-            align="center"
-            me="6px"
-          >
-            <Flex
-              align="center"
-              justify="center"
-              bg={badgeBox}
-              h="29px"
-              w="29px"
-              borderRadius="30px"
-              me="7px"
-            >
-              <MinerTempIcon w="18px" h="18px" color={navbarIcon} />
-            </Flex>
-            <Text
-              w="max-content"
-              color={badgeColor}
-              fontSize="sm"
-              fontWeight="700"
-              me="6px"
-            >
-              {minerStatusLabel === 'Online' && avgBoardTemp !== null
-                ? `${formatTemperature(avgBoardTemp, temperatureUnit)}`
-                : '-'}
-            </Text>
-          </Flex>
+          )}
 
           <Flex p="0px" mx="4px" display={{ base: 'none', md: 'block' }}>
             <FixedPlugin type="small" />
@@ -405,36 +410,40 @@ export default function HeaderLinks({
                 bg={localVersion !== remoteVersion && 'orange.500'}
               />
               <MenuList>
-                <MenuGroup title="Miner">
-                  <MenuItem
-                    icon={<StartIcon />}
-                    isDisabled={
-                      minerOnline === 'online' || minerOnline === 'pending'
-                    }
-                    onClick={() => handleSystemAction('startMiner')}
-                  >
-                    Start
-                  </MenuItem>
-                  <MenuItem
-                    icon={<StopIcon />}
-                    isDisabled={
-                      minerOnline === 'offline' || minerOnline === 'pending'
-                    }
-                    onClick={() => handleSystemAction('stopMiner')}
-                  >
-                    Stop
-                  </MenuItem>
-                  <MenuItem
-                    icon={<RestartIcon />}
-                    isDisabled={
-                      minerOnline === 'offline' || minerOnline === 'pending'
-                    }
-                    onClick={() => handleSystemAction('restartMiner')}
-                  >
-                    Restart
-                  </MenuItem>
-                </MenuGroup>
-                <MenuDivider />
+                {deviceType !== 'solo-node' && (
+                  <>
+                    <MenuGroup title="Miner">
+                      <MenuItem
+                        icon={<StartIcon />}
+                        isDisabled={
+                          minerOnline === 'online' || minerOnline === 'pending'
+                        }
+                        onClick={() => handleSystemAction('startMiner')}
+                      >
+                        Start
+                      </MenuItem>
+                      <MenuItem
+                        icon={<StopIcon />}
+                        isDisabled={
+                          minerOnline === 'offline' || minerOnline === 'pending'
+                        }
+                        onClick={() => handleSystemAction('stopMiner')}
+                      >
+                        Stop
+                      </MenuItem>
+                      <MenuItem
+                        icon={<RestartIcon />}
+                        isDisabled={
+                          minerOnline === 'offline' || minerOnline === 'pending'
+                        }
+                        onClick={() => handleSystemAction('restartMiner')}
+                      >
+                        Restart
+                      </MenuItem>
+                    </MenuGroup>
+                    <MenuDivider />
+                  </>
+                )}
                 <MenuGroup title="Node">
                   <MenuItem
                     icon={<StartIcon />}

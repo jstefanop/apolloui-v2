@@ -57,6 +57,7 @@ import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 
 const SettingsTab = () => {
   const intl = useIntl();
+  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
   const router = useRouter();
   const dispatch = useDispatch();
   const [settings, setSettings] = useState({ initial: true });
@@ -74,8 +75,13 @@ const SettingsTab = () => {
   // Get the current tab from the URL
   const { tab } = router.query;
   
-  // Define tab mapping
-  const tabMapping = {
+  // Define tab mapping based on device type
+  const tabMapping = deviceType === 'solo-node' ? {
+    'node': 0,
+    'system': 1,
+    'logs': 2,
+    'extra': 3
+  } : {
     'pools': 0,
     'miner': 1,
     'node': 2,
@@ -160,7 +166,9 @@ const SettingsTab = () => {
 
   // Handle tab change
   const handleTabChange = (index) => {
-    const tabNames = ['pools', 'miner', 'node', 'system', 'logs', 'extra'];
+    const tabNames = deviceType === 'solo-node' 
+      ? ['node', 'system', 'logs', 'extra']
+      : ['pools', 'miner', 'node', 'system', 'logs', 'extra'];
     const newTab = tabNames[index];
     router.push(`/settings/${newTab}`);
   };
@@ -624,18 +632,22 @@ const SettingsTab = () => {
               scrollbarWidth: 'none'
             }}>
               <TabList>
-                <Tab>
-                  <Flex align="center" gap="10px">
-                    <PoolIcon />
-                    <Text>{intl.formatMessage({ id: 'settings.tabs.pools' })}</Text>
-                  </Flex>
-                </Tab>
-                <Tab>
-                  <Flex align="center" gap="10px">
-                    <MinerIcon />
-                    <Text>{intl.formatMessage({ id: 'settings.tabs.miner' })}</Text>
-                  </Flex>
-                </Tab>
+                {deviceType !== 'solo-node' && (
+                  <Tab>
+                    <Flex align="center" gap="10px">
+                      <PoolIcon />
+                      <Text>{intl.formatMessage({ id: 'settings.tabs.pools' })}</Text>
+                    </Flex>
+                  </Tab>
+                )}
+                {deviceType !== 'solo-node' && (
+                  <Tab>
+                    <Flex align="center" gap="10px">
+                      <MinerIcon />
+                      <Text>{intl.formatMessage({ id: 'settings.tabs.miner' })}</Text>
+                    </Flex>
+                  </Tab>
+                )}
                 <Tab>
                   <Flex align="center" gap="10px">
                     <NodeIcon />
@@ -671,12 +683,16 @@ const SettingsTab = () => {
             )}
 
             <TabPanels>
-              <TabPanel>
-                <PoolsTab />
-              </TabPanel>
-              <TabPanel>
-                <MinerTab />
-              </TabPanel>
+              {deviceType !== 'solo-node' && (
+                <TabPanel>
+                  <PoolsTab />
+                </TabPanel>
+              )}
+              {deviceType !== 'solo-node' && (
+                <TabPanel>
+                  <MinerTab />
+                </TabPanel>
+              )}
               <TabPanel>
                 <NodeTab />
               </TabPanel>
