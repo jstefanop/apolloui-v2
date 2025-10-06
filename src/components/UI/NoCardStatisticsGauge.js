@@ -33,7 +33,7 @@ const NoCardStatisticsGauge = React.memo(({
 }) => {
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const textColorSecondary = 'secondaryGray.600';
-  const [roundedPercentage, setRoundedPercentage] = useState(percent);
+  const [roundedPercentage, setRoundedPercentage] = useState(percent !== null && percent !== undefined ? percent.toFixed(2) : null);
   const isOnError = error && error.length > 0;
 
   useEffect(() => {
@@ -42,7 +42,9 @@ const NoCardStatisticsGauge = React.memo(({
       const valuePerc = Math.round(percentage * 100) / 100;
       setRoundedPercentage(valuePerc.toFixed(2));
     }
-    if (percent) setRoundedPercentage(percent.toFixed(2));
+    if (percent !== null && percent !== undefined) {
+      setRoundedPercentage(percent.toFixed(2));
+    }
   }, [rawValue, total, percent]);
 
   const gaugeColor = percentColor(roundedPercentage);
@@ -110,7 +112,7 @@ const NoCardStatisticsGauge = React.memo(({
             <Flex align="center">
               <Stat my="auto" ms={startContent ? '8px' : '0px'}>
                 <Flex direction={'row'}>
-                  {!isOnError && (value || roundedPercentage) ? (
+                  {!isOnError && (value || (roundedPercentage !== null && roundedPercentage !== undefined)) ? (
                     <StatNumber
                       color={textColor}
                       fontSize={{
@@ -120,7 +122,7 @@ const NoCardStatisticsGauge = React.memo(({
                     >
                       {value
                         ? value
-                        : roundedPercentage
+                        : roundedPercentage !== null && roundedPercentage !== undefined
                         ? `${roundedPercentage}%`
                         : 'N.a.'}
                     </StatNumber>
@@ -154,11 +156,11 @@ const NoCardStatisticsGauge = React.memo(({
               </Stat>
             </Flex>
           </Flex>
-          {!isOnError && gauge && roundedPercentage && (
+          {!isOnError && gauge && roundedPercentage !== null && roundedPercentage !== undefined && (
             <Box>
               <GaugeChart
                 chartOptions={chartOptions}
-                chartData={[parseFloat(roundedPercentage)]}
+                chartData={[parseFloat(roundedPercentage) || 0]}
                 id={id}
               />
             </Box>

@@ -255,7 +255,6 @@ const NavbarSeconday = ({
               me="6px"
               bgColor={badgeBox}
               onClick={() => handleSystemAction('stopNode')}
-              isDisabled={nodeOnline === 'pending'}
             >
               <Flex
                 align="center"

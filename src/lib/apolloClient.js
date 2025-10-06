@@ -20,8 +20,30 @@ export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
 const ls = typeof window !== 'undefined' ? localStorage : {};
 
-const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
+// Function to get the hostname/IP from the current browser URL
+const getHostFromBrowser = () => {
+  // Only works in browser environment
+  if (typeof window !== 'undefined') {
+    try {
+      return window.location.hostname;
+    } catch (error) {
+      console.error('Error getting hostname from browser:', error);
+      return 'localhost'; // Safe fallback
+    }
+  }
+  // Server-side fallback to hostname
+  return os.hostname();
+};
+
+const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || getHostFromBrowser();
 const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
+
+// Log the API endpoint for debugging
+if (process.env.NODE_ENV === 'development') {
+  const source = process.env.NEXT_PUBLIC_GRAPHQL_HOST ? 'environment variable' : 
+                 (typeof window !== 'undefined') ? 'browser URL' : 'server hostname';
+  console.log(`GraphQL API endpoint: http://${hostnameApi}:${portApi}/api/graphql (source: ${source})`);
+}
 
 let apolloClient;
 

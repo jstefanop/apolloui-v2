@@ -41,7 +41,11 @@ import BannerNode from '../assets/img/node_banner.png';
 import { settingsSelector } from '../redux/reselect/settings';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
 import { getNodeErrorMessage } from '../lib/utils';
-import { MdCastConnected, MdArrowDownward, MdArrowUpward } from 'react-icons/md';
+import {
+  MdCastConnected,
+  MdArrowDownward,
+  MdArrowUpward,
+} from 'react-icons/md';
 import NodeStatus from '../components/UI/NodeStatus';
 import LatestBlocks from '../components/apollo/LatestBlocks';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
@@ -100,7 +104,9 @@ const Node = () => {
   useEffect(() => {
     // If we have a timestamp but blocksCount is 0, the data might be stale
     if (timestamp && blocksCount === 0 && blockHeader === 0) {
-      console.log('Detected potentially stale data - blocksCount is 0 but timestamp exists');
+      console.log(
+        'Detected potentially stale data - blocksCount is 0 but timestamp exists'
+      );
       // This could indicate that the data is stale and needs refresh
     }
   }, [timestamp, blocksCount, blockHeader]);
@@ -112,10 +118,11 @@ const Node = () => {
   const prevData = useRef(dataNode);
 
   // Calculate sync progress
-  const syncProgress = verificationProgress > 0 
-    ? verificationProgress * 100 
-    : blockHeader > 0 
-      ? (blocksCount / blockHeader) * 100 
+  const syncProgress =
+    verificationProgress > 0
+      ? verificationProgress * 100
+      : blockHeader > 0
+      ? (blocksCount / blockHeader) * 100
       : 0;
 
   // Determine sync status
@@ -126,7 +133,12 @@ const Node = () => {
   useEffect(() => {
     // Store the current value directly when dataNode changes
     // Only update if we have meaningful data to avoid undefined values
-    if (dataNode && dataNode.stats && dataNode.stats.result && dataNode.stats.result.stats) {
+    if (
+      dataNode &&
+      dataNode.stats &&
+      dataNode.stats.result &&
+      dataNode.stats.result.stats
+    ) {
       prevData.current = dataNode;
       console.log('prevData updated:', dataNode.stats.result.stats);
     }
@@ -172,13 +184,13 @@ const Node = () => {
 
     const nodeDisk = _.find(disks, { mountPoint: '/media/nvme' });
     const { used = 0, total = 0 } = nodeDisk || {};
-    
+
     // If total is 0, set remainingSpace to 0 to avoid division by zero
     if (total === 0) {
       setRemainingSpace(0);
       return;
     }
-    
+
     const difference = total - used;
     const percentage = (difference / total) * 100;
     setRemainingSpace(Math.round(percentage * 100) / 100);
@@ -216,8 +228,9 @@ const Node = () => {
   ];
 
   // Determine if current data is valid
-  const isDataValid = !errorNode?.length && (connectionCount > 0 || blocksCount > 0);
-  
+  const isDataValid =
+    !errorNode?.length && (connectionCount > 0 || blocksCount > 0);
+
   // Determine if we have meaningful data (not just zeros)
   const hasMeaningfulData = connectionCount > 0 || blocksCount > 0;
 
@@ -233,27 +246,46 @@ const Node = () => {
   const isServiceError = nodeServiceStatus?.status === 'error';
   const isBackendDown = !servicesStatus;
 
-  const shouldShowStats = (!isServiceError && !isBackendDown && hasMeaningfulData) || (isServiceError && hadValidData && !isBackendDown);
+  const shouldShowStats =
+    (!isServiceError && !isBackendDown && hasMeaningfulData) ||
+    (isServiceError && hadValidData && !isBackendDown);
 
   // Debug logging only when key values change
   useEffect(() => {
-    console.log('=== NODE STATE CHANGED ===');
-    console.log('blocksCount:', blocksCount);
-    console.log('blockHeader:', blockHeader);
-    console.log('connectionCount:', connectionCount);
-    console.log('isDataValid:', isDataValid);
-    console.log('hasMeaningfulData:', hasMeaningfulData);
-    console.log('hadValidData:', hadValidData);
-    console.log('isServiceError:', isServiceError);
-    console.log('isBackendDown:', isBackendDown);
-    console.log('shouldShowStats:', shouldShowStats);
-    console.log('isSynced:', isSynced);
-    console.log('isSyncing:', isSyncing);
-    console.log('isInitializing:', isInitializing);
-    console.log('syncProgress:', syncProgress);
-    console.log('prevData.current:', prevData.current);
-    console.log('========================');
-  }, [blocksCount, blockHeader, connectionCount, isDataValid, hasMeaningfulData, hadValidData, isServiceError, isBackendDown, shouldShowStats, isSynced, isSyncing, isInitializing, syncProgress]);
+    // Only for DEVELOPMENT
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== NODE STATE CHANGED ===');
+      console.log('blocksCount:', blocksCount);
+      console.log('blockHeader:', blockHeader);
+      console.log('connectionCount:', connectionCount);
+      console.log('isDataValid:', isDataValid);
+      console.log('hasMeaningfulData:', hasMeaningfulData);
+      console.log('hadValidData:', hadValidData);
+      console.log('isServiceError:', isServiceError);
+      console.log('isBackendDown:', isBackendDown);
+      console.log('shouldShowStats:', shouldShowStats);
+      console.log('isSynced:', isSynced);
+      console.log('isSyncing:', isSyncing);
+      console.log('isInitializing:', isInitializing);
+      console.log('syncProgress:', syncProgress);
+      console.log('prevData.current:', prevData.current);
+      console.log('========================');
+    }
+  }, [
+    blocksCount,
+    blockHeader,
+    connectionCount,
+    isDataValid,
+    hasMeaningfulData,
+    hadValidData,
+    isServiceError,
+    isBackendDown,
+    shouldShowStats,
+    isSynced,
+    isSyncing,
+    isInitializing,
+    syncProgress,
+  ]);
 
   // Force reset hadValidData when service is in error state
   useEffect(() => {
@@ -284,7 +316,7 @@ const Node = () => {
         pass={nodeRpcPassword}
         address={nodeAddress}
       />
-      
+
       {servicesStatus?.node?.status !== 'online' ? (
         <Flex height="60vh" align="center" justify="center">
           <NodeStatus serviceStatus={servicesStatus} />
@@ -294,7 +326,7 @@ const Node = () => {
           <NodeStatus serviceStatus={servicesStatus} />
 
           {/* Render error alert if service status is in error state or backend is down */}
-          {(isServiceError) && (
+          {isServiceError && (
             <Alert
               status="error"
               borderRadius="10px"
@@ -376,7 +408,10 @@ const Node = () => {
                     icon={<BlocksIcon w="32px" h="32px" color={'white'} />}
                     mx="5"
                   />
-                  <Flex direction="column" align={{ base: 'center', md: 'start' }}>
+                  <Flex
+                    direction="column"
+                    align={{ base: 'center', md: 'start' }}
+                  >
                     <Text
                       color="white"
                       fontSize={{
@@ -446,7 +481,10 @@ const Node = () => {
                   {loadingNode ? (
                     <List />
                   ) : errorNodeSentence ? (
-                    <Alert borderRadius={'10px'} status={errorNodeType || 'info'}>
+                    <Alert
+                      borderRadius={'10px'}
+                      status={errorNodeType || 'info'}
+                    >
                       <AlertIcon />
                       <AlertTitle>{errorNodeType || 'info'}</AlertTitle>
                       <AlertDescription>{errorNodeSentence}</AlertDescription>
@@ -490,13 +528,13 @@ const Node = () => {
                             )
                           }
                           value={
-                            isSynced
-                              ? lastBlockTime
-                              : isSyncing
-                              ? (
-                                <FormattedMessage id="node.stats.processing_queue" />
-                              )
-                              : '...'
+                            isSynced ? (
+                              lastBlockTime
+                            ) : isSyncing ? (
+                              <FormattedMessage id="node.stats.processing_queue" />
+                            ) : (
+                              '...'
+                            )
                           }
                           reversed={true}
                         />
@@ -573,17 +611,28 @@ const Node = () => {
                               <Flex align="center" gap={2} fontSize="2xl">
                                 <Icon as={MdArrowDownward} color="green.200" />
                                 {connectionsIn}
-                                <Box as="span" mx={2}>/</Box>
+                                <Box as="span" mx={2}>
+                                  /
+                                </Box>
                                 <Icon as={MdArrowUpward} color="green.500" />
                                 {connectionsOut}
                               </Flex>
-                              <Text fontSize="sm" color="secondaryGray.600" mb={2} fontWeight="500">
+                              <Text
+                                fontSize="sm"
+                                color="secondaryGray.600"
+                                mb={2}
+                                fontWeight="500"
+                              >
                                 <FormattedMessage id="node.stats.connections_in_out" />
                               </Text>
                               <Text fontSize="md">
                                 {connectionCount}/{nodeMaxConnections || 64}
                               </Text>
-                              <Text fontSize="sm" color="secondaryGray.600" fontWeight="500">
+                              <Text
+                                fontSize="sm"
+                                color="secondaryGray.600"
+                                fontWeight="500"
+                              >
                                 <FormattedMessage id="node.stats.total_connections" />
                               </Text>
                             </Flex>
@@ -606,7 +655,9 @@ const Node = () => {
                               }
                             />
                           }
-                          name={<FormattedMessage id="node.stats.remaining_space" />}
+                          name={
+                            <FormattedMessage id="node.stats.remaining_space" />
+                          }
                           value={`${remainingSpace}%`}
                           progress={true}
                           progressPercent={remainingSpace}
@@ -636,9 +687,7 @@ const Node = () => {
                           value={nodeAddress || '...'}
                           reversed={true}
                           fontSize="md"
-                          button={
-                            <FormattedMessage id="node.stats.connect" />
-                          }
+                          button={<FormattedMessage id="node.stats.connect" />}
                           buttonHandler={onOpen}
                           buttonIcon={<MdCastConnected />}
                         />
@@ -667,9 +716,13 @@ const Node = () => {
                           secondaryText={
                             settings?.nodeSoftware ? (
                               <Text fontSize="xs" color="gray.500" mt="1">
-                                <FormattedMessage 
-                                  id={`node.stats.configured_${settings.nodeSoftware}`} 
-                                  defaultMessage={`Configured: ${settings.nodeSoftware === 'core-latest' ? 'Bitcoin Core' : 'Bitcoin Knots'}`}
+                                <FormattedMessage
+                                  id={`node.stats.configured_${settings.nodeSoftware}`}
+                                  defaultMessage={`Configured: ${
+                                    settings.nodeSoftware === 'core-latest'
+                                      ? 'Bitcoin Core'
+                                      : 'Bitcoin Knots'
+                                  }`}
                                 />
                               </Text>
                             ) : null
@@ -684,9 +737,7 @@ const Node = () => {
                 <DynamicTable
                   columnsData={columnsData}
                   tableData={dataTable}
-                  tableTitle={
-                    <FormattedMessage id="node.table.title" />
-                  }
+                  tableTitle={<FormattedMessage id="node.table.title" />}
                   shadow={shadow}
                   mt="5"
                 />

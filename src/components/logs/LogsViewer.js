@@ -31,6 +31,18 @@ export const LOG_TYPES = [
   { value: 'NODE', label: 'Bitcoin Node' },
 ];
 
+// Filter log types based on device type
+const getAvailableLogTypes = () => {
+  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+  
+  if (deviceType === 'solo-node') {
+    // Hide miner logs for solo-node devices
+    return LOG_TYPES.filter(type => type.value !== 'MINER');
+  }
+  
+  return LOG_TYPES;
+};
+
 const LogsViewer = ({ 
   initialLogType = 'CKPOOL',
   initialLines = 20,
@@ -39,7 +51,18 @@ const LogsViewer = ({
   showHeader = true,
   height = '400px'
 }) => {
-  const [logType, setLogType] = useState(initialLogType);
+  const availableLogTypes = getAvailableLogTypes();
+  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+  
+  // Ensure initial log type is available for the current device type
+  const getValidInitialLogType = () => {
+    if (deviceType === 'solo-node' && initialLogType === 'MINER') {
+      return 'CKPOOL'; // Default to CKPOOL if MINER is not available
+    }
+    return initialLogType;
+  };
+  
+  const [logType, setLogType] = useState(getValidInitialLogType());
   const [lines, setLines] = useState(initialLines);
   const [autoRefresh, setAutoRefresh] = useState(initialAutoRefresh);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
@@ -149,7 +172,7 @@ const LogsViewer = ({
               width={{ base: 'full', md: '200px' }}
               mr={2}
             >
-              {LOG_TYPES.map((type) => (
+              {availableLogTypes.map((type) => (
                 <option key={type.value} value={type.value}>
                   {type.label}
                 </option>

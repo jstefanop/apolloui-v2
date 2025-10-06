@@ -329,7 +329,7 @@ const System = () => {
               />
             }
             name={intl.formatMessage({ id: 'system.stats.cpu_usage' })}
-            value={`${cpuUsage}%`}
+            value={cpuUsage !== null && cpuUsage !== undefined ? `${cpuUsage}%` : 'N/A'}
             legendValue={`${cpuCores} ${intl.formatMessage({ id: 'system.stats.cores' })}`}
             percent={cpuUsage}
             gauge={true}

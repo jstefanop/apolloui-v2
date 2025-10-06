@@ -457,7 +457,7 @@ export default function HeaderLinks({
                   <MenuItem
                     icon={<StopIcon />}
                     isDisabled={
-                      nodeOnline === 'offline' || nodeOnline === 'pending'
+                      nodeOnline === 'offline'
                     }
                     onClick={() => handleSystemAction('stopNode')}
                   >
