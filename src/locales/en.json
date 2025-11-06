@@ -466,7 +466,8 @@
           "description": "Configure your WiFi connection",
           "scan": {
             "title": "Scan WiFi Networks",
-            "description": "Click the scan button and your system will scan for available wifi networks. Click one of the available SSIDs, and enter your WiFi passphrase. Clicking the disconnect button will delete all saved WiFi connections. If you are having issues connecting, set your wifi router to a seperate 2.4GHz SSID with WPA2 only security."
+            "description": "Click the scan button and your system will scan for available wifi networks. Click one of the available SSIDs, and enter your WiFi passphrase. Clicking the disconnect button will delete all saved WiFi connections. If you are having issues connecting, set your wifi router to a seperate 2.4GHz SSID with WPA2 only security.",
+            "button": "SCAN"
           }
         },
         "password": {

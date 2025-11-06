@@ -1,13 +1,37 @@
 /**
  * Serializes error objects to ensure they are Redux-serializable
  * @param {Error|string|Array|Object} error - The error to serialize
- * @returns {string|null} - A serialized string representation of the error or null
+ * @returns {string|Object|null} - A serialized representation of the error or null
  */
 export const serializeError = (error) => {
   if (!error) return null;
   
+  // If error has data.error structure (RPC errors), preserve it as an object
+  if (error.data?.error) {
+    return {
+      message: error.data.error.message || error.message || 'Unknown error',
+      code: error.data.error.code || error.code,
+      data: {
+        error: {
+          message: error.data.error.message,
+          code: error.data.error.code,
+        },
+      },
+      ...(error.status && { status: error.status }),
+      ...(error.statusText && { statusText: error.statusText }),
+    };
+  }
+  
   // If it's an Apollo error, extract the message
   if (error.message) {
+    // If it's already a plain object with message, return it as is
+    if (typeof error === 'object' && !(error instanceof Error)) {
+      return {
+        message: error.message,
+        ...(error.code && { code: error.code }),
+        ...(error.type && { type: error.type }),
+      };
+    }
     return error.message;
   }
   

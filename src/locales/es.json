@@ -462,7 +462,8 @@
           "description": "Configura tu conexión WiFi",
           "scan": {
             "title": "Escanear Redes WiFi",
-            "description": "Haz clic en el botón de escaneo y tu sistema buscará redes WiFi disponibles. Haz clic en uno de los SSID disponibles e ingresa tu contraseña WiFi. Al hacer clic en el botón desconectar se eliminarán todas las conexiones WiFi guardadas. Si tienes problemas de conexión, configura tu router WiFi en un SSID separado de 2.4GHz con solo seguridad WPA2."
+            "description": "Haz clic en el botón de escaneo y tu sistema buscará redes WiFi disponibles. Haz clic en uno de los SSID disponibles e ingresa tu contraseña WiFi. Al hacer clic en el botón desconectar se eliminarán todas las conexiones WiFi guardadas. Si tienes problemas de conexión, configura tu router WiFi en un SSID separado de 2.4GHz con solo seguridad WPA2.",
+            "button": "ESCANEAR"
           }
         },
         "password": {

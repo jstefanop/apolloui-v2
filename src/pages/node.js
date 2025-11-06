@@ -349,6 +349,32 @@ const Node = () => {
             </Alert>
           )}
 
+          {/* Show error alert if there's an error from API, even if no valid data */}
+          {errorNodeSentence && !shouldShowStats && (
+            <Alert
+              status={errorNodeType || 'warning'}
+              borderRadius="10px"
+              mb="5"
+              flexDirection="row"
+              alignItems="center"
+              textAlign="left"
+              width="100%"
+              px={6}
+            >
+              <Flex alignItems="center" minW="200px">
+                <AlertIcon boxSize="40px" mr={4} />
+                <AlertTitle fontSize="xl">
+                  {errorNodeType === 'info' ? (
+                    <FormattedMessage id="node.error.info.title" defaultMessage="Node Status" />
+                  ) : (
+                    <FormattedMessage id="node.error.warning.title" defaultMessage="Error" />
+                  )}
+                </AlertTitle>
+              </Flex>
+              <AlertDescription>{errorNodeSentence}</AlertDescription>
+            </Alert>
+          )}
+
           {/* Show stats if service is online or if we had valid data before */}
           {shouldShowStats && (
             <Flex direction="column">

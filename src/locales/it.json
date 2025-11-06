@@ -468,7 +468,8 @@
           "description": "Connetti il controller di sistema al WiFi invece di utilizzare l'ethernet",
           "scan": {
             "title": "Scansiona Reti WiFi",
-            "description": "Clicca il pulsante di scansione e il sistema cercherà le reti WiFi disponibili. Clicca su uno degli SSID disponibili e inserisci la password WiFi. Cliccando il pulsante disconnetti verranno eliminate tutte le connessioni WiFi salvate. Se hai problemi di connessione, imposta il tuo router WiFi su un SSID separato 2.4GHz con solo sicurezza WPA2."
+            "description": "Clicca il pulsante di scansione e il sistema cercherà le reti WiFi disponibili. Clicca su uno degli SSID disponibili e inserisci la password WiFi. Cliccando il pulsante disconnetti verranno eliminate tutte le connessioni WiFi salvate. Se hai problemi di connessione, imposta il tuo router WiFi su un SSID separato 2.4GHz con solo sicurezza WPA2.",
+            "button": "SCANSIONA"
           }
         },
         "password": {

@@ -296,28 +296,47 @@ export const getNodeErrorMessage = (error, intl) => {
     return intl.formatMessage({ id }, values);
   };
 
-  parsedError =
-    error[0].message ||
-    error[0].code ||
-    getMessage('node.error.unknown');
+  // Extract error from first error object
+  const firstError = error[0];
+  
+  // Check for RPC error structure: data.error.message
+  let errorMessage = firstError.message;
+  let errorCode = firstError.code;
+  
+  if (firstError.data?.error?.message) {
+    errorMessage = firstError.data.error.message;
+    errorCode = firstError.data.error.code || errorCode;
+  }
+
+  parsedError = errorMessage || errorCode || getMessage('node.error.unknown');
   sentence = getMessage('node.error.stats', { error: parsedError });
 
-  if (error[0].code === 'ECONNREFUSED') {
+  if (errorCode === 'ECONNREFUSED' || firstError.code === 'ECONNREFUSED') {
     sentence = getMessage('node.error.connection_refused');
   }
 
-  if (error[0].code === 'ERR_BAD_RESPONSE') {
+  if (errorCode === 'ERR_BAD_RESPONSE' || firstError.code === 'ERR_BAD_RESPONSE') {
     sentence = getMessage('node.error.bad_response');
   }
 
-  if (error[0].type === 'authentication') {
+  if (firstError.type === 'authentication') {
     sentence = getMessage('node.error.waiting_response');
     type = 'info';
   }
 
-  if (error[0].code === '-28') {
-    sentence = getMessage('node.error.starting_up');
+  // Check for code -28 (can be string or number)
+  if (errorCode === '-28' || errorCode === -28 || firstError.code === '-28' || firstError.code === -28) {
+    sentence = errorMessage || getMessage('node.error.starting_up');
     type = 'info';
+  }
+
+  // If we have a message from data.error.message, use it directly
+  if (firstError.data?.error?.message) {
+    sentence = errorMessage;
+    // Set type based on error code if available
+    if (errorCode === '-28' || errorCode === -28) {
+      type = 'info';
+    }
   }
 
   return { sentence, type };

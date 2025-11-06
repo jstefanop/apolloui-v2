@@ -12,9 +12,19 @@ export const nodeSelector = createSelector(
   (nodeData, nodeError, nodeLoading) => {
     // Handle null or undefined nodeData
     if (!nodeData) {
+      // Check if nodeError has data.error structure
+      let processedError = nodeError;
+      if (nodeError && typeof nodeError === 'object' && !Array.isArray(nodeError) && nodeError.data?.error) {
+        processedError = {
+          ...nodeError,
+          message: nodeError.data.error.message || nodeError.message,
+          code: nodeError.data.error.code || nodeError.code,
+          data: nodeError.data,
+        };
+      }
       return {
         loading: nodeLoading,
-        error: [nodeError].filter(Boolean),
+        error: [processedError].filter(Boolean),
         data: null,
       };
     }
@@ -25,8 +35,19 @@ export const nodeSelector = createSelector(
     const nodeStats = result?.stats || {};
     const error = nodeStats?.error;
 
+    // Process nodeError to extract data.error if present
+    let processedNodeError = nodeError;
+    if (nodeError && typeof nodeError === 'object' && !Array.isArray(nodeError) && nodeError.data?.error) {
+      processedNodeError = {
+        ...nodeError,
+        message: nodeError.data.error.message || nodeError.message,
+        code: nodeError.data.error.code || nodeError.code,
+        data: nodeError.data,
+      };
+    }
+
     // Filter out null/undefined errors
-    const errors = [...[nodeError, error, errorStats].filter(Boolean)];
+    const errors = [...[processedNodeError, error, errorStats].filter(Boolean)];
 
     let stats = null;
     // Only process data if we have valid nodeStats and no errors
