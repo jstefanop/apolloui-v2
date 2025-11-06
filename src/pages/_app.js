@@ -13,13 +13,13 @@ import '../assets/css/App.css';
 import 'animate.css';
 import theme from '../theme/theme';
 
-import routes from '../routes';
 import wrapper from '../redux/store';
 import AuthLayout from '../components/layouts/Auth';
 import DefaultLayout from '../components/layouts/Default';
 import ProtectedRoutes from '../components/ProtectedRoutes';
 import illustration from '../assets/img/networking_banner.png';
 import { flattenMessages } from '../lib/utils';
+import { DeviceConfigProvider } from '../contexts/DeviceConfigContext';
 
 import messages_en from '../locales/en.json';
 import messages_it from '../locales/it.json';
@@ -88,28 +88,29 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
                 throw err;
               }}
             >
-              <ProtectedRoutes router={router}>
-                <AnimatePresence mode='wait' initial={false}>
-                  {(router.pathname === '/signin' || router.pathname === '/setup') ? (
-                    <AuthLayout
-                      illustrationBackground={illustration.src}
-                      image={illustration.src}
-                      asPath={asPath}
-                    >
-                      <Component {...pageProps} />
-                    </AuthLayout>
-                  ) : router.route === '/404' ? (
-                    <Error statusCode={404} />
-                  ) : (
-                    <DefaultLayout
-                      asPath={asPath}
-                      routes={routes}
-                    >
-                      <Component {...pageProps} />
-                    </DefaultLayout>
-                  )}
-                </AnimatePresence>
-              </ProtectedRoutes>
+              <DeviceConfigProvider>
+                <ProtectedRoutes router={router}>
+                  <AnimatePresence mode='wait' initial={false}>
+                    {(router.pathname === '/signin' || router.pathname === '/setup') ? (
+                      <AuthLayout
+                        illustrationBackground={illustration.src}
+                        image={illustration.src}
+                        asPath={asPath}
+                      >
+                        <Component {...pageProps} />
+                      </AuthLayout>
+                    ) : router.route === '/404' ? (
+                      <Error statusCode={404} />
+                    ) : (
+                      <DefaultLayout
+                        asPath={asPath}
+                      >
+                        <Component {...pageProps} />
+                      </DefaultLayout>
+                    )}
+                  </AnimatePresence>
+                </ProtectedRoutes>
+              </DeviceConfigProvider>
             </IntlProvider>
           </Provider>
         </ApolloProvider>

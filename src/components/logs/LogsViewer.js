@@ -24,24 +24,13 @@ import { LOGS_READ_QUERY } from '../../graphql/logs';
 import { updateLogs } from '../../redux/slices/logsSlice';
 import { MdRefresh, MdContentCopy } from 'react-icons/md';
 import moment from 'moment';
+import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
 export const LOG_TYPES = [
   { value: 'CKPOOL', label: 'CK Pool' },
   { value: 'MINER', label: 'Bitcoin Miner' },
   { value: 'NODE', label: 'Bitcoin Node' },
 ];
-
-// Filter log types based on device type
-const getAvailableLogTypes = () => {
-  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
-  
-  if (deviceType === 'solo-node') {
-    // Hide miner logs for solo-node devices
-    return LOG_TYPES.filter(type => type.value !== 'MINER');
-  }
-  
-  return LOG_TYPES;
-};
 
 const LogsViewer = ({ 
   initialLogType = 'CKPOOL',
@@ -51,8 +40,19 @@ const LogsViewer = ({
   showHeader = true,
   height = '400px'
 }) => {
+  const deviceType = useDeviceType();
+  
+  // Filter log types based on device type
+  const getAvailableLogTypes = () => {
+    if (deviceType === 'solo-node') {
+      // Hide miner logs for solo-node devices
+      return LOG_TYPES.filter(type => type.value !== 'MINER');
+    }
+    
+    return LOG_TYPES;
+  };
+  
   const availableLogTypes = getAvailableLogTypes();
-  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
   
   // Ensure initial log type is available for the current device type
   const getValidInitialLogType = () => {

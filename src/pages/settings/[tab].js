@@ -54,10 +54,11 @@ import {
 import { nodeSelector } from '../../redux/reselect/node';
 import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
+import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
 const SettingsTab = () => {
   const intl = useIntl();
-  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+  const deviceType = useDeviceType();
   const router = useRouter();
   const dispatch = useDispatch();
   const [settings, setSettings] = useState({ initial: true });

@@ -1,12 +1,16 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Box, Spinner, Flex } from '@chakra-ui/react';
+import { useDeviceType } from '../contexts/DeviceConfigContext';
 
 const Settings = () => {
   const router = useRouter();
-  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+  const deviceType = useDeviceType();
 
   useEffect(() => {
+    // Wait for deviceType to load before redirecting
+    if (!deviceType) return;
+    
     // Redirect to the appropriate default tab based on device type
     const defaultTab = deviceType === 'solo-node' ? 'node' : 'pools';
     router.replace(`/settings/${defaultTab}`);

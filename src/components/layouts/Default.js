@@ -26,6 +26,8 @@ import { SERVICES_STATUS_QUERY } from '../../graphql/services';
 import { updateServicesStatus } from '../../redux/slices/servicesSlice';
 import { minerSelector } from '../../redux/reselect/miner';
 import { isAuthError } from '../../redux/utils/errorUtils';
+import { useDeviceType } from '../../contexts/DeviceConfigContext';
+import { getRoutes } from '../../routes';
 
 const createSerializableError = (error) => {
   if (!error) return null;
@@ -37,12 +39,17 @@ const createSerializableError = (error) => {
   };
 };
 
-const Layout = ({ children, routes }) => {
+const Layout = ({ children }) => {
   const { onOpen } = useDisclosure();
   const dispatch = useDispatch();
   const minerPollingTime = process.env.NEXT_PUBLIC_POLLING_TIME;
   const nodePollingTime = process.env.NEXT_PUBLIC_POLLING_TIME_NODE;
-  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+  const deviceType = useDeviceType();
+  
+  // Generate routes dynamically based on device type
+  // Fallback to 'miner' if deviceType is not yet loaded
+  const dynamicRoutes = getRoutes(deviceType || 'miner');
+  let routes = dynamicRoutes;
 
   // Miner data - only fetch if not solo-node device
   const {
@@ -54,12 +61,12 @@ const Layout = ({ children, routes }) => {
   } = useQuery(MINER_STATS_QUERY, {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-and-network',
-    skip: deviceType === 'solo-node'
+    skip: !deviceType || deviceType === 'solo-node'
   });
 
   useEffect(() => {
     // Skip miner polling and data processing for solo-node devices
-    if (deviceType === 'solo-node') {
+    if (!deviceType || deviceType === 'solo-node') {
       return;
     }
 

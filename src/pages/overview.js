@@ -58,6 +58,7 @@ import HashrateChart from '../components/apollo/HashrateChart';
 import { MdOfflineBolt } from 'react-icons/md';
 import { GiDiamondTrophy } from 'react-icons/gi';
 import CountUp from 'react-countup';
+import { useDeviceType } from '../contexts/DeviceConfigContext';
 
 const Overview = () => {
   const intl = useIntl();
@@ -68,7 +69,7 @@ const Overview = () => {
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
-  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+  const deviceType = useDeviceType();
 
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 

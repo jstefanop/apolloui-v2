@@ -48,6 +48,7 @@ import NavbarUpdateModal from './NavbarUpdateModal';
 import { useSelector, shallowEqual } from 'react-redux';
 import { soloSelector } from '../../redux/reselect/solo';
 import moment from '../../lib/moment';
+import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
 export default function HeaderLinks({
   secondary,
@@ -61,7 +62,7 @@ export default function HeaderLinks({
   loading,
   handleSystemAction,
 }) {
-  const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+  const deviceType = useDeviceType();
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.600', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');

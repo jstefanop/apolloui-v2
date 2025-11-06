@@ -7,49 +7,54 @@ import { SystemIcon } from './components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
 import { FormattedMessage } from 'react-intl';
 
-const deviceType = process.env.NEXT_PUBLIC_DEVICE_TYPE;
+// Function to generate routes based on device type
+// This allows routes to be dynamic and not require rebuild
+export const getRoutes = (deviceType) => {
+  return [
+    {
+      name: <FormattedMessage id="routes.overview" />,
+      layout: '/admin',
+      path: '/overview',
+      icon: <DashboardIcon width='20px' height='20px' color='inherit' />,
+    },
+    // Hide miner route for solo-node devices
+    ...(deviceType !== 'solo-node' ? [{
+      name: <FormattedMessage id="routes.miner" />,
+      layout: '/admin',
+      path: '/miner',
+      icon: <MinerIcon width='20px' height='20px' color='inherit' />,
+    }] : []),
+    {
+      name: <FormattedMessage id="routes.soloMining" />,
+      layout: '/admin',
+      path: '/solo-mining',
+      children: true,
+      icon: <GrUserWorker size='1.2em' color='inherit' />,
+    },
+    {
+      name: <FormattedMessage id="routes.node" />,
+      layout: '/admin',
+      icon: <NodeIcon width='20px' height='20px' color='inherit' />,
+      path: '/node',
+    },
+    {
+      name: <FormattedMessage id="routes.system" />,
+      layout: '/admin',
+      path: '/system',
+      bottom: true,
+      icon: <SystemIcon width='20px' height='20px' color='inherit' />,
+    },
+    {
+      name: <FormattedMessage id="routes.settings" />,
+      layout: '/admin',
+      path: '/settings',
+      bottom: true,
+      icon: <SettingsIcon width='20px' height='20px' color='inherit' />,
+    },
+  ];
+};
 
-const routes = [
-  {
-    name: <FormattedMessage id="routes.overview" />,
-    layout: '/admin',
-    path: '/overview',
-    icon: <DashboardIcon width='20px' height='20px' color='inherit' />,
-  },
-  // Hide miner route for solo-node devices
-  ...(deviceType !== 'solo-node' ? [{
-    name: <FormattedMessage id="routes.miner" />,
-    layout: '/admin',
-    path: '/miner',
-    icon: <MinerIcon width='20px' height='20px' color='inherit' />,
-  }] : []),
-  {
-    name: <FormattedMessage id="routes.soloMining" />,
-    layout: '/admin',
-    path: '/solo-mining',
-    children: true,
-    icon: <GrUserWorker size='1.2em' color='inherit' />,
-  },
-  {
-    name: <FormattedMessage id="routes.node" />,
-    layout: '/admin',
-    icon: <NodeIcon width='20px' height='20px' color='inherit' />,
-    path: '/node',
-  },
-  {
-    name: <FormattedMessage id="routes.system" />,
-    layout: '/admin',
-    path: '/system',
-    bottom: true,
-    icon: <SystemIcon width='20px' height='20px' color='inherit' />,
-  },
-  {
-    name: <FormattedMessage id="routes.settings" />,
-    layout: '/admin',
-    path: '/settings',
-    bottom: true,
-    icon: <SettingsIcon width='20px' height='20px' color='inherit' />,
-  },
-];
+// Default export for backward compatibility (uses build-time env var as fallback)
+const routes = getRoutes(process.env.NEXT_PUBLIC_DEVICE_TYPE || 'miner');
 
 export default routes;
