@@ -95,7 +95,8 @@ const NodeStatus = ({ serviceStatus }) => {
   }
 
   // Show info alert when the node is offline and not requested to be online.
-  if (status === 'offline' && requestedStatus === 'offline') {
+  // Handle both requestedStatus === 'offline' and requestedStatus === null
+  if (status === 'offline' && (requestedStatus === 'offline' || requestedStatus === null)) {
     return (
       <CustomAlert
         title={intl.formatMessage({ id: 'node.status.offline.title' })}

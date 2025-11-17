@@ -61,6 +61,8 @@ import { InfoIcon } from '@chakra-ui/icons';
 import SoloMiningDrawer from '../components/apollo/SoloMiningDrawer';
 import SoloMiningStatus from '../components/UI/SoloMiningStatus';
 import ColorBars from '../components/UI/ColorBars';
+import { useLazyQuery } from '@apollo/client';
+import { SOLO_START_QUERY } from '../graphql/solo';
 
 const SoloMining = () => {
   const intl = useIntl();
@@ -82,6 +84,16 @@ const SoloMining = () => {
   const [showBanner, setShowBanner] = useState(!isBannerDisabled);
 
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
+
+  // Solo service actions
+  const [startSolo, { loading: loadingSoloStart }] = useLazyQuery(
+    SOLO_START_QUERY,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  const handleStartSolo = () => {
+    startSolo();
+  };
 
   // Settings data
   const {
@@ -329,6 +341,7 @@ const SoloMining = () => {
             ckDisconnected={ckDisconnected}
             blocksCount={blocksCount}
             blockHeader={blockHeader}
+            onStart={handleStartSolo}
           />
         </Flex>
       )}

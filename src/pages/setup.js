@@ -11,6 +11,7 @@ import { SET_POOLS_QUERY } from '../graphql/pools';
 import { SET_SETTINGS_QUERY } from '../graphql/settings';
 import { NODE_STATS_QUERY } from '../graphql/node';
 import { isValidBitcoinAddress, presetPools } from '../lib/utils';
+import { useDeviceConfig } from '../contexts/DeviceConfigContext';
 
 // Components
 import StepWelcome from '../components/setup/StepWelcome';
@@ -24,6 +25,8 @@ const Setup = () => {
   const router = useRouter();
   const intl = useIntl();
   const textColor = useColorModeValue('brand.800', 'white');
+  const { deviceType } = useDeviceConfig();
+  const isSoloNode = deviceType === 'solo-node';
 
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
@@ -239,7 +242,12 @@ const Setup = () => {
 
     await signin({ variables: { input: { password } } });
 
-    setStep('mining');
+    // For solo-node, skip mining type step and go directly to wallet
+    if (isSoloNode) {
+      setStep('wallet');
+    } else {
+      setStep('mining');
+    }
   };
 
   const handleStartMining = () => {
@@ -270,7 +278,7 @@ const Setup = () => {
         />
       )}
 
-      {step === 'mining' && (
+      {step === 'mining' && !isSoloNode && (
         <StepMiningType
           setStep={setStep}
           isOpen={isOpen}
@@ -289,10 +297,11 @@ const Setup = () => {
           handlesSetupSoloMining={handlesSetupSoloMining}
           error={error}
           setStep={setStep}
+          isSoloNode={isSoloNode}
         />
       )}
 
-      {step === 3 && (
+      {step === 3 && !isSoloNode && (
         <StepPool
           pool={pool}
           setPool={setPool}
@@ -317,6 +326,7 @@ const Setup = () => {
         <StepComplete
           handleStartMining={handleStartMining}
           loadingMinerRestart={loadingMinerRestart}
+          isSoloNode={isSoloNode}
         />
       )}
     </>

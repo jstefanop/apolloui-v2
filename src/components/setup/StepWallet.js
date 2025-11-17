@@ -27,6 +27,7 @@ const StepWallet = ({
   handlesSetupSoloMining,
   error,
   setStep,
+  isSoloNode = false,
 }) => {
   const intl = useIntl();
   const [isValid, setIsValid] = useState(false);
@@ -132,12 +133,20 @@ const StepWallet = ({
           )}
 
           <Flex justify="space-between" mt="40px">
-            <Button onClick={() => setStep('mining')}>
-              {intl.formatMessage({ id: 'setup.common.previous' })}
-            </Button>
+            {!isSoloNode && (
+              <Button onClick={() => setStep('mining')}>
+                {intl.formatMessage({ id: 'setup.common.previous' })}
+              </Button>
+            )}
+            {isSoloNode && (
+              <Button onClick={() => setStep(2)}>
+                {intl.formatMessage({ id: 'setup.common.previous' })}
+              </Button>
+            )}
             <Button 
               type="submit" 
               isDisabled={showValidation && !isFullyValid}
+              ml={isSoloNode ? 'auto' : '0'}
             >
               {intl.formatMessage({ id: 'setup.common.next' })}
             </Button>

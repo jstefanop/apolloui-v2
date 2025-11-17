@@ -12,6 +12,7 @@ const SoloMiningStatus = ({
   ckDisconnected,
   blocksCount,
   blockHeader,
+  onStart,
 }) => {
   const intl = useIntl();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
@@ -105,7 +106,8 @@ const SoloMiningStatus = ({
   }
 
   // Show info alert when the solo service is offline and not requested to be online
-  if (soloStatus === 'offline' && soloRequestedStatus === 'offline') {
+  // Handle both requestedStatus === 'offline' and requestedStatus === null
+  if (soloStatus === 'offline' && (soloRequestedStatus === 'offline' || soloRequestedStatus === null)) {
     return (
       <CustomAlert
         title={intl.formatMessage({ id: 'solo_mining.status.solo_offline.title' })}
