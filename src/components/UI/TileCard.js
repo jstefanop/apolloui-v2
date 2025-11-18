@@ -42,20 +42,20 @@ const TileCard = ({
           justify={{ base: 'center' }}
           paddingBottom={secondaryData ? '8' : '0'}
         >
-          {errors && errors.length ? (
+          {errors && (Array.isArray(errors) ? errors.length > 0 : true) ? (
             <>
               <Text color="white" fontSize={{ base: '4xl' }} fontWeight="800">
                 Error
               </Text>
-              {errors.map((error, index) => {
+              {(Array.isArray(errors) ? errors : [errors]).map((error, index) => (
                 <Text
                   key={index}
                   color={secondaryTextColor || 'gray'}
                   fontSize={{ base: 'md' }}
                 >
-                  {error?.message || error?.code || error.toString()}
-                </Text>;
-              })}
+                  {error?.message || error?.code || (typeof error === 'string' ? error : error?.toString?.() || 'Unknown error')}
+                </Text>
+              ))}
             </>
           ) : (
             <>

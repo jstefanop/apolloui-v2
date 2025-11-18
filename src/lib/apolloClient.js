@@ -95,18 +95,10 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
       err = `[Network error]: ${networkError.message}, Operation: ${operation.operationName}`;
     }
     
-    // Create a serializable error object for Redux
-    const serializableError = {
-      message: err,
-      operationName: operation.operationName,
-      timestamp: new Date().toISOString()
-    };
-    
-    // Dispatch a serializable error object
+    // Dispatch a serializable error message (only message and type, no error object)
     store.dispatch(sendFeedback({ 
       message: err, 
-      type: 'error',
-      error: serializableError
+      type: 'error'
     }));
     
     console.log(err);

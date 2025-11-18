@@ -29,7 +29,25 @@ export const soloSelector = createSelector(
     const blockFound = resultStats?.blockFound ?? false;
     const timestamp = resultStats?.timestamp ?? null;
 
-    const errors = [...[soloError, errorStatus, errorStats].filter(Boolean)];
+    // Serialize errors to ensure they are always safe to pass to React components
+    const serializeError = (error) => {
+      if (!error) return null;
+      if (typeof error === 'string') return error;
+      if (typeof error === 'object') {
+        // Extract message or code, ensuring it's always a string
+        return {
+          message: error.message || error.code || 'Unknown error',
+          code: error.code || null,
+        };
+      }
+      return String(error);
+    };
+
+    const errors = [
+      serializeError(soloError),
+      serializeError(errorStatus),
+      serializeError(errorStats)
+    ].filter(Boolean);
 
     // Calculate pool statistics
     let poolStats = null;
@@ -145,7 +163,7 @@ export const soloSelector = createSelector(
 
     return {
       loading: soloLoading,
-      error: errors.length > 0 ? errors[0] : null,
+      error: errors.length > 0 ? errors : null,
       data: {
         status: soloStatus,
         pool: poolStats,

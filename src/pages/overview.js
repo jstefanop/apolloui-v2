@@ -552,11 +552,21 @@ const Overview = () => {
                 </Flex>
               ) : loadingSolo ? (
                 <List />
-              ) : errorSolo ? (
+              ) : errorSolo && errorSolo.length > 0 ? (
                 <Alert borderRadius={'10px'} status="error">
                   <AlertIcon />
                   <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{errorSolo}</AlertDescription>
+                  <AlertDescription>
+                    {Array.isArray(errorSolo) 
+                      ? errorSolo.map((err, idx) => (
+                          <div key={idx}>
+                            {typeof err === 'string' ? err : err?.message || err?.code || 'Unknown error'}
+                          </div>
+                        ))
+                      : typeof errorSolo === 'string' 
+                        ? errorSolo 
+                        : errorSolo?.message || errorSolo?.code || 'Unknown error'}
+                  </AlertDescription>
                 </Alert>
               ) : (
                 <Flex
