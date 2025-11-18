@@ -159,12 +159,14 @@ const SoloMining = () => {
     summary: poolSummary,
     blockFound,
     timestamp,
+    hasUsers = false,
   } = soloData || {};
 
   // Map solo service data to original variable names for compatibility
   const ckPoolGlobalHashrate = poolData?.hashrate1m ? displayHashrate(convertHashrateStringToValue(poolData.hashrate1m, 'GH/s'), 'GH/s', false, 2, true) : null;
   const ckPoolGlobalAvgHashrate = poolData?.hashrate1hr ? displayHashrate(convertHashrateStringToValue(poolData.hashrate1hr, 'GH/s'), 'GH/s', false, 2, true) : null;
-  const ckPoolGlobalBestshare = poolData?.bestshare || 0;
+  // Only show bestshare if there are users connected, otherwise show null (which will display as N/A)
+  const ckPoolGlobalBestshare = hasUsers ? (poolData?.bestshare || 0) : null;
   const ckPoolHashrateInGhs = poolData?.hashrate1m ? convertHashrateStringToValue(poolData.hashrate1m, 'GH/s') : 0;
   const ckUsersCount = poolData?.Users || 0;
   const ckWorkersCount = poolData?.Workers || 0;

@@ -16,7 +16,7 @@ const HashrateCard = ({
   avgData,
   prevData,
   prevAvgData,
-  status, // Required status parameter
+  status, // Status parameter (defaults to 'pending' if not provided)
   title, // Custom title parameter
 }) => {
   const hashCardColor = useColorModeValue(
@@ -29,39 +29,19 @@ const HashrateCard = ({
     'secondaryGray.200'
   );
 
-  // Status is required - show error message in the card if not provided
-  if (!status) {
-    console.error('HashrateCard: status parameter is required');
-    return (
-      <TileCard
-        bannerImage={BannerHashrate}
-        boxShadow={shadow}
-        bgGradient={hashCardColor}
-        icon={MinerIcon}
-        iconColor={iconColor}
-        iconBgColor={'linear-gradient(290.56deg, #454D76 7.51%, #25283E 60.45%)'}
-        secondaryTextColor={hashSecondaryColor}
-        secondaryText="Error"
-        title="Hashrate Status"
-        bigFont={true}
-        loading={false}
-        errors={['Status parameter is missing']}
-        mainData="Status Error"
-        secondaryData="N/A"
-      />
-    );
-  }
+  // Default to 'pending' if status is not provided
+  const currentStatus = status || 'pending';
 
   // Determine the appropriate icon for the TileCard
   const tileCardIcon = (() => {
-    if (status === 'offline') return MdOfflineBolt;
-    if (status === 'pending') return Spinner;
+    if (currentStatus === 'offline') return MdOfflineBolt;
+    if (currentStatus === 'pending') return Spinner;
     return MinerIcon;
   })();
 
   // Determine what to display in the main data section
   const mainDataContent = (() => {
-    if (status === 'online' && data?.value !== null && data?.value !== undefined) {
+    if (currentStatus === 'online' && data?.value !== null && data?.value !== undefined) {
       return (
         <CountUp
           start={prevData?.value || 0}
@@ -75,13 +55,13 @@ const HashrateCard = ({
           {({ countUpRef }) => <span ref={countUpRef} />}
         </CountUp>
       );
-    } else if (status === 'offline') {
+    } else if (currentStatus === 'offline') {
       return (
         <span>
           <FormattedMessage id="miner.status.offline.tag" />
         </span>
       );
-    } else if (status === 'pending') {
+    } else if (currentStatus === 'pending') {
       return (
         <span>
           <FormattedMessage id="miner.status.pending" />
@@ -111,7 +91,7 @@ const HashrateCard = ({
       errors={errors}
       mainData={mainDataContent}
       secondaryData={
-        status === 'online' && avgData?.value !== null && avgData?.value !== undefined ? (
+        currentStatus === 'online' && avgData?.value !== null && avgData?.value !== undefined ? (
           <CountUp
             start={prevAvgData?.value || 0}
             end={avgData.value || 0}

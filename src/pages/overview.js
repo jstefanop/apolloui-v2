@@ -114,6 +114,12 @@ const Overview = () => {
     const poolData = dataSolo?.pool;
     if (!poolData) return null;
 
+    // Check if there are any connected users (using hasUsers from selector)
+    const hasUsers = dataSolo?.hasUsers || false;
+
+    // If no users are connected, return null to show N/A
+    if (!hasUsers) return null;
+
     const bestshare = poolData.bestshare;
     const networkhashps = dataNode?.networkhashps || 0;
 

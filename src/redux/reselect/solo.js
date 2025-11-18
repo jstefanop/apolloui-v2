@@ -139,6 +139,10 @@ export const soloSelector = createSelector(
       };
     }
 
+    // Check if there are any connected users
+    const usersCount = poolStats?.Users || 0;
+    const hasUsers = usersCount > 0 || usersStats.length > 0;
+
     return {
       loading: soloLoading,
       error: errors.length > 0 ? errors[0] : null,
@@ -149,6 +153,7 @@ export const soloSelector = createSelector(
         summary: summaryStats,
         blockFound,
         timestamp,
+        hasUsers,
       },
     };
   }
