@@ -748,7 +748,7 @@ const Node = () => {
                                     settings.nodeSoftware === 'core_25_1'
                                       ? 'Bitcoin Core 25.1'
                                       : settings.nodeSoftware === 'core_28_1'
-                                      ? 'Bitcoin Core 28.1 (default)'
+                                      ? 'Bitcoin Core 28.1'
                                       : settings.nodeSoftware === 'knots_29_2'
                                       ? 'Bitcoin Knots 29.2'
                                       : settings.nodeSoftware?.startsWith('core_')
