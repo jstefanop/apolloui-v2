@@ -745,9 +745,17 @@ const Node = () => {
                                 <FormattedMessage
                                   id={`node.stats.configured_${settings.nodeSoftware}`}
                                   defaultMessage={`Configured: ${
-                                    settings.nodeSoftware === 'core-latest'
+                                    settings.nodeSoftware === 'core_25_1'
+                                      ? 'Bitcoin Core 25.1'
+                                      : settings.nodeSoftware === 'core_28_1'
+                                      ? 'Bitcoin Core 28.1 (default)'
+                                      : settings.nodeSoftware === 'knots_29_2'
+                                      ? 'Bitcoin Knots 29.2'
+                                      : settings.nodeSoftware?.startsWith('core_')
                                       ? 'Bitcoin Core'
-                                      : 'Bitcoin Knots'
+                                      : settings.nodeSoftware?.startsWith('knots_')
+                                      ? 'Bitcoin Knots'
+                                      : 'Unknown'
                                   }`}
                                 />
                               </Text>

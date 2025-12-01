@@ -28,7 +28,7 @@ export const useNodeSettings = () => {
   });
 
   // Node software selection
-  const [nodeSoftware, setNodeSoftware] = useState('bitcoin-core');
+  const [nodeSoftware, setNodeSoftware] = useState('core_28_1');
 
   // Node max connections
   const [nodeMaxConnections, setNodeMaxConnections] = useState(32);
@@ -62,7 +62,7 @@ export const useNodeSettings = () => {
       selected: settings.nodeAllowLan || false,
     }));
 
-    setNodeSoftware(settings.nodeSoftware || 'bitcoin-core');
+    setNodeSoftware(settings.nodeSoftware || 'core_28_1');
 
     setNodeMaxConnections(settings.nodeMaxConnections || 32);
 

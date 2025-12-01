@@ -78,8 +78,9 @@ const NodeSettings = () => {
             onChange={handleNodeSoftwareChange}
             color={inputTextColor}
           >
-            <option value="core-latest">Bitcoin Core</option>
-            <option value="knots-latest">Bitcoin Knots</option>
+            <option value="core_25_1">Bitcoin Core 25.1</option>
+            <option value="core_28_1">Bitcoin Core 28.1 (Default)</option>
+            <option value="knots_29_2">Bitcoin Knots 29.2</option>
           </Select>
         </SimpleCard>
 
