@@ -103,6 +103,7 @@ const StepPool = ({
                   isInvalid={poolError}
                   isDisabled={pool?.id !== 'custom'}
                   fontWeight="500"
+                  color={'secondaryGray.800'}
                   placeholder={intl.formatMessage({ id: 'setup.pool.url_placeholder' })}
                   _placeholder={{
                     fontWeight: '400',
@@ -123,6 +124,7 @@ const StepPool = ({
                   onChange={(e) => setPoolUsername(e.target.value)}
                   isInvalid={poolError && !poolUsername}
                   fontWeight="500"
+                  color={'secondaryGray.800'}
                   placeholder={intl.formatMessage({ id: 'setup.pool.username_placeholder' })}
                   _placeholder={{
                     fontWeight: '400',
@@ -145,6 +147,7 @@ const StepPool = ({
                     onChange={(e) => setPoolPassword(e.target.value)}
                     isInvalid={poolError && !poolPassword}
                     fontWeight="500"
+                    color={'secondaryGray.800'}
                     placeholder={intl.formatMessage({ id: 'setup.pool.password_placeholder' })}
                     _placeholder={{
                       fontWeight: '400',
@@ -173,7 +176,7 @@ const StepPool = ({
           )}
 
           <Flex justify="space-between" mt="40px">
-            <Button bg={buttonColor} onClick={() => setStep('mining')}>
+            <Button bg={buttonColor} onClick={() => setStep(2)}>
               {intl.formatMessage({ id: 'setup.common.previous' })}
             </Button>
             <Button bg={buttonColor} type="submit">

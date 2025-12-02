@@ -196,6 +196,10 @@
     "enabled": "ABILITATO",
     "auto": "AUTO",
     "status": {
+      "error": {
+        "title": "Errore Servizio Miner",
+        "description": "Il servizio del miner sta riscontrando un errore. Controllare la configurazione del sistema o provare a riavviare il servizio miner dal menu in alto."
+      },
       "unavailable": {
         "title": "Stato miner non disponibile",
         "description": "Impossibile recuperare lo stato del miner. Riprovare più tardi."
@@ -277,6 +281,10 @@
       "active": "Attivo"
     },
     "status": {
+      "error": {
+        "title": "Errore Servizio Solo",
+        "description": "Il servizio di solo mining sta riscontrando un errore. Controllare la configurazione del sistema o provare a riavviare il servizio solo dal menu in alto."
+      },
       "solo_unavailable": {
         "title": "Servizio solo non disponibile",
         "description": "Impossibile recuperare lo stato del servizio solo. Riprova più tardi."
@@ -656,6 +664,10 @@
     },
     "mining_type": {
       "title": "Seleziona tipo di mining",
+      "solo_warning": {
+        "title": "Il Mining in Solo Richiede un Nodo Sincronizzato",
+        "description": "Il mining in solo può essere utilizzato solo quando il tuo nodo è completamente sincronizzato. Puoi configurarlo ora, ma il mining inizierà solo quando la sincronizzazione del nodo sarà completa."
+      },
       "node_not_synced": {
         "title": "Nodo non completamente sincronizzato",
         "description": "Il mining in solo inizierà solo quando il tuo nodo sarà sincronizzato al 100%. Puoi selezionare questa opzione ora, ma il mining inizierà automaticamente quando la sincronizzazione sarà completata."
@@ -679,6 +691,7 @@
     },
     "wallet": {
       "title": "Imposta indirizzo wallet",
+      "description": "Inserisci il tuo indirizzo wallet per il pagamento del mining in solo. Questo è l'indirizzo a cui andrà l'intera ricompensa del blocco se trovi un blocco. NON utilizzare un indirizzo di exchange e usa solo un indirizzo Bitcoin che controlli completamente. Se la tua unità è dotata di una FutureBit Satscard, puoi toccare la card su un telefono abilitato NFC per visualizzare l'indirizzo di pagamento e copiarlo e incollarlo qui sotto. Nota che non inizierai il mining in solo finché il tuo nodo non sarà completamente sincronizzato, il che può richiedere diversi giorni.",
       "address_label": "Indirizzo wallet",
       "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
       "error": {
@@ -699,11 +712,13 @@
     "complete": {
       "title": "La tua configurazione è completa!",
       "subtitle": "Iniziamo a minare Bitcoin!",
-      "button": "Inizia il mining"
+      "button": "Inizia il mining",
+      "button_solo": "Avvia Solo Node"
     },
     "common": {
       "previous": "Precedente",
-      "next": "Avanti"
+      "next": "Avanti",
+      "get_started": "Inizia la configurazione"
     }
   },
   "footer": {

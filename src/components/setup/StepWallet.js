@@ -93,7 +93,7 @@ const StepWallet = ({
           {intl.formatMessage({ id: 'setup.wallet.title' })}
         </Heading>
         <Text mt="20px" color={textColor} fontWeight="400" fontSize="md">
-          {intl.formatMessage({ id: 'setup.mining_type.solo.description' })}
+          {intl.formatMessage({ id: 'setup.wallet.description' })}
         </Text>
       </Box>
 
@@ -144,12 +144,12 @@ const StepWallet = ({
 
           <Flex justify="space-between" mt="40px">
             {!isSoloNode && (
-              <Button bg={buttonColor} onClick={() => setStep('mining')}>
+              <Button bg={buttonColor} onClick={() => setStep(2)}>
                 {intl.formatMessage({ id: 'setup.common.previous' })}
               </Button>
             )}
             {isSoloNode && (
-              <Button bg={buttonColor} onClick={() => setStep(2)}>
+              <Button bg={buttonColor} onClick={() => setStep(1)}>
                 {intl.formatMessage({ id: 'setup.common.previous' })}
               </Button>
             )}

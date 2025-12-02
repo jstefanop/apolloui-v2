@@ -662,9 +662,9 @@
     },
     "mining_type": {
       "title": "Select mining type",
-      "node_not_synced": {
-        "title": "Node not fully synced",
-        "description": "Solo mining will only begin once your node is 100% synced. You can select this option now, but mining will start automatically when sync is complete."
+      "solo_warning": {
+        "title": "Solo Mining Requires Synced Node",
+        "description": "Solo mining can only be used once your node is fully synced. You can configure it now, but mining will only start when the node sync is complete."
       },
       "solo": {
         "title": "Solo Mining",
@@ -685,6 +685,7 @@
     },
     "wallet": {
       "title": "Set wallet address",
+      "description": "Enter your wallet address for solo mining payout. This is the address the full block reward will go to if you find a block. Do NOT use an exchange address, and only use a Bitcoin address you fully control. If your unit came with a FutureBit Satscard, you can tap the card on an NFC enable phone to view the payout address, and copy and paste the address below. Please note you will not start solo mining until your node is fully synced, which can take several days.",
       "address_label": "Wallet address",
       "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
       "error": {
@@ -705,7 +706,8 @@
     "complete": {
       "title": "Your Setup is complete!",
       "subtitle": "Let's start mining some Bitcoin!",
-      "button": "Start mining"
+      "button": "Start mining",
+      "button_solo": "Start Solo Node"
     },
     "common": {
       "previous": "Previous",

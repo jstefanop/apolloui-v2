@@ -21,7 +21,7 @@ import {
 import Card from '../card/Card';
 import { useIntl } from 'react-intl';
 
-const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
+const StepMiningType = ({ setStep, isOpen, onOpen, onClose }) => {
   const intl = useIntl();
   
   // Theme colors
@@ -41,17 +41,15 @@ const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
           {intl.formatMessage({ id: 'setup.mining_type.title' })}
         </Heading>
       </Box>
-      {!isNodeSynced && (
-        <Alert status="warning" mb="10" borderRadius="lg">
-          <AlertIcon />
-          <Box>
-            <AlertTitle>{intl.formatMessage({ id: 'setup.mining_type.node_not_synced.title' })}</AlertTitle>
-            <AlertDescription>
-              {intl.formatMessage({ id: 'setup.mining_type.node_not_synced.description' })}
-            </AlertDescription>
-          </Box>
-        </Alert>
-      )}
+      <Alert status="warning" mb="10" borderRadius="lg">
+        <AlertIcon />
+        <Box>
+          <AlertTitle>{intl.formatMessage({ id: 'setup.mining_type.solo_warning.title' })}</AlertTitle>
+          <AlertDescription>
+            {intl.formatMessage({ id: 'setup.mining_type.solo_warning.description' })}
+          </AlertDescription>
+        </Box>
+      </Alert>
       <Flex flexDir={{ base: 'column', md: 'row' }} justifyContent="center">
         <Card
           onClick={onOpen}

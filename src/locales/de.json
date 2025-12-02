@@ -100,6 +100,9 @@
       "last_block": "Minuten seit dem letzten Block",
       "node_address": "Lokale Node-Adresse",
       "node_version": "Bitcoin-Node-Version",
+      "configured_core_25_1": "Konfiguriert: Bitcoin Core 25.1",
+      "configured_core_28_1": "Konfiguriert: Bitcoin Core 28.1",
+      "configured_knots_29_2": "Konfiguriert: Bitcoin Knots 29.2",
       "percentage_completed": "Prozentsatz abgeschlossen {percentage}%",
       "processing_queue": "Verarbeitung der Warteschlange...",
       "initializing": "Initialisierung...",
@@ -111,7 +114,9 @@
       "in": "Eingehend: {count}",
       "out": "Ausgehend: {count}",
       "total_connections": "Gesamt",
-      "verification_progress": "Verifizierungsfortschritt"
+      "verification_progress": "Verifizierungsfortschritt",
+      "accepted_shares": "Akzeptierte Shares",
+      "rejected_shares": "Abgelehnte Shares"
     },
     "panel": {
       "connect_tooltip": "Mit Ihrer Node verbinden",
@@ -188,6 +193,10 @@
     "enabled": "AKTIVIERT",
     "auto": "AUTO",
     "status": {
+      "error": {
+        "title": "Miner-Dienstfehler",
+        "description": "Der Miner-Dienst hat derzeit einen Fehler. Bitte überprüfen Sie Ihre Systemkonfiguration oder versuchen Sie, den Miner-Dienst über das obere Menü neu zu starten."
+      },
       "unavailable": {
         "title": "Miner-Status nicht verfügbar",
         "description": "Der Miner-Status konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
@@ -269,6 +278,10 @@
       "active": "Aktiv"
     },
     "status": {
+      "error": {
+        "title": "Solo-Dienstfehler",
+        "description": "Der Solo-Mining-Dienst hat derzeit einen Fehler. Bitte überprüfen Sie Ihre Systemkonfiguration oder versuchen Sie, den Solo-Dienst über das obere Menü neu zu starten."
+      },
       "solo_unavailable": {
         "title": "Solo-Service nicht verfügbar",
         "description": "Der Solo-Service-Status konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut."
@@ -649,6 +662,10 @@
     },
     "mining_type": {
       "title": "Mining-Typ auswählen",
+      "solo_warning": {
+        "title": "Solo-Mining Erfordert Synchronisierte Node",
+        "description": "Solo-Mining kann nur verwendet werden, wenn Ihre Node vollständig synchronisiert ist. Sie können es jetzt konfigurieren, aber das Mining beginnt erst, wenn die Node-Synchronisierung abgeschlossen ist."
+      },
       "node_not_synced": {
         "title": "Node nicht vollständig synchronisiert",
         "description": "Solo-Mining beginnt erst, wenn Ihr Node zu 100% synchronisiert ist. Sie können diese Option jetzt auswählen, aber das Mining beginnt automatisch, wenn die Synchronisierung abgeschlossen ist."
@@ -672,6 +689,7 @@
     },
     "wallet": {
       "title": "Wallet-Adresse festlegen",
+      "description": "Geben Sie Ihre Wallet-Adresse für die Solo-Mining-Auszahlung ein. Dies ist die Adresse, an die die gesamte Blockbelohnung geht, wenn Sie einen Block finden. Verwenden Sie KEINE Exchange-Adresse und verwenden Sie nur eine Bitcoin-Adresse, die Sie vollständig kontrollieren. Wenn Ihr Gerät mit einer FutureBit Satscard geliefert wurde, können Sie die Karte auf einem NFC-fähigen Telefon antippen, um die Auszahlungsadresse anzuzeigen und sie unten zu kopieren und einzufügen. Bitte beachten Sie, dass Sie erst mit dem Solo-Mining beginnen, wenn Ihre Node vollständig synchronisiert ist, was mehrere Tage dauern kann.",
       "address_label": "Wallet-Adresse",
       "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
       "error": {
@@ -692,11 +710,13 @@
     "complete": {
       "title": "Ihr Setup ist abgeschlossen!",
       "subtitle": "Lassen Sie uns Bitcoin minen!",
-      "button": "Mining starten"
+      "button": "Mining starten",
+      "button_solo": "Solo Node Starten"
     },
     "common": {
       "previous": "Zurück",
-      "next": "Weiter"
+      "next": "Weiter",
+      "get_started": "Setup-Prozess starten"
     }
   },
   "footer": {

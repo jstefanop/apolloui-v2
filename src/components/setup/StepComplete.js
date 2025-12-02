@@ -3,7 +3,7 @@ import { Box, Button, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
-const StepComplete = ({ handleStartMining, loadingMinerRestart, isSoloNode }) => {
+const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloRestart, loadingNodeStart, isSoloNode }) => {
   const intl = useIntl();
   const router = useRouter();
   const textColor = useColorModeValue('brand.800', 'white');
@@ -12,6 +12,9 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, isSoloNode }) =>
   const handleGoToLogin = () => {
     router.push('/signin');
   };
+
+  // For solo-node, check if either node or solo service is loading
+  const isLoading = isSoloNode ? (loadingSoloRestart || loadingNodeStart) : loadingMinerRestart;
 
   return (
     <Box mx="auto" py="150px">
@@ -25,34 +28,21 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, isSoloNode }) =>
             </>
           )}
         </Text>
-        {!isSoloNode && (
-          <Button
-            fontSize="sm"
-            bg={buttonColor}
-            fontWeight="500"
-            w="300px"
-            h="50"
-            mb="24px"
-            onClick={handleStartMining}
-            isDisabled={loadingMinerRestart}
-            isLoading={loadingMinerRestart}
-          >
-            {intl.formatMessage({ id: 'setup.complete.button' })}
-          </Button>
-        )}
-        {isSoloNode && (
-          <Button
-            fontSize="sm"
-            bg={buttonColor}
-            fontWeight="500"
-            w="300px"
-            h="50"
-            mb="24px"
-            onClick={handleGoToLogin}
-          >
-            {intl.formatMessage({ id: 'signin.button' })}
-          </Button>
-        )}
+        <Button
+          fontSize="sm"
+          bg={buttonColor}
+          fontWeight="500"
+          w="300px"
+          h="50"
+          mb="24px"
+          onClick={isSoloNode ? handleStartMining : handleStartMining}
+          isDisabled={isLoading}
+          isLoading={isLoading}
+        >
+          {isSoloNode 
+            ? intl.formatMessage({ id: 'setup.complete.button_solo' }) 
+            : intl.formatMessage({ id: 'setup.complete.button' })}
+        </Button>
       </Flex>
     </Box>
   );

@@ -30,6 +30,8 @@ const StepPassword = ({
   setError,
   handlePassword,
   setStep,
+  isSoloNode,
+  soloMining,
 }) => {
   const intl = useIntl();
   
@@ -136,7 +138,14 @@ const StepPassword = ({
           )}
 
           <Flex justify="space-between" mt="80px">
-            <Button bg={buttonColor} onClick={() => setStep(1)}>
+            <Button bg={buttonColor} onClick={() => {
+              // Go back to the correct previous step
+              if (isSoloNode || soloMining) {
+                setStep('wallet');
+              } else {
+                setStep(3); // Go back to pool settings
+              }
+            }}>
               {intl.formatMessage({ id: 'setup.common.previous' })}
             </Button>
             <Button bg={buttonColor} type="submit">

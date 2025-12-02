@@ -6,10 +6,11 @@ import { useColorModeValue, useDisclosure } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 
 import { MINER_RESTART_QUERY } from '../graphql/miner';
+import { SOLO_RESTART_QUERY } from '../graphql/solo';
+import { NODE_START_QUERY } from '../graphql/node';
 import { AUTH_LOGIN_QUERY, SAVE_SETUP_QUERY } from '../graphql/auth';
 import { SET_POOLS_QUERY } from '../graphql/pools';
 import { SET_SETTINGS_QUERY } from '../graphql/settings';
-import { NODE_STATS_QUERY } from '../graphql/node';
 import { isValidBitcoinAddress, presetPools } from '../lib/utils';
 import { useDeviceConfig } from '../contexts/DeviceConfigContext';
 
@@ -40,13 +41,22 @@ const Setup = () => {
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
   const [token, setToken] = useState();
-  const [isNodeSynced, setIsNodeSynced] = useState(null);
   const [isComplete, setIsComplete] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [restartMiner, { loading: loadingMinerRestart }] = useLazyQuery(
     MINER_RESTART_QUERY,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  const [restartSolo, { loading: loadingSoloRestart }] = useLazyQuery(
+    SOLO_RESTART_QUERY,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  const [startNode, { loading: loadingNodeStart }] = useLazyQuery(
+    NODE_START_QUERY,
     { fetchPolicy: 'no-cache' }
   );
 
@@ -66,32 +76,17 @@ const Setup = () => {
     fetchPolicy: 'no-cache',
   });
 
-  const [getNodeStatus, { data: nodeStatusData }] =
-    useLazyQuery(NODE_STATS_QUERY);
-
   useEffect(() => {
     if (dataSaveSetup?.Auth?.setup?.error)
       setError(dataSaveSetup.Auth.setup.error.message);
-    if (dataSignin?.Auth?.login?.error)
-      setError(dataSignin.Auth.login.error.message);
-    if (errorSignin) setError(errorSignin.message);
     if (errorSaveSetup) setError(errorSaveSetup.message);
-
-    if (dataSignin?.Auth?.login?.result) {
-      const accessToken = dataSignin.Auth.login.result.accessToken;
-      setToken(accessToken);
-      // Save token immediately when available
-      if (accessToken) {
-        localStorage.setItem('token', accessToken);
-      }
-    }
-  }, [dataSaveSetup, dataSignin, errorSignin, errorSaveSetup]);
+  }, [dataSaveSetup, errorSaveSetup]);
 
   useEffect(() => {
     // Only proceed if setup is complete AND token is available
     if (!isComplete || !token) return;
 
-    // Token is already saved in the previous useEffect when it becomes available
+    // Token is already saved in localStorage in handlePassword
     // Now we can safely make authenticated requests
 
     if (soloMining) {
@@ -126,7 +121,7 @@ const Setup = () => {
     setPoolError(null);
     setError(null);
     onClose();
-    if (step === 'mining') {
+    if (step === 1) {
       setPoolUsername('');
       setPoolPassword('');
       setPoolUrl('');
@@ -136,38 +131,6 @@ const Setup = () => {
       setVerifyPassword('');
     }
   }, [step, onClose]);
-
-  useEffect(() => {
-    if (step === 'mining') {
-      getNodeStatus(); // Trigger the node status query when step is 'mining'
-    }
-  }, [step, getNodeStatus]);
-
-  useEffect(() => {
-    if (!nodeStatusData) return;
-    
-    // Add proper null checks for each level of the object
-    const Node = nodeStatusData.Node;
-    if (!Node) return;
-    
-    const stats = Node.stats;
-    if (!stats) return;
-    
-    const result = stats.result;
-    if (!result) return;
-    
-    const statsData = result.stats;
-    if (!statsData) return;
-    
-    const blockchainInfo = statsData.blockchainInfo;
-    if (!blockchainInfo) return;
-    
-    const { blocks: blocksCount, headers: blockHeader } = blockchainInfo;
-    
-    if (blockHeader && blockHeader === blocksCount) {
-      setIsNodeSynced(true); // Set sync status based on query result
-    }
-  }, [nodeStatusData]);
 
   const handleChangePool = (e) => {
     const preset = presetPools[e.target.value];
@@ -184,12 +147,6 @@ const Setup = () => {
     if (!poolUrl.match(/stratum\+tcp:\/\/(.*):?\d*$/))
       return setPoolError('Invalid pool URL');
 
-    // Only mark as complete if token is available (setup and signin completed)
-    if (!token) {
-      setPoolError('Please wait for authentication to complete');
-      return;
-    }
-
     setPool({
       ...pool,
       username: poolUsername,
@@ -197,8 +154,8 @@ const Setup = () => {
       url: poolUrl,
     });
 
-    setIsComplete(true);
-    setStep(4);
+    // Move to password step
+    setStep('password');
   };
 
   const handlesSetupSoloMining = async (e) => {
@@ -209,12 +166,6 @@ const Setup = () => {
 
       if (!isValidBitcoinAddress(poolUsername))
         return setPoolError('Please add a valid Bitcoin address');
-
-      // Only mark as complete if token is available (setup and signin completed)
-      if (!token) {
-        setPoolError('Please wait for authentication to complete');
-        return;
-      }
 
       const soloUrl = 'stratum+tcp://127.0.0.1:3333';
       const soloPassword = 'x';
@@ -230,8 +181,9 @@ const Setup = () => {
       });
 
       setSoloMining(true);
-      setIsComplete(true);
-      setStep(4);
+      
+      // Move to password step
+      setStep('password');
     } catch (error) {
       setError(error.toString());
     }
@@ -258,7 +210,7 @@ const Setup = () => {
     setError(null); // Clear previous errors
 
     try {
-      // Wait for saveSetup to complete
+      // Save setup with password
       const saveSetupResult = await saveSetup({ variables: { input: { password } } });
       
       // Check for errors in saveSetup
@@ -267,7 +219,7 @@ const Setup = () => {
         return;
       }
 
-      // Wait for signin to complete
+      // Now sign in to get token
       const signinResult = await signin({ variables: { input: { password } } });
       
       // Check for errors in signin
@@ -276,21 +228,30 @@ const Setup = () => {
         return;
       }
 
-      // Only proceed to next step if both operations succeeded
-      // Token will be set by the useEffect when dataSignin is available
-      // For solo-node, skip mining type step and go directly to wallet
-      if (isSoloNode) {
-        setStep('wallet');
-      } else {
-        setStep('mining');
+      // Get token from signin result
+      const accessToken = signinResult?.data?.Auth?.login?.result?.accessToken;
+      if (accessToken) {
+        localStorage.setItem('token', accessToken);
+        setToken(accessToken);
       }
+
+      // Mark setup as complete and move to final step
+      setIsComplete(true);
+      setStep('complete');
     } catch (err) {
       setError(err.message || 'An error occurred during setup');
     }
   };
 
   const handleStartMining = () => {
-    restartMiner();
+    if (isSoloNode) {
+      startNode();
+      restartSolo();
+    } else {
+      startNode();
+      restartMiner();
+      restartSolo();
+    }
     router.reload();
   };
 
@@ -300,30 +261,14 @@ const Setup = () => {
         <title>Setup your Apollo miner</title>
       </Head>
 
-      {step === 1 && <StepWelcome setStep={setStep} />}
+      {step === 1 && <StepWelcome setStep={setStep} isSoloNode={isSoloNode} />}
 
-      {step === 2 && (
-        <StepPassword
-          password={password}
-          setPassword={setPassword}
-          verifyPassword={verifyPassword}
-          setVerifyPassword={setVerifyPassword}
-          showPassword={showPassword}
-          setShowPassword={setShowPassword}
-          error={error}
-          setError={setError}
-          handlePassword={handlePassword}
-          setStep={setStep}
-        />
-      )}
-
-      {step === 'mining' && !isSoloNode && (
+      {step === 2 && !isSoloNode && (
         <StepMiningType
           setStep={setStep}
           isOpen={isOpen}
           onOpen={onOpen}
           onClose={onClose}
-          isNodeSynced={isNodeSynced} // Passing sync status to StepMiningType
         />
       )}
 
@@ -361,10 +306,29 @@ const Setup = () => {
         />
       )}
 
-      {step === 4 && (
+      {step === 'password' && (
+        <StepPassword
+          password={password}
+          setPassword={setPassword}
+          verifyPassword={verifyPassword}
+          setVerifyPassword={setVerifyPassword}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          error={error}
+          setError={setError}
+          handlePassword={handlePassword}
+          setStep={setStep}
+          isSoloNode={isSoloNode}
+          soloMining={soloMining}
+        />
+      )}
+
+      {step === 'complete' && (
         <StepComplete
           handleStartMining={handleStartMining}
           loadingMinerRestart={loadingMinerRestart}
+          loadingSoloRestart={loadingSoloRestart}
+          loadingNodeStart={loadingNodeStart}
           isSoloNode={isSoloNode}
         />
       )}
