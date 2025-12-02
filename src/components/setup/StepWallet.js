@@ -85,6 +85,9 @@ const StepWallet = ({
         <Heading color="white" fontSize="42px" mt="10">
           {intl.formatMessage({ id: 'setup.wallet.title' })}
         </Heading>
+        <Text mt="20px" color="gray.400" fontWeight="400" fontSize="md">
+          {intl.formatMessage({ id: 'setup.mining_type.solo.description' })}
+        </Text>
       </Box>
 
       <Card h="max-content" mx="auto" mt="40px" mb="50px" p="50px">

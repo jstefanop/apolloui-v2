@@ -27,7 +27,7 @@ import moment from 'moment';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
 export const LOG_TYPES = [
-  { value: 'CKPOOL', label: 'CK Pool' },
+  { value: 'CKPOOL', label: 'Apollo Solo' },
   { value: 'MINER', label: 'Bitcoin Miner' },
   { value: 'NODE', label: 'Bitcoin Node' },
 ];
