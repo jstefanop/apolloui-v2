@@ -360,6 +360,7 @@
     "tabs": {
       "pools": "Pools",
       "miner": "Miner",
+      "solo": "Solo",
       "node": "Nodo",
       "system": "Sistema",
       "logs": "Registros",

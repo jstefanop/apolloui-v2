@@ -12,7 +12,7 @@ const Settings = () => {
     if (!deviceType) return;
     
     // Redirect to the appropriate default tab based on device type
-    const defaultTab = deviceType === 'solo-node' ? 'node' : 'pools';
+    const defaultTab = deviceType === 'solo-node' ? 'solo' : 'pools';
     router.replace(`/settings/${defaultTab}`);
   }, [router, deviceType]);
 

@@ -50,10 +50,10 @@ const Setup = () => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const [saveSetup, { data: dataSaveSetup, error: errorSaveSetup }] =
+  const [saveSetup, { data: dataSaveSetup, error: errorSaveSetup, loading: loadingSaveSetup }] =
     useLazyQuery(SAVE_SETUP_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [signin, { data: dataSignin, error: errorSignin }] = useLazyQuery(
+  const [signin, { data: dataSignin, error: errorSignin, loading: loadingSignin }] = useLazyQuery(
     AUTH_LOGIN_QUERY,
     { fetchPolicy: 'no-cache' }
   );
@@ -77,14 +77,22 @@ const Setup = () => {
     if (errorSignin) setError(errorSignin.message);
     if (errorSaveSetup) setError(errorSaveSetup.message);
 
-    if (dataSignin?.Auth?.login?.result)
-      setToken(dataSignin.Auth.login.result.accessToken);
+    if (dataSignin?.Auth?.login?.result) {
+      const accessToken = dataSignin.Auth.login.result.accessToken;
+      setToken(accessToken);
+      // Save token immediately when available
+      if (accessToken) {
+        localStorage.setItem('token', accessToken);
+      }
+    }
   }, [dataSaveSetup, dataSignin, errorSignin, errorSaveSetup]);
 
   useEffect(() => {
-    if (!isComplete) return;
+    // Only proceed if setup is complete AND token is available
+    if (!isComplete || !token) return;
 
-    localStorage.setItem('token', token);
+    // Token is already saved in the previous useEffect when it becomes available
+    // Now we can safely make authenticated requests
 
     if (soloMining) {
       saveSettings({
@@ -176,6 +184,12 @@ const Setup = () => {
     if (!poolUrl.match(/stratum\+tcp:\/\/(.*):?\d*$/))
       return setPoolError('Invalid pool URL');
 
+    // Only mark as complete if token is available (setup and signin completed)
+    if (!token) {
+      setPoolError('Please wait for authentication to complete');
+      return;
+    }
+
     setPool({
       ...pool,
       username: poolUsername,
@@ -184,7 +198,6 @@ const Setup = () => {
     });
 
     setIsComplete(true);
-
     setStep(4);
   };
 
@@ -196,6 +209,12 @@ const Setup = () => {
 
       if (!isValidBitcoinAddress(poolUsername))
         return setPoolError('Please add a valid Bitcoin address');
+
+      // Only mark as complete if token is available (setup and signin completed)
+      if (!token) {
+        setPoolError('Please wait for authentication to complete');
+        return;
+      }
 
       const soloUrl = 'stratum+tcp://127.0.0.1:3333';
       const soloPassword = 'x';
@@ -211,9 +230,7 @@ const Setup = () => {
       });
 
       setSoloMining(true);
-
       setIsComplete(true);
-
       setStep(4);
     } catch (error) {
       setError(error.toString());
@@ -238,15 +255,37 @@ const Setup = () => {
       return;
     }
 
-    await saveSetup({ variables: { input: { password } } });
+    setError(null); // Clear previous errors
 
-    await signin({ variables: { input: { password } } });
+    try {
+      // Wait for saveSetup to complete
+      const saveSetupResult = await saveSetup({ variables: { input: { password } } });
+      
+      // Check for errors in saveSetup
+      if (saveSetupResult?.data?.Auth?.setup?.error) {
+        setError(saveSetupResult.data.Auth.setup.error.message);
+        return;
+      }
 
-    // For solo-node, skip mining type step and go directly to wallet
-    if (isSoloNode) {
-      setStep('wallet');
-    } else {
-      setStep('mining');
+      // Wait for signin to complete
+      const signinResult = await signin({ variables: { input: { password } } });
+      
+      // Check for errors in signin
+      if (signinResult?.data?.Auth?.login?.error) {
+        setError(signinResult.data.Auth.login.error.message);
+        return;
+      }
+
+      // Only proceed to next step if both operations succeeded
+      // Token will be set by the useEffect when dataSignin is available
+      // For solo-node, skip mining type step and go directly to wallet
+      if (isSoloNode) {
+        setStep('wallet');
+      } else {
+        setStep('mining');
+      }
+    } catch (err) {
+      setError(err.message || 'An error occurred during setup');
     }
   };
 

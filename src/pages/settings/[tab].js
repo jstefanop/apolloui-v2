@@ -25,9 +25,11 @@ import { MinerIcon } from '../../components/UI/Icons/MinerIcon';
 import { NodeIcon } from '../../components/UI/Icons/NodeIcon';
 import { SystemIcon } from '../../components/UI/Icons/SystemIcon';
 import { MdSettings, MdHistory } from 'react-icons/md';
+import { GrUserWorker } from 'react-icons/gr';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../../graphql/settings';
 import { GET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../../graphql/pools';
 import { MINER_RESTART_QUERY } from '../../graphql/miner';
+import { SOLO_RESTART_QUERY } from '../../graphql/solo';
 import {
   NODE_START_QUERY,
   NODE_STOP_QUERY,
@@ -37,6 +39,7 @@ import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { SettingsProvider } from '../../components/settings/context/SettingsContext';
 import PoolsTab from '../../components/settings/tabs/PoolsTab';
 import MinerTab from '../../components/settings/tabs/MinerTab';
+import SoloTab from '../../components/settings/tabs/SoloTab';
 import NodeTab from '../../components/settings/tabs/NodeTab';
 import SystemTab from '../../components/settings/tabs/SystemTab';
 import ExtraTab from '../../components/settings/tabs/ExtraTab';
@@ -78,10 +81,11 @@ const SettingsTab = () => {
   
   // Define tab mapping based on device type
   const tabMapping = deviceType === 'solo-node' ? {
-    'node': 0,
-    'system': 1,
-    'logs': 2,
-    'extra': 3
+    'solo': 0,
+    'node': 1,
+    'system': 2,
+    'logs': 3,
+    'extra': 4
   } : {
     'pools': 0,
     'miner': 1,
@@ -147,6 +151,11 @@ const SettingsTab = () => {
     { fetchPolicy: 'no-cache' }
   );
 
+  const [restartSolo, { loading: loadingSoloRestart }] = useLazyQuery(
+    SOLO_RESTART_QUERY,
+    { fetchPolicy: 'no-cache' }
+  );
+
   const [stopNode, { loading: loadingNodeStop }] = useLazyQuery(
     NODE_STOP_QUERY,
     { fetchPolicy: 'no-cache' }
@@ -168,7 +177,7 @@ const SettingsTab = () => {
   // Handle tab change
   const handleTabChange = (index) => {
     const tabNames = deviceType === 'solo-node' 
-      ? ['node', 'system', 'logs', 'extra']
+      ? ['solo', 'node', 'system', 'logs', 'extra']
       : ['pools', 'miner', 'node', 'system', 'logs', 'extra'];
     const newTab = tabNames[index];
     router.push(`/settings/${newTab}`);
@@ -202,7 +211,18 @@ const SettingsTab = () => {
       },
     } = dataSettings;
 
-    const finalSettings = { ...settingsData, pool: poolsData[0] };
+    // Use the first pool if it exists, otherwise create a default empty pool
+    const poolToUse = poolsData && poolsData.length > 0 
+      ? poolsData[0] 
+      : {
+          enabled: true,
+          url: deviceType === 'solo-node' ? 'stratum+tcp://127.0.0.1:3333' : '',
+          username: '',
+          password: 'x',
+          index: 1,
+        };
+
+    const finalSettings = { ...settingsData, pool: poolToUse };
     setSettings(finalSettings);
     setCurrentSettings(finalSettings);
     setBackupData({ settings: settingsData, pools: poolsData });
@@ -213,6 +233,7 @@ const SettingsTab = () => {
     dataPools,
     errorQuerySettings,
     errorQueryPools,
+    deviceType,
   ]);
 
   // Detect changes and restart needs
@@ -227,6 +248,10 @@ const SettingsTab = () => {
       'powerLedOff',
       'nodeEnableSoloMining',
     ];
+    const restartSoloFields = [
+      'pool',
+      'nodeEnableSoloMining',
+    ];
     const restartNodeFields = [
       'nodeEnableTor',
       'nodeUserConf',
@@ -235,26 +260,42 @@ const SettingsTab = () => {
       'nodeSoftware',
     ];
     const isEqual = _.isEqual(settings, currentSettings);
-    const restartMinerNeeded = !_.isEqual(
-      _.pick(settings, restartMinerFields),
-      _.pick(currentSettings, restartMinerFields)
-    );
+    
+    // For solo-node, check solo fields instead of miner fields
+    const restartMinerNeeded = deviceType === 'solo-node' 
+      ? false 
+      : !_.isEqual(
+          _.pick(settings, restartMinerFields),
+          _.pick(currentSettings, restartMinerFields)
+        );
+    
+    const restartSoloNeeded = deviceType === 'solo-node'
+      ? !_.isEqual(
+          _.pick(settings, restartSoloFields),
+          _.pick(currentSettings, restartSoloFields)
+        )
+      : false;
+    
     const restartNodeNeeded = !_.isEqual(
       _.pick(settings, restartNodeFields),
       _.pick(currentSettings, restartNodeFields)
     );
+    
     const restartType =
-      restartMinerNeeded && restartNodeNeeded
+      (restartMinerNeeded || restartSoloNeeded) && restartNodeNeeded
         ? 'both'
-        : restartMinerNeeded && !restartNodeNeeded
+        : restartMinerNeeded
         ? 'miner'
-        : !restartMinerNeeded && restartNodeNeeded
+        : restartSoloNeeded
+        ? 'solo'
+        : restartNodeNeeded
         ? 'node'
         : null;
+    
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
-  }, [settings, currentSettings]);
+  }, [settings, currentSettings, deviceType]);
 
   // Handle backup download
   const handleBackup = async () => {
@@ -372,7 +413,20 @@ const SettingsTab = () => {
         btcsig,
       } = settings;
 
-      const { enabled, url, username, password, index } = pool;
+      // Ensure pool exists with default values
+      const poolData = pool || {};
+      const { enabled, url, username, password, index } = poolData;
+
+      // Additional check for required pool fields
+      if (!url) {
+        setIsSaving(false);
+        return setErrorForm('Pool URL is required');
+      }
+
+      if (!username) {
+        setIsSaving(false);
+        return setErrorForm('Pool username/wallet address is required');
+      }
 
       // Validations
       if (!url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/)) {
@@ -418,11 +472,11 @@ const SettingsTab = () => {
       };
 
       const poolInput = {
-        enabled,
+        enabled: enabled !== undefined ? enabled : true, // Default to true if not set
         url,
         username,
         password,
-        index,
+        index: index !== undefined ? index : 1, // Default to 1 if not set
       };
 
       // Save settings and pools
@@ -451,6 +505,11 @@ const SettingsTab = () => {
         dispatch(
           sendFeedback({ message: 'Restarting miner...', type: 'info' })
         );
+      } else if (type === 'solo') {
+        await restartSolo();
+        dispatch(
+          sendFeedback({ message: 'Restarting solo service...', type: 'info' })
+        );
       } else if (type === 'node') {
         await stopNode();
         dispatch(
@@ -461,10 +520,19 @@ const SettingsTab = () => {
         );
         await startNode();
       } else if (type === 'both') {
-        await restartMiner();
-        dispatch(
-          sendFeedback({ message: 'Restarting miner...', type: 'info' })
-        );
+        // For solo-node, restart solo service + node
+        if (deviceType === 'solo-node') {
+          await restartSolo();
+          dispatch(
+            sendFeedback({ message: 'Restarting solo service...', type: 'info' })
+          );
+        } else {
+          // For miner, restart miner
+          await restartMiner();
+          dispatch(
+            sendFeedback({ message: 'Restarting miner...', type: 'info' })
+          );
+        }
         await stopNode();
         dispatch(
           sendFeedback({
@@ -490,6 +558,7 @@ const SettingsTab = () => {
     loadingSave ||
     loadingSavePools ||
     loadingMinerRestart ||
+    loadingSoloRestart ||
     loadingNodeStart ||
     loadingNodeStop ||
     changeLockPasswordLoading;
@@ -633,6 +702,14 @@ const SettingsTab = () => {
               scrollbarWidth: 'none'
             }}>
               <TabList>
+                {deviceType === 'solo-node' && (
+                  <Tab>
+                    <Flex align="center" gap="10px">
+                      <GrUserWorker />
+                      <Text>{intl.formatMessage({ id: 'settings.tabs.solo' })}</Text>
+                    </Flex>
+                  </Tab>
+                )}
                 {deviceType !== 'solo-node' && (
                   <Tab>
                     <Flex align="center" gap="10px">
@@ -684,6 +761,11 @@ const SettingsTab = () => {
             )}
 
             <TabPanels>
+              {deviceType === 'solo-node' && (
+                <TabPanel>
+                  <SoloTab />
+                </TabPanel>
+              )}
               {deviceType !== 'solo-node' && (
                 <TabPanel>
                   <PoolsTab />

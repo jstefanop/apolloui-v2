@@ -12,6 +12,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import { RiEyeCloseLine } from 'react-icons/ri';
@@ -31,6 +32,12 @@ const StepPassword = ({
   setStep,
 }) => {
   const intl = useIntl();
+  
+  // Theme colors
+  const headingColor = useColorModeValue('white', 'white');
+  const labelColor = useColorModeValue('brand.800', 'white');
+  const iconColor = useColorModeValue('gray.500', 'gray.400');
+  const buttonColor = useColorModeValue('gray.400', 'brand.300');
 
   const handlePasswordChange = (e) => {
     setError(null);
@@ -45,7 +52,7 @@ const StepPassword = ({
   return (
     <Flex flexDir="column" alignItems="center" mx="auto" w="80%">
       <Box alignSelf="flex-start">
-        <Heading color="white" fontSize="42px" mt="10">
+        <Heading color={headingColor} fontSize="42px" mt="10">
           {intl.formatMessage({ id: 'setup.password.title' })}
         </Heading>
       </Box>
@@ -55,7 +62,7 @@ const StepPassword = ({
           <Stack spacing="20px">
             <SimpleGrid columns={{ base: 1, md: 2 }} gap="20px">
               <Flex direction="column">
-                <FormLabel htmlFor="password" color="white" fontWeight="bold">
+                <FormLabel htmlFor="password" color={labelColor} fontWeight="bold">
                   {intl.formatMessage({ id: 'setup.password.password_label' })} *
                 </FormLabel>
                 <InputGroup>
@@ -77,7 +84,7 @@ const StepPassword = ({
                   <InputRightElement>
                     <Icon
                       as={showPassword ? RiEyeCloseLine : MdOutlineRemoveRedEye}
-                      color="gray.400"
+                      color={iconColor}
                       cursor="pointer"
                       onClick={() => setShowPassword(!showPassword)}
                     />
@@ -88,7 +95,7 @@ const StepPassword = ({
               <Flex direction="column">
                 <FormLabel
                   htmlFor="verifyPassword"
-                  color="white"
+                  color={labelColor}
                   fontWeight="bold"
                 >
                   {intl.formatMessage({ id: 'setup.password.verify_label' })} *
@@ -112,7 +119,7 @@ const StepPassword = ({
                   <InputRightElement>
                     <Icon
                       as={showPassword ? RiEyeCloseLine : MdOutlineRemoveRedEye}
-                      color="gray.400"
+                      color={iconColor}
                       cursor="pointer"
                       onClick={() => setShowPassword(!showPassword)}
                     />
@@ -129,10 +136,10 @@ const StepPassword = ({
           )}
 
           <Flex justify="space-between" mt="80px">
-            <Button onClick={() => setStep(1)}>
+            <Button bg={buttonColor} onClick={() => setStep(1)}>
               {intl.formatMessage({ id: 'setup.common.previous' })}
             </Button>
-            <Button type="submit">
+            <Button bg={buttonColor} type="submit">
               {intl.formatMessage({ id: 'setup.common.next' })}
             </Button>
           </Flex>

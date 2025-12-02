@@ -58,6 +58,18 @@ const SoloMiningStatus = ({
   const { status: soloStatus, requestedStatus: soloRequestedStatus, requestedAt: soloRequestedAt } = soloService;
   const soloTimeSinceRequest = soloRequestedAt ? (new Date() - new Date(soloRequestedAt)) / 1000 : 0;
 
+  // Handle error status - solo service crashed or has an error
+  // This can happen with requestedStatus null (no request made) or any other value
+  if (soloStatus === 'error') {
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'solo_mining.status.error.title' })}
+        description={intl.formatMessage({ id: 'solo_mining.status.error.description' })}
+        status="error"
+      />
+    );
+  }
+
   // Handle solo service pending status
   if (soloStatus === 'pending') {
     if (soloRequestedStatus === 'offline') {

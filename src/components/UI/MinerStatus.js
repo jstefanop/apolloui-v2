@@ -47,6 +47,18 @@ const MinerStatus = ({ serviceStatus }) => {
   const { status, requestedStatus, requestedAt } = miner;
   const timeSinceRequest = moment().diff(moment(requestedAt), 'seconds');
 
+  // Handle error status - miner service crashed or has an error
+  // This can happen with requestedStatus null (no request made) or any other value
+  if (status === 'error') {
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'miner.status.error.title' })}
+        description={intl.formatMessage({ id: 'miner.status.error.description' })}
+        status="error"
+      />
+    );
+  }
+
   // Handle pending status
   if (status === 'pending') {
     if (requestedStatus === 'offline') {
@@ -95,7 +107,8 @@ const MinerStatus = ({ serviceStatus }) => {
   }
 
   // Show info alert when the miner is offline and not requested to be online.
-  if (status === 'offline' && requestedStatus === 'offline') {
+  // Handle both requestedStatus === 'offline' and requestedStatus === null
+  if (status === 'offline' && (requestedStatus === 'offline' || requestedStatus === null)) {
     return (
       <CustomAlert
         title={intl.formatMessage({ id: 'miner.status.offline.title' })}

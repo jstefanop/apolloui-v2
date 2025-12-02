@@ -13,6 +13,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import { RiEyeCloseLine } from 'react-icons/ri';
@@ -39,6 +40,12 @@ const StepPool = ({
   setStep,
 }) => {
   const intl = useIntl();
+  
+  // Theme colors
+  const headingColor = useColorModeValue('white', 'white');
+  const labelColor = useColorModeValue('brand.800', 'white');
+  const iconColor = useColorModeValue('gray.500', 'gray.400');
+  const buttonColor = useColorModeValue('gray.400', 'brand.300');
 
   return (
     <Flex
@@ -48,7 +55,7 @@ const StepPool = ({
       w={{ base: '100%', lg: '80%' }}
     >
       <Box alignSelf="flex-start">
-        <Heading color="white" fontSize="42px" mt="10">
+        <Heading color={headingColor} fontSize="42px" mt="10">
           {intl.formatMessage({ id: 'setup.pool.title' })}
         </Heading>
       </Box>
@@ -64,7 +71,7 @@ const StepPool = ({
           <Stack spacing="20px">
             <SimpleGrid columns={{ base: 1, md: 2 }} gap="20px">
               <Flex direction="column">
-                <FormLabel htmlFor="poolPreset" color="white" fontWeight="bold">
+                <FormLabel htmlFor="poolPreset" color={labelColor} fontWeight="bold">
                   {intl.formatMessage({ id: 'setup.pool.select_label' })} *
                 </FormLabel>
                 <Select
@@ -86,7 +93,7 @@ const StepPool = ({
               </Flex>
 
               <Flex direction="column">
-                <FormLabel htmlFor="poolUrl" color="white" fontWeight="bold">
+                <FormLabel htmlFor="poolUrl" color={labelColor} fontWeight="bold">
                   {intl.formatMessage({ id: 'setup.pool.url_label' })} *
                 </FormLabel>
                 <Input
@@ -96,11 +103,10 @@ const StepPool = ({
                   isInvalid={poolError}
                   isDisabled={pool?.id !== 'custom'}
                   fontWeight="500"
-                  variant="main"
                   placeholder={intl.formatMessage({ id: 'setup.pool.url_placeholder' })}
                   _placeholder={{
                     fontWeight: '400',
-                    color: 'secondaryGray.600',
+                    color: 'secondaryGray.800',
                   }}
                   h="46px"
                   maxh="46px"
@@ -108,7 +114,7 @@ const StepPool = ({
               </Flex>
 
               <Flex direction="column">
-                <FormLabel htmlFor="poolUsername" color="white" fontWeight="bold">
+                <FormLabel htmlFor="poolUsername" color={labelColor} fontWeight="bold">
                   {intl.formatMessage({ id: 'setup.pool.username_label' })} *
                 </FormLabel>
                 <Input
@@ -117,11 +123,10 @@ const StepPool = ({
                   onChange={(e) => setPoolUsername(e.target.value)}
                   isInvalid={poolError && !poolUsername}
                   fontWeight="500"
-                  variant="main"
                   placeholder={intl.formatMessage({ id: 'setup.pool.username_placeholder' })}
                   _placeholder={{
                     fontWeight: '400',
-                    color: 'secondaryGray.600',
+                    color: 'secondaryGray.800',
                   }}
                   h="44px"
                   maxh="44px"
@@ -129,7 +134,7 @@ const StepPool = ({
               </Flex>
 
               <Flex direction="column">
-                <FormLabel htmlFor="poolPassword" color="white" fontWeight="bold">
+                <FormLabel htmlFor="poolPassword" color={labelColor} fontWeight="bold">
                   {intl.formatMessage({ id: 'setup.pool.password_label' })} *
                 </FormLabel>
                 <InputGroup>
@@ -140,11 +145,10 @@ const StepPool = ({
                     onChange={(e) => setPoolPassword(e.target.value)}
                     isInvalid={poolError && !poolPassword}
                     fontWeight="500"
-                    variant="main"
                     placeholder={intl.formatMessage({ id: 'setup.pool.password_placeholder' })}
                     _placeholder={{
                       fontWeight: '400',
-                      color: 'secondaryGray.600',
+                      color: 'secondaryGray.800',
                     }}
                     h="44px"
                     maxh="44px"
@@ -152,7 +156,7 @@ const StepPool = ({
                   <InputRightElement>
                     <Icon
                       as={showPassword ? RiEyeCloseLine : MdOutlineRemoveRedEye}
-                      color="gray.400"
+                      color={iconColor}
                       cursor="pointer"
                       onClick={() => setShowPassword(!showPassword)}
                     />
@@ -169,10 +173,10 @@ const StepPool = ({
           )}
 
           <Flex justify="space-between" mt="40px">
-            <Button onClick={() => setStep('mining')}>
+            <Button bg={buttonColor} onClick={() => setStep('mining')}>
               {intl.formatMessage({ id: 'setup.common.previous' })}
             </Button>
-            <Button type="submit">
+            <Button bg={buttonColor} type="submit">
               {intl.formatMessage({ id: 'setup.common.next' })}
             </Button>
           </Flex>

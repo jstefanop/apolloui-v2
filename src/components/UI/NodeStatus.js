@@ -47,6 +47,18 @@ const NodeStatus = ({ serviceStatus }) => {
   const { status, requestedStatus, requestedAt } = node;
   const timeSinceRequest = moment().diff(moment(requestedAt), 'seconds');
 
+  // Handle error status - node service crashed or has an error
+  // This can happen with requestedStatus null (no request made) or any other value
+  if (status === 'error') {
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'node.status.error.title' })}
+        description={intl.formatMessage({ id: 'node.status.error.description' })}
+        status="error"
+      />
+    );
+  }
+
   // Handle pending status
   if (status === 'pending') {
     if (requestedStatus === 'offline') {

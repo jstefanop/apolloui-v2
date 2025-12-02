@@ -17,9 +17,12 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { presetPools } from '../../../lib/utils';
 import { useIntl } from 'react-intl';
+import { useDeviceType } from '../../../contexts/DeviceConfigContext';
 
 const SoloSettings = () => {
   const intl = useIntl();
+  const deviceType = useDeviceType();
+  const isSoloNode = deviceType === 'solo-node';
   const { settings, setSettings, setErrorForm } = useSettings();
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
@@ -91,8 +94,10 @@ const SoloSettings = () => {
       setErrorForm(intl.formatMessage({ id: 'settings.sections.solo.incompatible_address' }));
 
     const poolChanged = {
+      enabled: true, // Ensure enabled is set
+      index: 1, // Ensure index is set
       ...settings.pool,
-      url: '127.0.0.1:3333',
+      url: isSoloNode ? 'stratum+tcp://127.0.0.1:3333' : '127.0.0.1:3333',
       username: e.target.value,
       password: 'x',
     };
@@ -114,31 +119,53 @@ const SoloSettings = () => {
       textColor={textColor}
       icon={GrUserWorker}
     >
-      {(blockHeader && blockHeader === blocksCount) ||
-        soloMiningMode.selected ? (
+      {/* For solo-node, always show the wallet field. For miner, check if node is synced or solo mining is enabled */}
+      {isSoloNode || (blockHeader && blockHeader === blocksCount) || soloMiningMode.selected ? (
         <>
-          <SimpleSwitchSettingsItem
-            item={soloMiningMode}
-            textColor={textColor}
-            sliderTextColor={inputTextColor}
-            handleSwitch={handleSwitchSoloMiningMode}
-          />
-          {soloMiningMode.selected && (
-            <SimpleCard
-              title={intl.formatMessage({ id: 'settings.sections.solo.wallet_address' })}
+          {/* Show switch only for non-solo-node devices */}
+          {!isSoloNode && (
+            <SimpleSwitchSettingsItem
+              item={soloMiningMode}
               textColor={textColor}
-            >
-              <Input
-                color={inputTextColor}
-                name="wallet"
-                type="text"
-                placeholder={intl.formatMessage({ id: 'settings.sections.solo.wallet_placeholder' })}
-                value={settings.pool.username}
-                onChange={handleSoloMiningChange}
-              />
-            </SimpleCard>
+              sliderTextColor={inputTextColor}
+              handleSwitch={handleSwitchSoloMiningMode}
+            />
           )}
-          {soloMiningMode.selected && settings.nodeEnableTor && (
+          {/* Show wallet field if solo mining is enabled or if it's a solo-node */}
+          {(soloMiningMode.selected || isSoloNode) && (
+            <>
+              {/* Show warning for solo-node if node is not synced */}
+              {isSoloNode && (!blockHeader || blockHeader !== blocksCount) && (
+                <SimpleCard
+                  bg="orange.300"
+                  title={intl.formatMessage({ id: 'settings.sections.solo.cannot_enable' })}
+                  textColor={'orange.600'}
+                  mb="20px"
+                >
+                  <Text fontSize="sm" color="gray.800">
+                    {intl.formatMessage({ id: 'settings.sections.solo.node_not_synced' })}
+                  </Text>
+                </SimpleCard>
+              )}
+              <SimpleCard
+                title={intl.formatMessage({ id: 'settings.sections.solo.wallet_address' })}
+                textColor={textColor}
+              >
+                <Input
+                  color={inputTextColor}
+                  name="wallet"
+                  type="text"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
+                  placeholder={intl.formatMessage({ id: 'settings.sections.solo.wallet_placeholder' })}
+                  value={settings.pool?.username || ''}
+                  onChange={handleSoloMiningChange}
+                />
+              </SimpleCard>
+            </>
+          )}
+          {(soloMiningMode.selected || isSoloNode) && settings.nodeEnableTor && (
             <Alert mt="5" borderRadius={'10px'} status={'error'}>
               <AlertIcon />
               <AlertDescription>
@@ -165,8 +192,11 @@ const SoloSettings = () => {
           color={inputTextColor}
           name="btcsig"
           type="text"
+          autoComplete="off"
+          data-lpignore="true"
+          data-form-type="other"
           placeholder={intl.formatMessage({ id: 'settings.sections.solo.btc_signature_placeholder' })}
-          value={settings.btcsig}
+          value={settings.btcsig || ''}
           onChange={handleBtcsigChange}
         />
       </SimpleCard>

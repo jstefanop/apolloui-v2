@@ -12,6 +12,7 @@ import {
   InputGroup,
   InputRightElement,
   Icon,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import Card from '../card/Card';
@@ -33,6 +34,12 @@ const StepWallet = ({
   const [isValid, setIsValid] = useState(false);
   const [isCompatible, setIsCompatible] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
+
+  // Theme colors
+  const headingColor = useColorModeValue('white', 'white');
+  const textColor = useColorModeValue('gray.400', 'gray.400');
+  const labelColor = useColorModeValue('brand.800', 'white');
+  const buttonColor = useColorModeValue('gray.400', 'brand.300');
 
   // Reset validation state when poolUsername changes from outside
   useEffect(() => {
@@ -82,10 +89,10 @@ const StepWallet = ({
   return (
     <Flex flexDir="column" alignItems="center" mx="auto" w="80%">
       <Box alignSelf="flex-start">
-        <Heading color="white" fontSize="42px" mt="10">
+        <Heading color={headingColor} fontSize="42px" mt="10">
           {intl.formatMessage({ id: 'setup.wallet.title' })}
         </Heading>
-        <Text mt="20px" color="gray.400" fontWeight="400" fontSize="md">
+        <Text mt="20px" color={textColor} fontWeight="400" fontSize="md">
           {intl.formatMessage({ id: 'setup.mining_type.solo.description' })}
         </Text>
       </Box>
@@ -95,7 +102,7 @@ const StepWallet = ({
           <Stack spacing="20px">
             <SimpleGrid columns={1} gap="20px">
               <Flex direction="column">
-                <FormLabel htmlFor="poolUsername" color="white" fontWeight="bold">
+                <FormLabel htmlFor="poolUsername" color={labelColor} fontWeight="bold">
                   {intl.formatMessage({ id: 'setup.wallet.address_label' })} *
                 </FormLabel>
                 <InputGroup>
@@ -137,16 +144,16 @@ const StepWallet = ({
 
           <Flex justify="space-between" mt="40px">
             {!isSoloNode && (
-              <Button onClick={() => setStep('mining')}>
+              <Button bg={buttonColor} onClick={() => setStep('mining')}>
                 {intl.formatMessage({ id: 'setup.common.previous' })}
               </Button>
             )}
             {isSoloNode && (
-              <Button onClick={() => setStep(2)}>
+              <Button bg={buttonColor} onClick={() => setStep(2)}>
                 {intl.formatMessage({ id: 'setup.common.previous' })}
               </Button>
             )}
-            <Button 
+            <Button bg={buttonColor} 
               type="submit" 
               isDisabled={showValidation && !isFullyValid}
               ml={isSoloNode ? 'auto' : '0'}

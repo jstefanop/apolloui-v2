@@ -16,12 +16,18 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import Card from '../card/Card';
 import { useIntl } from 'react-intl';
 
 const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
   const intl = useIntl();
+  
+  // Theme colors
+  const headingColor = useColorModeValue('white', 'white');
+  const textColor = useColorModeValue('gray.400', 'gray.400');
+  const buttonTextColor = useColorModeValue('white', 'white');
 
   return (
     <Flex
@@ -31,7 +37,7 @@ const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
       maxW={{ base: '100%', xl: '60%' }}
     >
       <Box alignSelf="flex-start" mb="10">
-        <Heading color="white" fontSize="42px" mt="10">
+        <Heading color={headingColor} fontSize="42px" mt="10">
           {intl.formatMessage({ id: 'setup.mining_type.title' })}
         </Heading>
       </Box>
@@ -62,12 +68,12 @@ const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
             variant="outline"
             size="lg"
             colorScheme="white"
-            textColor="white"
+            textColor={buttonTextColor}
             onClick={onOpen}
           >
             {intl.formatMessage({ id: 'setup.mining_type.solo.title' })}
           </Button>
-          <Text mt="20px" color="gray.400" fontWeight="400" fontSize="md">
+          <Text mt="20px" color={textColor} fontWeight="400" fontSize="md">
             {intl.formatMessage({ id: 'setup.mining_type.solo.description' })}
           </Text>
         </Card>
@@ -86,12 +92,12 @@ const StepMiningType = ({ setStep, isOpen, onOpen, onClose, isNodeSynced }) => {
             variant="outline"
             size="lg"
             colorScheme="white"
-            textColor="white"
+            textColor={buttonTextColor}
             onClick={() => setStep(3)}
           >
             {intl.formatMessage({ id: 'setup.mining_type.pool.title' })}
           </Button>
-          <Text mt="20px" color="gray.400" fontWeight="400" fontSize="md">
+          <Text mt="20px" color={textColor} fontWeight="400" fontSize="md">
             {intl.formatMessage({ id: 'setup.mining_type.pool.description' })}
           </Text>
         </Card>

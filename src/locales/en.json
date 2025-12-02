@@ -193,6 +193,10 @@
     "enabled": "ENABLED",
     "auto": "AUTO",
     "status": {
+      "error": {
+        "title": "Miner Service Error",
+        "description": "The miner service is currently experiencing an error. Please check your system configuration or try restarting the miner from the top menu."
+      },
       "unavailable": {
         "title": "Miner status unavailable",
         "description": "Could not fetch the miner status. Please try again later."
@@ -274,6 +278,10 @@
       "active": "Active"
     },
     "status": {
+      "error": {
+        "title": "Solo Service Error",
+        "description": "The solo mining service is currently experiencing an error. Please check your system configuration or try restarting the solo service from the top menu."
+      },
       "solo_unavailable": {
         "title": "Solo service unavailable",
         "description": "Could not fetch the solo service status. Please try again later."
@@ -365,6 +373,7 @@
     "tabs": {
       "pools": "Pools",
       "miner": "Miner",
+      "solo": "Solo",
       "node": "Node",
       "system": "System",
       "logs": "Logs",

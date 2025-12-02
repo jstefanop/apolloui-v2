@@ -1,14 +1,15 @@
 // components/setup/StepWelcome.js
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 
 const StepWelcome = ({ setStep }) => {
   const intl = useIntl();
+  const textColor = useColorModeValue('gray.300', 'white');
   
   return (
     <Box mx="auto" py="150px">
       <Flex flexDir="column">
-        <Text fontSize="4xl" fontWeight="700" lineHeight="8" color="white" mb="10">
+        <Text fontSize="4xl" fontWeight="700" lineHeight="8" color={textColor} mb="10">
           {intl.formatMessage({ id: 'setup.welcome.title' })}
           <br />
           {intl.formatMessage({ id: 'setup.welcome.subtitle' })}

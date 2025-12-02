@@ -367,6 +367,7 @@
     "tabs": {
       "pools": "Pool",
       "miner": "Miner",
+      "solo": "Solo",
       "node": "Nodo",
       "system": "Sistema",
       "logs": "Log",
