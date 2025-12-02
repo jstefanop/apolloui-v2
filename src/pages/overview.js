@@ -180,7 +180,7 @@ const Overview = () => {
   // Settings data
   const { data: settings } = useSelector(settingsSelector, shallowEqual);
 
-  const { nodeMaxConnections, temperatureUnit } = settings || {};
+  const { nodeMaxConnections, temperatureUnit, nodeEnableSoloMining } = settings || {};
 
   // Set Previous state for CountUp component
   const prevData = useRef(null);
@@ -305,7 +305,9 @@ const Overview = () => {
       ) : (
         <>
           {/* Solo Status Widgets - Top row */}
-          {servicesStatus?.solo?.status === 'online' ? (
+          {(deviceType === 'solo-node' || nodeEnableSoloMining === true) && (
+            <>
+              {servicesStatus?.solo?.status === 'online' ? (
             <Grid
               templateAreas={{
                 base: `'soloHashrate' 'soloBestShare' 'soloDailyChance'`,
@@ -592,6 +594,8 @@ const Overview = () => {
                 </Flex>
               )}
             </Card>
+          )}
+          </>
           )}
 
           <Grid
