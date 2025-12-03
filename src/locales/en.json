@@ -266,6 +266,7 @@
       "per_block_chance_title": "Chance next block",
       "monthly_chance_title": "Chance per month",
       "yearly_chance_title": "Chance per year",
+      "other_chances": "Other Time Periods",
       "users": "Users",
       "workers": "Workers",
       "idle": "Idle"

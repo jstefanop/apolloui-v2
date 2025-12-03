@@ -269,6 +269,7 @@
       "per_block_chance_title": "Chance prossimo blocco",
       "monthly_chance_title": "Chance al mese",
       "yearly_chance_title": "Chance all'anno",
+      "other_chances": "Altri Periodi di Tempo",
       "users": "Utenti",
       "workers": "Worker",
       "idle": "Inattivo"

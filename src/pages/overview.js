@@ -604,9 +604,9 @@ const Overview = () => {
               lg: `'node node node node' 'gauges gauges gauges gauges'`,
               '3xl': `'node node node node' 'gauges gauges gauges gauges'`,
             } : {
-              base: `'hashrate' 'chart' 'temperatures' 'power' 'node' 'gauges'`,
-              lg: `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'gauges gauges gauges gauges' 'chart chart chart chart'`,
-              '3xl': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'gauges gauges gauges gauges' 'chart chart chart chart'`,
+              base: `'hashrate' 'temperatures' 'power' 'node' 'chart' 'gauges'`,
+              lg: `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'chart chart chart chart' 'gauges gauges gauges gauges'`,
+              '3xl': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'chart chart chart chart' 'gauges gauges gauges gauges'`,
             }}
             templateRows={deviceType === 'solo-node' ? {
               base: 'auto auto',

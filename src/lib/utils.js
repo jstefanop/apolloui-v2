@@ -89,9 +89,7 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
 
 export const numberToText = (num, intl) => {
   if (num < 1e6)
-    return `${Math.ceil(num)} ${intl.formatMessage({
-      id: 'utils.units.units',
-    })}`; // Less than 1 million
+    return `${Math.ceil(num)}`; // Less than 1 million
 
   const units = [
     { value: 1e12, name: intl.formatMessage({ id: 'utils.units.trillions' }) },

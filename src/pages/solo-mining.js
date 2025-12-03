@@ -14,6 +14,8 @@ import {
   AlertDescription,
   CloseButton,
   Button,
+  Tooltip,
+  Divider,
 } from '@chakra-ui/react';
 import { useRef, useEffect, useState } from 'react';
 import { BulletList } from 'react-content-loader';
@@ -79,6 +81,11 @@ const SoloMining = () => {
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
+  
+  // Tooltip colors
+  const tooltipBg = useColorModeValue('gray.100', 'brand.700');
+  const tooltipColor = useColorModeValue('gray.800', 'white');
+  const tooltipDividerColor = useColorModeValue('gray.300', 'whiteAlpha.300');
 
   const isBannerDisabled = typeof window !== 'undefined' ? localStorage.getItem('solo-mining-banner-disabled') : null;
   const [showBanner, setShowBanner] = useState(!isBannerDisabled);
@@ -384,13 +391,13 @@ const SoloMining = () => {
 
           <Grid
             templateAreas={{
-              base: `'chances' 'hashrate' 'bestshare' 'summary' 'info' 'users'`,
-              lg: `'chances chances chances chances' 'hashrate hashrate summary summary' 'bestshare info users users'`,
-              '3xl': `'chances chances chances chances' 'hashrate hashrate summary summary' 'bestshare bestshare info users'`,
+              base: `'hashrate' 'bestshare' 'summary' 'info' 'users'`,
+              lg: `'hashrate hashrate summary summary' 'bestshare info users users'`,
+              '3xl': `'hashrate hashrate summary summary' 'bestshare bestshare info users'`,
             }}
             templateRows={{
-              base: 'auto auto auto auto auto auto',
-              lg: 'auto auto auto',
+              base: 'auto auto auto auto auto',
+              lg: 'auto auto',
             }}
             templateColumns={{
               base: '1fr',
@@ -399,147 +406,6 @@ const SoloMining = () => {
             gap={'20px'}
             mb={'10px'}
           >
-            <GridItem gridArea="chances">
-              <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
-                {/* Next block chance */}
-                <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  {loadingSolo ? (
-                    <BulletList />
-                  ) : (
-                    <Flex my="auto" direction="column">
-                      <NoCardStatistics
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            bg={'transparent'}
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={GiDiamondTrophy}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name={intl.formatMessage({
-                          id: 'solo_mining.info.per_block_chance',
-                        })}
-                        value={
-                          perBlockChance &&
-                          globalPerBlockChanceVisualization ? (
-                            <Flex align="center" gap={2}>
-                              <Box
-                                color={globalPerBlockChanceVisualization.color}
-                              >
-                                {globalPerBlockChanceVisualization.text}
-                              </Box>
-                              <ColorBars
-                                bars={globalPerBlockChanceVisualization.bars}
-                                currentValue={perBlockChance}
-                              />
-                            </Flex>
-                          ) : (
-                            'N/A'
-                          )
-                        }
-                        reversed={true}
-                      />
-                    </Flex>
-                  )}
-                </Card>
-
-                {/* Monthly chance */}
-                <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  {loadingSolo ? (
-                    <BulletList />
-                  ) : (
-                    <Flex my="auto" direction="column">
-                      <NoCardStatistics
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            bg={'transparent'}
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={GiDiamondTrophy}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name={intl.formatMessage({
-                          id: 'solo_mining.info.monthly_chance',
-                        })}
-                        value={
-                          monthlyChance && globalMonthlyChanceVisualization ? (
-                            <Flex align="center" gap={2}>
-                              <Box
-                                color={globalMonthlyChanceVisualization.color}
-                              >
-                                {globalMonthlyChanceVisualization.text}
-                              </Box>
-                            </Flex>
-                          ) : (
-                            'N/A'
-                          )
-                        }
-                        reversed={true}
-                      />
-                    </Flex>
-                  )}
-                </Card>
-
-                {/* Yearly chance */}
-                <Card py="15px" bgColor={cardColor} boxShadow={shadow}>
-                  {loadingSolo ? (
-                    <BulletList />
-                  ) : (
-                    <Flex my="auto" direction="column">
-                      <NoCardStatistics
-                        startContent={
-                          <IconBox
-                            w="56px"
-                            h="56px"
-                            bg={'transparent'}
-                            icon={
-                              <Icon
-                                w="32px"
-                                h="32px"
-                                as={GiDiamondTrophy}
-                                color={iconColorReversed}
-                              />
-                            }
-                          />
-                        }
-                        name={intl.formatMessage({
-                          id: 'solo_mining.info.yearly_chance',
-                        })}
-                        value={
-                          yearlyChance && globalYearlyChanceVisualization ? (
-                            <Flex align="center" gap={2}>
-                              <Box
-                                color={globalYearlyChanceVisualization.color}
-                              >
-                                {globalYearlyChanceVisualization.text}
-                              </Box>
-                            </Flex>
-                          ) : (
-                            'N/A'
-                          )
-                        }
-                        reversed={true}
-                      />
-                    </Flex>
-                  )}
-                </Card>
-              </SimpleGrid>
-            </GridItem>
-
             <GridItem gridArea="hashrate">
               <HashrateCard
                 loading={loadingSolo}
@@ -680,38 +546,105 @@ const SoloMining = () => {
                   <BulletList />
                 ) : (
                   <Flex my="auto" direction="column">
-                    <NoCardStatistics
-                      startContent={
-                        <IconBox
-                          w="56px"
-                          h="56px"
-                          bg={'transparent'}
-                          icon={
-                            <Icon
-                              w="32px"
-                              h="32px"
-                              as={GiDiamondTrophy}
-                              color={iconColorReversed}
+                    <Tooltip
+                      hasArrow
+                      placement="top"
+                      bg={tooltipBg}
+                      color={tooltipColor}
+                      p={4}
+                      borderRadius="lg"
+                      boxShadow="xl"
+                      label={
+                        <Box minW="280px">
+                          <Text fontWeight="bold" mb={3} fontSize="sm">
+                            {intl.formatMessage({ id: 'solo_mining.info.other_chances' })}
+                          </Text>
+                          <Flex direction="column" gap={2}>
+                            <Flex justify="space-between" align="center" gap={6}>
+                              <Text fontSize="sm" whiteSpace="nowrap">
+                                {intl.formatMessage({ id: 'solo_mining.info.per_block_chance_title' })}
+                              </Text>
+                              <Text
+                                fontSize="sm"
+                                fontWeight="bold"
+                                color={globalPerBlockChanceVisualization?.color}
+                                whiteSpace="nowrap"
+                              >
+                                {globalPerBlockChanceVisualization?.text || 'N/A'}
+                              </Text>
+                            </Flex>
+                            <Divider borderColor={tooltipDividerColor} />
+                            <Flex justify="space-between" align="center" gap={6}>
+                              <Text fontSize="sm" whiteSpace="nowrap">
+                                {intl.formatMessage({ id: 'solo_mining.info.monthly_chance_title' })}
+                              </Text>
+                              <Text
+                                fontSize="sm"
+                                fontWeight="bold"
+                                color={globalMonthlyChanceVisualization?.color}
+                                whiteSpace="nowrap"
+                              >
+                                {globalMonthlyChanceVisualization?.text || 'N/A'}
+                              </Text>
+                            </Flex>
+                            <Divider borderColor={tooltipDividerColor} />
+                            <Flex justify="space-between" align="center" gap={6}>
+                              <Text fontSize="sm" whiteSpace="nowrap">
+                                {intl.formatMessage({ id: 'solo_mining.info.yearly_chance_title' })}
+                              </Text>
+                              <Text
+                                fontSize="sm"
+                                fontWeight="bold"
+                                color={globalYearlyChanceVisualization?.color}
+                                whiteSpace="nowrap"
+                              >
+                                {globalYearlyChanceVisualization?.text || 'N/A'}
+                              </Text>
+                            </Flex>
+                          </Flex>
+                        </Box>
+                      }
+                    >
+                      <Box cursor="pointer">
+                        <NoCardStatistics
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <Icon
+                                  w="32px"
+                                  h="32px"
+                                  as={GiDiamondTrophy}
+                                  color={iconColorReversed}
+                                />
+                              }
                             />
                           }
+                          name={
+                            <Flex align="center" gap={1}>
+                              {intl.formatMessage({
+                                id: 'solo_mining.info.daily_chance',
+                              })}
+                              <InfoIcon boxSize={3} color="secondaryGray.500" />
+                            </Flex>
+                          }
+                          value={
+                            dailyChance && globalDailyChanceVisualization ? (
+                              <Flex align="center" gap={2}>
+                                <Box color={globalDailyChanceVisualization.color}>
+                                  {globalDailyChanceVisualization.text}
+                                </Box>
+                              </Flex>
+                            ) : (
+                              'N/A'
+                            )
+                          }
+                          reversed={true}
                         />
-                      }
-                      name={intl.formatMessage({
-                        id: 'solo_mining.info.daily_chance',
-                      })}
-                      value={
-                        dailyChance && globalDailyChanceVisualization ? (
-                          <Flex align="center" gap={2}>
-                            <Box color={globalDailyChanceVisualization.color}>
-                              {globalDailyChanceVisualization.text}
-                            </Box>
-                          </Flex>
-                        ) : (
-                          'N/A'
-                        )
-                      }
-                      reversed={true}
-                    />
+                      </Box>
+                    </Tooltip>
                     <NoCardStatistics
                       startContent={
                         <IconBox

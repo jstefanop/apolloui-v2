@@ -36,6 +36,9 @@ const NoCardStatisticsGauge = React.memo(({
   const [roundedPercentage, setRoundedPercentage] = useState(percent !== null && percent !== undefined ? percent.toFixed(2) : null);
   const isOnError = error && error.length > 0;
 
+  // Check if value is a React element (not just a string/number)
+  const isComplexValue = React.isValidElement(value);
+
   useEffect(() => {
     if (rawValue && total) {
       const percentage = (rawValue / total) * 100;
@@ -118,7 +121,9 @@ const NoCardStatisticsGauge = React.memo(({
                       fontSize={{
                         base: '2xl',
                       }}
-                      noOfLines={1}
+                      noOfLines={isComplexValue ? undefined : 1}
+                      overflow={isComplexValue ? "visible" : undefined}
+                      whiteSpace={isComplexValue ? "normal" : undefined}
                     >
                       {value
                         ? value

@@ -44,6 +44,9 @@ const MiniStatistics = ({
 
   const [roundedPercentage, setRoundedPercentage] = useState(progressPercent);
 
+  // Check if value is a React element (not just a string/number)
+  const isComplexValue = React.isValidElement(value);
+
   useEffect(() => {
     if (progressValue && progressTotal) {
       const percentage = (progressValue / progressTotal) * 100;
@@ -57,13 +60,6 @@ const MiniStatistics = ({
       <Flex justify={{ base: 'center', xl: 'center' }} w="100%">
         {startContent}
 
-        <Tooltip
-          hasArrow
-          bg={'gray.600'}
-          color="white"
-          placement="top"
-          label={value}
-        >
           <Stat 
             ms={startContent ? '18px' : '0px'} 
             flex="1"
@@ -75,11 +71,11 @@ const MiniStatistics = ({
                 fontSize={{
                   base: fontSize || '2xl',
                 }}
-                noOfLines={1}
-                maxW="100%"
-                overflow="hidden"
-                textOverflow="ellipsis"
-                whiteSpace="nowrap"
+                noOfLines={isComplexValue ? undefined : 1}
+                maxW={isComplexValue ? undefined : "100%"}
+                overflow={isComplexValue ? "visible" : "hidden"}
+                textOverflow={isComplexValue ? undefined : "ellipsis"}
+                whiteSpace={isComplexValue ? "normal" : "nowrap"}
               >
                 {value}
               </StatNumber>
@@ -104,11 +100,11 @@ const MiniStatistics = ({
                 fontSize={{
                   base: fontSize || '2xl',
                 }}
-                noOfLines={1}
-                maxW="100%"
-                overflow="hidden"
-                textOverflow="ellipsis"
-                whiteSpace="nowrap"
+                noOfLines={isComplexValue ? undefined : 1}
+                maxW={isComplexValue ? undefined : "100%"}
+                overflow={isComplexValue ? "visible" : "hidden"}
+                textOverflow={isComplexValue ? undefined : "ellipsis"}
+                whiteSpace={isComplexValue ? "normal" : "nowrap"}
               >
                 {value}
               </StatNumber>
@@ -134,7 +130,7 @@ const MiniStatistics = ({
               </StatLabel>
             ) : null}
           </Stat>
-        </Tooltip>
+
         {button && (
           <Flex align="center" ms="18px" flexShrink="0">
             <Button leftIcon={buttonIcon} onClick={buttonHandler} size="sm">{button}</Button>

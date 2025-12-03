@@ -480,8 +480,21 @@ const SettingsTab = () => {
       };
 
       // Save settings and pools
-      await saveSettings({ variables: { input } });
-      await savePools({ variables: { input: { pools: [poolInput] } } });
+      const settingsResult = await saveSettings({ variables: { input } });
+      
+      // Check for errors in settings update response
+      if (settingsResult?.data?.Settings?.update?.error) {
+        setIsSaving(false);
+        return setErrorForm(settingsResult.data.Settings.update.error.message);
+      }
+      
+      const poolsResult = await savePools({ variables: { input: { pools: [poolInput] } } });
+      
+      // Check for errors in pools update response
+      if (poolsResult?.data?.Pool?.update?.error) {
+        setIsSaving(false);
+        return setErrorForm(poolsResult.data.Pool.update.error.message);
+      }
 
       // Handle password change if needed
       if (
