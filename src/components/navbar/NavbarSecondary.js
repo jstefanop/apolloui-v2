@@ -48,7 +48,6 @@ const NavbarSeconday = ({
                 me="6px"
                 bgColor={badgeBox}
                 onClick={() => handleSystemAction('stopMiner')}
-                isDisabled={minerOnline === 'pending'}
               >
                 <Flex
                   align="center"
@@ -152,7 +151,6 @@ const NavbarSeconday = ({
                 me="6px"
                 bgColor={badgeBox}
                 onClick={() => handleSystemAction('stopSolo')}
-                isDisabled={soloOnline === 'pending'}
               >
                 <Flex
                   align="center"

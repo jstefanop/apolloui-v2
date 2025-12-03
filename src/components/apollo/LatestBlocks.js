@@ -173,7 +173,7 @@ const LatestBlocks = () => {
         let updatedBlocks = [...data];
         
         // Add fake FutureBit block only in development
-        if (process.env.NODE_ENV === 'developmentTEST') {
+        if (process.env.NODE_ENV === 'development') {
           const futureBitBlock = {
             id: 'futurebit-block',
             height: data[0].height + 1,
@@ -183,7 +183,7 @@ const LatestBlocks = () => {
             extras: {
               totalFees: 12300000,
               pool: {
-                name: 'FutureBit Apollo Solo',
+                name: 'FutureBit-Apollo',
                 url: 'https://futurebit.com'
               }
             }

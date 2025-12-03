@@ -17,6 +17,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { signOut } from 'next-auth/react';
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
@@ -37,6 +38,7 @@ import { TbAlertHexagonFilled } from 'react-icons/tb';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
 import NavbarLogsModal from './NavbarLogsModal';
+import SystemActionModal from './SystemActionModal';
 import {
   getVersionFromPackageJson,
   capitalizeFirstLetter,
@@ -80,6 +82,12 @@ export default function HeaderLinks({
     onOpen: onLogsModalOpen,
     onClose: onLogsModalClose,
   } = useDisclosure();
+  const {
+    isOpen: isSystemActionModalOpen,
+    onOpen: onSystemActionModalOpen,
+    onClose: onSystemActionModalClose,
+  } = useDisclosure();
+  const [systemActionType, setSystemActionType] = useState(null);
 
   const handleSignout = async () => {
     await signOut({ redirect: false });
@@ -97,6 +105,19 @@ export default function HeaderLinks({
   const onOpenModalVersion = async () => {
     await refetchVersion();
     onOpen();
+  };
+
+  const handleOpenSystemActionModal = (type) => {
+    setSystemActionType(type);
+    onSystemActionModalOpen();
+  };
+
+  const handleSystemActionConfirm = () => {
+    if (systemActionType === 'reboot') {
+      handleSystemAction('rebootMcu');
+    } else if (systemActionType === 'shutdown') {
+      handleSystemAction('shutdownMcu');
+    }
   };
 
   // Solo data for pool connection status
@@ -146,6 +167,13 @@ export default function HeaderLinks({
       />
 
       <NavbarLogsModal isOpen={isLogsModalOpen} onClose={onLogsModalClose} />
+
+      <SystemActionModal
+        isOpen={isSystemActionModalOpen}
+        onClose={onSystemActionModalClose}
+        actionType={systemActionType}
+        onConfirm={handleSystemActionConfirm}
+      />
 
       {!loading && (
         <Center>
@@ -425,9 +453,7 @@ export default function HeaderLinks({
                       </MenuItem>
                       <MenuItem
                         icon={<StopIcon />}
-                        isDisabled={
-                          minerOnline === 'offline' || minerOnline === 'pending'
-                        }
+                        isDisabled={minerOnline === 'offline'}
                         onClick={() => handleSystemAction('stopMiner')}
                       >
                         Stop
@@ -478,9 +504,7 @@ export default function HeaderLinks({
                   </MenuItem>
                   <MenuItem
                     icon={<StopIcon />}
-                    isDisabled={
-                      soloOnline === 'offline' || soloOnline === 'pending'
-                    }
+                    isDisabled={soloOnline === 'offline'}
                     onClick={() => handleSystemAction('stopSolo')}
                   >
                     Stop
@@ -499,13 +523,13 @@ export default function HeaderLinks({
                 <MenuGroup title="System">
                   <MenuItem
                     icon={<RestartIcon />}
-                    onClick={() => handleSystemAction('rebootMcu')}
+                    onClick={() => handleOpenSystemActionModal('reboot')}
                   >
                     Reboot
                   </MenuItem>
                   <MenuItem
                     icon={<PowerOffIcon />}
-                    onClick={() => handleSystemAction('shutdownMcu')}
+                    onClick={() => handleOpenSystemActionModal('shutdown')}
                   >
                     Shutdown
                   </MenuItem>

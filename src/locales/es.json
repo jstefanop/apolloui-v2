@@ -715,5 +715,24 @@
       "units": "unidades"
     },
     "about": "Aproximadamente"
+  },
+  "system_action": {
+    "cancel": "Cancelar",
+    "reboot": {
+      "confirm_title": "Reiniciar Sistema",
+      "confirm_description": "¿Estás seguro de que quieres reiniciar el sistema? Todos los servicios estarán temporalmente no disponibles.",
+      "loading_title": "Reiniciando Sistema",
+      "loading_description": "Por favor espera mientras el sistema se reinicia. Esto tomará aproximadamente {seconds} segundos.",
+      "button": "Reiniciar"
+    },
+    "shutdown": {
+      "confirm_title": "Apagar Sistema",
+      "confirm_description": "¿Estás seguro de que quieres apagar el sistema? Tendrás que reiniciar el dispositivo manualmente.",
+      "loading_title": "Apagando",
+      "loading_description": "El sistema se está apagando. Por favor espera {seconds} segundos.",
+      "complete_title": "¡Hasta pronto!",
+      "complete_description": "El sistema se ha apagado. Puedes desconectar la alimentación de forma segura.",
+      "button": "Apagar"
+    }
   }
 }

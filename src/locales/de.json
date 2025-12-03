@@ -735,5 +735,24 @@
       "units": "Einheiten"
     },
     "about": "Etwa"
+  },
+  "system_action": {
+    "cancel": "Abbrechen",
+    "reboot": {
+      "confirm_title": "System neu starten",
+      "confirm_description": "Sind Sie sicher, dass Sie das System neu starten möchten? Alle Dienste werden vorübergehend nicht verfügbar sein.",
+      "loading_title": "System wird neu gestartet",
+      "loading_description": "Bitte warten Sie, während das System neu startet. Dies dauert etwa {seconds} Sekunden.",
+      "button": "Neu starten"
+    },
+    "shutdown": {
+      "confirm_title": "System herunterfahren",
+      "confirm_description": "Sind Sie sicher, dass Sie das System herunterfahren möchten? Sie müssen das Gerät manuell neu starten.",
+      "loading_title": "System wird heruntergefahren",
+      "loading_description": "Das System wird heruntergefahren. Bitte warten Sie {seconds} Sekunden.",
+      "complete_title": "Bis bald!",
+      "complete_description": "Das System wurde heruntergefahren. Sie können die Stromversorgung sicher trennen.",
+      "button": "Herunterfahren"
+    }
   }
 }

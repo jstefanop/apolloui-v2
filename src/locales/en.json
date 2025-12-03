@@ -730,5 +730,24 @@
       "units": "units"
     },
     "about": "About"
+  },
+  "system_action": {
+    "cancel": "Cancel",
+    "reboot": {
+      "confirm_title": "Reboot System",
+      "confirm_description": "Are you sure you want to reboot the system? All services will be temporarily unavailable.",
+      "loading_title": "Rebooting System",
+      "loading_description": "Please wait while the system reboots. This will take approximately {seconds} seconds.",
+      "button": "Reboot"
+    },
+    "shutdown": {
+      "confirm_title": "Shutdown System",
+      "confirm_description": "Are you sure you want to shutdown the system? You will need to manually restart the device.",
+      "loading_title": "Shutting Down",
+      "loading_description": "The system is shutting down. Please wait {seconds} seconds.",
+      "complete_title": "See you soon!",
+      "complete_description": "The system has been shut down. You can safely disconnect the power.",
+      "button": "Shutdown"
+    }
   }
 }

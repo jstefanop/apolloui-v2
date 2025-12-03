@@ -737,5 +737,24 @@
       "units": "unità"
     },
     "about": "Circa"
+  },
+  "system_action": {
+    "cancel": "Annulla",
+    "reboot": {
+      "confirm_title": "Riavvia Sistema",
+      "confirm_description": "Sei sicuro di voler riavviare il sistema? Tutti i servizi saranno temporaneamente non disponibili.",
+      "loading_title": "Riavvio in corso",
+      "loading_description": "Attendere il riavvio del sistema. L'operazione richiederà circa {seconds} secondi.",
+      "button": "Riavvia"
+    },
+    "shutdown": {
+      "confirm_title": "Spegni Sistema",
+      "confirm_description": "Sei sicuro di voler spegnere il sistema? Dovrai riavviare manualmente il dispositivo.",
+      "loading_title": "Spegnimento in corso",
+      "loading_description": "Il sistema si sta spegnendo. Attendere {seconds} secondi.",
+      "complete_title": "A presto!",
+      "complete_description": "Il sistema è stato spento. Puoi scollegare l'alimentazione in sicurezza.",
+      "button": "Spegni"
+    }
   }
 }
