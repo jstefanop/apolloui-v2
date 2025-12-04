@@ -328,7 +328,7 @@ const SoloMining = () => {
             ? intl.formatMessage(
                 {
                   id: 'solo_mining.title',
-                  defaultMessage: 'Apollo Solo Mining {hashrate}',
+                  defaultMessage: 'Apollo Solo Pool {hashrate}',
                 },
                 {
                   hashrate: `${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}`,
@@ -336,7 +336,7 @@ const SoloMining = () => {
               )
             : intl.formatMessage({
                 id: 'solo_mining.title',
-                defaultMessage: 'Apollo Solo Mining',
+                defaultMessage: 'Apollo Solo Pool',
               })}
         </title>
       </Head>

@@ -275,7 +275,7 @@
       "idle": "Inattivo"
     },
     "users": {
-      "title": "Utenti Mining SOLO",
+      "title": "Utenti Pool SOLO",
       "waiting": "In attesa dell'aggiornamento delle statistiche...",
       "show_all_data": "Mostra tutti i dati",
       "no_active_workers": "Nessun worker attivo",
@@ -549,7 +549,7 @@
       "solo": {
         "title": "Impostazioni SOLO",
         "description": "Miner direttamente sul tuo nodo Bitcoin",
-        "mining_mode": "Modalità Mining SOLO",
+        "mining_mode": "Modalità Pool SOLO",
         "mining_mode_description": "Abilita la modalità solo mining per minare direttamente sul tuo nodo Bitcoin. Nota: il nodo verrà riavviato per applicare le modifiche.",
         "wallet_address": "Indirizzo wallet",
         "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
@@ -634,7 +634,7 @@
   "routes": {
     "overview": "Panoramica",
     "miner": "Miner",
-    "soloMining": "Mining SOLO",
+    "soloMining": "Pool SOLO",
     "node": "Nodo",
     "system": "Sistema",
     "settings": "Impostazioni"
@@ -737,6 +737,56 @@
       "units": "unità"
     },
     "about": "Circa"
+  },
+  "action": {
+    "miner": {
+      "stop": {
+        "title": "Arresto miner",
+        "description": "Il miner verrà arrestato in pochi secondi"
+      },
+      "start": {
+        "title": "Avvio miner",
+        "description": "Il miner sarà disponibile a breve, attendere prego"
+      },
+      "restart": {
+        "title": "Riavvio miner",
+        "description": "Il miner sarà disponibile a breve, attendere prego"
+      }
+    },
+    "node": {
+      "stop": {
+        "title": "Arresto nodo Bitcoin",
+        "description": "Il nodo verrà arrestato in pochi secondi"
+      },
+      "start": {
+        "title": "Avvio nodo Bitcoin",
+        "description": "Il nodo sarà disponibile a breve, attendere prego"
+      }
+    },
+    "solo": {
+      "stop": {
+        "title": "Arresto Solo Pool",
+        "description": "Il servizio solo pool verrà arrestato in pochi secondi"
+      },
+      "start": {
+        "title": "Avvio Solo Pool",
+        "description": "Il servizio solo pool sarà disponibile a breve, attendere prego"
+      },
+      "restart": {
+        "title": "Riavvio Solo Pool",
+        "description": "Il servizio solo pool sarà disponibile a breve, attendere prego"
+      }
+    },
+    "system": {
+      "reboot": {
+        "title": "Riavvio sistema",
+        "description": "Il sistema si sta riavviando, attendere almeno 1 minuto per rivedere le statistiche"
+      },
+      "shutdown": {
+        "title": "Spegnimento sistema",
+        "description": "Il sistema si sta spegnendo, dovrai riavviarlo manualmente. A presto."
+      }
+    }
   },
   "system_action": {
     "cancel": "Annulla",

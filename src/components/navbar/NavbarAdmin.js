@@ -109,75 +109,71 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     switch (action) {
       case 'stopMiner':
         stopMiner();
-        title = 'Stopping miner';
-        description = 'Your miner will be stopped in a few seconds';
+        title = intl.formatMessage({ id: 'action.miner.stop.title', defaultMessage: 'Stopping miner' });
+        description = intl.formatMessage({ id: 'action.miner.stop.description', defaultMessage: 'Your miner will be stopped in a few seconds' });
         loadingAction = loadingMinerStop;
         errorAction = errorMinerStop;
         break;
       case 'startMiner':
         startMiner();
-        title = 'Starting miner';
-        description =
-          'Your miner will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.miner.start.title', defaultMessage: 'Starting miner' });
+        description = intl.formatMessage({ id: 'action.miner.start.description', defaultMessage: 'Your miner will be available in a moment, please hold on' });
         loadingAction = loadingMinerStart;
         errorAction = errorMinerStart;
         break;
       case 'restartMiner':
         restartMiner();
-        title = 'Restarting miner';
-        description =
-          'Your miner will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.miner.restart.title', defaultMessage: 'Restarting miner' });
+        description = intl.formatMessage({ id: 'action.miner.restart.description', defaultMessage: 'Your miner will be available in a moment, please hold on' });
         loadingAction = loadingMinerRestart;
         errorAction = errorMinerRestart;
         break;
       case 'stopNode':
         stopNode();
-        title = 'Stopping Bitcoin node';
-        description = 'Your node will be stopped in a few seconds';
+        title = intl.formatMessage({ id: 'action.node.stop.title', defaultMessage: 'Stopping Bitcoin node' });
+        description = intl.formatMessage({ id: 'action.node.stop.description', defaultMessage: 'Your node will be stopped in a few seconds' });
         loadingAction = loadingNodeStart;
         errorAction = errorNodeStart;
         break;
       case 'startNode':
         startNode();
-        title = 'Starting Bitcoin node';
-        description = 'Your node will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.node.start.title', defaultMessage: 'Starting Bitcoin node' });
+        description = intl.formatMessage({ id: 'action.node.start.description', defaultMessage: 'Your node will be available in a moment, please hold on' });
         loadingAction = loadingNodeStop;
         errorAction = errorNodeStop;
         break;
       case 'stopSolo':
         stopSolo();
-        title = 'Stopping Solo mining';
-        description = 'Your solo mining service will be stopped in a few seconds';
+        title = intl.formatMessage({ id: 'action.solo.stop.title', defaultMessage: 'Stopping Solo Pool' });
+        description = intl.formatMessage({ id: 'action.solo.stop.description', defaultMessage: 'Your solo pool service will be stopped in a few seconds' });
         loadingAction = loadingSoloStop;
         errorAction = errorSoloStop;
         break;
       case 'startSolo':
         startSolo();
-        title = 'Starting Solo mining';
-        description = 'Your solo mining service will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.solo.start.title', defaultMessage: 'Starting Solo Pool' });
+        description = intl.formatMessage({ id: 'action.solo.start.description', defaultMessage: 'Your solo pool service will be available in a moment, please hold on' });
         loadingAction = loadingSoloStart;
         errorAction = errorSoloStart;
         break;
       case 'restartSolo':
         restartSolo();
-        title = 'Restarting Solo mining';
-        description = 'Your solo mining service will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.solo.restart.title', defaultMessage: 'Restarting Solo Pool' });
+        description = intl.formatMessage({ id: 'action.solo.restart.description', defaultMessage: 'Your solo pool service will be available in a moment, please hold on' });
         loadingAction = loadingSoloRestart;
         errorAction = errorSoloRestart;
         break;
       case 'rebootMcu':
         rebootMcu();
-        title = 'Rebooting system';
-        description =
-          'Your system is rebooting, please wait at least 1 minute you should see stats again';
+        title = intl.formatMessage({ id: 'action.system.reboot.title', defaultMessage: 'Rebooting system' });
+        description = intl.formatMessage({ id: 'action.system.reboot.description', defaultMessage: 'Your system is rebooting, please wait at least 1 minute you should see stats again' });
         loadingAction = loadingRebootMcu;
         errorAction = errorRebootMcu;
         break;
       case 'shutdownMcu':
         shutdownMcu();
-        title = 'Shutting down system';
-        description =
-          'Your system is halting, you will need to start it manually. See you.';
+        title = intl.formatMessage({ id: 'action.system.shutdown.title', defaultMessage: 'Shutting down system' });
+        description = intl.formatMessage({ id: 'action.system.shutdown.description', defaultMessage: 'Your system is halting, you will need to start it manually. See you.' });
         loadingAction = loadingShutdownMcu;
         errorAction = errorShutdownMcu;
         break;

@@ -189,7 +189,7 @@
     "total_pools_hashboards": "Total pools and hashboards",
     "hashboards": "Hashboards",
     "pools": "Pools",
-    "solo_mining": "SOLO Mining",
+    "solo_mining": "SOLO Pool",
     "enabled": "ENABLED",
     "auto": "AUTO",
     "status": {
@@ -632,7 +632,7 @@
   "routes": {
     "overview": "Overview",
     "miner": "Miner",
-    "soloMining": "SOLO Mining",
+    "soloMining": "Solo Pool",
     "node": "Node",
     "system": "System",
     "settings": "Settings"
@@ -730,6 +730,56 @@
       "units": "units"
     },
     "about": "About"
+  },
+  "action": {
+    "miner": {
+      "stop": {
+        "title": "Stopping miner",
+        "description": "Your miner will be stopped in a few seconds"
+      },
+      "start": {
+        "title": "Starting miner",
+        "description": "Your miner will be available in a moment, please hold on"
+      },
+      "restart": {
+        "title": "Restarting miner",
+        "description": "Your miner will be available in a moment, please hold on"
+      }
+    },
+    "node": {
+      "stop": {
+        "title": "Stopping Bitcoin node",
+        "description": "Your node will be stopped in a few seconds"
+      },
+      "start": {
+        "title": "Starting Bitcoin node",
+        "description": "Your node will be available in a moment, please hold on"
+      }
+    },
+    "solo": {
+      "stop": {
+        "title": "Stopping Solo Pool",
+        "description": "Your solo pool service will be stopped in a few seconds"
+      },
+      "start": {
+        "title": "Starting Solo Pool",
+        "description": "Your solo pool service will be available in a moment, please hold on"
+      },
+      "restart": {
+        "title": "Restarting Solo Pool",
+        "description": "Your solo pool service will be available in a moment, please hold on"
+      }
+    },
+    "system": {
+      "reboot": {
+        "title": "Rebooting system",
+        "description": "Your system is rebooting, please wait at least 1 minute you should see stats again"
+      },
+      "shutdown": {
+        "title": "Shutting down system",
+        "description": "Your system is halting, you will need to start it manually. See you."
+      }
+    }
   },
   "system_action": {
     "cancel": "Cancel",

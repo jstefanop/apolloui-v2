@@ -736,6 +736,56 @@
     },
     "about": "Etwa"
   },
+  "action": {
+    "miner": {
+      "stop": {
+        "title": "Miner wird angehalten",
+        "description": "Ihr Miner wird in wenigen Sekunden angehalten"
+      },
+      "start": {
+        "title": "Miner wird gestartet",
+        "description": "Ihr Miner wird in Kürze verfügbar sein, bitte warten"
+      },
+      "restart": {
+        "title": "Miner wird neu gestartet",
+        "description": "Ihr Miner wird in Kürze verfügbar sein, bitte warten"
+      }
+    },
+    "node": {
+      "stop": {
+        "title": "Bitcoin-Node wird angehalten",
+        "description": "Ihre Node wird in wenigen Sekunden angehalten"
+      },
+      "start": {
+        "title": "Bitcoin-Node wird gestartet",
+        "description": "Ihre Node wird in Kürze verfügbar sein, bitte warten"
+      }
+    },
+    "solo": {
+      "stop": {
+        "title": "Solo-Pool wird angehalten",
+        "description": "Ihr Solo-Pool-Dienst wird in wenigen Sekunden angehalten"
+      },
+      "start": {
+        "title": "Solo-Pool wird gestartet",
+        "description": "Ihr Solo-Pool-Dienst wird in Kürze verfügbar sein, bitte warten"
+      },
+      "restart": {
+        "title": "Solo-Pool wird neu gestartet",
+        "description": "Ihr Solo-Pool-Dienst wird in Kürze verfügbar sein, bitte warten"
+      }
+    },
+    "system": {
+      "reboot": {
+        "title": "System wird neu gestartet",
+        "description": "Ihr System wird neu gestartet, bitte warten Sie mindestens 1 Minute, um die Statistiken wieder zu sehen"
+      },
+      "shutdown": {
+        "title": "System wird heruntergefahren",
+        "description": "Ihr System wird heruntergefahren, Sie müssen es manuell neu starten. Bis bald."
+      }
+    }
+  },
   "system_action": {
     "cancel": "Abbrechen",
     "reboot": {
