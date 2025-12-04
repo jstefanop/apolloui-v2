@@ -12,13 +12,13 @@ import {
   AlertTitle,
   AlertDescription,
   Spinner,
+  Select,
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import Head from 'next/head';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setAnalyticsLoading } from '../redux/slices/analyticsSlice';
 import { BulletList, List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
@@ -39,9 +39,6 @@ import { nodeSelector } from '../redux/reselect/node';
 import { minerSelector } from '../redux/reselect/miner';
 import { servicesSelector } from '../redux/reselect/services';
 import { soloSelector } from '../redux/reselect/solo';
-import { analyticsSelector } from '../redux/reselect/analytics';
-import { soloAnalyticsSelector } from '../redux/reselect/soloAnalytics';
-import { setSoloAnalyticsLoading } from '../redux/slices/soloAnalyticsSlice';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
 import { McuTempIcon } from '../components/UI/Icons/McuTempIcon';
@@ -56,7 +53,7 @@ import HashrateCard from '../components/apollo/HashrateCard';
 import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { settingsSelector } from '../redux/reselect/settings';
-import HashrateChart from '../components/apollo/HashrateChart';
+import HashrateChart, { INTERVAL_CONFIG } from '../components/apollo/HashrateChart';
 import { MdOfflineBolt } from 'react-icons/md';
 import { GiDiamondTrophy } from 'react-icons/gi';
 import CountUp from 'react-countup';
@@ -72,6 +69,9 @@ const Overview = () => {
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
   const deviceType = useDeviceType();
+
+  // Chart interval state
+  const [chartInterval, setChartInterval] = useState('hour');
 
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
@@ -169,19 +169,6 @@ const Overview = () => {
 
   const { used: memoryUsed, total: memoryTotal } = memory || {};
 
-  // Analytics data
-  const {
-    loading: loadingAnalytics,
-    data: dataAnalytics,
-    error: errorAnalytics,
-  } = useSelector(analyticsSelector, shallowEqual);
-
-  // Solo Analytics data
-  const {
-    loading: loadingSoloAnalytics,
-    data: dataSoloAnalytics,
-    error: errorSoloAnalytics,
-  } = useSelector(soloAnalyticsSelector, shallowEqual);
 
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode, intl);
@@ -273,25 +260,6 @@ const Overview = () => {
     prevGlobalHashrate?.value || prevGlobalHashrate || 0
   );
 
-  // Set loading state when component mounts to show cached data
-  useEffect(() => {
-    // Set loading to true to show cached data while fetching new data
-    if (deviceType === 'solo-node') {
-      dispatch(setSoloAnalyticsLoading(true));
-    } else {
-      dispatch(setAnalyticsLoading(true));
-    }
-
-    return () => {
-      // Don't clear data on unmount, let it stay in cache
-      // Only set loading to false to indicate we're not actively loading
-      if (deviceType === 'solo-node') {
-        dispatch(setSoloAnalyticsLoading(false));
-      } else {
-        dispatch(setAnalyticsLoading(false));
-      }
-    };
-  }, [dispatch, deviceType]);
 
   return (
     <Box>
@@ -663,13 +631,39 @@ const Overview = () => {
             {deviceType !== 'solo-node' && (
               <GridItem gridArea="chart">
                 <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
-                  <Flex m="2">
+                  <Flex m="2" justify="space-between" align="center">
                     <Text fontSize="lg" fontWeight="800">
                       <FormattedMessage
-                        id="overview.hashrate.title"
-                        defaultMessage="Last 24h Hashrate"
+                        id="overview.hashrate.chart.title"
+                        defaultMessage="Hashrate History"
                       />
                     </Text>
+                    <Select
+                      size="sm"
+                      value={chartInterval}
+                      onChange={(e) => setChartInterval(e.target.value)}
+                      w="auto"
+                      minW="130px"
+                      fontSize="xs"
+                      fontWeight="500"
+                      borderRadius="md"
+                      bg="transparent"
+                      borderColor={iconColorReversed}
+                      color={iconColorReversed}
+                      _hover={{ borderColor: 'brand.500' }}
+                      _focus={{ borderColor: 'brand.500', boxShadow: 'none' }}
+                      cursor="pointer"
+                    >
+                      <option value="tenmin" style={{ color: 'black' }}>
+                        {intl.formatMessage({ id: 'chart.interval.6hours', defaultMessage: 'Last 6 hours' })}
+                      </option>
+                      <option value="hour" style={{ color: 'black' }}>
+                        {intl.formatMessage({ id: 'chart.interval.24hours', defaultMessage: 'Last 24 hours' })}
+                      </option>
+                      <option value="day" style={{ color: 'black' }}>
+                        {intl.formatMessage({ id: 'chart.interval.30days', defaultMessage: 'Last 30 days' })}
+                      </option>
+                    </Select>
                   </Flex>
                   <Flex
                     my="auto"
@@ -677,14 +671,7 @@ const Overview = () => {
                     justify={{ base: 'center', xl: 'center' }}
                     direction={{ base: 'column', md: 'row' }}
                   >
-                    <HashrateChart
-                      dataAnalytics={
-                        dataAnalytics && Array.isArray(dataAnalytics)
-                          ? dataAnalytics
-                          : null
-                      }
-                      loading={loadingAnalytics}
-                    />
+                    <HashrateChart source="miner" interval={chartInterval} />
                   </Flex>
                 </Card>
               </GridItem>
@@ -693,13 +680,39 @@ const Overview = () => {
             {deviceType === 'solo-node' && (
               <GridItem gridArea="soloChart">
                 <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
-                  <Flex m="2">
+                  <Flex m="2" justify="space-between" align="center">
                     <Text fontSize="lg" fontWeight="800">
                       <FormattedMessage
-                        id="overview.solo.hashrate.title"
-                        defaultMessage="Last 24h Solo Hashrate"
+                        id="overview.solo.hashrate.chart.title"
+                        defaultMessage="Solo Hashrate History"
                       />
                     </Text>
+                    <Select
+                      size="sm"
+                      value={chartInterval}
+                      onChange={(e) => setChartInterval(e.target.value)}
+                      w="auto"
+                      minW="130px"
+                      fontSize="xs"
+                      fontWeight="500"
+                      borderRadius="md"
+                      bg="transparent"
+                      borderColor={iconColorReversed}
+                      color={iconColorReversed}
+                      _hover={{ borderColor: 'orange.500' }}
+                      _focus={{ borderColor: 'orange.500', boxShadow: 'none' }}
+                      cursor="pointer"
+                    >
+                      <option value="tenmin" style={{ color: 'black' }}>
+                        {intl.formatMessage({ id: 'chart.interval.6hours', defaultMessage: 'Last 6 hours' })}
+                      </option>
+                      <option value="hour" style={{ color: 'black' }}>
+                        {intl.formatMessage({ id: 'chart.interval.24hours', defaultMessage: 'Last 24 hours' })}
+                      </option>
+                      <option value="day" style={{ color: 'black' }}>
+                        {intl.formatMessage({ id: 'chart.interval.30days', defaultMessage: 'Last 30 days' })}
+                      </option>
+                    </Select>
                   </Flex>
                   <Flex
                     my="auto"
@@ -707,15 +720,7 @@ const Overview = () => {
                     justify={{ base: 'center', xl: 'center' }}
                     direction={{ base: 'column', md: 'row' }}
                   >
-                    <HashrateChart
-                      dataAnalytics={
-                        dataSoloAnalytics && Array.isArray(dataSoloAnalytics)
-                          ? dataSoloAnalytics
-                          : null
-                      }
-                      loading={loadingSoloAnalytics}
-                      source="solo"
-                    />
+                    <HashrateChart source="solo" interval={chartInterval} />
                   </Flex>
                 </Card>
               </GridItem>

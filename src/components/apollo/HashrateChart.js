@@ -1,21 +1,58 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import moment from '../../lib/moment';
 import { displayHashrate } from '../../lib/utils';
-import { useTheme, useColorModeValue, Box, Flex, Spinner, Text } from '@chakra-ui/react';
+import { 
+  useTheme, 
+  useColorModeValue, 
+  Box, 
+  Flex, 
+  Spinner, 
+  Text,
+  HStack
+} from '@chakra-ui/react';
+import { useQuery } from '@apollo/client';
 import { useAnalyticsData } from '../../hooks/useAnalyticsData';
 import { useSoloAnalyticsData } from '../../hooks/useSoloAnalyticsData';
+import { GET_ANALYTICS_QUERY, GET_SOLO_ANALYTICS_QUERY } from '../../graphql/analytics';
 
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+
+// Interval configuration
+export const INTERVAL_CONFIG = {
+  tenmin: {
+    points: 36,
+    labelFormat: 'HH:mm',
+    tooltipFormat: 'HH:mm',
+    labelKey: 'chart.interval.6hours',
+    defaultLabel: 'Last 6 hours'
+  },
+  hour: {
+    points: 24,
+    labelFormat: 'HH:mm',
+    tooltipFormat: 'HH:mm',
+    labelKey: 'chart.interval.24hours',
+    defaultLabel: 'Last 24 hours'
+  },
+  day: {
+    points: 30,
+    labelFormat: 'DD MMM',
+    tooltipFormat: 'DD MMM YYYY',
+    labelKey: 'chart.interval.30days',
+    defaultLabel: 'Last 30 days'
+  }
+};
 
 /**
  * HashrateChart component - displays hashrate data over time
  * @param {Object} props
- * @param {Array} props.dataAnalytics - Analytics data array
- * @param {boolean} props.loading - Loading state
  * @param {string} props.source - Data source: 'miner' (default) or 'solo'
+ * @param {string} props.interval - Selected interval: 'tenmin', 'hour', 'day' (default: 'hour')
  */
-const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'miner' }) => {
+const HashrateChart = React.memo(({ 
+  source = 'miner',
+  interval = 'hour'
+}) => {
   const theme = useTheme();
   const isSolo = source === 'solo';
 
@@ -37,17 +74,81 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
   const loadingBgColor = useColorModeValue('rgba(255, 255, 255, 0.9)', 'rgba(45, 55, 72, 0.9)');
   const loadingTextColor = useColorModeValue('gray.600', 'gray.300');
 
-  // Use the appropriate analytics data hook based on source
-  const minerAnalytics = useAnalyticsData(isSolo ? null : dataAnalytics);
-  const soloAnalytics = useSoloAnalyticsData(isSolo ? dataAnalytics : null);
-  
-  const { data: limitedData, chartData } = isSolo ? soloAnalytics : minerAnalytics;
+  // Query for miner analytics
+  const { 
+    loading: loadingMinerQuery, 
+    data: dataMinerQuery 
+  } = useQuery(GET_ANALYTICS_QUERY, {
+    variables: {
+      input: {
+        interval: interval,
+      },
+    },
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    errorPolicy: 'all',
+    pollInterval: interval === 'tenmin' ? 30000 : 60000,
+    skip: isSolo
+  });
 
-  // Format labels for display
-  const labels = useMemo(() => 
-    limitedData.map((item) => moment(item.date).startOf('hour').format('HH:mm')),
-    [limitedData]
-  );
+  // Query for solo analytics
+  const { 
+    loading: loadingSoloQuery, 
+    data: dataSoloQuery 
+  } = useQuery(GET_SOLO_ANALYTICS_QUERY, {
+    variables: {
+      input: {
+        interval: interval,
+        source: 'solo',
+      },
+    },
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    errorPolicy: 'all',
+    pollInterval: interval === 'tenmin' ? 30000 : 60000,
+    skip: !isSolo
+  });
+
+  // Extract miner data from query result
+  const minerQueryData = useMemo(() => {
+    if (!dataMinerQuery?.TimeSeries?.stats?.result?.data) return null;
+    return dataMinerQuery.TimeSeries.stats.result.data;
+  }, [dataMinerQuery]);
+
+  // Extract solo data from query result
+  const soloQueryData = useMemo(() => {
+    if (!dataSoloQuery?.TimeSeries?.stats?.result?.data) return null;
+    return dataSoloQuery.TimeSeries.stats.result.data;
+  }, [dataSoloQuery]);
+
+  // Get current interval config
+  const currentConfig = INTERVAL_CONFIG[interval];
+
+  // Use the appropriate analytics data hook based on source
+  const minerAnalytics = useAnalyticsData(isSolo ? null : minerQueryData);
+  const soloAnalytics = useSoloAnalyticsData(isSolo ? soloQueryData : null);
+  
+  // Select the appropriate data based on source
+  const effectiveLoading = isSolo ? loadingSoloQuery : loadingMinerQuery;
+  const { data: rawLimitedData, chartData } = isSolo ? soloAnalytics : minerAnalytics;
+
+  // Limit data based on interval configuration
+  const limitedData = useMemo(() => {
+    if (!rawLimitedData || !rawLimitedData.length) return [];
+    return rawLimitedData.slice(-currentConfig.points);
+  }, [rawLimitedData, currentConfig.points]);
+
+  // Format labels for display based on interval
+  const labels = useMemo(() => {
+    return limitedData.map((item) => {
+      const date = moment(item.date);
+      if (interval === 'day') {
+        return date.format('DD MMM');
+      }
+      // For tenmin and hour, show time
+      return date.format('HH:mm');
+    });
+  }, [limitedData, interval]);
 
   // Get colors and series names based on source
   const primaryColor = isSolo ? soloHashrateColor : minerColor;
@@ -72,7 +173,6 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
       zoom: {
         enabled: false
       },
-      // Add redraw options to optimize performance
       redrawOnWindowResize: false,
       redrawOnParentResize: false
     },
@@ -99,7 +199,9 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
       labels: {
         style: {
           colors: textColor
-        }
+        },
+        rotate: interval === 'day' ? -45 : 0,
+        rotateAlways: interval === 'day'
       },
       axisBorder: {
         show: false
@@ -136,7 +238,15 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
     tooltip: {
       theme: 'dark',
       x: {
-        format: 'HH:mm'
+        formatter: (value, { dataPointIndex }) => {
+          if (limitedData[dataPointIndex]) {
+            const date = moment(limitedData[dataPointIndex].date);
+            return interval === 'day' 
+              ? date.format('DD MMM YYYY')
+              : date.format('HH:mm');
+          }
+          return value;
+        }
       },
       y: {
         formatter: (value, { seriesIndex }) => {
@@ -152,16 +262,16 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
     },
     legend: {
       position: 'top',
-      horizontalAlign: 'right',
+      horizontalAlign: 'left',
       labels: {
         colors: textColor
       }
     },
     colors: [primaryColor, secondaryColor],
     markers: {
-      size: 4,
+      size: interval === 'day' ? 3 : 4,
       hover: {
-        size: 8
+        size: interval === 'day' ? 6 : 8
       },
       fillColors: [primaryColor, secondaryColor],
       strokeColors: [primaryColor, secondaryColor],
@@ -169,29 +279,33 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
       strokeOpacity: 0.8,
       fillOpacity: 0.8
     }
-  }), [labels, gridColor, textColor, primaryColor, secondaryColor, isSolo]);
+  }), [labels, gridColor, textColor, primaryColor, secondaryColor, isSolo, interval, limitedData]);
 
-  // Memoize series data
+  // Memoize series data with proper limiting
   const series = useMemo(() => {
+    const limitedHashrates = chartData.hashrates?.slice(-currentConfig.points) || [];
+    
     if (isSolo) {
       return [
         {
           name: primarySeriesName,
-          data: chartData.hashrates
+          data: limitedHashrates
         }
       ];
     }
+    
+    const limitedPoolHashrates = chartData.poolhashrates?.slice(-currentConfig.points) || [];
     return [
       {
         name: primarySeriesName,
-        data: chartData.hashrates
+        data: limitedHashrates
       },
       {
         name: secondarySeriesName,
-        data: chartData.poolhashrates
+        data: limitedPoolHashrates
       }
     ];
-  }, [chartData.hashrates, chartData.poolhashrates, isSolo, primarySeriesName, secondarySeriesName]);
+  }, [chartData.hashrates, chartData.poolhashrates, isSolo, primarySeriesName, secondarySeriesName, currentConfig.points]);
 
   // Show loader when no data available
   if (!limitedData.length) {
@@ -252,7 +366,7 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
             ))}
           </Box>
           <Text fontSize="sm" color={textColor} mt={2}>
-            {loading ? 'Loading data...' : 'Waiting for data...'}
+            {effectiveLoading ? 'Loading data...' : 'Waiting for data...'}
           </Text>
         </Flex>
       </Box>
@@ -261,11 +375,12 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
 
   return (
     <Box w="100%" h="300px" p="20px" position="relative">
-      {loading && (
+      {/* Loading indicator */}
+      {effectiveLoading && (
         <Flex
           position="absolute"
           top="10px"
-          right="10px"
+          right="20px"
           zIndex={10}
           align="center"
           gap={2}
@@ -275,12 +390,13 @@ const HashrateChart = React.memo(({ dataAnalytics, loading = false, source = 'mi
           borderRadius="md"
           boxShadow="sm"
         >
-          <Spinner size="sm" color="blue.500" />
+          <Spinner size="sm" color={isSolo ? 'orange.500' : 'blue.500'} />
           <Text fontSize="xs" color={loadingTextColor}>
-            {limitedData.length > 0 ? 'Updating...' : 'Loading...'}
+            Updating...
           </Text>
         </Flex>
       )}
+      
       <ReactApexChart
         options={chartOptions}
         series={series}

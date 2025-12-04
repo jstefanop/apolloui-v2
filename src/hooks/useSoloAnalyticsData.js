@@ -1,18 +1,28 @@
 import { useMemo, useCallback } from 'react';
 
+// Maximum points per interval to prevent memory accumulation
+const MAX_POINTS = {
+  tenmin: 36,
+  hour: 24,
+  day: 30,
+  default: 36 // Use largest as default
+};
+
 /**
  * Custom hook for memory-optimized solo analytics data management
  * Ensures data is limited and cleaned to prevent memory accumulation
+ * @param {Array} rawData - Raw analytics data
+ * @param {number} maxPoints - Maximum number of points to keep (default: 36)
  */
-export const useSoloAnalyticsData = (rawData) => {
+export const useSoloAnalyticsData = (rawData, maxPoints = MAX_POINTS.default) => {
   // Memoize and limit the data to prevent memory accumulation
   const limitedData = useMemo(() => {
     if (!rawData || !Array.isArray(rawData)) {
       return [];
     }
     
-    // Take only the last 24 items to prevent memory accumulation
-    const limited = rawData.slice(-24);
+    // Take only the last N items to prevent memory accumulation
+    const limited = rawData.slice(-maxPoints);
     
     // Clean each data point to ensure only necessary properties are kept
     return limited.map(item => ({
@@ -26,7 +36,7 @@ export const useSoloAnalyticsData = (rawData) => {
       rejected: item.rejected || 0,
       bestshare: item.bestshare || 0
     }));
-  }, [rawData]);
+  }, [rawData, maxPoints]);
 
   // Memoize chart data to prevent unnecessary recalculations
   const chartData = useMemo(() => {
@@ -62,6 +72,10 @@ export const useSoloAnalyticsData = (rawData) => {
     data: limitedData,
     chartData,
     getDataForRange,
-    dataLength: limitedData.length
+    dataLength: limitedData.length,
+    maxPoints: MAX_POINTS
   };
 };
+
+// Export MAX_POINTS for use in other components
+export { MAX_POINTS };
