@@ -40,6 +40,8 @@ import { minerSelector } from '../redux/reselect/miner';
 import { servicesSelector } from '../redux/reselect/services';
 import { soloSelector } from '../redux/reselect/solo';
 import { analyticsSelector } from '../redux/reselect/analytics';
+import { soloAnalyticsSelector } from '../redux/reselect/soloAnalytics';
+import { setSoloAnalyticsLoading } from '../redux/slices/soloAnalyticsSlice';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { MinerTempIcon } from '../components/UI/Icons/MinerTemp';
 import { McuTempIcon } from '../components/UI/Icons/McuTempIcon';
@@ -174,6 +176,13 @@ const Overview = () => {
     error: errorAnalytics,
   } = useSelector(analyticsSelector, shallowEqual);
 
+  // Solo Analytics data
+  const {
+    loading: loadingSoloAnalytics,
+    data: dataSoloAnalytics,
+    error: errorSoloAnalytics,
+  } = useSelector(soloAnalyticsSelector, shallowEqual);
+
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode, intl);
 
@@ -267,14 +276,22 @@ const Overview = () => {
   // Set loading state when component mounts to show cached data
   useEffect(() => {
     // Set loading to true to show cached data while fetching new data
-    dispatch(setAnalyticsLoading(true));
+    if (deviceType === 'solo-node') {
+      dispatch(setSoloAnalyticsLoading(true));
+    } else {
+      dispatch(setAnalyticsLoading(true));
+    }
 
     return () => {
       // Don't clear data on unmount, let it stay in cache
       // Only set loading to false to indicate we're not actively loading
-      dispatch(setAnalyticsLoading(false));
+      if (deviceType === 'solo-node') {
+        dispatch(setSoloAnalyticsLoading(false));
+      } else {
+        dispatch(setAnalyticsLoading(false));
+      }
     };
-  }, [dispatch]);
+  }, [dispatch, deviceType]);
 
   return (
     <Box>
@@ -600,17 +617,17 @@ const Overview = () => {
 
           <Grid
             templateAreas={deviceType === 'solo-node' ? {
-              base: `'node' 'gauges'`,
-              lg: `'node node node node' 'gauges gauges gauges gauges'`,
-              '3xl': `'node node node node' 'gauges gauges gauges gauges'`,
+              base: `'node' 'soloChart' 'gauges'`,
+              lg: `'node node node node' 'soloChart soloChart soloChart soloChart' 'gauges gauges gauges gauges'`,
+              '3xl': `'node node node node' 'soloChart soloChart soloChart soloChart' 'gauges gauges gauges gauges'`,
             } : {
               base: `'hashrate' 'temperatures' 'power' 'node' 'chart' 'gauges'`,
               lg: `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'chart chart chart chart' 'gauges gauges gauges gauges'`,
               '3xl': `'hashrate hashrate temperatures power' 'hashrate hashrate node node' 'chart chart chart chart' 'gauges gauges gauges gauges'`,
             }}
             templateRows={deviceType === 'solo-node' ? {
-              base: 'auto auto',
-              lg: 'auto auto',
+              base: 'auto auto auto',
+              lg: 'auto auto auto',
             } : {
               base: 'auto auto auto auto auto auto',
               lg: 'auto auto auto auto',
@@ -667,6 +684,37 @@ const Overview = () => {
                           : null
                       }
                       loading={loadingAnalytics}
+                    />
+                  </Flex>
+                </Card>
+              </GridItem>
+            )}
+
+            {deviceType === 'solo-node' && (
+              <GridItem gridArea="soloChart">
+                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
+                  <Flex m="2">
+                    <Text fontSize="lg" fontWeight="800">
+                      <FormattedMessage
+                        id="overview.solo.hashrate.title"
+                        defaultMessage="Last 24h Solo Hashrate"
+                      />
+                    </Text>
+                  </Flex>
+                  <Flex
+                    my="auto"
+                    align={{ base: 'center', xl: 'start' }}
+                    justify={{ base: 'center', xl: 'center' }}
+                    direction={{ base: 'column', md: 'row' }}
+                  >
+                    <HashrateChart
+                      dataAnalytics={
+                        dataSoloAnalytics && Array.isArray(dataSoloAnalytics)
+                          ? dataSoloAnalytics
+                          : null
+                      }
+                      loading={loadingSoloAnalytics}
+                      source="solo"
                     />
                   </Flex>
                 </Card>

@@ -9,6 +9,7 @@ import minerReducer from './slices/minerSlice';
 import nodeReducer from './slices/nodeSlice';
 import mcuReducer from './slices/mcuSlice';
 import analyticsReducer from './slices/analyticsSlice';
+import soloAnalyticsReducer from './slices/soloAnalyticsSlice';
 import settingsReducer from './slices/settingsSlice';
 import wifiReducer from './slices/wifiSlice';
 import feedbackReducer, {
@@ -73,6 +74,7 @@ const rootReducer = {
   node: nodeReducer,
   mcu: mcuReducer,
   analytics: analyticsReducer,
+  soloAnalytics: soloAnalyticsReducer,
   settings: settingsReducer,
   wifi: wifiReducer,
   feedback: feedbackReducer,

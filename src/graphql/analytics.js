@@ -30,7 +30,44 @@ export const GET_ANALYTICS_QUERY = gql`
   }
 `;
 
+export const GET_SOLO_ANALYTICS_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query GET_SOLO_ANALYTICS ($input: TimeSeriesInput!) {
+    TimeSeries {
+      stats (input: $input) {
+        result {
+          data {
+            date
+            users
+            workers
+            idle
+            disconnected
+            hashrate15m
+            accepted
+            rejected
+            bestshare
+          }
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
 export const initialState = {
+  TimeSeries: {
+    stats: {
+      result: {
+        data: [],
+      },
+      error: null,
+    },
+  },
+};
+
+export const initialSoloState = {
   TimeSeries: {
     stats: {
       result: {

@@ -19,8 +19,9 @@ import { MCU_STATS_QUERY } from '../../graphql/mcu';
 import { updateMcuStats } from '../../redux/slices/mcuSlice';
 import { GET_SETTINGS_QUERY } from '../../graphql/settings';
 import { updateSettings } from '../../redux/slices/settingsSlice';
-import { GET_ANALYTICS_QUERY } from '../../graphql/analytics';
+import { GET_ANALYTICS_QUERY, GET_SOLO_ANALYTICS_QUERY } from '../../graphql/analytics';
 import { updateAnalytics } from '../../redux/slices/analyticsSlice';
+import { updateSoloAnalytics } from '../../redux/slices/soloAnalyticsSlice';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { SERVICES_STATUS_QUERY } from '../../graphql/services';
 import { updateServicesStatus } from '../../redux/slices/servicesSlice';
@@ -339,6 +340,72 @@ const Layout = ({ children }) => {
     dataAnalytics,
     errorAnalytics,
     nodePollingTime
+  ]);
+
+  // Solo Analytics data - only fetch for solo-node devices or when solo mining is enabled
+  const {
+    loading: loadingSoloAnalytics,
+    error: errorSoloAnalytics,
+    data: dataSoloAnalytics,
+    startPolling: startPollingSoloAnalytics,
+    stopPolling: stopPollingSoloAnalytics,
+  } = useQuery(GET_SOLO_ANALYTICS_QUERY, {
+    variables: {
+      input: {
+        interval: 'hour',
+        source: 'solo',
+      },
+    },
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+    errorPolicy: 'all',
+    notifyOnNetworkStatusChange: false,
+    pollInterval: 0,
+    skip: deviceType !== 'solo-node'
+  });
+
+  useEffect(() => {
+    // Skip if not solo-node device
+    if (deviceType !== 'solo-node') {
+      return;
+    }
+
+    // Create a serializable error object
+    const serializableError = createSerializableError(errorSoloAnalytics);
+    
+    // Always dispatch to update loading state and data
+    dispatch(
+      updateSoloAnalytics({
+        loading: loadingSoloAnalytics,
+        error: serializableError,
+        data: dataSoloAnalytics,
+      })
+    );
+  }, [
+    dispatch,
+    loadingSoloAnalytics,
+    errorSoloAnalytics,
+    dataSoloAnalytics,
+    deviceType
+  ]);
+
+  // Separate effect for solo analytics polling
+  useEffect(() => {
+    if (deviceType !== 'solo-node') {
+      return;
+    }
+
+    // Start polling immediately for solo-node devices
+    startPollingSoloAnalytics(nodePollingTime);
+
+    return () => {
+      stopPollingSoloAnalytics();
+    };
+  }, [
+    startPollingSoloAnalytics,
+    stopPollingSoloAnalytics,
+    nodePollingTime,
+    deviceType
   ]);
 
   // Services data
