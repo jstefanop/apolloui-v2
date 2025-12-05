@@ -65,10 +65,12 @@ import SoloMiningStatus from '../components/UI/SoloMiningStatus';
 import ColorBars from '../components/UI/ColorBars';
 import { useLazyQuery } from '@apollo/client';
 import { SOLO_START_QUERY } from '../graphql/solo';
+import { useDeviceType } from '../contexts/DeviceConfigContext';
 
 const SoloMining = () => {
   const intl = useIntl();
   const router = useRouter();
+  const deviceType = useDeviceType();
 
   const {
     isOpen: isVisibleBanner,
@@ -150,8 +152,9 @@ const SoloMining = () => {
   }, [soloData]);
 
   useEffect(() => {
-    if (!loadingSettings && !nodeEnableSoloMining) router.push('/miner');
-  }, [nodeEnableSoloMining, loadingSettings, router]);
+    // Don't redirect for solo-node devices, they always have solo mining
+    if (deviceType !== 'solo-node' && !loadingSettings && !nodeEnableSoloMining) router.push('/miner');
+  }, [deviceType, nodeEnableSoloMining, loadingSettings, router]);
 
   // Extract previous data for animations
   const prevPoolData = prevData.current?.pool || {};

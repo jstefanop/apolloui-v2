@@ -14,7 +14,7 @@ import config from '../../config';
 import LanguageSelector from '../language/LanguageSelector';
 
 export default function Footer() {
-  const textColor = useColorModeValue('gray.200', 'white');
+  const textColor = useColorModeValue('gray.600', 'white');
   return (
     <Flex
       w={{ base: '100%', xl: '1170px' }}

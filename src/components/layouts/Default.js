@@ -332,7 +332,8 @@ const Layout = ({ children }) => {
 
   // Reparsing routes
   routes = routes.filter((route) => {
-    if (route.path === '/solo-mining' && !nodeEnableSoloMining) return false;
+    // Show solo-mining route if device is solo-node OR if nodeEnableSoloMining is enabled
+    if (route.path === '/solo-mining' && deviceType !== 'solo-node' && !nodeEnableSoloMining) return false;
     return true;
   });
 

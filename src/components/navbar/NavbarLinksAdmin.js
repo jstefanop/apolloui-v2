@@ -239,7 +239,7 @@ export default function HeaderLinks({
           </Flex>
 
           {/* SOLO MINING */}
-          {nodeEnableSoloMining && (
+          {(deviceType === 'solo-node' || nodeEnableSoloMining) && (
             <Flex
               bg={badgeBg}
               display={secondary ? 'flex' : 'none'}
@@ -334,8 +334,8 @@ export default function HeaderLinks({
                   me="6px"
                   minW="70px"
                   display={{
-                    base: nodeEnableSoloMining ? 'none' : 'block',
-                    md: 'block',
+                    base: (deviceType === 'solo-node' || nodeEnableSoloMining) ? 'none' : 'block',
+                    md: deviceType === 'solo-node' ? 'none' : 'block',
                   }}
                 >
                   {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}

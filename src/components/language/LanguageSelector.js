@@ -19,7 +19,7 @@ const languages = [
 ];
 
 export default function LanguageSelector() {
-  const textColor = useColorModeValue('gray.200', 'white');
+  const textColor = useColorModeValue('gray.600', 'white');
   const menuBg = useColorModeValue('white', 'gray.800');
   const menuHoverBg = useColorModeValue('gray.300', 'gray.700');
   const router = useRouter();
