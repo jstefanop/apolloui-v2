@@ -59,6 +59,17 @@ const MinerStatus = ({ serviceStatus }) => {
     );
   }
 
+  // Handle unknown status - miner service status is unknown
+  if (status === 'unknown') {
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'miner.status.unknown.title' })}
+        description={intl.formatMessage({ id: 'miner.status.unknown.description' })}
+        status="warning"
+      />
+    );
+  }
+
   // Handle pending status
   if (status === 'pending') {
     if (requestedStatus === 'offline') {

@@ -557,7 +557,7 @@
         "cannot_enable": "Impossibile abilitare il solo mining",
         "node_not_synced": "Il tuo nodo Bitcoin non è in esecuzione o non è completamente sincronizzato. Puoi abilitare il solo mining solo dopo che il nodo è completamente sincronizzato.",
         "btc_signature": "Firma BTC",
-        "btc_signature_placeholder": "/La tua stringa preferita/",
+        "btc_signature_placeholder": "IlTuoNome",
         "invalid_address": "Aggiungi un indirizzo Bitcoin valido",
         "incompatible_address": "Attenzione: gli indirizzi Bitcoin P2WSH e P2TR non sono validi per il solo mining. Aggiungi un indirizzo Bitcoin diverso"
       }

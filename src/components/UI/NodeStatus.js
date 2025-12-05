@@ -59,6 +59,17 @@ const NodeStatus = ({ serviceStatus }) => {
     );
   }
 
+  // Handle unknown status - node service status is unknown
+  if (status === 'unknown') {
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'node.status.unknown.title' })}
+        description={intl.formatMessage({ id: 'node.status.unknown.description' })}
+        status="warning"
+      />
+    );
+  }
+
   // Handle pending status
   if (status === 'pending') {
     if (requestedStatus === 'offline') {

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   Input,
+  InputGroup,
+  InputLeftAddon,
+  InputRightAddon,
   Text,
   Alert,
   AlertIcon,
@@ -49,7 +52,11 @@ const SoloSettings = () => {
   const { data: dataNode } = useSelector(nodeSelector, shallowEqual);
   const { blocksCount, blockHeader } = dataNode || {};
 
-  // Check for btcsig setting
+  // BTC Signature prefix and suffix (visual only)
+  const btcsigPrefix = '/FutureBit-';
+  const btcsigSuffix = '/';
+
+  // Check for btcsig setting - save only the editable part (API receives just the name)
   const handleBtcsigChange = (e) => {
     setSettings({ ...settings, btcsig: e.target.value });
   };
@@ -188,17 +195,21 @@ const SoloSettings = () => {
       )}
 
       <SimpleCard title={intl.formatMessage({ id: 'settings.sections.solo.btc_signature' })} textColor={textColor}>
-        <Input
-          color={inputTextColor}
-          name="btcsig"
-          type="text"
-          autoComplete="off"
-          data-lpignore="true"
-          data-form-type="other"
-          placeholder={intl.formatMessage({ id: 'settings.sections.solo.btc_signature_placeholder' })}
-          value={settings.btcsig || ''}
-          onChange={handleBtcsigChange}
-        />
+        <InputGroup>
+          <InputLeftAddon>{btcsigPrefix}</InputLeftAddon>
+          <Input
+            color={inputTextColor}
+            name="btcsig"
+            type="text"
+            autoComplete="off"
+            data-lpignore="true"
+            data-form-type="other"
+            placeholder={intl.formatMessage({ id: 'settings.sections.solo.btc_signature_placeholder' })}
+            value={settings.btcsig || ''}
+            onChange={handleBtcsigChange}
+          />
+          <InputRightAddon>{btcsigSuffix}</InputRightAddon>
+        </InputGroup>
       </SimpleCard>
     </PanelCard>
   );

@@ -542,7 +542,7 @@
         "cannot_enable": "No se puede activar la minería SOLO",
         "node_not_synced": "Tu nodo Bitcoin no está en funcionamiento o no está totalmente sincronizado. Solo puedes activar la minería solo una vez esté completamente sincronizado.",
         "btc_signature": "Firma BTC",
-        "btc_signature_placeholder": "/Tu cadena preferida/",
+        "btc_signature_placeholder": "TuNombre",
         "invalid_address": "Por favor, introduce una dirección Bitcoin válida",
         "incompatible_address": "Advertencia: Las direcciones P2WSH y P2TR no son válidas para la minería SOLO. Usa una dirección diferente."
       }

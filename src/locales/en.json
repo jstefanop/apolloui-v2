@@ -82,6 +82,10 @@
       },
       "online": {
         "message": "Your node is {online} and operational."
+      },
+      "unknown": {
+        "title": "Node status unknown",
+        "description": "The node service status is currently unknown. Please wait while the system determines the service state."
       }
     },
     "table": {
@@ -233,7 +237,11 @@
       "online": {
         "message": "Your miner is {online} and operational."
       },
-      "pending": "Pending"
+      "pending": "Pending",
+      "unknown": {
+        "title": "Miner status unknown",
+        "description": "The miner service status is currently unknown. Please wait while the system determines the service state."
+      }
     },
     "hashrate": {
       "current": "Miner hashrate",
@@ -330,6 +338,10 @@
       },
       "online": {
         "message": "Your solo mining service is {online} and operational."
+      },
+      "solo_unknown": {
+        "title": "Solo service status unknown",
+        "description": "The solo mining service status is currently unknown. Please wait while the system determines the service state."
       }
     }
   },
@@ -555,7 +567,7 @@
         "cannot_enable": "Cannot enable SOLO mining",
         "node_not_synced": "Your Bitcoin node is not running or not fully synced. You can enable solo mining only after your node is fully synced.",
         "btc_signature": "BTC Signature",
-        "btc_signature_placeholder": "/Your preferred string/",
+        "btc_signature_placeholder": "YourName",
         "invalid_address": "Please add a valid Bitcoin address",
         "incompatible_address": "Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address"
       }

@@ -70,6 +70,17 @@ const SoloMiningStatus = ({
     );
   }
 
+  // Handle unknown status - solo service status is unknown
+  if (soloStatus === 'unknown') {
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'solo_mining.status.solo_unknown.title' })}
+        description={intl.formatMessage({ id: 'solo_mining.status.solo_unknown.description' })}
+        status="warning"
+      />
+    );
+  }
+
   // Handle solo service pending status
   if (soloStatus === 'pending') {
     if (soloRequestedStatus === 'offline') {
