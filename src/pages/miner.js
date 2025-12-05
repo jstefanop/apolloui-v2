@@ -487,7 +487,7 @@ const Miner = () => {
                       name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
                       value={
                         fanLow !== 40 && fanHigh !== 60
-                          ? `${fanLow}°C / ${fanHigh}°C`
+                          ? `${formatTemperature(fanLow, temperatureUnit)} / ${formatTemperature(fanHigh, temperatureUnit)}`
                           : intl.formatMessage({ id: 'miner.auto' })
                       }
                       reversed={true}

@@ -16,7 +16,8 @@ import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
-import { bytesToSize } from '../lib/utils';
+import { bytesToSize, formatTemperature } from '../lib/utils';
+import { settingsSelector } from '../redux/reselect/settings';
 import { mcuSelector } from '../redux/reselect/mcu';
 import { CpuIcon } from '../components/UI/Icons/CpuIcon';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
@@ -65,6 +66,10 @@ const System = () => {
     data: dataMcu,
     error: errorMcu,
   } = useSelector(mcuSelector, shallowEqual);
+
+  // Settings data
+  const { data: settings } = useSelector(settingsSelector, shallowEqual);
+  const { temperatureUnit } = settings || {};
 
   const {
     temperature: mcuTemperature,
@@ -258,7 +263,7 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.temperature' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {(temperature / 1000).toFixed(1)}°C
+              {formatTemperature(temperature / 1000, temperatureUnit)}
             </Text>
           </Flex>
         </Card>
