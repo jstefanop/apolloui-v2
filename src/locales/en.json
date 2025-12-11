@@ -58,7 +58,7 @@
       },
       "stop_delay": {
         "title": "Stop taking longer than expected",
-        "description": "The node is taking longer than expected to stop. Please wait a little more or check the connection."
+        "description": "The node is taking longer than expected to stop. Please wait a few more minutes or check the connection."
       },
       "starting": {
         "title": "Starting node",
@@ -66,7 +66,7 @@
       },
       "start_delay": {
         "title": "Start taking longer than expected",
-        "description": "The node is taking longer than expected to start. Please wait a little more or check the connection."
+        "description": "The node is taking longer than expected to start. Please wait a few more minutes or check the connection."
       },
       "offline": {
         "title": "Node is offline",
@@ -85,7 +85,7 @@
       },
       "unknown": {
         "title": "Node status unknown",
-        "description": "The node service status is currently unknown. Please wait while the system determines the service state."
+        "description": "The node service status is currently unknown. Please wait few more minutes for the system to determine the service state."
       }
     },
     "table": {
@@ -124,7 +124,7 @@
     },
     "panel": {
       "connect_tooltip": "Connect to your node",
-      "connect_tooltip_loading": "To connect to your node you need to enable the Allow LAN connections first and wait for the availability of the node."
+      "connect_tooltip_loading": "To connect to your node you need to enable the Allow LAN connections in settings first, and wait for the availability of the node."
     },
     "error": {
       "unknown": "Unknown error",
@@ -211,7 +211,7 @@
       },
       "stop_delay": {
         "title": "Stop taking longer than expected",
-        "description": "The miner is taking longer than expected to stop. Please wait a little more or check the connection."
+        "description": "The miner is taking longer than expected to stop. Please wait a few more minutes or check the connection."
       },
       "starting": {
         "title": "Starting miner",
@@ -219,7 +219,7 @@
       },
       "start_delay": {
         "title": "Start taking longer than expected",
-        "description": "The miner is taking longer than expected to start. Please wait a little more or check the connection."
+        "description": "The miner is taking longer than expected to start. Please wait a few more minutes or check the connection."
       },
       "offline": {
         "tag": "Offline",
@@ -240,7 +240,7 @@
       "pending": "Pending",
       "unknown": {
         "title": "Miner status unknown",
-        "description": "The miner service status is currently unknown. Please wait while the system determines the service state."
+        "description": "The miner service status is currently unknown. Please wait few more minutes for the system to determine the service state."
       }
     },
     "hashrate": {
@@ -253,7 +253,7 @@
     }
   },
   "solo_mining": {
-    "title": "Apollo BTC Miner {hashrate}",
+    "title": "Apollo Miner {hashrate}",
     "banner": {
       "title": "SOLO LAN Mining",
       "description": "Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: {address}:3333 Username: [bitcoin address]",
@@ -301,7 +301,7 @@
       },
       "solo_stop_delay": {
         "title": "Solo service stop taking longer than expected",
-        "description": "The solo service is taking longer than expected to stop. Please wait a little more or check the connection."
+        "description": "The solo service is taking longer than expected to stop. Please wait a few more minutes or check the connection."
       },
       "solo_starting": {
         "title": "Starting solo service",
@@ -309,7 +309,7 @@
       },
       "solo_start_delay": {
         "title": "Solo service start taking longer than expected",
-        "description": "The solo service is taking longer than expected to start. Please wait a little more or check the connection."
+        "description": "The solo service is taking longer than expected to start. Please wait a few more minutes or check the connection."
       },
       "solo_offline": {
         "title": "Solo service is offline",
@@ -341,12 +341,12 @@
       },
       "solo_unknown": {
         "title": "Solo service status unknown",
-        "description": "The solo mining service status is currently unknown. Please wait while the system determines the service state."
+        "description": "The solo mining service status is currently unknown. Please wait few more minutes for the system to determine the service state."
       }
     }
   },
   "system": {
-    "title": "Apollo BTC System",
+    "title": "Apollo OS System",
     "dashboard": "Dashboard",
     "memory_stats": "Memory Statistics",
     "stats": {
@@ -354,7 +354,7 @@
       "hostname": "Hostname",
       "operating_system": "Operating System",
       "system_uptime": "System uptime",
-      "active_wifi": "Active wifi",
+      "active_wifi": "Active WiFi",
       "ethernet": "Ethernet",
       "network_data": "Network data",
       "connected": "Connected",
@@ -376,7 +376,7 @@
     }
   },
   "settings": {
-    "title": "Apollo BTC Settings",
+    "title": "Apollo OS Settings",
     "actions": {
       "discard": "Discard changes",
       "save": "Save",
@@ -561,9 +561,14 @@
         "description": "Mine directly to your Bitcoin node",
         "mining_mode": "SOLO Mining mode",
         "mining_mode_description": "Enable solo mining mode to mine directly to your own Bitcoin Node. Note: your node will be restarted to apply.",
+<<<<<<< Updated upstream
         "wallet_address": "Wallet address",
         "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
         "wallet_info": "Enter your wallet address for solo mining payout. This is the address the full block reward will go to if you find a block. Do NOT use an exchange address, and only use a Bitcoin address you fully control. If your unit came with a FutureBit Satscard, you can tap the card on an NFC enabled phone to view the payout address, and copy and paste the address below.",
+=======
+        "wallet_address": "Wallet Address",
+        "wallet_placeholder": "ENTER BITCOIN WALLET PAYOUT ADDRESS HERE",
+>>>>>>> Stashed changes
         "tor_warning": "You have tor enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block",
         "cannot_enable": "Cannot enable SOLO mining",
         "node_not_synced": "Your Bitcoin node is not running or not fully synced. You can enable solo mining only after your node is fully synced.",
@@ -738,9 +743,9 @@
   },
   "utils": {
     "units": {
-      "trillions": "trillions",
-      "billions": "billions",
-      "millions": "millions",
+      "trillions": "trillion",
+      "billions": "billion",
+      "millions": "million",
       "units": "units"
     },
     "about": "About"

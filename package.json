@@ -1,11 +1,11 @@
 {
   "name": "apolloui-v2",
-  "version": "2.1.0",
+  "version": "2.0.7",
   "private": true,
-  "description": "Dashboard for Apollo miner from Futurebit",
+  "description": "FutureBi Apollo OS 2",
   "author": "FutureBit LLC",
   "homepage": "https://www.futurebit.io",
-  "copyright": "Copyright 2024 FutureBit LLC",
+  "copyright": "Copyright 2025 FutureBit LLC",
   "license": "CC-BY-NC-ND-4.0",
   "repository": {
     "type": "git",
