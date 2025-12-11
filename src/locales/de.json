@@ -563,11 +563,13 @@
         "mining_mode_description": "Aktivieren Sie den SOLO-Mining-Modus, um direkt zu Ihrer eigenen Bitcoin-Node zu minen. Hinweis: Ihre Node wird neu gestartet, um dies anzuwenden.",
         "wallet_address": "Wallet-Adresse",
         "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "wallet_info": "Geben Sie Ihre Wallet-Adresse für die Solo-Mining-Auszahlung ein. Dies ist die Adresse, an die die gesamte Blockbelohnung geht, wenn Sie einen Block finden. Verwenden Sie KEINE Exchange-Adresse und verwenden Sie nur eine Bitcoin-Adresse, die Sie vollständig kontrollieren. Wenn Ihr Gerät mit einer FutureBit Satscard geliefert wurde, können Sie die Karte auf einem NFC-fähigen Telefon antippen, um die Auszahlungsadresse anzuzeigen und sie unten zu kopieren und einzufügen.",
         "tor_warning": "Sie haben Tor aktiviert. Es wird empfohlen, Tor für Solo-Mining auszuschalten. Bitcoin-Nodes im Tor-Netzwerk verbreiten Blöcke langsamer, und es besteht eine höhere Chance, einen Block zu verwaisen.",
         "cannot_enable": "SOLO-Mining kann nicht aktiviert werden",
         "node_not_synced": "Ihre Bitcoin-Node läuft nicht oder ist nicht vollständig synchronisiert. Sie können Solo-Mining erst aktivieren, nachdem Ihre Node vollständig synchronisiert ist.",
         "btc_signature": "BTC-Signatur",
         "btc_signature_placeholder": "IhrName",
+        "btc_signature_info": "Dies ist die Blocksignatur, die angezeigt wird, wenn Sie einen Solo-Block finden. Sie können den Standardwert belassen oder ihn mit Ihrer eigenen Nachricht/Signatur versehen, die die ganze Welt sehen kann!",
         "invalid_address": "Bitte fügen Sie eine gültige Bitcoin-Adresse hinzu",
         "incompatible_address": "Warnung: P2WSH- und P2TR-Bitcoin-Adresse sind für SOLO-Mining nicht gültig. Bitte fügen Sie eine andere Bitcoin-Adresse hinzu"
       }

@@ -1065,7 +1065,7 @@ const Overview = () => {
                       defaultMessage="CPU usage"
                     />
                   }
-                  value={cpuUsage ? `${cpuUsage.toFixed(0)}%` : 'N/A'}
+                    value={cpuUsage !== null && cpuUsage !== undefined ? `${cpuUsage}%` : 'N/A'}
                   legendValue={`${cpuCores} ${intl.formatMessage({
                     id: 'overview.system.cores',
                   })}`}

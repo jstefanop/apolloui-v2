@@ -9,7 +9,11 @@ import {
   AlertIcon,
   AlertDescription,
   useColorModeValue,
+  Box,
+  Flex,
+  Icon,
 } from '@chakra-ui/react';
+import { MdInfo } from 'react-icons/md';
 import { GrUserWorker } from 'react-icons/gr';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
@@ -29,6 +33,10 @@ const SoloSettings = () => {
   const { settings, setSettings, setErrorForm } = useSettings();
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
+  const infoBgColor = useColorModeValue('blue.50', 'blue.900');
+  const infoBorderColor = useColorModeValue('blue.200', 'blue.700');
+  const infoIconColor = useColorModeValue('blue.500', 'blue.300');
+  const infoTextColor = useColorModeValue('blue.700', 'blue.200');
 
   // Get solo mining mode settings
   const [soloMiningMode, setSoloMiningMode] = useState({
@@ -169,6 +177,31 @@ const SoloSettings = () => {
                   value={settings.pool?.username || ''}
                   onChange={handleSoloMiningChange}
                 />
+                <Flex
+                  mt="4"
+                  p="4"
+                  bg={infoBgColor}
+                  borderRadius="md"
+                  border="1px solid"
+                  borderColor={infoBorderColor}
+                  align="flex-start"
+                >
+                  <Icon
+                    as={MdInfo}
+                    w="20px"
+                    h="20px"
+                    color={infoIconColor}
+                    mr="3"
+                    mt="1"
+                    flexShrink={0}
+                  />
+                  <Text
+                    fontSize="sm"
+                    color={infoTextColor}
+                  >
+                    {intl.formatMessage({ id: 'settings.sections.solo.wallet_info' })}
+                  </Text>
+                </Flex>
               </SimpleCard>
             </>
           )}
@@ -210,6 +243,31 @@ const SoloSettings = () => {
           />
           <InputRightAddon>{btcsigSuffix}</InputRightAddon>
         </InputGroup>
+        <Flex
+          mt="4"
+          p="4"
+          bg={infoBgColor}
+          borderRadius="md"
+          border="1px solid"
+          borderColor={infoBorderColor}
+          align="flex-start"
+        >
+          <Icon
+            as={MdInfo}
+            w="20px"
+            h="20px"
+            color={infoIconColor}
+            mr="3"
+            mt="1"
+            flexShrink={0}
+          />
+          <Text
+            fontSize="sm"
+            color={infoTextColor}
+          >
+            {intl.formatMessage({ id: 'settings.sections.solo.btc_signature_info' })}
+          </Text>
+        </Flex>
       </SimpleCard>
     </PanelCard>
   );

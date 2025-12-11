@@ -538,11 +538,13 @@
         "mining_mode_description": "Activa el modo de minería solo para minar directamente a tu nodo Bitcoin. Nota: el nodo se reiniciará para aplicar los cambios.",
         "wallet_address": "Dirección de cartera",
         "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "wallet_info": "Introduce tu dirección de cartera para el pago de la minería solo. Esta es la dirección a la que irá la recompensa completa del bloque si encuentras un bloque. NO uses una dirección de exchange, y usa solo una dirección Bitcoin que controles completamente. Si tu unidad vino con una FutureBit Satscard, puedes tocar la tarjeta en un teléfono con NFC para ver la dirección de pago y copiarla y pegarla a continuación.",
         "tor_warning": "Tienes Tor activado. Se recomienda desactivarlo para minería solo. Los nodos en Tor propagan bloques lentamente, lo que aumenta el riesgo de bloques huérfanos.",
         "cannot_enable": "No se puede activar la minería SOLO",
         "node_not_synced": "Tu nodo Bitcoin no está en funcionamiento o no está totalmente sincronizado. Solo puedes activar la minería solo una vez esté completamente sincronizado.",
         "btc_signature": "Firma BTC",
         "btc_signature_placeholder": "TuNombre",
+        "btc_signature_info": "Esta es la firma del bloque que se mostrará si encuentras un bloque en solo. Puedes dejarlo como predeterminado, o personalizarlo con tu propio mensaje/firma para que el mundo lo vea!",
         "invalid_address": "Por favor, introduce una dirección Bitcoin válida",
         "incompatible_address": "Advertencia: Las direcciones P2WSH y P2TR no son válidas para la minería SOLO. Usa una dirección diferente."
       }

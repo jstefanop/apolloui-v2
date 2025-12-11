@@ -553,11 +553,13 @@
         "mining_mode_description": "Abilita la modalità solo mining per minare direttamente sul tuo nodo Bitcoin. Nota: il nodo verrà riavviato per applicare le modifiche.",
         "wallet_address": "Indirizzo wallet",
         "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "wallet_info": "Inserisci il tuo indirizzo wallet per il pagamento del solo mining. Questo è l'indirizzo a cui andrà l'intera ricompensa del blocco se trovi un blocco. NON usare un indirizzo di exchange, e usa solo un indirizzo Bitcoin che controlli completamente. Se la tua unità è dotata di una FutureBit Satscard, puoi toccare la card su un telefono abilitato NFC per visualizzare l'indirizzo di pagamento e copiarlo e incollarlo qui sotto.",
         "tor_warning": "Hai abilitato Tor, si consiglia di disabilitarlo per il solo mining. I nodi Bitcoin sulla rete Tor propagano i blocchi più lentamente, aumentando la probabilità di orfani.",
         "cannot_enable": "Impossibile abilitare il solo mining",
         "node_not_synced": "Il tuo nodo Bitcoin non è in esecuzione o non è completamente sincronizzato. Puoi abilitare il solo mining solo dopo che il nodo è completamente sincronizzato.",
         "btc_signature": "Firma BTC",
         "btc_signature_placeholder": "IlTuoNome",
+        "btc_signature_info": "Questa è la firma del blocco che verrà visualizzata se trovi un blocco in solo. Puoi lasciare il valore predefinito, o personalizzarlo con il tuo messaggio/firma da mostrare al mondo!",
         "invalid_address": "Aggiungi un indirizzo Bitcoin valido",
         "incompatible_address": "Attenzione: gli indirizzi Bitcoin P2WSH e P2TR non sono validi per il solo mining. Aggiungi un indirizzo Bitcoin diverso"
       }
