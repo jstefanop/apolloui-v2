@@ -6,29 +6,25 @@ const settingsErrorSelector = (state) => state.settings.error;
 const settingsLoadingSelector = (state) => state.settings.loading;
 
 export const settingsSelector = createSelector(
-  [settingsDataSelector, settingsErrorSelector, settingsLoadingSelector],
+  settingsDataSelector,
+  settingsErrorSelector,
+  settingsLoadingSelector,
   (settingsData, settingsError, settingsLoading) => {
-    
     const {
       Settings: {
-        read: {
-          error,
-          result: settings,
-        },
+        read: { error, result: settings },
       },
-    } = settingsData || initialState;
+    } = settingsData ?? initialState;
 
-    const errors = [...[settingsError, error].filter(Boolean)];
+    const errors = [settingsError, error].filter(Boolean);
 
-    let data = {};
-    if (settings) {
-      const { fan_high: fanHigh, fan_low: fanLow } = settings.settings || {};
-      data = {
-        ...settings.settings,
-        fanHigh,
-        fanLow,
-      };
-    }
+    const data = settings?.settings
+      ? {
+          ...settings.settings,
+          fanHigh: settings.settings.fan_high,
+          fanLow: settings.settings.fan_low,
+        }
+      : {};
 
     return {
       loading: settingsLoading,

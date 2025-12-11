@@ -42,20 +42,20 @@ const TileCard = ({
           justify={{ base: 'center' }}
           paddingBottom={secondaryData ? '8' : '0'}
         >
-          {errors.length ? (
+          {errors && (Array.isArray(errors) ? errors.length > 0 : true) ? (
             <>
               <Text color="white" fontSize={{ base: '4xl' }} fontWeight="800">
                 Error
               </Text>
-              {errors.map((error, index) => {
+              {(Array.isArray(errors) ? errors : [errors]).map((error, index) => (
                 <Text
                   key={index}
                   color={secondaryTextColor || 'gray'}
                   fontSize={{ base: 'md' }}
                 >
-                  {error?.message || error?.code || error.toString()}
-                </Text>;
-              })}
+                  {error?.message || error?.code || (typeof error === 'string' ? error : error?.toString?.() || 'Unknown error')}
+                </Text>
+              ))}
             </>
           ) : (
             <>
@@ -70,13 +70,16 @@ const TileCard = ({
                 color="white"
                 fontSize={{
                   base: '4xl',
+                  md: '3xl',
+                  lg: '3xl',
                   xl: bigFont ? '6xl' : '4xl',
                 }}
                 fontWeight="800"
-                minW="180px"
+                minW={{ base: '180px', md: '120px', lg: '120px' }}
                 my="auto"
-                maxWidth={{ base: '150px', xl: '300px' }}
-                noOfLines={1}
+                textAlign="center"
+                wordBreak="break-word"
+                overflow="hidden"
               >
                 {loading ? <LoadingIcon /> : mainData}
               </Text>
@@ -87,7 +90,15 @@ const TileCard = ({
         <Flex mx="auto" mt={'auto'} pb={'5'} flexDirection="column">
           {secondaryData && (
             <>
-              <Text mx="auto" color="white" fontSize="2xl" fontWeight="800">
+              <Text 
+                mx="auto" 
+                color="white" 
+                fontSize={{ base: 'lg', md: 'xl', lg: '2xl' }} 
+                fontWeight="800"
+                textAlign="center"
+                wordBreak="break-word"
+                overflow="hidden"
+              >
                 {loading ? <LoadingIcon /> : secondaryData}
               </Text>
               <Text color={secondaryTextColor} fontSize="xs" fontWeight="800">

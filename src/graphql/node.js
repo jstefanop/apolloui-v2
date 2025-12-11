@@ -14,6 +14,7 @@ export const NODE_STATS_QUERY = gql`
               blockTime
               headers
               sizeOnDisk
+              verificationprogress
             }
             connectionCount
             miningInfo {
@@ -32,6 +33,8 @@ export const NODE_STATS_QUERY = gql`
                 port
                 score
               }
+              connections_in
+              connections_out
             }
             error {
               code
@@ -129,6 +132,7 @@ export const initialState = {
             blockTime: null,
             headers: null,
             sizeOnDisk: null,
+            verificationprogress: null,
           },
           connectionCount: null,
           miningInfo: {
@@ -140,6 +144,8 @@ export const initialState = {
             version: null,
             subversion: null,
             localaddresses: [],
+            connections_in: null,
+            connections_out: null,
           },
           error: null,
         },

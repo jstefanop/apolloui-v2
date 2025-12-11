@@ -6,10 +6,14 @@ import {
   StatNumber,
   useColorModeValue,
 } from '@chakra-ui/react';
+import React from 'react';
 
 const NoCardStatistics = ({ startContent, name, value, reversed, ...props }) => {
   const textColor = useColorModeValue('brand.800', 'white');
   const textColorSecondary = 'secondaryGray.600';
+
+  // Check if value is a React element (not just a string/number)
+  const isComplexValue = React.isValidElement(value);
 
   return (
     <Flex
@@ -38,6 +42,9 @@ const NoCardStatistics = ({ startContent, name, value, reversed, ...props }) => 
           fontSize={{
             base: '2xl',
           }}
+          noOfLines={isComplexValue ? undefined : 1}
+          overflow={isComplexValue ? "visible" : undefined}
+          whiteSpace={isComplexValue ? "normal" : undefined}
         >
           {value}
         </StatNumber>

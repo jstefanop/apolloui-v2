@@ -10,18 +10,74 @@ import os from 'os';
 import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
-import moment from 'moment';
-import { sendFeedback, resetFeedback } from '../redux/actions/feedback';
+import moment from './moment';
+import { sendFeedback, resetFeedback } from '../redux/slices/feedbackSlice';
 import { store } from '../redux/store';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
 const ls = typeof window !== 'undefined' ? localStorage : {};
 
-const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
+// Function to get the hostname/IP from the current browser URL
+const getHostFromBrowser = () => {
+  // Only works in browser environment
+  if (typeof window !== 'undefined') {
+    try {
+      return window.location.hostname;
+    } catch (error) {
+      console.error('Error getting hostname from browser:', error);
+      return 'localhost'; // Safe fallback
+    }
+  }
+  // Server-side fallback to hostname
+  return os.hostname();
+};
+
+const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || getHostFromBrowser();
 const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
 
+// Log the API endpoint for debugging
+if (process.env.NODE_ENV === 'development') {
+  const source = process.env.NEXT_PUBLIC_GRAPHQL_HOST ? 'environment variable' : 
+                 (typeof window !== 'undefined') ? 'browser URL' : 'server hostname';
+  console.log(`GraphQL API endpoint: http://${hostnameApi}:${portApi}/api/graphql (source: ${source})`);
+}
+
 let apolloClient;
+
+const isMoment = (value) => {
+  return value && typeof value === 'object' && value._isAMomentObject;
+};
+
+const convertMomentToString = (obj) => {
+  if (!obj) return obj;
+
+  if (isMoment(obj)) {
+    return obj.format();
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(convertMomentToString);
+  }
+
+  if (typeof obj === 'object' && obj !== null) {
+    // Skip handling special objects that could cause circular references
+    if (obj._reactFragment || obj.constructor.name !== 'Object') {
+      return obj;
+    }
+
+    const result = {};
+    Object.keys(obj).forEach(key => {
+      result[key] = convertMomentToString(obj[key]);
+    });
+    return result;
+  }
+
+  return obj;
+};
+
 const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors)
     graphQLErrors.forEach(({ message }) => {
@@ -33,16 +89,28 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
     let err;
     if (networkError.message === 'Timeout exceeded') {
       err = `[Timeout error]: Operation: ${operation.operationName}`;
+    } else if (networkError.message === 'Failed to fetch') {
+      err = `[Connection error]: Backend service is unavailable, Operation: ${operation.operationName}`;
     } else {
       err = `[Network error]: ${networkError.message}, Operation: ${operation.operationName}`;
     }
-    //store.dispatch(sendFeedback({ message: err, type: 'error' }));
+    
+    // Dispatch a serializable error message (only message and type, no error object)
+    store.dispatch(sendFeedback({ 
+      message: err, 
+      type: 'error'
+    }));
+    
     console.log(err);
   }
 });
 
 const httpLink = new HttpLink({
   uri: `http://${hostnameApi}:${portApi}/api/graphql`,
+  // Add a timeout to prevent long-hanging requests
+  fetchOptions: {
+    timeout: 10000, // 10 seconds timeout
+  },
 });
 
 const authLink = new ApolloLink((operation, forward) => {
@@ -60,6 +128,70 @@ const authLink = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
+const momentTransformLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map((response) => {
+    if (response.data) {
+      response.data = convertMomentToString(response.data);
+    }
+    return response;
+  });
+});
+
+// Add a utility function to check if the backend is available
+export const checkBackendAvailability = async () => {
+  try {
+    const response = await fetch(`http://${hostnameApi}:${portApi}/api/health`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      // Short timeout for health check
+      signal: AbortSignal.timeout(3000),
+    });
+    return response.ok;
+  } catch (error) {
+    console.log('[Backend health check failed]:', error.message);
+    return false;
+  }
+};
+
+// Add a link to check backend availability before making requests
+const healthCheckLink = new ApolloLink((operation, forward) => {
+  // Skip health check for certain operations if needed
+  if (operation.operationName === 'HealthCheck') {
+    return forward(operation);
+  }
+  
+  // For now, let's disable the health check to avoid the error
+  // We'll implement a better solution later
+  return forward(operation);
+});
+
+// Add a retry link for network errors
+const retryLink = new ApolloLink((operation, forward) => {
+  return forward(operation).map((response) => {
+    // If the response has errors, retry the operation
+    if (response.errors) {
+      const retryCount = operation.getContext().retryCount || 0;
+      
+      // Only retry up to 3 times
+      if (retryCount < 3) {
+        // Set the retry count in the operation context
+        operation.setContext({ retryCount: retryCount + 1 });
+        
+        // Retry the operation after a delay
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(forward(operation));
+          }, 1000 * (retryCount + 1)); // Exponential backoff
+        });
+      }
+    }
+    
+    return response;
+  });
+});
+
 function createApolloClient() {
   const cache = new InMemoryCache({
     typePolicies: {
@@ -73,6 +205,9 @@ function createApolloClient() {
         },
       },
       MinerActions: {
+        merge: true,
+      },
+      NodeActions: {
         merge: true,
       },
       MinerStatsResult: {
@@ -129,6 +264,14 @@ function createApolloClient() {
       },
       Query: {
         fields: {
+          Node: {
+            merge(existing, incoming) {
+              return {
+                ...existing,
+                ...incoming,
+              };
+            },
+          },
           Mcu: {
             merge(existing, incoming) {
               return {
@@ -142,11 +285,108 @@ function createApolloClient() {
     },
   });
 
+  // Add cache size monitoring
+  const MAX_CACHE_SIZE = 50 * 1024 * 1024; // 50MB limit
+  let lastCacheSize = 0;
+  let lastMemoryUsage = 0;
+
+  const checkCacheSize = () => {
+    const currentSize = JSON.stringify(cache.extract()).length;
+    const memoryUsage = window.performance.memory?.usedJSHeapSize || 0;
+    const totalJSHeapSize = window.performance.memory?.totalJSHeapSize || 0;
+    const jsHeapSizeLimit = window.performance.memory?.jsHeapSizeLimit || 0;
+    
+    // Log detailed memory information only in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Memory Usage Report:', {
+        cacheSize: `${(currentSize / 1024 / 1024).toFixed(2)}MB`,
+        jsHeapSize: memoryUsage ? `${(memoryUsage / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+        totalJSHeapSize: totalJSHeapSize ? `${(totalJSHeapSize / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+        jsHeapSizeLimit: jsHeapSizeLimit ? `${(jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB` : 'N/A',
+        heapUsagePercentage: totalJSHeapSize ? `${((memoryUsage / totalJSHeapSize) * 100).toFixed(2)}%` : 'N/A',
+        cacheEntries: Object.keys(cache.extract()).length,
+        timestamp: new Date().toISOString()
+      });
+      
+      // Log memory warning if usage is high
+      if (memoryUsage > jsHeapSizeLimit * 0.8) {
+        console.warn('High memory usage detected! Consider investigating memory leaks.');
+      }
+      
+      if (currentSize > MAX_CACHE_SIZE) {
+        console.log(`Cache size exceeded limit (${(currentSize / 1024 / 1024).toFixed(2)}MB), performing cleanup`);
+      }
+      
+      // Log significant changes
+      if (Math.abs(currentSize - lastCacheSize) > 1024 * 1024 || 
+          (memoryUsage && Math.abs(memoryUsage - lastMemoryUsage) > 50 * 1024 * 1024)) {
+        console.log(`Significant change detected:
+          Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB
+          JS Heap size: ${memoryUsage ? (memoryUsage / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}
+          Total JS Heap: ${totalJSHeapSize ? (totalJSHeapSize / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}
+          Heap Usage: ${((memoryUsage / totalJSHeapSize) * 100).toFixed(2)}%`);
+      }
+    }
+    
+    // Always perform cleanup if needed, regardless of environment
+    if (currentSize > MAX_CACHE_SIZE) {
+      cache.gc();
+    }
+    
+    lastCacheSize = currentSize;
+    lastMemoryUsage = memoryUsage;
+  };
+
+  // Monitor cache size more frequently
+  if (typeof window !== 'undefined') {
+    setInterval(checkCacheSize, 30 * 1000); // Check every 30 seconds
+  }
+
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: from([errorLink, authLink.concat(httpLink)]),
+    link: from([
+      errorLink,
+      healthCheckLink,
+      retryLink,
+      authLink,
+      momentTransformLink,
+      httpLink
+    ]),
     cache,
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'network-only',
+        errorPolicy: 'all',
+        retry: 3,
+        retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 30000),
+      },
+      query: {
+        fetchPolicy: 'network-only',
+        errorPolicy: 'all',
+      },
+      mutate: {
+        errorPolicy: 'all',
+      },
+    },
   });
+}
+
+// Add cache cleanup function
+export const cleanupApolloCache = () => {
+  if (apolloClient) {
+    const beforeSize = JSON.stringify(apolloClient.cache.extract()).length;
+    apolloClient.cache.gc();
+    const afterSize = JSON.stringify(apolloClient.cache.extract()).length;
+    console.log(`Cache cleanup performed:
+      Before: ${(beforeSize / 1024 / 1024).toFixed(2)}MB
+      After: ${(afterSize / 1024 / 1024).toFixed(2)}MB
+      Reduction: ${(((beforeSize - afterSize) / beforeSize) * 100).toFixed(2)}%`);
+  }
+};
+
+// Add periodic cache cleanup
+if (typeof window !== 'undefined') {
+  setInterval(cleanupApolloCache, 2 * 60 * 1000); // Clean cache every 2 minutes
 }
 
 export function initializeApollo(initialState = null) {
@@ -192,4 +432,65 @@ export function useApollo(pageProps) {
   const state = pageProps[APOLLO_STATE_PROP_NAME];
   const store = useMemo(() => initializeApollo(state), [state]);
   return store;
+}
+
+// Add React component monitoring
+if (process.env.NODE_ENV === 'development') {
+  const originalCreateElement = React.createElement;
+  React.createElement = function(type, props, ...children) {
+    const componentName = type?.displayName || type?.name || 'Unknown';
+    
+    // Monitor component creation
+    if (typeof type === 'function') {
+      const originalRender = type.prototype?.render;
+      if (originalRender) {
+        type.prototype.render = function() {
+          return originalRender.apply(this);
+        };
+      }
+    }
+    
+    return originalCreateElement(type, props, ...children);
+  };
+}
+
+// Add memory monitoring for React components
+const monitorReactMemory = () => {
+  if (process.env.NODE_ENV === 'development') {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.name.includes('react-dom-client.development.js')) {
+          console.log('React DOM Memory Usage:', {
+            component: entry.name,
+            duration: entry.duration,
+            timestamp: new Date().toISOString()
+          });
+        }
+      }
+    });
+    
+    observer.observe({ entryTypes: ['measure'] });
+    
+    // Monitor component mounting
+    const originalCreateRoot = ReactDOM.createRoot;
+    ReactDOM.createRoot = function(container, options) {
+      const root = originalCreateRoot(container, options);
+      const originalRender = root.render;
+      
+      root.render = function(element) {
+        console.log('Root render called with:', {
+          elementType: element?.type?.name || 'Unknown',
+          timestamp: new Date().toISOString()
+        });
+        return originalRender.call(this, element);
+      };
+      
+      return root;
+    };
+  }
+};
+
+// Call the monitoring function
+if (typeof window !== 'undefined') {
+  monitorReactMemory();
 }

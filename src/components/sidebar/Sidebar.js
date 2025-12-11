@@ -44,7 +44,7 @@ function Sidebar(props) {
       <Box
         bg={sidebarBg}
         transition={variantChange}
-        w='250px'
+        w='200px'
         h='100vh'
         m={sidebarMargins}
         minH='100%'
@@ -83,8 +83,8 @@ export function SidebarResponsive(props) {
           as={IoMenuOutline}
           color={menuColor}
           my='auto'
-          w='20px'
-          h='20px'
+          w='28px'
+          h='28px'
           me='20px'
           _hover={{ cursor: 'pointer' }}
         />

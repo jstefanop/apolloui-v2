@@ -1,4 +1,3 @@
-
 import { signIn } from 'next-auth/react';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import { RiEyeCloseLine } from 'react-icons/ri';
@@ -19,12 +18,13 @@ import {
 } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
 const SignIn = () => {
+  const intl = useIntl();
   // Chakra color mode
-  const textButtonColor = useColorModeValue('white', 'brand.800');
   const textColor = useColorModeValue('brand.800', 'white');
-  const textColorSecondary = 'gray.400';
+  const textColorSecondary = useColorModeValue('gray.600', 'gray.500');
   const brandStars = useColorModeValue('brand.500', 'brand.400');
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +42,16 @@ const SignIn = () => {
       redirect: false,
     });
     const { error } = response;
-    setError(error);
+    
+    if (error) {
+      switch (error) {
+        case 'CredentialsSignin':
+          setError('Invalid password');
+          break;
+        default:
+          setError('Something went wrong');
+      }
+    }
     setLoading(false);
   };
 
@@ -57,11 +66,11 @@ const SignIn = () => {
       flexDirection='column'
     >
       <Head>
-        <title>Welcome to Apollo Web OS 2</title>
+        <title>{intl.formatMessage({ id: 'signin.title' })}</title>
       </Head>
       <Box me='auto'>
         <Heading color={textColor} fontSize='36px' mb='10px'>
-          Sign In
+          {intl.formatMessage({ id: 'signin.heading' })}
         </Heading>
         <Text
           mb='86px'
@@ -70,7 +79,7 @@ const SignIn = () => {
           fontWeight='400'
           fontSize='md'
         >
-          Enter your password to sign in!
+          {intl.formatMessage({ id: 'signin.description' })}
         </Text>
       </Box>
       <Flex
@@ -93,7 +102,8 @@ const SignIn = () => {
               color={textColor}
               display='flex'
             >
-              Password<Text color={brandStars}>*</Text>
+              {intl.formatMessage({ id: 'signin.password_label' })}
+              <Text color={brandStars}>*</Text>
             </FormLabel>
             <InputGroup size='md'>
               <Input
@@ -101,7 +111,7 @@ const SignIn = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 isRequired={true}
                 fontSize='sm'
-                placeholder='Min. 8 characters'
+                placeholder={intl.formatMessage({ id: 'signin.password_placeholder' })}
                 mb='24px'
                 size='lg'
                 type={showPassword ? 'text' : 'password'}
@@ -127,7 +137,7 @@ const SignIn = () => {
               isDisabled={loading}
               isLoading={loading}
             >
-              Sign In
+              {intl.formatMessage({ id: 'signin.button' })}
             </Button>
           </FormControl>
         </form>

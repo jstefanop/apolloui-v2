@@ -6,18 +6,17 @@ const wifiErrorSelector = (state) => state.wifi.error;
 const wifiLoadingSelector = (state) => state.wifi.loading;
 
 export const wifiSelector = createSelector(
-  [wifiDataSelector, wifiErrorSelector, wifiLoadingSelector],
+  wifiDataSelector,
+  wifiErrorSelector,
+  wifiLoadingSelector,
   (wifiData, wifiError, wifiLoading) => {
     const {
       Mcu: {
-        wifiConnect: {
-          error: errorStats,
-          result: address,
-        },
+        wifiConnect: { error: errorStats, result: address },
       },
-    } = wifiData || initialStateWifi;
+    } = wifiData ?? initialStateWifi;
 
-    const errors = [...[wifiError, errorStats].filter(Boolean)];
+    const errors = [wifiError, errorStats].filter(Boolean);
 
     return {
       loading: wifiLoading,

@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { NODE_FORMAT_PROGRESS_QUERY } from '../../graphql/node';
 import { useQuery } from '@apollo/client';
-import { sendFeedback } from '../../redux/actions/feedback';
+import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { useDispatch } from 'react-redux';
 
 const ModalFormat = ({ isOpen, onClose, onFormat }) => {

@@ -197,56 +197,7 @@ export const MINER_STATS_FRAGMENT = gql`
           time
           ping
         }
-        ckpool {
-          pool {
-            runtime
-            lastupdate
-            Users
-            Workers
-            Idle
-            Disconnected
-            hashrate1m
-            hashrate5m
-            hashrate15m
-            hashrate1hr
-            hashrate6hr
-            hashrate1d
-            hashrate7d
-            diff
-            accepted
-            rejected
-            bestshare
-            SPS1m
-            SPS5m
-            SPS15m
-            SPS1h
-          }
-          users {
-            hashrate1m
-            hashrate5m
-            hashrate1hr
-            hashrate1d
-            hashrate7d
-            lastshare
-            workers
-            shares
-            bestshare
-            bestever
-            authorised
-            worker {
-              workername
-              hashrate1m
-              hashrate5m
-              hashrate1hr
-              hashrate1d
-              hashrate7d
-              lastshare
-              shares
-              bestshare
-              bestever
-            }
-          }
-        }
+
       }
     }
     error {

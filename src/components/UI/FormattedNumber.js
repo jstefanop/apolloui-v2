@@ -2,10 +2,10 @@ import React from 'react';
 
 const formatNumber = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-const FormattedNumber = ({ number }) => {
-  const formattedNumber = formatNumber(number);
+const FormattedNumber = ({ value }) => {
+  const formattedNumber = formatNumber(value);
   return (
-    <div>{formattedNumber}</div>
+    <React.Fragment>{formattedNumber}</React.Fragment>
   );
 };
 

@@ -1,93 +1,817 @@
 {
-  "signin.meta.title": "One account. All of StreetLib.",
-  "signin.title": "Sign in to your account",
-  "signin.forgot": "Forgot your password?",
-  "signin.reset": "Reset password",
-  "signin.noaccount": "No account?",
-  "signin.create": "Create account",
-  "signin.button": "Sign in",
-  "signin.welcome": "Congratulations! Your account is now active. You can access your personal area to complete your user profile and start using StreetLib services right away.",
-  "signin.internaliderror": "Ops, it seems like there is a problem with your account configuration, please ask our support to fix it",
-  "signup.meta.title": "Create your StreetLib account",
-  "signup.title": "Create a new account",
-  "signup.haveaccount": "Have an account?",
-  "signup.agreement": "I have read and accept the {agreementLink} and the {privacyLink}",
-  "signup.tos": "general conditions for the use of StreetLib",
-  "signup.privacy": "privacy policy",
-  "signup.button": "Create account",
-  "signup.accept": "You must accept the terms of services and privacy policy",
-  "signup.newsletter": "Keep me updated with the StreetLib news",
-  "signup.passworderror": "Your password doesn't match the verify password value",
-  "signup.passwordrequired": "Passwords are required",
-  "signup.firstnameRequired": "Firstname is required",
-  "signup.lastnameRequired": "Lastname is required",
-  "signup.emailRequired": "Email is required",
-  "reset.meta.title": "Reset your StreetLib account's password",
-  "reset.title": "Reset your password",
-  "reset.button": "Send code",
-  "reset.back": "Back to Sign In",
-  "confirmsignup.meta.title": "Confirm your StreetLib account",
-  "confirmsignup.button": "Confirm",
-  "confirmsignup.title": "Confirm your account",
-  "confirmsignup.lost": "Lost your code?",
-  "confirmsignup.resend": "Resend code",
-  "confirmsignup.coderesent": "We sent the confirmation code to your email, please check it.",
-  "confirmsignup.resentdone": "Code was sent, wait to request another one",
-  "confirmreset.title": "Confirm password update",
-  "confirmreset.button": "Confirm reset",
-  "changepassword.title": "Change your password",
-  "changepassword.button": "Continue",
-  "form.firstname": "First name",
-  "form.firstname.ph": "Enter your first name",
-  "form.lastname": "Last name",
-  "form.lastname.ph": "Enter your last name",
-  "form.email": "Email address",
-  "form.email.ph": "Enter your email",
-  "form.emailusername": "Email address / Username",
-  "form.emailusername.ph": "Enter your email or username",
-  "form.username": "Username",
-  "form.username.ph": "Enter username",
-  "form.password": "Password",
-  "form.password.ph": "Enter password",
-  "form.tmppassword": "Password",
-  "form.tmppassword.ph": "Enter password",
-  "form.verifypassword": "Verify password",
-  "form.verifypassword.ph": "Enter password again",
-  "form.authcode.ph": "######",
-  "form.language": "Language",
-  "form.authcode": "Confirmation Code",
-  "form.passwordhint": "Password must contain at least 8 characters, one upper and one lower case letter, a number and a special character.",
-  "welcome.title": "Welcome back!",
-  "welcome.msg1": "You are signed in as",
-  "welcome.msg2": "Wait to be redirect to the StreetLib services",
-  "welcome.msg3": "You will be redirect in {count} seconds...",
-  "welcome.msg4": "If you are not redirect please click this {link}",
-  "welcome.tile.blog": "Look at our blog for the latest news",
-  "welcome.stuck": "Are you stuck here?",
-  "welcome.start": "Try to start from our",
-  "welcome.signout": "Sign out",
-  "welcome.needhelp": "Do you need help?",
-  "welcome.contact": "Ask our {support} team",
-  "welcome.support": "support",
-  "welcome.wantsignout": "Want to change user?",
-  "error.NotAuthorizedException": "Incorrect username or password.",
-  "error.UserNotFoundException": "User does not exists.",
-  "error.InvalidParameterException": "Invalid email address format.",
-  "error.UserLambdaValidationException": "A user with same email already exists, please try to sign in or reset your password.",
-  "error.InvalidPasswordException": "Password did not conform with policy: Password must have uppercase characters.",
-  "error.CodeMismatchException": "Invalid verification code provided, please try again.",
-  "cookies.banner.title": "Notice",
-  "cookies.banner.description": "We and selected partners, use cookies or similar technologies as specified in the {link}. You can consent to the use of such technologies or not by accepting or declining this notice.",
-  "cookies.banner.linkprivacy": "cookie policy",
-  "cookies.banner.necessary": "Use necessary cookies only needed by the website",
-  "cookies.banner.necessary.label": "Solo cookie tecnici",
-  "cookies.banner.google": "Allow Google Analytics cookies used for website statistics",
-  "cookies.banner.facebook": "Allow Facebook Pixel cookies used for website statistics",
-  "cookies.banner.accept": "Accept",
-  "cookies.banner.acceptall": "Accept All",
-  "cookies.banner.decline": "Decline",
-  "cookies.banner.notes.text": "Third-party analytics cookies used by StreetLib are comparable to cookies and other technical identifiers because:",
-  "cookies.banner.notes.list.1": "- they are used only to produce aggregate statistics and in relation to a single site or a single mobile application;",
-  "cookies.banner.notes.list.2": "- for those of third parties, at least the fourth component of the IP address is masked;",
-  "cookies.banner.notes.list.3": "- third parties refrain from combining these analytics cookies with other processing (customer files or statistics of visits to other sites, for example) or from transmitting them to third parties. However, third parties are allowed to produce statistics with data relating to multiple domains, sites, or apps that can be traced back to the same publisher or business group."
+  "overview": {
+    "title": "Apollo Overview",
+    "warning": {
+      "title": "Warning",
+      "description": "There is a problem getting data from the server."
+    },
+    "hashrate": {
+      "title": "Last 24h Hashrate"
+    },
+    "temperatures": {
+      "miner": "Miner temperature",
+      "system": "System temperature",
+      "hardware_errors": "Hardware errors"
+    },
+    "node": {
+      "title": "Node status",
+      "pending": "Pending... Please wait.",
+      "connections": "Connections",
+      "blocks": "Blocks",
+      "blockchain_size": "Blockchain size"
+    },
+    "system": {
+      "cpu_usage": "CPU usage",
+      "memory_usage": "Memory usage",
+      "disk_usage": "System disk usage",
+      "cores": "cores"
+    },
+    "solo": {
+      "title": "Solo Status",
+      "hashrate": "Solo Hashrate",
+      "best_share": "Solo Best Share",
+      "daily_chance": "Daily Chance",
+      "pending": "Pending... Please wait.",
+      "offline": "Solo service is offline.",
+      "unknown": "Solo service status unknown."
+    }
+  },
+  "node": {
+    "title": {
+      "syncing": "Syncing blocks...",
+      "up_to_date": "Node is up to date",
+      "pre_sync": "Pre-synchronization",
+      "last_block": "{time}m since the last block"
+    },
+    "status": {
+      "error": {
+        "title": "Node Service Error",
+        "description": "The node service is currently experiencing an error. Please check your system configuration or contact support."
+      },
+      "unavailable": {
+        "title": "Node status unavailable",
+        "description": "Could not fetch the node status. Please try again later."
+      },
+      "stopping": {
+        "title": "Stopping node",
+        "description": "The node is stopping. Please wait a moment."
+      },
+      "stop_delay": {
+        "title": "Stop taking longer than expected",
+        "description": "The node is taking longer than expected to stop. Please wait a little more or check the connection."
+      },
+      "starting": {
+        "title": "Starting node",
+        "description": "The node is starting. Please wait a moment."
+      },
+      "start_delay": {
+        "title": "Start taking longer than expected",
+        "description": "The node is taking longer than expected to start. Please wait a little more or check the connection."
+      },
+      "offline": {
+        "title": "Node is offline",
+        "description": "The node is currently offline. You can start it from the top menu if needed."
+      },
+      "connection_issue": {
+        "title": "Node connection issue",
+        "description": "The node is currently offline, but it should be online. Please check the connection or try restarting."
+      },
+      "unexpected": {
+        "title": "Unexpected node status",
+        "description": "The node is online, but it was requested to stop. Please verify its state or restart."
+      },
+      "online": {
+        "message": "Your node is {online} and operational."
+      },
+      "unknown": {
+        "title": "Node status unknown",
+        "description": "The node service status is currently unknown. Please wait while the system determines the service state."
+      }
+    },
+    "table": {
+      "address": "ADDRESS",
+      "client": "CLIENT",
+      "status": "STATUS",
+      "title": "Last connections"
+    },
+    "stats": {
+      "connections": "Connections",
+      "network_hashrate": "Network hashrate",
+      "difficulty": "Difficulty",
+      "blocks": "Blocks",
+      "blockchain_size": "Blockchain size",
+      "remaining_space": "Remaining space",
+      "last_block": "Minutes since last block",
+      "node_address": "Local node address",
+      "node_version": "Bitcoin Node Version",
+      "configured_core_25_1": "Configured: Bitcoin Core 25.1",
+      "configured_core_28_1": "Configured: Bitcoin Core 28.1",
+      "configured_knots_29_2": "Configured: Bitcoin Knots 29.2",
+      "percentage_completed": "Percentage completed {percentage}%",
+      "processing_queue": "Processing queue...",
+      "initializing": "Initializing...",
+      "synched": "100% synched",
+      "synching": "{percentage}% synched",
+      "details": "Details",
+      "connect": "Connect",
+      "connections_in_out": "Connections in/out",
+      "in": "In: {count}",
+      "out": "Out: {count}",
+      "total_connections": "Total connections",
+      "verification_progress": "Verification Progress",
+      "accepted_shares": "Accepted shares",
+      "rejected_shares": "Rejected shares"
+    },
+    "panel": {
+      "connect_tooltip": "Connect to your node",
+      "connect_tooltip_loading": "To connect to your node you need to enable the Allow LAN connections first and wait for the availability of the node."
+    },
+    "error": {
+      "unknown": "Unknown error",
+      "stats": "There was an error getting stats for Node: {error}",
+      "connection_refused": "Connection refused. Your node is not running.",
+      "bad_response": "Bad response. Trying again in a few seconds...",
+      "waiting_response": "Waiting for node response...",
+      "starting_up": "Your node is starting up..."
+    },
+    "latest_blocks": "Latest Blocks",
+    "block": {
+      "height": "Height",
+      "time": "Time",
+      "size": "Size",
+      "txs": "Transactions",
+      "fees": "Fees",
+      "miner": "Miner"
+    }
+  },
+  "miner": {
+    "title": "Apollo Miner {hashrate}",
+    "stats": {
+      "hashrate": "Hashrate",
+      "power": "Power",
+      "efficiency": "Efficiency",
+      "temperature": "Temperature",
+      "fan_speed": "Fan speed",
+      "voltage": "Voltage",
+      "errors": "Errors",
+      "pool_hashrate": "Pool hashrate",
+      "difficulty": "Difficulty",
+      "shares": {
+        "sent": "Shares sent",
+        "accepted": "Accepted shares",
+        "rejected": "Rejected shares"
+      },
+      "last_share": "Last share",
+      "uptime": "Uptime",
+      "mode": "Mode",
+      "fan": {
+        "high": "Fan high",
+        "low": "Fan low"
+      },
+      "frequency": "Frequency",
+      "chip_speed": "Chip speed",
+      "boards": {
+        "active": "Active boards",
+        "total": "Total boards",
+        "average": "Average"
+      },
+      "pools": {
+        "active": "Active pools",
+        "total": "Total pools"
+      }
+    },
+    "units": {
+      "rpm": "rpm",
+      "wth": "W/TH",
+      "a": "A",
+      "percent": "%",
+      "n_a": "N/A"
+    },
+    "device_presets": "Device presets",
+    "show_all_data": "Show all data",
+    "boards_averages": "Boards averages",
+    "total_pools_hashboards": "Total pools and hashboards",
+    "hashboards": "Hashboards",
+    "pools": "Pools",
+    "solo_mining": "SOLO Pool",
+    "enabled": "ENABLED",
+    "auto": "AUTO",
+    "status": {
+      "error": {
+        "title": "Miner Service Error",
+        "description": "The miner service is currently experiencing an error. Please check your system configuration or try restarting the miner from the top menu."
+      },
+      "unavailable": {
+        "title": "Miner status unavailable",
+        "description": "Could not fetch the miner status. Please try again later."
+      },
+      "stopping": {
+        "title": "Stopping miner",
+        "description": "The miner is stopping. Please wait a moment."
+      },
+      "stop_delay": {
+        "title": "Stop taking longer than expected",
+        "description": "The miner is taking longer than expected to stop. Please wait a little more or check the connection."
+      },
+      "starting": {
+        "title": "Starting miner",
+        "description": "The miner is starting. Please wait a moment."
+      },
+      "start_delay": {
+        "title": "Start taking longer than expected",
+        "description": "The miner is taking longer than expected to start. Please wait a little more or check the connection."
+      },
+      "offline": {
+        "tag": "Offline",
+        "title": "Miner is offline",
+        "description": "The miner is currently offline. You can start it from the top menu if needed."
+      },
+      "connection_issue": {
+        "title": "Miner connection issue",
+        "description": "The miner is currently offline, but it should be online. Please check the connection or try restarting."
+      },
+      "unexpected": {
+        "title": "Unexpected miner status",
+        "description": "The miner is online, but it was requested to stop. Please verify its state or restart."
+      },
+      "online": {
+        "message": "Your miner is {online} and operational."
+      },
+      "pending": "Pending",
+      "unknown": {
+        "title": "Miner status unknown",
+        "description": "The miner service status is currently unknown. Please wait while the system determines the service state."
+      }
+    },
+    "hashrate": {
+      "current": "Miner hashrate",
+      "average": "1 hour average"
+    },
+    "power": {
+      "usage": "Power usage",
+      "watts_per_th": "Watts per TH/s"
+    }
+  },
+  "solo_mining": {
+    "title": "Apollo BTC Miner {hashrate}",
+    "banner": {
+      "title": "SOLO LAN Mining",
+      "description": "Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: {address}:3333 Username: [bitcoin address]",
+      "connect": "Connect"
+    },
+    "stats": {
+      "accepted_shares": "Accepted shares",
+      "rejected_shares": "Rejected shares",
+      "last_share": "Last share",
+      "uptime": "Uptime"
+    },
+    "info": {
+      "title": "Solo Info",
+      "daily_chance": "Daily Chance of Solving a Solo Block",
+      "per_block_chance": "Chance of Solving the Next Block",
+      "monthly_chance": "Monthly Chance of Solving a Solo Block",
+      "yearly_chance": "Yearly Chance of Solving a Solo Block",
+      "per_block_chance_title": "Chance next block",
+      "monthly_chance_title": "Chance per month",
+      "yearly_chance_title": "Chance per year",
+      "other_chances": "Other Time Periods",
+      "users": "Users",
+      "workers": "Workers",
+      "idle": "Idle"
+    },
+    "users": {
+      "title": "SOLO Mining Users",
+      "waiting": "Waiting for stats to refresh...",
+      "show_all_data": "Show all data",
+      "no_active_workers": "No active workers",
+      "active": "Active"
+    },
+    "status": {
+      "error": {
+        "title": "Solo Service Error",
+        "description": "The solo mining service is currently experiencing an error. Please check your system configuration or try restarting the solo service from the top menu."
+      },
+      "solo_unavailable": {
+        "title": "Solo service unavailable",
+        "description": "Could not fetch the solo service status. Please try again later."
+      },
+      "solo_stopping": {
+        "title": "Stopping solo service",
+        "description": "The solo service is stopping. Please wait a moment."
+      },
+      "solo_stop_delay": {
+        "title": "Solo service stop taking longer than expected",
+        "description": "The solo service is taking longer than expected to stop. Please wait a little more or check the connection."
+      },
+      "solo_starting": {
+        "title": "Starting solo service",
+        "description": "The solo service is starting. Please wait a moment."
+      },
+      "solo_start_delay": {
+        "title": "Solo service start taking longer than expected",
+        "description": "The solo service is taking longer than expected to start. Please wait a little more or check the connection."
+      },
+      "solo_offline": {
+        "title": "Solo service is offline",
+        "description": "The solo service is currently offline. You can start it from the top menu if needed."
+      },
+      "solo_connection_issue": {
+        "title": "Solo service connection issue",
+        "description": "The solo service is currently offline, but it should be online. Please check the connection or try restarting."
+      },
+      "solo_unexpected": {
+        "title": "Unexpected solo service status",
+        "description": "The solo service is online, but it was requested to stop. Please verify its state or restart."
+      },
+
+      "waiting_share": {
+        "title": "Waiting for first share",
+        "description": "Please wait until the first share is received."
+      },
+      "ck_pool_disconnected": {
+        "title": "CK Pool Disconnected",
+        "description": "Please check your node connection and the CK Pool status."
+      },
+      "node_not_synced": {
+        "title": "Node not synced",
+        "description": "Node needs to be synced to correctly mine on SOLO mode. Please check your node for problems."
+      },
+      "online": {
+        "message": "Your solo mining service is {online} and operational."
+      },
+      "solo_unknown": {
+        "title": "Solo service status unknown",
+        "description": "The solo mining service status is currently unknown. Please wait while the system determines the service state."
+      }
+    }
+  },
+  "system": {
+    "title": "Apollo BTC System",
+    "dashboard": "Dashboard",
+    "memory_stats": "Memory Statistics",
+    "stats": {
+      "architecture": "Architecture",
+      "hostname": "Hostname",
+      "operating_system": "Operating System",
+      "system_uptime": "System uptime",
+      "active_wifi": "Active wifi",
+      "ethernet": "Ethernet",
+      "network_data": "Network data",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "cpu_usage": "CPU usage",
+      "memory_usage": "Memory usage",
+      "system_disk_usage": "System disk usage",
+      "node_disk_usage": "Node disk usage",
+      "cores": "cores",
+      "copied": "IP address copied to clipboard",
+      "copy_failed": "Failed to copy IP address",
+      "temperature": "Temperature",
+      "load_average": "Load Average",
+      "memory_total": "Total Memory",
+      "memory_used": "Used Memory",
+      "memory_available": "Available Memory",
+      "memory_cache": "Cache Memory",
+      "available": "Available"
+    }
+  },
+  "settings": {
+    "title": "Apollo BTC Settings",
+    "actions": {
+      "discard": "Discard changes",
+      "save": "Save",
+      "save_restart": "Save & Restart",
+      "saving": "Saving..."
+    },
+    "tabs": {
+      "pools": "Pools",
+      "miner": "Miner",
+      "solo": "Solo",
+      "node": "Node",
+      "system": "System",
+      "logs": "Logs",
+      "extra": "Extra"
+    },
+    "sections": {
+      "miner": {
+        "title": "Miner settings",
+        "description": "Manage Miner Configuration",
+        "connect": "Connect",
+        "modes": {
+          "title": "Miner modes settings",
+          "description": "Manage miner specific configurations",
+          "eco": {
+            "title": "ECO",
+            "description": "In ECO mode your miner will be at its most efficient, but its hashrate will be slightly slower. This mode is recommended, and will produce the least amount of noise and heat."
+          },
+          "balanced": {
+            "title": "BALANCED",
+            "description": "BALANCED mode is a good compromise between hashrate, efficiency, and noise."
+          },
+          "turbo": {
+            "title": "TURBO",
+            "description": "In TURBO mode your miner will be the least efficient, but its hashrate will be the highest. This mode is only recommended for expert users, and you should monitor your miner for possible overheating. The fan can get loud in this mode."
+          },
+          "custom": {
+            "title": "CUSTOM",
+            "description": "In CUSTOM mode you can set your own frequency and voltage. This mode is only recommended for expert users.",
+            "warning": "WARNING",
+            "warning_description": "The Apollo comes with tuned preset values (above), which offer a good range of operating modes. By selecting custom you risk damaging your device and FutureBit will not be responsible for any or all damage caused by over-clocking or over-volting",
+            "power": {
+              "title": "Power",
+              "description": "You can set your miner custom power or reset to default value.",
+              "min": "Min",
+              "max": "Max"
+            },
+            "frequency": {
+              "title": "Frequency",
+              "description": "You can set your miner custom frequency or reset to default value.",
+              "min": "Min",
+              "max": "Max"
+            }
+          }
+        },
+        "fan": {
+          "title": "Miner fan settings",
+          "description": "Adjust the fan speed or set it to automatic",
+          "low": {
+            "title": "Temperature to start fan",
+            "description": "This is the temperature needed to start the fan.",
+            "min": "Min",
+            "max": "Max"
+          },
+          "high": {
+            "title": "Temperature for max fan speed",
+            "description": "This is the temperature needed to set the fan at maximum speed.",
+            "min": "Min",
+            "max": "Max"
+          }
+        },
+        "power_led": {
+          "title": "Front Status Light",
+          "description": "Turn off/on the front status led. Note: your miner will be restarted to apply."
+        }
+      },
+      "node": {
+        "title": "Bitcoin node settings",
+        "description": "Manage Bitcoin Node Configuration",
+        "connect": "Connect",
+        "software": {
+          "title": "Node Software",
+          "description": "Choose between Bitcoin Core and Bitcoin Knots"
+        },
+        "tor_mode": {
+          "title": "TOR mode",
+          "description": "Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply."
+        },
+        "allow_lan": {
+          "title": "Allow LAN connections",
+          "description": "Allow LAN connections to your Bitcoin Node to connect external wallets and services. Note: your node will be restarted to apply."
+        },
+        "max_connections": "Max connections",
+        "extra_options": "Extra options",
+        "node_config": {
+          "title": "Bitcoin node configuration",
+          "description": "Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. Please check Bitcoin Core documentation for valid options.)"
+        },
+        "solo_mining_warning": "You have solo mining enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block"
+      },
+      "system": {
+        "title": "System settings",
+        "description": "Manage System Configuration",
+        "temperature_unit": "Temperature unit",
+        "temperature_description": "Choose your preferred unit",
+        "power_led": "Power LED",
+        "api_access": "API access",
+        "custom_approval": "Custom approval",
+        "wifi": {
+          "title": "WiFi Settings",
+          "description": "Configure your WiFi connection",
+          "scan": {
+            "title": "Scan WiFi Networks",
+            "description": "Click the scan button and your system will scan for available wifi networks. Click one of the available SSIDs, and enter your WiFi passphrase. Clicking the disconnect button will delete all saved WiFi connections. If you are having issues connecting, set your wifi router to a seperate 2.4GHz SSID with WPA2 only security.",
+            "button": "SCAN"
+          }
+        },
+        "password": {
+          "title": "Lockscreen",
+          "description": "Change the password to access the dashboard",
+          "password": "Password",
+          "verify_password": "Verify Password",
+          "password_placeholder": "Your lock screen password",
+          "verify_password_placeholder": "Verify your lock screen password",
+          "show": "Show",
+          "hide": "Hide",
+          "error": {
+            "required": "The password must have 8 characters at least",
+            "match": "Passwords must match"
+          }
+        },
+        "sidebar": {
+          "left": {
+            "visibility": "Left sidebar visibility",
+            "extended": "Left sidebar extended"
+          },
+          "right": {
+            "visibility": "Right sidebar visibility"
+          }
+        },
+        "logs": {
+          "title": "System Logs",
+          "description": "View and monitor system logs for different components"
+        }
+      },
+      "extra": {
+        "backup": {
+          "title": "Backup settings",
+          "description": "Create a backup file of dashboard, miner and pools configurations",
+          "button": "BACKUP"
+        },
+        "restore": {
+          "title": "Restore settings",
+          "description": "Restore all configurations from a backup file",
+          "button": "RESTORE"
+        },
+        "format": {
+          "title": "Format Node SSD",
+          "description": "Use this tool for formatting and setting up your Node NVMe SSD",
+          "button": "FORMAT"
+        }
+      },
+      "pool": {
+        "title": "Pooled settings",
+        "description": "Manage pools configuration for your miner",
+        "select_pool": "Select a pool",
+        "learn_more": "Learn more about this pool",
+        "url": {
+          "title": "URL",
+          "placeholder": "stratum.slushpool.com:3333"
+        },
+        "username": {
+          "title": "Username",
+          "placeholder": "futurebit.worker"
+        },
+        "password": {
+          "title": "Password",
+          "placeholder": "x"
+        }
+      },
+      "solo": {
+        "title": "SOLO settings",
+        "description": "Mine directly to your Bitcoin node",
+        "mining_mode": "SOLO Mining mode",
+        "mining_mode_description": "Enable solo mining mode to mine directly to your own Bitcoin Node. Note: your node will be restarted to apply.",
+        "wallet_address": "Wallet address",
+        "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "wallet_info": "Enter your wallet address for solo mining payout. This is the address the full block reward will go to if you find a block. Do NOT use an exchange address, and only use a Bitcoin address you fully control. If your unit came with a FutureBit Satscard, you can tap the card on an NFC enabled phone to view the payout address, and copy and paste the address below.",
+        "tor_warning": "You have tor enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block",
+        "cannot_enable": "Cannot enable SOLO mining",
+        "node_not_synced": "Your Bitcoin node is not running or not fully synced. You can enable solo mining only after your node is fully synced.",
+        "btc_signature": "BTC Signature",
+        "btc_signature_placeholder": "YourName",
+        "btc_signature_info": "This is the block signature displayed if you find a solo block. You can leave as default, or tag it with your own message/signature for the world to see!",
+        "invalid_address": "Please add a valid Bitcoin address",
+        "incompatible_address": "Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address"
+      }
+    }
+  },
+  "block_found": {
+    "congratulations": "CONGRATULATIONS!",
+    "message": "Your miner has found a Bitcoin block!",
+    "description": "This is an extraordinary achievement in the Bitcoin mining world. You have successfully mined an entire block and earned the full reward!",
+    "reset": {
+      "title": "Reset block found flag",
+      "description": "The block found notification has been reset",
+      "error": "Error while resetting block found flag: {error}",
+      "loading": "Resetting...",
+      "button": "Confirm and Reset"
+    }
+  },
+  "status_transition": {
+    "miner": {
+      "stopping": {
+        "title": "Stopping miner",
+        "description": "The miner is stopping. Please wait a moment."
+      },
+      "starting": {
+        "title": "Starting miner",
+        "description": "The miner is starting. Please wait a moment."
+      },
+      "online": {
+        "title": "Miner is online",
+        "description": "The miner is online and operational."
+      },
+      "offline": {
+        "title": "Miner is offline",
+        "description": "The miner has been successfully stopped."
+      }
+    },
+    "node": {
+      "stopping": {
+        "title": "Stopping node",
+        "description": "The node is stopping. Please wait a moment."
+      },
+      "starting": {
+        "title": "Starting node",
+        "description": "The node is starting. Please wait a moment."
+      },
+      "online": {
+        "title": "Node is online",
+        "description": "The node is online and operational."
+      },
+      "offline": {
+        "title": "Node is offline",
+        "description": "The node has been successfully stopped."
+      }
+    },
+    "solo": {
+      "stopping": {
+        "title": "Stopping solo service",
+        "description": "The solo service is stopping. Please wait a moment."
+      },
+      "starting": {
+        "title": "Starting solo service",
+        "description": "The solo service is starting. Please wait a moment."
+      },
+      "online": {
+        "title": "Solo service is online",
+        "description": "The solo service is online and operational."
+      },
+      "offline": {
+        "title": "Solo service is offline",
+        "description": "The solo service has been successfully stopped."
+      }
+    }
+  },
+  "routes": {
+    "overview": "Overview",
+    "miner": "Miner",
+    "soloMining": "Solo Pool",
+    "node": "Node",
+    "system": "System",
+    "settings": "Settings"
+  },
+  "signin": {
+    "title": "Welcome to Apollo Web OS 2",
+    "heading": "Sign In",
+    "description": "Enter your password to sign in!",
+    "password_label": "Password",
+    "password_placeholder": "Min. 8 characters",
+    "button": "Sign In"
+  },
+  "setup": {
+    "welcome": {
+      "title": "One node. One miner. One person.",
+      "subtitle": "Welcome.",
+      "button": "Start setup process"
+    },
+    "password": {
+      "title": "Set lock and system password",
+      "password_label": "Password",
+      "password_placeholder": "Min. 8 characters",
+      "verify_label": "Verify Password",
+      "verify_placeholder": "Verify your password",
+      "required": "All fields are required",
+      "too_short": "Password must be at least 8 characters long",
+      "mismatch": "Passwords do not match"
+    },
+    "mining_type": {
+      "title": "Select mining type",
+      "solo_warning": {
+        "title": "Solo Mining Requires Synced Node",
+        "description": "Solo mining can only be used once your node is fully synced. You can configure it now, but mining will only start when the node sync is complete."
+      },
+      "solo": {
+        "title": "Solo Mining",
+        "description": "You are competing with the entire network for a full Bitcoin Block (the whole BTC reward). You gain zero rewards while mining, in hopes of hitting the entire block. This is also called \"lottery\" mining because the chances are low, but this produces the maximum decentralization of the bitcoin network. If there are millions of solo miners then solo blocks will be found every day and ensure Bitcoin can never be censored!"
+      },
+      "pool": {
+        "title": "Pooled Mining",
+        "description": "You are contributing your hashrate to a collective \"pool\" that is competing to find a block. This produces daily rewards in mined \"satoshis\" because once your pool finds a block, it shares that block reward with you based on your % of hashrate contributed to the pool. These is the least decentralized form of mining, because you give control of block creation to the pool. Please note most pools have minimum payouts, that can take months of mining before you accumulate enough for a payout."
+      },
+      "disclaimer": {
+        "title": "Legal Disclaimer for Solo Mining",
+        "part1": "The Apollo II offers enhanced features for solo mining, including the ability to launch your own Stratum solo pool with a simple toggle in the user interface. While these features are designed for ease of use and efficiency, solo mining inherently carries certain risks that users must be aware of. Specifically, the process of solo mining is sensitive to network conditions. Factors such as Bitcoin network congestion, network latency and upload speeds can impact the successful submission of a solo block to the Bitcoin network.",
+        "part2": "Due to the decentralized and competitive nature of the Bitcoin network, a block mined by the user may be orphaned and not accepted by the network, especially in cases of high network latency or suboptimal connection speeds. While FutureBit has engineered the Apollo II to minimize such risks at a device level, the outcome of solo mining activities is influenced by factors beyond our control.",
+        "part3": "By using the Apollo II for solo mining, users acknowledge and accept that FutureBit is not responsible for any lost or orphaned solo blocks that may occur as a result of hardware issues, software issues, network conditions including but not limited to latency and connection stability. FutureBit disclaims any liability for losses or damages resulting from solo mining activities. Users engage in solo mining at their own risk and are advised to ensure a high-speed, stable Ethernet connection for optimal performance.",
+        "accept": "Accept",
+        "cancel": "Cancel"
+      }
+    },
+    "wallet": {
+      "title": "Set wallet address",
+      "description": "Enter your wallet address for solo mining payout. This is the address the full block reward will go to if you find a block. Do NOT use an exchange address, and only use a Bitcoin address you fully control. If your unit came with a FutureBit Satscard, you can tap the card on an NFC enable phone to view the payout address, and copy and paste the address below. Please note you will not start solo mining until your node is fully synced, which can take several days.",
+      "address_label": "Wallet address",
+      "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "error": {
+        "invalid_address": "Please add a valid Bitcoin address",
+        "incompatible_address": "P2WSH and P2TR Bitcoin addresses are not valid for solo mining"
+      }
+    },
+    "pool": {
+      "title": "Set mining pool",
+      "select_label": "Select a pool",
+      "url_label": "URL",
+      "url_placeholder": "stratum+tcp://ss.antpool.com:3333",
+      "username_label": "Username",
+      "username_placeholder": "futurebit.worker1",
+      "password_label": "Password",
+      "password_placeholder": "x"
+    },
+    "complete": {
+      "title": "Your Setup is complete!",
+      "subtitle": "Let's start mining some Bitcoin!",
+      "button": "Start mining",
+      "button_solo": "Start Solo Node"
+    },
+    "common": {
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "footer": {
+    "support": "Support",
+    "shop": "Shop",
+    "website": "Website",
+    "made_with_love": "Apollo Web OS v{version} Made with love by",
+    "futurebit": "FutureBit"
+  },
+  "utils": {
+    "units": {
+      "trillions": "trillions",
+      "billions": "billions",
+      "millions": "millions",
+      "units": "units"
+    },
+    "about": "About"
+  },
+  "action": {
+    "miner": {
+      "stop": {
+        "title": "Stopping miner",
+        "description": "Your miner will be stopped in a few seconds"
+      },
+      "start": {
+        "title": "Starting miner",
+        "description": "Your miner will be available in a moment, please hold on"
+      },
+      "restart": {
+        "title": "Restarting miner",
+        "description": "Your miner will be available in a moment, please hold on"
+      }
+    },
+    "node": {
+      "stop": {
+        "title": "Stopping Bitcoin node",
+        "description": "Your node will be stopped in a few seconds"
+      },
+      "start": {
+        "title": "Starting Bitcoin node",
+        "description": "Your node will be available in a moment, please hold on"
+      }
+    },
+    "solo": {
+      "stop": {
+        "title": "Stopping Solo Pool",
+        "description": "Your solo pool service will be stopped in a few seconds"
+      },
+      "start": {
+        "title": "Starting Solo Pool",
+        "description": "Your solo pool service will be available in a moment, please hold on"
+      },
+      "restart": {
+        "title": "Restarting Solo Pool",
+        "description": "Your solo pool service will be available in a moment, please hold on"
+      }
+    },
+    "system": {
+      "reboot": {
+        "title": "Rebooting system",
+        "description": "Your system is rebooting, please wait at least 1 minute you should see stats again"
+      },
+      "shutdown": {
+        "title": "Shutting down system",
+        "description": "Your system is halting, you will need to start it manually. See you."
+      }
+    }
+  },
+  "system_action": {
+    "cancel": "Cancel",
+    "reboot": {
+      "confirm_title": "Reboot System",
+      "confirm_description": "Are you sure you want to reboot the system? All services will be temporarily unavailable.",
+      "loading_title": "Rebooting System",
+      "loading_description": "Please wait while the system reboots. This will take approximately {seconds} seconds.",
+      "button": "Reboot"
+    },
+    "shutdown": {
+      "confirm_title": "Shutdown System",
+      "confirm_description": "Are you sure you want to shutdown the system? You will need to manually restart the device.",
+      "loading_title": "Shutting Down",
+      "loading_description": "The system is shutting down. Please wait {seconds} seconds.",
+      "complete_title": "See you soon!",
+      "complete_description": "The system has been shut down. You can safely disconnect the power.",
+      "button": "Shutdown"
+    }
+  }
 }
