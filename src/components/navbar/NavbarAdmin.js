@@ -13,7 +13,8 @@ import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useLazyQuery } from '@apollo/client';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { useIntl } from 'react-intl';
 
 import AdminNavbarLinks from './NavbarLinksAdmin';
 import NavbarSeconday from './NavbarSecondary';
@@ -23,37 +24,34 @@ import {
   MINER_STOP_QUERY,
 } from '../../graphql/miner';
 import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
-import { updateMinerAction } from '../../redux/actions/minerAction';
+import { SOLO_START_QUERY, SOLO_STOP_QUERY, SOLO_RESTART_QUERY } from '../../graphql/solo';
+import { updateMinerAction } from '../../redux/slices/minerActionSlice';
 import { minerSelector } from '../../redux/reselect/miner';
-import { nodeSelector } from '../../redux/reselect/node';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
-import { sendFeedback } from '../../redux/actions/feedback';
+import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { SidebarResponsive } from '../sidebar/Sidebar';
+import { servicesSelector } from '../../redux/reselect/services';
+import StatusTransitionFeedback from '../UI/StatusTransitionFeedback';
 
 const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const [scrolled, setScrolled] = useState(false);
+  const intl = useIntl();
 
   // Miner data
   const {
     loading,
-    data: { online, stats },
+    data: { stats },
     error,
-  } = useSelector(minerSelector);
-
-  // Node data
-  const {
-    data: dataNode,
-    error: errorNode,
-    loading: loadingNode,
-  } = useSelector(nodeSelector);
+  } = useSelector(minerSelector, shallowEqual);
 
   // Settings data
-  const { data: settings } = useSelector(settingsSelector);
+  const { data: settings } = useSelector(settingsSelector, shallowEqual);
 
-  const { blocksCount } = dataNode;
+  // Services data reselected
+  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   // Miner actions
   const [startMiner, { loading: loadingMinerStart, error: errorMinerStart }] =
@@ -74,6 +72,18 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
     useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
 
+  // Solo actions
+  const [startSolo, { loading: loadingSoloStart, error: errorSoloStart }] =
+    useLazyQuery(SOLO_START_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [stopSolo, { loading: loadingSoloStop, error: errorSoloStop }] =
+    useLazyQuery(SOLO_STOP_QUERY, { fetchPolicy: 'no-cache' });
+
+  const [
+    restartSolo,
+    { loading: loadingSoloRestart, error: errorSoloRestart },
+  ] = useLazyQuery(SOLO_RESTART_QUERY, { fetchPolicy: 'no-cache' });
+
   // MCU actions
   const [rebootMcu, { loading: loadingRebootMcu, error: errorRebootMcu }] =
     useLazyQuery(MCU_REBOOT_QUERY, { fetchPolicy: 'no-cache' });
@@ -89,7 +99,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     return () => {
       window.removeEventListener('scroll', changeNavbar);
     };
-  });
+  }, []);
 
   const handleSystemAction = (action) => {
     let title;
@@ -99,54 +109,71 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     switch (action) {
       case 'stopMiner':
         stopMiner();
-        title = 'Stopping miner';
-        description = 'Your miner will be stopped in a few seconds';
+        title = intl.formatMessage({ id: 'action.miner.stop.title', defaultMessage: 'Stopping miner' });
+        description = intl.formatMessage({ id: 'action.miner.stop.description', defaultMessage: 'Your miner will be stopped in a few seconds' });
         loadingAction = loadingMinerStop;
         errorAction = errorMinerStop;
         break;
       case 'startMiner':
         startMiner();
-        title = 'Starting miner';
-        description =
-          'Your miner will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.miner.start.title', defaultMessage: 'Starting miner' });
+        description = intl.formatMessage({ id: 'action.miner.start.description', defaultMessage: 'Your miner will be available in a moment, please hold on' });
         loadingAction = loadingMinerStart;
         errorAction = errorMinerStart;
         break;
       case 'restartMiner':
         restartMiner();
-        title = 'Restarting miner';
-        description =
-          'Your miner will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.miner.restart.title', defaultMessage: 'Restarting miner' });
+        description = intl.formatMessage({ id: 'action.miner.restart.description', defaultMessage: 'Your miner will be available in a moment, please hold on' });
         loadingAction = loadingMinerRestart;
         errorAction = errorMinerRestart;
         break;
       case 'stopNode':
         stopNode();
-        title = 'Stopping Bitcoin node';
-        description = 'Your node will be stopped in a few seconds';
+        title = intl.formatMessage({ id: 'action.node.stop.title', defaultMessage: 'Stopping Bitcoin node' });
+        description = intl.formatMessage({ id: 'action.node.stop.description', defaultMessage: 'Your node will be stopped in a few seconds' });
         loadingAction = loadingNodeStart;
         errorAction = errorNodeStart;
         break;
       case 'startNode':
         startNode();
-        title = 'Starting Bitcoin node';
-        description = 'Your node will be available in a moment, please hold on';
+        title = intl.formatMessage({ id: 'action.node.start.title', defaultMessage: 'Starting Bitcoin node' });
+        description = intl.formatMessage({ id: 'action.node.start.description', defaultMessage: 'Your node will be available in a moment, please hold on' });
         loadingAction = loadingNodeStop;
         errorAction = errorNodeStop;
         break;
+      case 'stopSolo':
+        stopSolo();
+        title = intl.formatMessage({ id: 'action.solo.stop.title', defaultMessage: 'Stopping Solo Pool' });
+        description = intl.formatMessage({ id: 'action.solo.stop.description', defaultMessage: 'Your solo pool service will be stopped in a few seconds' });
+        loadingAction = loadingSoloStop;
+        errorAction = errorSoloStop;
+        break;
+      case 'startSolo':
+        startSolo();
+        title = intl.formatMessage({ id: 'action.solo.start.title', defaultMessage: 'Starting Solo Pool' });
+        description = intl.formatMessage({ id: 'action.solo.start.description', defaultMessage: 'Your solo pool service will be available in a moment, please hold on' });
+        loadingAction = loadingSoloStart;
+        errorAction = errorSoloStart;
+        break;
+      case 'restartSolo':
+        restartSolo();
+        title = intl.formatMessage({ id: 'action.solo.restart.title', defaultMessage: 'Restarting Solo Pool' });
+        description = intl.formatMessage({ id: 'action.solo.restart.description', defaultMessage: 'Your solo pool service will be available in a moment, please hold on' });
+        loadingAction = loadingSoloRestart;
+        errorAction = errorSoloRestart;
+        break;
       case 'rebootMcu':
         rebootMcu();
-        title = 'Rebooting system';
-        description =
-          'Your system is rebooting, please wait at least 1 minute you should see stats again';
+        title = intl.formatMessage({ id: 'action.system.reboot.title', defaultMessage: 'Rebooting system' });
+        description = intl.formatMessage({ id: 'action.system.reboot.description', defaultMessage: 'Your system is rebooting, please wait at least 1 minute you should see stats again' });
         loadingAction = loadingRebootMcu;
         errorAction = errorRebootMcu;
         break;
       case 'shutdownMcu':
         shutdownMcu();
-        title = 'Shutting down system';
-        description =
-          'Your system is halting, you will need to start it manually. See you.';
+        title = intl.formatMessage({ id: 'action.system.shutdown.title', defaultMessage: 'Shutting down system' });
+        description = intl.formatMessage({ id: 'action.system.shutdown.description', defaultMessage: 'Your system is halting, you will need to start it manually. See you.' });
         loadingAction = loadingShutdownMcu;
         errorAction = errorShutdownMcu;
         break;
@@ -165,7 +192,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         loading: loadingAction,
         error: errorAction,
         data: dataAction,
-        status: action.match(/start/i) ? true : false,
+        status: action.match(/start/i) ? 'online' : 'offline',
         timestamp: Date.now(),
       })
     );
@@ -179,6 +206,9 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   };
 
   const currentRoute = _.find(routes, { path: router.pathname });
+
+  // Extract the message ID from the FormattedMessage component
+  const routeName = currentRoute?.name?.props?.id?.replace('routes.', '') || '';
 
   // Here are all the props that may change depending on navbar's type or state.(secondary, variant, scrolled)
   let mainText = useColorModeValue('navy.700', 'white');
@@ -230,7 +260,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         mx="auto"
         mt={secondaryMargin}
         pb="8px"
-        right={{ base: '12px', md: '30px', lg: '30px', xl: '30px' }}
+        right={{ base: '12px', md: '30px', lg: '30px', xl: '70px' }}
         px={{
           sm: paddingX,
           md: '10px',
@@ -247,6 +277,21 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           xl: 'calc(100vw - 300px)',
         }}
       >
+        <StatusTransitionFeedback
+          key={`miner-feedback-${intl.locale}`}
+          serviceStatus={servicesStatus}
+          type={'miner'}
+        />
+        <StatusTransitionFeedback
+          key={`solo-feedback-${intl.locale}`}
+          serviceStatus={servicesStatus}
+          type={'solo'}
+        />
+        <StatusTransitionFeedback
+          key={`node-feedback-${intl.locale}`}
+          serviceStatus={servicesStatus}
+          type={'node'}
+        />
         <Flex
           w="100%"
           flexDirection={{
@@ -259,7 +304,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
           <Box mb={{ sm: '8px', md: '5px' }}>
             <Breadcrumb>
               <BreadcrumbItem color={secondaryText} fontSize="sm">
-                {currentRoute && currentRoute.name !== 'Overview' ? (
+                {currentRoute && routeName !== 'overview' ? (
                   <Link href="/overview">Overview</Link>
                 ) : (
                   <Text>Apollo System</Text>
@@ -287,26 +332,40 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
             </Text>
           </Box>
 
-          <Box position={'absolute'} right={2} display={{ base: 'block', md: 'none' }}>
+          <Box
+            position={'absolute'}
+            right={2}
+            display={{ base: 'block', md: 'none' }}
+          >
             <SidebarResponsive routes={routes} />
           </Box>
 
-          {currentRoute && currentRoute.name === 'Miner' && (
+          {currentRoute && routeName === 'miner' && (
             <Box ml="5" display={{ base: 'none', xl: 'block' }}>
               <NavbarSeconday
                 type={'miner'}
                 handleSystemAction={handleSystemAction}
-                minerOnline={online}
+                minerOnline={servicesStatus?.miner?.status}
               />
             </Box>
           )}
 
-          {currentRoute && currentRoute.name === 'Node' && (
+          {currentRoute && routeName === 'soloMining' && (
+            <Box ml="5" display={{ base: 'none', xl: 'block' }}>
+              <NavbarSeconday
+                type={'solo'}
+                handleSystemAction={handleSystemAction}
+                soloOnline={servicesStatus?.solo?.status}
+              />
+            </Box>
+          )}
+
+          {currentRoute && routeName === 'node' && (
             <Box ml="5" display={{ base: 'none', xl: 'block' }}>
               <NavbarSeconday
                 type={'node'}
                 handleSystemAction={handleSystemAction}
-                blocksCount={blocksCount}
+                nodeOnline={servicesStatus?.node?.status}
               />
             </Box>
           )}
@@ -319,10 +378,10 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
               scrolled={scrolled}
               routes={routes}
               handleSystemAction={handleSystemAction}
-              minerOnline={online}
-              minerStats={stats}
-              errorNode={errorNode}
-              blocksCount={blocksCount}
+              minerOnline={servicesStatus?.miner?.status}
+              minerStats={stats || []}
+              soloOnline={servicesStatus?.solo?.status}
+              nodeOnline={servicesStatus?.node?.status}
               settings={settings}
               error={error}
               loading={loading}

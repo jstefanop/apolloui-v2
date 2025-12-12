@@ -1,0 +1,740 @@
+{
+  "overview": {
+    "title": "Resumen de Apollo",
+    "warning": {
+      "title": "Advertencia",
+      "description": "Hay un problema al obtener datos del servidor."
+    },
+    "hashrate": {
+      "title": "Hashrate de las últimas 24h"
+    },
+    "temperatures": {
+      "miner": "Temperatura del minero",
+      "system": "Temperatura del sistema",
+      "hardware_errors": "Errores de hardware"
+    },
+    "node": {
+      "title": "Estado del nodo",
+      "pending": "Pendiente... Por favor espera.",
+      "connections": "Conexiones",
+      "blocks": "Bloques",
+      "blockchain_size": "Tamaño de la blockchain"
+    },
+    "system": {
+      "cpu_usage": "Uso de CPU",
+      "memory_usage": "Uso de memoria",
+      "disk_usage": "Uso del disco del sistema",
+      "cores": "núcleos"
+    },
+    "solo": {
+      "title": "Estado Solo",
+      "hashrate": "Hashrate Solo",
+      "best_share": "Mejor Share Solo",
+      "daily_chance": "Probabilidad Diaria",
+      "pending": "Pendiente... Por favor espera.",
+      "offline": "El servicio Solo está fuera de línea.",
+      "unknown": "Estado del servicio Solo desconocido."
+    }
+  },
+  "node": {
+    "title": {
+      "syncing": "Sincronizando bloques...",
+      "up_to_date": "El nodo está actualizado",
+      "pre_sync": "Pre-sincronización",
+      "last_block": "Hace {time}m desde el último bloque"
+    },
+    "status": {
+      "error": {
+        "title": "Error del servicio del nodo",
+        "description": "El servicio del nodo está experimentando un error. Revisa la configuración del sistema o contacta al soporte."
+      },
+      "unavailable": {
+        "title": "Estado del nodo no disponible",
+        "description": "No se pudo obtener el estado del nodo. Por favor, intenta más tarde."
+      },
+      "stopping": {
+        "title": "Deteniendo el nodo",
+        "description": "El nodo se está deteniendo. Por favor, espera un momento."
+      },
+      "stop_delay": {
+        "title": "La detención tarda más de lo esperado",
+        "description": "El nodo está tardando más de lo esperado en detenerse. Espera un poco más o verifica la conexión."
+      },
+      "starting": {
+        "title": "Iniciando el nodo",
+        "description": "El nodo se está iniciando. Por favor, espera un momento."
+      },
+      "start_delay": {
+        "title": "El inicio tarda más de lo esperado",
+        "description": "El nodo está tardando más de lo esperado en iniciar. Espera un poco más o verifica la conexión."
+      },
+      "offline": {
+        "title": "El nodo está fuera de línea",
+        "description": "El nodo está actualmente fuera de línea. Puedes iniciarlo desde el menú superior si es necesario."
+      },
+      "connection_issue": {
+        "title": "Problema de conexión del nodo",
+        "description": "El nodo está actualmente fuera de línea, pero debería estar en línea. Verifica la conexión o intenta reiniciar."
+      },
+      "unexpected": {
+        "title": "Estado inesperado del nodo",
+        "description": "El nodo está en línea, pero se solicitó detenerlo. Verifica su estado o reinícialo."
+      },
+      "online": {
+        "message": "Tu nodo está <strong>en línea</strong> y operativo."
+      }
+    },
+    "table": {
+      "address": "DIRECCIÓN",
+      "client": "CLIENTE",
+      "status": "ESTADO",
+      "title": "Últimas conexiones"
+    },
+    "stats": {
+      "connections": "Conexiones",
+      "network_hashrate": "Hashrate de la red",
+      "difficulty": "Dificultad",
+      "blocks": "Bloques",
+      "blockchain_size": "Tamaño de la blockchain",
+      "remaining_space": "Espacio restante",
+      "last_block": "Minutos desde el último bloque",
+      "node_address": "Dirección local del nodo",
+      "node_version": "Versión del nodo Bitcoin",
+      "percentage_completed": "Porcentaje completado {percentage}%",
+      "processing_queue": "Procesando cola...",
+      "initializing": "Inicializando...",
+      "synched": "100% sincronizado",
+      "synching": "{percentage}% sincronizado",
+      "details": "Detalles",
+      "connect": "Conectar",
+      "connections_in_out": "Conexiones in/out",
+      "in": "Entrada: {count}",
+      "out": "Salida: {count}",
+      "total_connections": "Total conexiones",
+      "verification_progress": "Progreso de verificación"
+    },
+    "panel": {
+      "connect_tooltip": "Conéctate a tu nodo",
+      "connect_tooltip_loading": "Para conectarte a tu nodo necesitas habilitar primero la opción Permitir conexiones LAN y esperar a que el nodo esté disponible."
+    },
+    "error": {
+      "unknown": "Error desconocido",
+      "stats": "Hubo un error al obtener estadísticas del Nodo: {error}",
+      "connection_refused": "Conexión rechazada. Tu nodo no está en ejecución.",
+      "bad_response": "Respuesta incorrecta. Intentando de nuevo en unos segundos...",
+      "waiting_response": "Esperando respuesta del nodo...",
+      "starting_up": "Tu nodo está iniciando..."
+    },
+    "latest_blocks": "Últimos Bloques",
+    "block": {
+      "height": "Altura",
+      "time": "Tiempo",
+      "size": "Tamaño",
+      "txs": "Transacciones",
+      "fees": "Comisiones",
+      "miner": "Minero"
+    }
+  },
+  "miner": {
+    "title": "Minero Apollo {hashrate}",
+    "stats": {
+      "hashrate": "Hashrate",
+      "power": "Potencia",
+      "efficiency": "Eficiencia",
+      "temperature": "Temperatura",
+      "fan_speed": "Velocidad del ventilador",
+      "voltage": "Voltaje",
+      "errors": "Errores",
+      "pool_hashrate": "Hashrate del pool",
+      "difficulty": "Dificultad",
+      "shares": {
+        "sent": "Shares enviadas",
+        "accepted": "Shares aceptadas",
+        "rejected": "Shares rechazadas"
+      },
+      "last_share": "Última share",
+      "uptime": "Tiempo en funcionamiento",
+      "mode": "Modo",
+      "fan": {
+        "high": "Ventilador alto",
+        "low": "Ventilador bajo"
+      },
+      "frequency": "Frecuencia",
+      "chip_speed": "Velocidad del chip",
+      "boards": {
+        "active": "Placas activas",
+        "total": "Placas totales",
+        "average": "Promedio"
+      },
+      "pools": {
+        "active": "Pools activos",
+        "total": "Pools totales"
+      }
+    },
+    "units": {
+      "rpm": "rpm",
+      "wth": "W/TH",
+      "a": "A",
+      "percent": "%",
+      "n_a": "N/D"
+    },
+    "device_presets": "Preajustes del dispositivo",
+    "show_all_data": "Mostrar todos los datos",
+    "boards_averages": "Promedios de placas",
+    "total_pools_hashboards": "Total de pools y hashboards",
+    "hashboards": "Hashboards",
+    "pools": "Pools",
+    "solo_mining": "Minería SOLO",
+    "enabled": "ACTIVADO",
+    "auto": "AUTO",
+    "status": {
+      "unavailable": {
+        "title": "Estado del minero no disponible",
+        "description": "No se pudo obtener el estado del minero. Por favor, intenta más tarde."
+      },
+      "stopping": {
+        "title": "Deteniendo el minero",
+        "description": "El minero se está deteniendo. Por favor, espera un momento."
+      },
+      "stop_delay": {
+        "title": "La detención tarda más de lo esperado",
+        "description": "El minero está tardando más de lo esperado en detenerse. Espera un poco más o revisa la conexión."
+      },
+      "starting": {
+        "title": "Iniciando el minero",
+        "description": "El minero se está iniciando. Por favor, espera un momento."
+      },
+      "start_delay": {
+        "title": "El inicio tarda más de lo esperado",
+        "description": "El minero está tardando más de lo esperado en iniciar. Espera un poco más o revisa la conexión."
+      },
+      "offline": {
+        "tag": "Fuera de línea",
+        "title": "El minero está fuera de línea",
+        "description": "El minero está actualmente fuera de línea. Puedes iniciarlo desde el menú superior si es necesario."
+      },
+      "connection_issue": {
+        "title": "Problema de conexión del minero",
+        "description": "El minero está actualmente fuera de línea, pero debería estar en línea. Verifica la conexión o intenta reiniciar."
+      },
+      "unexpected": {
+        "title": "Estado inesperado del minero",
+        "description": "El minero está en línea, pero se solicitó detenerlo. Verifica su estado o reinícialo."
+      },
+      "online": {
+        "message": "Tu minero está <strong>en línea</strong> y operativo."
+      },
+      "pending": "Pendiente"
+    },
+    "hashrate": {
+      "current": "Hashrate del minero",
+      "average": "Promedio de 1 hora"
+    },
+    "power": {
+      "usage": "Consumo de energía",
+      "watts_per_th": "Watts por TH/s"
+    }
+  },
+  "solo_mining": {
+    "title": "Minero Apollo BTC {hashrate}",
+    "banner": {
+      "title": "Minería SOLO en LAN",
+      "description": "Dirige cualquier minero de Bitcoin en tu red local a tu Solo Pool con la siguiente URL: {address}:3333 Usuario: [dirección bitcoin]",
+      "connect": "Conectar"
+    },
+    "stats": {
+      "accepted_shares": "Shares aceptadas",
+      "rejected_shares": "Shares rechazadas",
+      "last_share": "Última share",
+      "uptime": "Tiempo en funcionamiento"
+    },
+    "info": {
+      "title": "Información de Solo",
+      "daily_chance": "Probabilidad diaria de resolver un bloque en Solo",
+      "per_block_chance": "Probabilidad de resolver el próximo bloque",
+      "monthly_chance": "Probabilidad mensual de resolver un bloque en Solo",
+      "yearly_chance": "Probabilidad anual de resolver un bloque en Solo",
+      "per_block_chance_title": "Chance próximo bloque",
+      "monthly_chance_title": "Chance por mes",
+      "yearly_chance_title": "Chance por año",
+      "other_chances": "Otros Períodos de Tiempo",
+      "users": "Usuarios",
+      "workers": "Trabajadores",
+      "idle": "Inactivo"
+    },
+    "users": {
+      "title": "Usuarios de Minería SOLO",
+      "waiting": "Esperando que se actualicen las estadísticas...",
+      "show_all_data": "Mostrar todos los datos",
+      "no_active_workers": "No hay trabajadores activos",
+      "active": "Activo"
+    },
+    "status": {
+      "solo_unavailable": {
+        "title": "Servicio solo no disponible",
+        "description": "No se pudo obtener el estado del servicio solo. Por favor, intenta más tarde."
+      },
+      "solo_stopping": {
+        "title": "Deteniendo el servicio solo",
+        "description": "El servicio solo se está deteniendo. Por favor, espera un momento."
+      },
+      "solo_stop_delay": {
+        "title": "La detención del servicio solo tarda más de lo esperado",
+        "description": "El servicio solo está tardando más de lo esperado en detenerse. Espera un poco más o revisa la conexión."
+      },
+      "solo_starting": {
+        "title": "Iniciando el servicio solo",
+        "description": "El servicio solo se está iniciando. Por favor, espera un momento."
+      },
+      "solo_start_delay": {
+        "title": "El inicio del servicio solo tarda más de lo esperado",
+        "description": "El servicio solo está tardando más de lo esperado en iniciar. Espera un poco más o revisa la conexión."
+      },
+      "solo_offline": {
+        "title": "El servicio solo está fuera de línea",
+        "description": "El servicio solo está actualmente fuera de línea. Puedes iniciarlo desde el menú superior si es necesario."
+      },
+      "solo_connection_issue": {
+        "title": "Problema de conexión del servicio solo",
+        "description": "El servicio solo está actualmente fuera de línea, pero debería estar en línea. Verifica la conexión o intenta reiniciar."
+      },
+      "solo_unexpected": {
+        "title": "Estado inesperado del servicio solo",
+        "description": "El servicio solo está en línea, pero se solicitó detenerlo. Verifica su estado o reinícialo."
+      },
+
+      "waiting_share": {
+        "title": "Esperando la primera share",
+        "description": "Espera hasta que se reciba la primera share."
+      },
+      "ck_pool_disconnected": {
+        "title": "CK Pool desconectado",
+        "description": "Verifica la conexión de tu nodo y el estado del CK Pool."
+      },
+      "node_not_synced": {
+        "title": "Nodo no sincronizado",
+        "description": "El nodo debe estar sincronizado para minar correctamente en modo SOLO. Revisa tu nodo."
+      },
+      "online": {
+        "message": "Tu servicio solo mining está <strong>en línea</strong> y operativo."
+      }
+    }
+  },
+  "system": {
+    "title": "Sistema Apollo BTC",
+    "dashboard": "Panel de control",
+    "memory_stats": "Estadísticas de Memoria",
+    "stats": {
+      "architecture": "Arquitectura",
+      "hostname": "Nombre del host",
+      "operating_system": "Sistema operativo",
+      "system_uptime": "Tiempo de actividad del sistema",
+      "active_wifi": "Wifi activo",
+      "ethernet": "Ethernet",
+      "network_data": "Datos de red",
+      "connected": "Conectado",
+      "disconnected": "Desconectado",
+      "cpu_usage": "Uso de CPU",
+      "memory_usage": "Uso de memoria",
+      "system_disk_usage": "Uso del disco del sistema",
+      "node_disk_usage": "Uso del disco del nodo",
+      "cores": "núcleos",
+      "copied": "Dirección IP copiada al portapapeles",
+      "copy_failed": "Error al copiar la dirección IP",
+      "temperature": "Temperatura",
+      "load_average": "Carga Media",
+      "memory_total": "Memoria Total",
+      "memory_used": "Memoria Usada",
+      "memory_available": "Memoria Disponible",
+      "memory_cache": "Memoria Cache",
+      "available": "Disponible"
+    }
+  },
+  "settings": {
+    "title": "Configuración de Apollo BTC",
+    "actions": {
+      "discard": "Descartar cambios",
+      "save": "Guardar",
+      "save_restart": "Guardar y reiniciar",
+      "saving": "Guardando..."
+    },
+    "tabs": {
+      "pools": "Pools",
+      "miner": "Miner",
+      "solo": "Solo",
+      "node": "Nodo",
+      "system": "Sistema",
+      "logs": "Registros",
+      "extra": "Extra"
+    },
+    "sections": {
+      "miner": {
+        "title": "Configuración del minero",
+        "description": "Gestionar configuración del minero",
+        "connect": "Conectar",
+        "modes": {
+          "title": "Modos del minero",
+          "description": "Gestionar configuraciones específicas del minero",
+          "eco": {
+            "title": "ECO",
+            "description": "En modo ECO tu minero será más eficiente, pero tendrá un hashrate ligeramente menor. Este modo es recomendado, y genera menos ruido y calor."
+          },
+          "balanced": {
+            "title": "EQUILIBRADO",
+            "description": "El modo EQUILIBRADO es un buen compromiso entre hashrate, eficiencia y ruido."
+          },
+          "turbo": {
+            "title": "TURBO",
+            "description": "En modo TURBO tu minero será menos eficiente, pero tendrá el hashrate más alto. Este modo es solo para usuarios expertos y se debe monitorear la temperatura. El ventilador puede volverse ruidoso."
+          },
+          "custom": {
+            "title": "PERSONALIZADO",
+            "description": "En modo PERSONALIZADO puedes establecer tu propia frecuencia y voltaje. Solo se recomienda para usuarios expertos.",
+            "warning": "ADVERTENCIA",
+            "warning_description": "El Apollo viene con valores predefinidos optimizados (arriba), que ofrecen un buen rango de operación. Al usar el modo personalizado, corres el riesgo de dañar el dispositivo y FutureBit no será responsable por daños causados por overclocking o sobrevoltaje.",
+            "power": {
+              "title": "Potencia",
+              "description": "Puedes establecer una potencia personalizada o restablecer a los valores por defecto.",
+              "min": "Mín",
+              "max": "Máx"
+            },
+            "frequency": {
+              "title": "Frecuencia",
+              "description": "Puedes establecer una frecuencia personalizada o restablecer a los valores por defecto.",
+              "min": "Mín",
+              "max": "Máx"
+            }
+          }
+        },
+        "fan": {
+          "title": "Configuración del ventilador",
+          "description": "Ajusta la velocidad del ventilador o configúralo como automático",
+          "low": {
+            "title": "Temperatura para iniciar el ventilador",
+            "description": "Temperatura necesaria para iniciar el ventilador.",
+            "min": "Mín",
+            "max": "Máx"
+          },
+          "high": {
+            "title": "Temperatura para velocidad máxima",
+            "description": "Temperatura necesaria para que el ventilador funcione a velocidad máxima.",
+            "min": "Mín",
+            "max": "Máx"
+          }
+        },
+        "power_led": {
+          "title": "Luz de estado frontal",
+          "description": "Encender/apagar el LED de estado frontal. Nota: el minero se reiniciará para aplicar los cambios."
+        }
+      },
+      "node": {
+        "title": "Configuración del nodo Bitcoin",
+        "description": "Gestionar configuración del nodo Bitcoin",
+        "connect": "Conectar",
+        "software": {
+          "title": "Software del Nodo",
+          "description": "Elige entre Bitcoin Core y Bitcoin Knots"
+        },
+        "tor_mode": {
+          "title": "Modo TOR",
+          "description": "Conecta tu nodo Bitcoin mediante la red Tor para aumentar seguridad y anonimato. Nota: el nodo se reiniciará para aplicar los cambios."
+        },
+        "allow_lan": {
+          "title": "Permitir conexiones LAN",
+          "description": "Permitir que tu nodo Bitcoin acepte conexiones LAN desde billeteras y servicios externos. Nota: el nodo se reiniciará para aplicar los cambios."
+        },
+        "max_connections": "Conexiones máximas",
+        "extra_options": "Opciones extra",
+        "node_config": {
+          "title": "Configuración avanzada del nodo",
+          "description": "Agrega líneas adicionales al archivo bitcoin.conf. (Nota: esta sección es para usuarios avanzados, no se realiza validación. Consulta la documentación de Bitcoin Core para ver las opciones válidas.)"
+        },
+        "solo_mining_warning": "Tienes activada la minería solo. Se recomienda desactivar Tor para este modo. Los nodos Bitcoin en Tor propagan los blocos más lentamente, lo que aumenta el riesgo de bloques huérfanos."
+      },
+      "system": {
+        "title": "Configuración del sistema",
+        "description": "Gestionar configuración del sistema",
+        "temperature_unit": "Unidad de temperatura",
+        "temperature_description": "Elige tu unidad preferida",
+        "power_led": "LED de encendido",
+        "api_access": "Acceso API",
+        "custom_approval": "Aprobación personalizada",
+        "wifi": {
+          "title": "Configuración WiFi",
+          "description": "Configura tu conexión WiFi",
+          "scan": {
+            "title": "Escanear Redes WiFi",
+            "description": "Haz clic en el botón de escaneo y tu sistema buscará redes WiFi disponibles. Haz clic en uno de los SSID disponibles e ingresa tu contraseña WiFi. Al hacer clic en el botón desconectar se eliminarán todas las conexiones WiFi guardadas. Si tienes problemas de conexión, configura tu router WiFi en un SSID separado de 2.4GHz con solo seguridad WPA2.",
+            "button": "ESCANEAR"
+          }
+        },
+        "password": {
+          "title": "Pantalla de bloqueo",
+          "description": "Cambia la contraseña para acceder al panel",
+          "password": "Contraseña",
+          "verify_password": "Verificar contraseña",
+          "password_placeholder": "Tu contraseña de bloqueo",
+          "verify_password_placeholder": "Verifica tu contraseña de bloqueo",
+          "show": "Mostrar",
+          "hide": "Ocultar",
+          "error": {
+            "required": "La contraseña debe tener al menos 8 caracteres",
+            "match": "Las contraseñas deben coincidir"
+          }
+        },
+        "sidebar": {
+          "left": {
+            "visibility": "Visibilidad de la barra lateral izquierda",
+            "extended": "Barra lateral izquierda extendida"
+          },
+          "right": {
+            "visibility": "Visibilidad de la barra lateral derecha"
+          }
+        },
+        "logs": {
+          "title": "Registros del Sistema",
+          "description": "Ver y monitorear los registros del sistema para diferentes componentes"
+        }
+      },
+      "extra": {
+        "backup": {
+          "title": "Copia de seguridad",
+          "description": "Crear un archivo de respaldo de la configuración del panel, minero y pools",
+          "button": "RESPALDAR"
+        },
+        "restore": {
+          "title": "Restaurar configuración",
+          "description": "Restaurar todas las configuraciones desde un archivo de respaldo",
+          "button": "RESTAURAR"
+        },
+        "format": {
+          "title": "Formatear SSD del nodo",
+          "description": "Usa esta herramienta para formatear y configurar tu SSD NVMe del nodo",
+          "button": "FORMATEAR"
+        }
+      },
+      "pool": {
+        "title": "Configuración de pool",
+        "description": "Gestionar configuración de pools para tu minero",
+        "select_pool": "Selecciona un pool",
+        "learn_more": "Aprende más sobre este pool",
+        "url": {
+          "title": "URL",
+          "placeholder": "stratum.slushpool.com:3333"
+        },
+        "username": {
+          "title": "Usuario",
+          "placeholder": "futurebit.worker"
+        },
+        "password": {
+          "title": "Contraseña",
+          "placeholder": "x"
+        }
+      },
+      "solo": {
+        "title": "Configuración SOLO",
+        "description": "Mina directamente a tu nodo Bitcoin",
+        "mining_mode": "Modo de minería SOLO",
+        "mining_mode_description": "Activa el modo de minería solo para minar directamente a tu nodo Bitcoin. Nota: el nodo se reiniciará para aplicar los cambios.",
+        "wallet_address": "Dirección de cartera",
+        "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "wallet_info": "Introduce tu dirección de cartera para el pago de la minería solo. Esta es la dirección a la que irá la recompensa completa del bloque si encuentras un bloque. NO uses una dirección de exchange, y usa solo una dirección Bitcoin que controles completamente. Si tu unidad vino con una FutureBit Satscard, puedes tocar la tarjeta en un teléfono con NFC para ver la dirección de pago y copiarla y pegarla a continuación.",
+        "tor_warning": "Tienes Tor activado. Se recomienda desactivarlo para minería solo. Los nodos en Tor propagan bloques lentamente, lo que aumenta el riesgo de bloques huérfanos.",
+        "cannot_enable": "No se puede activar la minería SOLO",
+        "node_not_synced": "Tu nodo Bitcoin no está en funcionamiento o no está totalmente sincronizado. Solo puedes activar la minería solo una vez esté completamente sincronizado.",
+        "btc_signature": "Firma BTC",
+        "btc_signature_placeholder": "TuNombre",
+        "btc_signature_info": "Esta es la firma del bloque que se mostrará si encuentras un bloque en solo. Puedes dejarlo como predeterminado, o personalizarlo con tu propio mensaje/firma para que el mundo lo vea!",
+        "invalid_address": "Por favor, introduce una dirección Bitcoin válida",
+        "incompatible_address": "Advertencia: Las direcciones P2WSH y P2TR no son válidas para la minería SOLO. Usa una dirección diferente."
+      }
+    }
+  },
+  "block_found": {
+    "congratulations": "¡FELICITACIONES!",
+    "message": "¡Tu minero ha encontrado un bloque de Bitcoin!",
+    "description": "¡Este es un logro extraordinario en el mundo de la minería de Bitcoin! Has minado exitosamente un bloque completo y ganado la recompensa total.",
+    "reset": {
+      "title": "Reiniciar notificación de bloque encontrado",
+      "description": "La notificación de bloque encontrado ha sido reiniciada",
+      "error": "Error al reiniciar la notificación: {error}",
+      "loading": "Reiniciando...",
+      "button": "Confirmar y reiniciar"
+    }
+  },
+  "status_transition": {
+    "miner": {
+      "stopping": {
+        "title": "Deteniendo minero",
+        "description": "El minero se está deteniendo. Por favor, espera un momento."
+      },
+      "starting": {
+        "title": "Iniciando minero",
+        "description": "El minero se está iniciando. Por favor, espera un momento."
+      },
+      "online": {
+        "title": "Minero en línea",
+        "description": "El minero está en línea y operativo."
+      },
+      "offline": {
+        "title": "Minero fuera de línea",
+        "description": "El minero ha sido detenido correctamente."
+      }
+    },
+    "node": {
+      "stopping": {
+        "title": "Deteniendo nodo",
+        "description": "El nodo se está deteniendo. Por favor, espera un momento."
+      },
+      "starting": {
+        "title": "Iniciando nodo",
+        "description": "El nodo se está iniciando. Por favor, espera un momento."
+      },
+      "online": {
+        "title": "Nodo en línea",
+        "description": "El nodo está en línea y operativo."
+      },
+      "offline": {
+        "title": "Nodo fuera de línea",
+        "description": "El nodo ha sido detenido correctamente."
+      }
+    },
+    "solo": {
+      "stopping": {
+        "title": "Deteniendo servicio solo",
+        "description": "El servicio solo se está deteniendo. Por favor, espera un momento."
+      },
+      "starting": {
+        "title": "Iniciando servicio solo",
+        "description": "El servicio solo se está iniciando. Por favor, espera un momento."
+      },
+      "online": {
+        "title": "Servicio solo en línea",
+        "description": "El servicio solo está en línea y operativo."
+      },
+      "offline": {
+        "title": "Servicio solo fuera de línea",
+        "description": "El servicio solo ha sido detenido correctamente."
+      }
+    }
+  },
+  "routes": {
+    "overview": "Resumen",
+    "miner": "Minero",
+    "soloMining": "Minería SOLO",
+    "node": "Nodo",
+    "system": "Sistema",
+    "settings": "Configuraciones"
+  },
+  "signin": {
+    "title": "Bienvenido a Apollo Web OS 2",
+    "heading": "Iniciar sesión",
+    "description": "¡Ingresa tu contraseña para acceder!",
+    "password_label": "Contraseña",
+    "password_placeholder": "Mín. 8 caracteres",
+    "button": "Iniciar sesión"
+  },
+  "setup": {
+    "welcome": {
+      "title": "Un nodo. Un minero. Una persona.",
+      "subtitle": "Bienvenido.",
+      "button": "Iniciar configuración"
+    },
+    "password": {
+      "title": "Establecer contraseña de sistema y bloqueo",
+      "password_label": "Contraseña",
+      "password_placeholder": "Mín. 8 caracteres",
+      "verify_label": "Verificar contraseña",
+      "verify_placeholder": "Verifica tu contraseña",
+      "required": "Todos los campos son obligatorios",
+      "too_short": "La contraseña debe tener al menos 8 caracteres",
+      "mismatch": "Las contraseñas no coinciden"
+    },
+    "mining_type": {
+      "title": "Seleccionar tipo de minería",
+      "node_not_synced": {
+        "title": "Nodo no totalmente sincronizado",
+        "description": "La minería SOLO comenzará solo cuando tu nodo esté sincronizado al 100%. Puedes seleccionar esta opción ahora, pero la minería empezará automáticamente al completar la sincronización."
+      },
+      "solo": {
+        "title": "Minería Solo",
+        "description": "Compites contra toda la red para encontrar un bloque completo de Bitcoin (la recompensa completa en BTC). No recibes recompensas mientras minas, esperando encontrar un bloque completo. También se le llama minería tipo \"lotería\" porque las probabilidades son bajas, pero ayuda a la máxima descentralización de la red. ¡Si hay millones de mineros solo, se encontrarán bloques todos los días y Bitcoin no podrá ser censurado!"
+      },
+      "pool": {
+        "title": "Minería en Pool",
+        "description": "Contribuyes con tu hashrate a un \"pool\" colectivo que compite por encontrar bloques. Recibes recompensas diarias en \"satoshis\" minados según el porcentaje de tu contribución. Es la forma menos descentralizada, ya que entregas el control de creación de bloques al pool. Ten en cuenta que muchos pools tienen pagos mínimos, que pueden tardar meses en alcanzarse."
+      },
+      "disclaimer": {
+        "title": "Aviso legal sobre minería solo",
+        "part1": "Apollo II ofrece funciones avanzadas para minería solo, incluyendo la capacidad de iniciar tu propio pool solo Stratum con solo un clic en la interfaz. Aunque estas funciones están diseñadas para facilidad de uso y eficiencia, la minería solo conlleva ciertos riesgos. Específicamente, el proceso es sensible a las condiciones de red, como congestión de la red Bitcoin, latencia y velocidad de subida.",
+        "part2": "Debido a la naturaleza descentralizada y competitiva de la red Bitcoin, un bloque minado por el usuario puede ser huérfano y no aceptado, especialmente con alta latencia o mala conexión. Aunque Apollo II está optimizado para minimizar estos riesgos, los resultados dependen de factores fuera de nuestro control.",
+        "part3": "Al usar Apollo II para minería solo, los usuarios aceptan que FutureBit no es responsable por ningún bloque huérfano o perdido debido a problemas de hardware, software o red. FutureBit no se hace responsable por pérdidas derivadas de la minería solo. El usuario asume todo el riesgo y se recomienda una conexión Ethernet estable y de alta velocidad.",
+        "accept": "Aceptar",
+        "cancel": "Cancelar"
+      }
+    },
+    "wallet": {
+      "title": "Establecer dirección de cartera",
+      "address_label": "Dirección de cartera",
+      "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "error": {
+        "invalid_address": "Por favor, introduce una dirección válida de Bitcoin",
+        "incompatible_address": "Las direcciones P2WSH y P2TR no son válidas para minería solo"
+      }
+    },
+    "pool": {
+      "title": "Establecer pool de minería",
+      "select_label": "Seleccionar un pool",
+      "url_label": "URL",
+      "url_placeholder": "stratum+tcp://ss.antpool.com:3333",
+      "username_label": "Usuario",
+      "username_placeholder": "futurebit.worker1",
+      "password_label": "Contraseña",
+      "password_placeholder": "x"
+    },
+    "complete": {
+      "title": "¡Configuración completada!",
+      "subtitle": "¡Empecemos a minar Bitcoin!",
+      "button": "Comenzar minería"
+    },
+    "common": {
+      "previous": "Anterior",
+      "next": "Siguiente"
+    }
+  },
+  "footer": {
+    "support": "Soporte",
+    "shop": "Tienda",
+    "website": "Sitio web",
+    "made_with_love": "Apollo Web OS v{version} Hecho con amor por",
+    "futurebit": "FutureBit"
+  },
+  "utils": {
+    "units": {
+      "trillions": "billones",
+      "billions": "mil millones",
+      "millions": "millones",
+      "units": "unidades"
+    },
+    "about": "Aproximadamente"
+  },
+  "system_action": {
+    "cancel": "Cancelar",
+    "reboot": {
+      "confirm_title": "Reiniciar Sistema",
+      "confirm_description": "¿Estás seguro de que quieres reiniciar el sistema? Todos los servicios estarán temporalmente no disponibles.",
+      "loading_title": "Reiniciando Sistema",
+      "loading_description": "Por favor espera mientras el sistema se reinicia. Esto tomará aproximadamente {seconds} segundos.",
+      "button": "Reiniciar"
+    },
+    "shutdown": {
+      "confirm_title": "Apagar Sistema",
+      "confirm_description": "¿Estás seguro de que quieres apagar el sistema? Tendrás que reiniciar el dispositivo manualmente.",
+      "loading_title": "Apagando",
+      "loading_description": "El sistema se está apagando. Por favor espera {seconds} segundos.",
+      "complete_title": "¡Hasta pronto!",
+      "complete_description": "El sistema se ha apagado. Puedes desconectar la alimentación de forma segura.",
+      "button": "Apagar"
+    }
+  }
+}

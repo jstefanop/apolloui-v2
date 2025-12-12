@@ -12,6 +12,7 @@ export const NODE_STATS_FRAGMENT = gql`
           blockTime
           headers
           sizeOnDisk
+          verificationprogress
         }
         connectionCount
         miningInfo {
@@ -26,9 +27,16 @@ export const NODE_STATS_FRAGMENT = gql`
           code
           message
         }
-        error {
-          message
-          code
+        networkInfo {
+          version
+          subversion
+          localaddresses {
+            address
+            port
+            score
+          }
+          connections_in
+          connections_out
         }
       }
     }

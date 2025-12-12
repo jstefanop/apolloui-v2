@@ -78,6 +78,13 @@ export const globalStyles = {
     gray: {
       100: "#FAFCFE",
       200: "#F4F7FE",
+      300: "#E9EDF7",
+      400: "#E0E5F2",
+      500: "#8F9BBA",
+      600: "#707EAE",
+      700: "#1B2559",
+      800: "#111C44",
+      900: "#02044A",
     },
   },
   styles: {

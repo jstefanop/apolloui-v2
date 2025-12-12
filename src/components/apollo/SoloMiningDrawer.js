@@ -12,19 +12,36 @@ import {
   Tab,
   TabPanel,
   useColorModeValue,
+  Flex,
 } from '@chakra-ui/react';
 import _ from 'lodash';
-import moment from 'moment';
+import moment from '../../lib/moment';
 import Card from '../card/Card';
 import { MinerIcon } from '../UI/Icons/MinerIcon';
 import { LastShareIcon } from '../UI/Icons/LastShareIcon';
 import { SharesSentIcon } from '../UI/Icons/SharesSentIcon';
 import { BlocksIcon } from '../UI/Icons/BlocksIcon';
+import { GiDiamondTrophy } from 'react-icons/gi';
 import PanelGrid from '../UI/PanelGrid';
 import ActiveBadge from './ActiveBadge';
-import { filterRecentShares } from '../../lib/utils';
+import ColorBars from '../UI/ColorBars';
+import {
+  filterRecentShares,
+  workerIsActive,
+  calculateDailyChance,
+  convertHashrateStringToValue,
+  useDailyChanceVisualizations,
+} from '../../lib/utils';
 
-const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }) => {
+const SoloMiningDrawer = ({
+  isOpen,
+  onClose,
+  placement,
+  data,
+  user,
+  difficulty,
+  networkhashps,
+}) => {
   const drawerBgColor = useColorModeValue('gray.200', 'brand.700');
   const cardColor = useColorModeValue('white', 'brand.800');
   const shadow = useColorModeValue(
@@ -44,47 +61,89 @@ const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }
   const totalWorkers = _.size(data);
   const activeWorkers = _.size(filterRecentShares(data, 180));
 
-  const dataTableWorkers = data.map((element) => {
-    if (!element) return;
-    const mappedArray = [];
-    desiredKeys.forEach((key) => {
-      if (key in element) {
-        let value, icon;
-        switch (key) {
-          case 'hashrate5m':
-            value = `${element[key]} (5m)`;
-            icon = MinerIcon;
-            break;
-          case 'hashrate1d':
-            value = `${element[key]} (1d)`;
-            icon = MinerIcon;
-            break;
-          case 'workername':
-            workerNames.push(element[key]);
-            break;
-          case 'lastshare':
-            value = `${moment(element[key], 'X').fromNow()}`;
-            icon = LastShareIcon;
-            break;
-          case 'shares':
-            value = `${element[key]?.toLocaleString('en-US')}`;
-            icon = SharesSentIcon;
-            break;
-          case 'bestever':
-            value =
-              difficulty > 0
-                ? `${element[key].toLocaleString('en-US', {
-                    maximumFractionDigits: 0,
-                  })}`
-                : 'n.a.';
-            icon = BlocksIcon;
-            break;
+  // Get all daily chance visualizations at once
+  const dailyChanceVisualizations = useDailyChanceVisualizations(data, networkhashps);
+
+  const dataTableWorkers = data
+    .map((element, index) => {
+      if (!element) return null;
+      const mappedArray = [];
+      let workerName = '';
+      let lastShare = null;
+      let isActive = false;
+
+      desiredKeys.forEach((key) => {
+        if (key in element) {
+          let value, icon, name;
+          switch (key) {
+            case 'hashrate5m':
+              name = 'Hashrate (5m)';
+              value = `${element[key]} (5m)`;
+              icon = MinerIcon;
+              break;
+            case 'hashrate1d':
+              name = 'Hashrate (1d)';
+              value = `${element[key]} (1d)`;
+              icon = MinerIcon;
+              break;
+            case 'workername':
+              name = 'Workername';
+              workerName = element[key];
+              break;
+            case 'lastshare':
+              name = 'Last Share';
+              lastShare = element[key];
+              value = `${moment(element[key], 'X').fromNow()}`;
+              icon = LastShareIcon;
+              break;
+            case 'shares':
+              name = 'Shares';
+              value = `${element[key]?.toLocaleString('en-US')}`;
+              icon = SharesSentIcon;
+              break;
+            case 'bestever':
+              name = 'Best ever';
+              value =
+                difficulty > 0
+                  ? `${element[key].toLocaleString('en-US', {
+                      maximumFractionDigits: 0,
+                    })}`
+                  : 'n.a.';
+              icon = BlocksIcon;
+              break;
+          }
+          if (value || icon) {
+            mappedArray.push({ name, value, icon });
+          }
         }
-        mappedArray.push({ value, icon });
+      });
+
+      // Add daily chance visualization if available
+      const visualization = dailyChanceVisualizations[index];
+      if (visualization) {
+        const hashrateValue = convertHashrateStringToValue(element.hashrate5m, 'GH/s');
+        const dailyChance = calculateDailyChance(hashrateValue, networkhashps);
+        mappedArray.push({
+          name: 'Daily chance',
+          value: (
+            <Flex align="center" gap={2}>
+              <Text color={visualization.color}>{visualization.text}</Text>
+              <ColorBars bars={visualization.bars} currentValue={dailyChance} />
+            </Flex>
+          ),
+          icon: GiDiamondTrophy,
+        });
       }
+
+      if (lastShare !== null) {
+        isActive = workerIsActive(lastShare, 180);
+      }
+      return { workername: workerName, active: isActive, data: mappedArray };
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      return a.workername.localeCompare(b.workername);
     });
-    return mappedArray;
-  });
 
   return (
     <Drawer placement={placement} onClose={onClose} isOpen={isOpen} size="xl">
@@ -125,8 +184,10 @@ const SoloMiningDrawer = ({ isOpen, onClose, placement, data, user, difficulty }
                     my="15px"
                   >
                     <PanelGrid
-                      title={`Worker ${workerNames[index]}`}
-                      data={worker}
+                      title={`Worker ${worker.workername}`}
+                      data={worker.data}
+                      showName={true}
+                      status={worker.active}
                     />
                   </Card>
                 ))}

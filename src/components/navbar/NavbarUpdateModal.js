@@ -23,6 +23,7 @@ const NavbarUpdateModal = ({
   const [updateInProgress, setUpdateInProgress] = useState(false);
   const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
   const [handleUpdate, { error: errorUpdate, data: dataUpdate }] = useLazyQuery(
     MCU_UPDATE_QUERY,
     { fetchPolicy: 'no-cache' }
@@ -44,6 +45,15 @@ const NavbarUpdateModal = ({
     dataProgress?.Mcu?.updateProgress?.result || {};
 
   useEffect(() => {
+    if (errorUpdate) {
+      setUpdateError(errorUpdate.message || 'An error occurred during the update process');
+      setUpdateInProgress(false);
+      stopPollingProgress();
+      setProgress(0);
+    }
+  }, [errorUpdate, stopPollingProgress]);
+
+  useEffect(() => {
     if (updateInProgress) {
       setProgress(remoteProgress);
     }
@@ -52,7 +62,9 @@ const NavbarUpdateModal = ({
       stopPollingProgress();
       setUpdateInProgress(false);
       setProgress(0);
-      setDone(true);
+      setTimeout(() => {
+        setDone(true);
+      }, 5000);
     }
   }, [updateInProgress, remoteProgress, stopPollingProgress]);
 
@@ -65,12 +77,19 @@ const NavbarUpdateModal = ({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={() => {
+        if (updateInProgress) {
+          // Show warning that update is in progress
+          return;
+        }
+        onClose();
+      }}
       size={{ base: 'sm', md: '4xl' }}
       closeOnOverlayClick={false}
       closeOnEsc={false}
       onCloseComplete={() => {
         setDone(false);
+        setUpdateError(null);
       }}
     >
       <ModalOverlay />
@@ -88,10 +107,15 @@ const NavbarUpdateModal = ({
           </Text>
           {updateInProgress && <Text>Updating... {progress}%</Text>}
           {done && !updateInProgress && <Text>Done!</Text>}
+          {updateError && (
+            <Text color="red.500" mt={2}>
+              Error: {updateError}
+            </Text>
+          )}
         </ModalBody>
         {!done && !updateInProgress && <ModalCloseButton />}
         <ModalFooter>
-          {localVersion !== remoteVersion && !done && (
+          {localVersion !== remoteVersion && !done && !updateError && (
             <Button
               colorScheme="blue"
               mr={3}
@@ -110,6 +134,11 @@ const NavbarUpdateModal = ({
           {done && (
             <Button colorScheme="orange" onClick={handleReloadApp()}>
               Reload App
+            </Button>
+          )}
+          {updateError && (
+            <Button colorScheme="red" onClick={() => setUpdateError(null)}>
+              Try Again
             </Button>
           )}
         </ModalFooter>

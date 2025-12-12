@@ -9,13 +9,13 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { percentColor } from '../../lib/utils';
 import GaugeChart from '../charts/GaugeCharts';
 import ChartLoader from './Loaders/ChartLoader';
 import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 
-const NoCardStatisticsGauge = ({
+const NoCardStatisticsGauge = React.memo(({
   id,
   startContent,
   name,
@@ -33,8 +33,11 @@ const NoCardStatisticsGauge = ({
 }) => {
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const textColorSecondary = 'secondaryGray.600';
-  const [roundedPercentage, setRoundedPercentage] = useState(percent);
+  const [roundedPercentage, setRoundedPercentage] = useState(percent !== null && percent !== undefined ? percent.toFixed(2) : null);
   const isOnError = error && error.length > 0;
+
+  // Check if value is a React element (not just a string/number)
+  const isComplexValue = React.isValidElement(value);
 
   useEffect(() => {
     if (rawValue && total) {
@@ -42,7 +45,9 @@ const NoCardStatisticsGauge = ({
       const valuePerc = Math.round(percentage * 100) / 100;
       setRoundedPercentage(valuePerc.toFixed(2));
     }
-    if (percent) setRoundedPercentage(percent.toFixed(2));
+    if (percent !== null && percent !== undefined) {
+      setRoundedPercentage(percent.toFixed(2));
+    }
   }, [rawValue, total, percent]);
 
   const gaugeColor = percentColor(roundedPercentage);
@@ -98,7 +103,7 @@ const NoCardStatisticsGauge = ({
   return (
     <Flex
       align={align || 'center'}
-      direction={{ base: 'row', md: 'column' }}
+      direction={{ base: 'column' }}
       w="100%"
     >
       {loading ? (
@@ -110,17 +115,19 @@ const NoCardStatisticsGauge = ({
             <Flex align="center">
               <Stat my="auto" ms={startContent ? '8px' : '0px'}>
                 <Flex direction={'row'}>
-                  {!isOnError && (value || roundedPercentage) ? (
+                  {!isOnError && (value || (roundedPercentage !== null && roundedPercentage !== undefined)) ? (
                     <StatNumber
                       color={textColor}
                       fontSize={{
                         base: '2xl',
                       }}
-                      noOfLines={1}
+                      noOfLines={isComplexValue ? undefined : 1}
+                      overflow={isComplexValue ? "visible" : undefined}
+                      whiteSpace={isComplexValue ? "normal" : undefined}
                     >
                       {value
                         ? value
-                        : roundedPercentage
+                        : roundedPercentage !== null && roundedPercentage !== undefined
                         ? `${roundedPercentage}%`
                         : 'N.a.'}
                     </StatNumber>
@@ -154,11 +161,11 @@ const NoCardStatisticsGauge = ({
               </Stat>
             </Flex>
           </Flex>
-          {!isOnError && gauge && roundedPercentage && (
+          {!isOnError && gauge && roundedPercentage !== null && roundedPercentage !== undefined && (
             <Box>
               <GaugeChart
                 chartOptions={chartOptions}
-                chartData={[roundedPercentage]}
+                chartData={[parseFloat(roundedPercentage) || 0]}
                 id={id}
               />
             </Box>
@@ -167,6 +174,8 @@ const NoCardStatisticsGauge = ({
       )}
     </Flex>
   );
-};
+});
+
+NoCardStatisticsGauge.displayName = 'NoCardStatisticsGauge';
 
 export default NoCardStatisticsGauge;

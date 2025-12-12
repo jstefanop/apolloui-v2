@@ -17,6 +17,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { signOut } from 'next-auth/react';
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
@@ -36,24 +37,34 @@ import { GoVersions } from 'react-icons/go';
 import { TbAlertHexagonFilled } from 'react-icons/tb';
 import Link from 'next/link';
 import { PowerIcon } from '../UI/Icons/PowerIcon';
-import { useSelector } from 'react-redux';
-import { getVersionFromPackageJson } from '../../lib/utils';
+import NavbarLogsModal from './NavbarLogsModal';
+import SystemActionModal from './SystemActionModal';
+import {
+  getVersionFromPackageJson,
+  capitalizeFirstLetter,
+  formatTemperature,
+} from '../../lib/utils';
 import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
 import NavbarUpdateModal from './NavbarUpdateModal';
+import { useSelector, shallowEqual } from 'react-redux';
+import { soloSelector } from '../../redux/reselect/solo';
+import moment from '../../lib/moment';
+import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
 export default function HeaderLinks({
   secondary,
   routes,
   minerStats,
   minerOnline,
+  soloOnline,
   settings,
-  blocksCount,
-  errorNode,
+  nodeOnline,
   error,
   loading,
   handleSystemAction,
 }) {
+  const deviceType = useDeviceType();
   // Chakra Color Mode
   const navbarIcon = useColorModeValue('gray.600', 'white');
   let menuBg = useColorModeValue('white', 'navy.800');
@@ -66,10 +77,17 @@ export default function HeaderLinks({
   );
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const { status: minerStatus, timestamp } = useSelector(
-    (state) => state.minerAction
-  );
+  const {
+    isOpen: isLogsModalOpen,
+    onOpen: onLogsModalOpen,
+    onClose: onLogsModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isSystemActionModalOpen,
+    onOpen: onSystemActionModalOpen,
+    onClose: onSystemActionModalClose,
+  } = useDisclosure();
+  const [systemActionType, setSystemActionType] = useState(null);
 
   const handleSignout = async () => {
     await signOut({ redirect: false });
@@ -89,30 +107,43 @@ export default function HeaderLinks({
     onOpen();
   };
 
+  const handleOpenSystemActionModal = (type) => {
+    setSystemActionType(type);
+    onSystemActionModalOpen();
+  };
+
+  const handleSystemActionConfirm = () => {
+    if (systemActionType === 'reboot') {
+      handleSystemAction('rebootMcu');
+    } else if (systemActionType === 'shutdown') {
+      handleSystemAction('shutdownMcu');
+    }
+  };
+
+  // Solo data for pool connection status
+  const {
+    loading: loadingSolo,
+    data: soloData,
+    error: errorSolo,
+  } = useSelector(soloSelector, shallowEqual);
+
+  // Extract ckpool disconnected status from solo service
+  const { pool: poolData } = soloData || {};
+  const ckPoolDisconnected = poolData?.lastupdate ? 
+    moment().diff(moment.unix(poolData.lastupdate), 'seconds') > 90 : 
+    true;
+
   // Parse stats
-  const { globalHashrate, avgBoardTemp, ckPoolDisconnected } = minerStats;
+  const { globalHashrate, avgBoardTemp } = minerStats || {};
 
-  const { nodeEnableSoloMining } = settings;
+  const { nodeEnableSoloMining, temperatureUnit } = settings || {};
 
-  const nodeStatusLabel =
-    blocksCount && !errorNode.length
-      ? 'Online'
-      : !blocksCount && !errorNode.length
-      ? 'Offline'
-      : errorNode.length
-      ? 'Error'
-      : 'Unknown';
+  const nodeStatusLabel = nodeOnline
+    ? capitalizeFirstLetter(nodeOnline)
+    : 'Error';
 
   const minerStatusLabel =
-    minerOnline && !error.length
-      ? 'Online'
-      : minerOnline !== minerStatus
-      ? 'Pending'
-      : !minerOnline && !error.length
-      ? 'Offline'
-      : error
-      ? 'Error'
-      : 'Unknown';
+    minerOnline && !error.length ? capitalizeFirstLetter(minerOnline) : 'Error';
 
   return (
     <Flex
@@ -126,13 +157,22 @@ export default function HeaderLinks({
       px="14px"
       borderRadius="30px"
       boxShadow={shadow}
-      mt={{base: 4, md: 0}}
+      mt={{ base: 4, md: 0 }}
     >
       <NavbarUpdateModal
         isOpen={isOpen}
         onClose={onClose}
         localVersion={localVersion}
         remoteVersion={remoteVersion}
+      />
+
+      <NavbarLogsModal isOpen={isLogsModalOpen} onClose={onLogsModalClose} />
+
+      <SystemActionModal
+        isOpen={isSystemActionModalOpen}
+        onClose={onSystemActionModalClose}
+        actionType={systemActionType}
+        onConfirm={handleSystemActionConfirm}
       />
 
       {!loading && (
@@ -171,6 +211,8 @@ export default function HeaderLinks({
                   ? 'gray.400'
                   : nodeStatusLabel === 'Error'
                   ? 'orange.500'
+                  : nodeStatusLabel === 'Pending'
+                  ? 'gray.300'
                   : null
               }
               h="20px"
@@ -188,6 +230,8 @@ export default function HeaderLinks({
                     ? PowerIcon
                     : nodeStatusLabel === 'Error'
                     ? WarningIcon
+                    : nodeStatusLabel === 'Pending'
+                    ? Spinner
                     : null
                 }
               />
@@ -195,7 +239,7 @@ export default function HeaderLinks({
           </Flex>
 
           {/* SOLO MINING */}
-          {nodeEnableSoloMining && (
+          {(deviceType === 'solo-node' || nodeEnableSoloMining) && (
             <Flex
               bg={badgeBg}
               display={secondary ? 'flex' : 'none'}
@@ -229,9 +273,9 @@ export default function HeaderLinks({
                 align="center"
                 justify="center"
                 bg={
-                  !ckPoolDisconnected && minerStatusLabel === 'Online'
+                  soloOnline === 'online' && !ckPoolDisconnected
                     ? 'green.500'
-                    : minerStatusLabel !== 'Online'
+                    : soloOnline === 'offline'
                     ? 'gray.400'
                     : 'orange.500'
                 }
@@ -244,9 +288,9 @@ export default function HeaderLinks({
                   h="12px"
                   color={badgeBox}
                   as={
-                    !ckPoolDisconnected && minerStatusLabel === 'Online'
+                    soloOnline === 'online' && !ckPoolDisconnected
                       ? CheckIcon
-                      : minerStatusLabel === 'Offline'
+                      : soloOnline === 'offline'
                       ? PowerIcon
                       : WarningIcon
                   }
@@ -256,112 +300,120 @@ export default function HeaderLinks({
           )}
 
           {/* HASHRATE */}
-          <Flex
-            bg={badgeBg}
-            display={secondary ? 'flex' : 'none'}
-            borderRadius="30px"
-            ms="auto"
-            p="6px"
-            align="center"
-            me="8px"
-            px="10px"
-          >
+          {deviceType !== 'solo-node' && (
             <Flex
-              align="center"
-              justify="center"
-              bg={badgeBox}
-              h="29px"
-              w="29px"
+              bg={badgeBg}
+              display={secondary ? 'flex' : 'none'}
               borderRadius="30px"
-              me="7px"
+              ms="auto"
+              p="6px"
+              align="center"
+              me="8px"
+              px="10px"
             >
-              <Link href="/miner">
-                <MinerIcon w="18px" h="18px" color={navbarIcon} />
-              </Link>
+              <Flex
+                align="center"
+                justify="center"
+                bg={badgeBox}
+                h="29px"
+                w="29px"
+                borderRadius="30px"
+                me="7px"
+              >
+                <Link href="/miner">
+                  <MinerIcon w="18px" h="18px" color={navbarIcon} />
+                </Link>
+              </Flex>
+              {globalHashrate?.value && minerStatusLabel === 'Online' && (
+                <Text
+                  align={'center'}
+                  w="max-content"
+                  color={badgeColor}
+                  fontSize="sm"
+                  fontWeight="700"
+                  me="6px"
+                  minW="70px"
+                  display={{
+                    base: (deviceType === 'solo-node' || nodeEnableSoloMining) ? 'none' : 'block',
+                    md: deviceType === 'solo-node' ? 'none' : 'block',
+                  }}
+                >
+                  {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
+                </Text>
+              )}
+              <Flex
+                align="center"
+                justify="center"
+                bg={
+                  minerStatusLabel === 'Online'
+                    ? 'green.500'
+                    : minerStatusLabel === 'Offline'
+                    ? 'gray.400'
+                    : minerStatusLabel === 'Error'
+                    ? 'orange.500'
+                    : minerStatusLabel === 'Pending'
+                    ? 'gray.300'
+                    : null
+                }
+                h="20px"
+                w="20px"
+                borderRadius="30px"
+              >
+                <Icon
+                  w="12px"
+                  h="12px"
+                  color={badgeBox}
+                  as={
+                    minerStatusLabel === 'Online'
+                      ? CheckIcon
+                      : minerStatusLabel === 'Offline'
+                      ? PowerIcon
+                      : minerStatusLabel === 'Error'
+                      ? WarningIcon
+                      : minerStatusLabel === 'Pending'
+                      ? Spinner
+                      : null
+                  }
+                />
+              </Flex>
             </Flex>
-            {globalHashrate?.value && minerStatusLabel === 'Online' && (
+          )}
+
+          {/* TEMPERATURE */}
+          {deviceType !== 'solo-node' && (
+            <Flex
+              bg={badgeBg}
+              display={secondary ? { base: 'none', md: 'flex' } : 'none'}
+              borderRadius="30px"
+              ms="auto"
+              p="6px"
+              align="center"
+              me="6px"
+            >
+              <Flex
+                align="center"
+                justify="center"
+                bg={badgeBox}
+                h="29px"
+                w="29px"
+                borderRadius="30px"
+                me="7px"
+              >
+                <MinerTempIcon w="18px" h="18px" color={navbarIcon} />
+              </Flex>
               <Text
-                align={'center'}
                 w="max-content"
                 color={badgeColor}
                 fontSize="sm"
                 fontWeight="700"
                 me="6px"
-                minW="70px"
-                display={{ base: nodeEnableSoloMining ? 'none' : 'block', md: 'block' }}
               >
-                {`${globalHashrate?.value || 0} ${globalHashrate?.unit || ''}`}
+                {minerStatusLabel === 'Online' && avgBoardTemp !== null
+                  ? `${formatTemperature(avgBoardTemp, temperatureUnit)}`
+                  : '-'}
               </Text>
-            )}
-            <Flex
-              align="center"
-              justify="center"
-              bg={
-                minerStatusLabel === 'Online'
-                  ? 'green.500'
-                  : minerStatusLabel === 'Offline'
-                  ? 'gray.400'
-                  : minerStatusLabel === 'Error'
-                  ? 'orange.500'
-                  : minerStatusLabel === 'Pending'
-                  ? 'gray.300'
-                  : null
-              }
-              h="20px"
-              w="20px"
-              borderRadius="30px"
-            >
-              <Icon
-                w="12px"
-                h="12px"
-                color={badgeBox}
-                as={
-                  minerStatusLabel === 'Online'
-                    ? CheckIcon
-                    : minerStatusLabel === 'Offline'
-                    ? PowerIcon
-                    : minerStatusLabel === 'Error'
-                    ? WarningIcon
-                    : minerStatusLabel === 'Pending'
-                    ? Spinner
-                    : null
-                }
-              />
             </Flex>
-          </Flex>
-
-          {/* TEMPERATURE */}
-          <Flex
-            bg={badgeBg}
-            display={secondary ? { base: 'none', md: 'flex' } : 'none'}
-            borderRadius="30px"
-            ms="auto"
-            p="6px"
-            align="center"
-            me="6px"
-          >
-            <Flex
-              align="center"
-              justify="center"
-              bg={badgeBox}
-              h="29px"
-              w="29px"
-              borderRadius="30px"
-              me="7px"
-            >
-              <MinerTempIcon w="18px" h="18px" color={navbarIcon} />
-            </Flex>
-            <Text
-              w="max-content"
-              color={badgeColor}
-              fontSize="sm"
-              fontWeight="700"
-              me="6px"
-            >
-              {minerStatusLabel === 'Online' ? avgBoardTemp : '-'}
-              {minerStatusLabel === 'Online' && <span>°C</span>}
-            </Text>
-          </Flex>
+          )}
 
           <Flex p="0px" mx="4px" display={{ base: 'none', md: 'block' }}>
             <FixedPlugin type="small" />
@@ -387,57 +439,97 @@ export default function HeaderLinks({
                 bg={localVersion !== remoteVersion && 'orange.500'}
               />
               <MenuList>
-                <MenuGroup title="Miner">
-                  <MenuItem
-                    icon={<StartIcon />}
-                    isDisabled={minerOnline}
-                    onClick={() => handleSystemAction('startMiner')}
-                  >
-                    Start
-                  </MenuItem>
-                  <MenuItem
-                    icon={<StopIcon />}
-                    isDisabled={!minerOnline}
-                    onClick={() => handleSystemAction('stopMiner')}
-                  >
-                    Stop
-                  </MenuItem>
-                  <MenuItem
-                    icon={<RestartIcon />}
-                    isDisabled={!minerOnline}
-                    onClick={() => handleSystemAction('restartMiner')}
-                  >
-                    Restart
-                  </MenuItem>
-                </MenuGroup>
-                <MenuDivider />
+                {deviceType !== 'solo-node' && (
+                  <>
+                    <MenuGroup title="Miner">
+                      <MenuItem
+                        icon={<StartIcon />}
+                        isDisabled={
+                          minerOnline === 'online' || minerOnline === 'pending'
+                        }
+                        onClick={() => handleSystemAction('startMiner')}
+                      >
+                        Start
+                      </MenuItem>
+                      <MenuItem
+                        icon={<StopIcon />}
+                        isDisabled={minerOnline === 'offline'}
+                        onClick={() => handleSystemAction('stopMiner')}
+                      >
+                        Stop
+                      </MenuItem>
+                      <MenuItem
+                        icon={<RestartIcon />}
+                        isDisabled={
+                          minerOnline === 'offline' || minerOnline === 'pending'
+                        }
+                        onClick={() => handleSystemAction('restartMiner')}
+                      >
+                        Restart
+                      </MenuItem>
+                    </MenuGroup>
+                    <MenuDivider />
+                  </>
+                )}
                 <MenuGroup title="Node">
                   <MenuItem
                     icon={<StartIcon />}
-                    isDisabled={blocksCount}
+                    isDisabled={
+                      nodeOnline === 'online' || nodeOnline === 'pending'
+                    }
                     onClick={() => handleSystemAction('startNode')}
                   >
                     Start
                   </MenuItem>
                   <MenuItem
                     icon={<StopIcon />}
-                    isDisabled={!blocksCount}
+                    isDisabled={
+                      nodeOnline === 'offline'
+                    }
                     onClick={() => handleSystemAction('stopNode')}
                   >
                     Stop
                   </MenuItem>
                 </MenuGroup>
                 <MenuDivider />
+                <MenuGroup title="Solo Server">
+                  <MenuItem
+                    icon={<StartIcon />}
+                    isDisabled={
+                      soloOnline === 'online' || soloOnline === 'pending'
+                    }
+                    onClick={() => handleSystemAction('startSolo')}
+                  >
+                    Start
+                  </MenuItem>
+                  <MenuItem
+                    icon={<StopIcon />}
+                    isDisabled={soloOnline === 'offline'}
+                    onClick={() => handleSystemAction('stopSolo')}
+                  >
+                    Stop
+                  </MenuItem>
+                  <MenuItem
+                    icon={<RestartIcon />}
+                    isDisabled={
+                      soloOnline === 'offline' || soloOnline === 'pending'
+                    }
+                    onClick={() => handleSystemAction('restartSolo')}
+                  >
+                    Restart
+                  </MenuItem>
+                </MenuGroup>
+                <MenuDivider />
                 <MenuGroup title="System">
                   <MenuItem
                     icon={<RestartIcon />}
-                    onClick={() => handleSystemAction('rebootMcu')}
+                    onClick={() => handleOpenSystemActionModal('reboot')}
                   >
                     Reboot
                   </MenuItem>
                   <MenuItem
                     icon={<PowerOffIcon />}
-                    onClick={() => handleSystemAction('shutdownMcu')}
+                    onClick={() => handleOpenSystemActionModal('shutdown')}
                   >
                     Shutdown
                   </MenuItem>

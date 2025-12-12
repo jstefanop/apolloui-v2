@@ -6,6 +6,7 @@ import {
   SimpleGrid,
   useColorModeValue,
   Tag,
+  Box,
 } from '@chakra-ui/react';
 import ActiveBadge from '../apollo/ActiveBadge';
 import { ErrorIcon } from './Icons/ErrorIcon';
@@ -21,6 +22,7 @@ const PanelGrid = ({
   comport,
   badgeText,
   badgeSecondaryText,
+  showName,
 }) => {
   const badgeBgColor = useColorModeValue('gray.200', 'gray.900');
   const tagColor = useColorModeValue('gray.800', 'gray.200');
@@ -29,6 +31,7 @@ const PanelGrid = ({
     v1: { color: 'blue', name: 'Apollo BTC' },
     v2: { color: 'teal', name: 'Apollo II' },
   };
+
   return (
     <Flex mt="4" mx="5" direction="column">
       <Flex justify="space-between" direction={{ base: 'column', md: 'row' }}>
@@ -113,16 +116,19 @@ const PanelGrid = ({
         </Flex>
       </Flex>
       {data && data.length && (
-        <SimpleGrid columns={{ base: '1', xl: '2' }} spacing={0} my="5" ml="2">
+        <SimpleGrid columns={{ base: '1', xl: '2' }} spacing={8} my="5" ml="2">
           {data.map((item, index) =>
-            !item.value ? (
-              <span key={index}></span>
-            ) : (
+            item.value !== null && item.value !== undefined && (
               <Flex align="center" mb="4" key={index}>
                 <Icon as={item.icon} me="3" w="18px" h="18px" />
-                <Text fontWeight="600" minWidth="100px">
+                {showName && (
+                  <Box fontWeight="400" color="gray.500" me="3">
+                    {item.name}
+                  </Box>
+                )}
+                <Box fontWeight="600" minWidth="100px">
                   {item.value}
-                </Text>
+                </Box>
               </Flex>
             )
           )}

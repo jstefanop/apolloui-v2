@@ -8,11 +8,13 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { FormattedMessage } from 'react-intl';
 
-import config from '../../config.json';
+import config from '../../config';
+import LanguageSelector from '../language/LanguageSelector';
 
 export default function Footer() {
-  const textColor = useColorModeValue('gray.400', 'white');
+  const textColor = useColorModeValue('gray.600', 'white');
   return (
     <Flex
       w={{ base: '100%', xl: '1170px' }}
@@ -45,23 +47,26 @@ export default function Footer() {
           </Link>
         </Text>
       </Text>
-      <List display="flex">
-        {config.footerLinks.map((item, index) => {
-          return (
-            <ListItem
-              me={{
-                base: '20px',
-                md: '44px',
-              }}
-              key={index}
-            >
-              <Link fontWeight="500" color={textColor} href={item.url}>
-                {item.anchor}
-              </Link>
-            </ListItem>
-          );
-        })}
-      </List>
+      <Flex alignItems="center" gap="20px">
+        <LanguageSelector />
+        <List display="flex">
+          {config.footerLinks.map((item, index) => {
+            return (
+              <ListItem
+                me={{
+                  base: '20px',
+                  md: '44px',
+                }}
+                key={index}
+              >
+                <Link fontWeight="500" color={textColor} href={item.url}>
+                  <FormattedMessage id={item.anchor} />
+                </Link>
+              </ListItem>
+            );
+          })}
+        </List>
+      </Flex>
     </Flex>
   );
 }

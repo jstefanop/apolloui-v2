@@ -2,23 +2,25 @@ import { createSelector } from 'reselect';
 import _ from 'lodash';
 import { initialState } from '../../graphql/miner';
 import { displayHashrate, convertHashrateStringToValue } from '../../lib/utils';
-import moment from 'moment';
+import moment from '../../lib/moment';
 
 const minerDataSelector = (state) => state.miner.data;
 const minerErrorSelector = (state) => state.miner.error;
 const minerLoadingSelector = (state) => state.miner.loading;
 
 export const minerSelector = createSelector(
-  [minerDataSelector, minerErrorSelector, minerLoadingSelector],
+  minerDataSelector,
+  minerErrorSelector,
+  minerLoadingSelector,
   (minerData, minerError, minerLoading) => {
     const {
       Miner: {
         online: { error: errorOnline, result = {} },
         stats: { error: errorStats, result: resultStats },
       },
-    } = minerData || initialState;
+    } = minerData ?? initialState;
 
-    const { stats: minerStats, ckpool: ckData } = resultStats || {};
+    const minerStats = resultStats?.stats ?? [];
 
     let minerOnline = false;
     if (result?.online && result?.online?.status)
@@ -93,7 +95,9 @@ export const minerSelector = createSelector(
           wattTotal,
           hashrateInGh,
           avgHashrateInGh,
-          efficiency: avgHashrateInGh ? (wattTotal / avgHashrateInGh) * 1000 : 0,
+          efficiency: avgHashrateInGh
+            ? (wattTotal / avgHashrateInGh) * 1000
+            : 0,
           fanSpeed: _.mean(fanRpm),
           temperature,
           errorRate,
@@ -107,32 +111,12 @@ export const minerSelector = createSelector(
         };
       });
 
-      // ckPool data
-      const { pool: ckPool, users: ckUsers } = ckData || {};
 
-      const filteredCkUsers = _.filter(ckUsers, (user) => {
-        return user.lastshare && user.lastshare > moment().subtract(1, 'days').format('X');
-      });
 
-      const {
-        runtime: ckRuntime,
-        lastupdate: ckLastUpdate,
-        Users: ckUsersCount,
-        Workers: ckWorkersCount,
-        hashrate1d: ckHashrate1d,
-        hashrate1hr: ckHashrate1h,
-        hashrate1m: ckHashrate1m,
-        bestshare: ckPoolBestshare,
-        bestever: ckPoolBestever,
-        Disconnected: ckDisconnected,
-        Idle: ckIdle,
-        accepted: ckSharesAccepted,
-        rejected: ckSharesRejected,
-      } = ckPool || {};
 
-      const ckPoolLastUpdate = ckLastUpdate
-        ? moment(ckLastUpdate, 'X').fromNow()
-        : null;
+
+
+
 
       const maxBoardDate = _.maxBy(boards, 'date');
 
@@ -215,7 +199,7 @@ export const minerSelector = createSelector(
       });
 
       // Board sum/avg
-      let avgBoardEfficiency = (minerPower / globalAvgHashrateInGh) * 1000
+      let avgBoardEfficiency = (minerPower / globalAvgHashrateInGh) * 1000;
 
       let avgBoardTemp = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.temperature;
@@ -323,59 +307,11 @@ export const minerSelector = createSelector(
         activeBoards,
         totalBoards,
         activePools,
-        soloMining: (ckData && true) || false,
-        ckRuntime: moment().to(
-          moment().subtract(
-            ckRuntime,
-            'seconds'
-          ),
-          true
-        ),
-        ckPoolLastUpdate,
-        ckUsersCount,
-        ckWorkersCount,
-        ckPoolHashrateInGhs: ckHashrate1m && convertHashrateStringToValue(ckHashrate1m),
-        ckPoolHashrate1m:
-          ckHashrate1m &&
-          displayHashrate(
-            convertHashrateStringToValue(ckHashrate1m),
-            'GH/s',
-            false,
-            2,
-            true
-          ),
-        ckPoolHashrate1h:
-          ckHashrate1h &&
-          displayHashrate(
-            convertHashrateStringToValue(ckHashrate1h),
-            'GH/s',
-            false,
-            2,
-            true
-          ),
-        ckPoolHashrate1d:
-          ckHashrate1d &&
-          displayHashrate(
-            convertHashrateStringToValue(ckHashrate1d),
-            'GH/s',
-            false,
-            2,
-            true
-          ),
-        ckPoolBestshare,
-        ckPoolBestever,
-        ckDisconnected:
-          moment().diff(moment.unix(ckLastUpdate), 'seconds') > 90
-            ? true
-            : false,
-        ckIdle,
-        ckSharesAccepted,
-        ckSharesRejected,
-        ckUsers: filteredCkUsers,
+        soloMining: false,
       };
     }
 
-    return {
+    const selectorResult = {
       loading: minerLoading,
       error: errors,
       data: {
@@ -383,5 +319,6 @@ export const minerSelector = createSelector(
         stats: !errors.length && stats,
       },
     };
+    return selectorResult;
   }
 );

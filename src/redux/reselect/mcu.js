@@ -6,20 +6,17 @@ const mcuErrorSelector = (state) => state.mcu.error;
 const mcuLoadingSelector = (state) => state.mcu.loading;
 
 export const mcuSelector = createSelector(
-  [mcuDataSelector, mcuErrorSelector, mcuLoadingSelector],
+  mcuDataSelector,
+  mcuErrorSelector,
+  mcuLoadingSelector,
   (mcuData, mcuError, mcuLoading) => {
     const {
       Mcu: {
-        stats: {
-          error: errorStats,
-          result,
-        },
+        stats: { error: errorStats, result },
       },
-    } = mcuData || initialState;
+    } = mcuData ?? initialState;
 
-    const {
-      stats: mcuStats = {},
-    } = result || {};
+    const mcuStats = result?.stats ?? {};
 
     const errors = [...[mcuError, errorStats].filter(Boolean)];
 
