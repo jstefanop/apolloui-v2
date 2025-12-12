@@ -561,14 +561,9 @@
         "description": "Mine directly to your Bitcoin node",
         "mining_mode": "SOLO Mining mode",
         "mining_mode_description": "Enable solo mining mode to mine directly to your own Bitcoin Node. Note: your node will be restarted to apply.",
-<<<<<<< Updated upstream
-        "wallet_address": "Wallet address",
-        "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
         "wallet_info": "Enter your wallet address for solo mining payout. This is the address the full block reward will go to if you find a block. Do NOT use an exchange address, and only use a Bitcoin address you fully control. If your unit came with a FutureBit Satscard, you can tap the card on an NFC enabled phone to view the payout address, and copy and paste the address below.",
-=======
         "wallet_address": "Wallet Address",
         "wallet_placeholder": "ENTER BITCOIN WALLET PAYOUT ADDRESS HERE",
->>>>>>> Stashed changes
         "tor_warning": "You have tor enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block",
         "cannot_enable": "Cannot enable SOLO mining",
         "node_not_synced": "Your Bitcoin node is not running or not fully synced. You can enable solo mining only after your node is fully synced.",
@@ -706,8 +701,8 @@
     "wallet": {
       "title": "Set wallet address",
       "description": "Enter your wallet address for solo mining payout. This is the address the full block reward will go to if you find a block. Do NOT use an exchange address, and only use a Bitcoin address you fully control. If your unit came with a FutureBit Satscard, you can tap the card on an NFC enable phone to view the payout address, and copy and paste the address below. Please note you will not start solo mining until your node is fully synced, which can take several days.",
-      "address_label": "Wallet address",
-      "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "address_label": "Wallet Address",
+      "address_placeholder": "ENTER BITCOIN WALLET PAYOUT ADDRESS HERE",
       "error": {
         "invalid_address": "Please add a valid Bitcoin address",
         "incompatible_address": "P2WSH and P2TR Bitcoin addresses are not valid for solo mining"
