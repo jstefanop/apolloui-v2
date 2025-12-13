@@ -186,7 +186,14 @@ const SoloMining = () => {
   const ckDisconnected = poolData?.lastupdate ? moment().diff(moment.unix(poolData.lastupdate), 'seconds') > 90 : true;
   const ckSharesAccepted = poolData?.accepted || 0;
   const ckSharesRejected = poolData?.rejected || 0;
-  const ckUsers = soloUsers || [];
+  const ckUsersUnsorted = soloUsers || [];
+  
+  // Sort users alphabetically by wallet address
+  const ckUsers = [...ckUsersUnsorted].sort((a, b) => {
+    const walletA = a.worker?.[0]?.workername?.split('.')[0] || '';
+    const walletB = b.worker?.[0]?.workername?.split('.')[0] || '';
+    return walletA.localeCompare(walletB);
+  });
 
   const prevBestSharePerc =
     1 / (((prevCkPoolGlobalBestshare * 1e11) / networkhashps) * 144) || 0;
