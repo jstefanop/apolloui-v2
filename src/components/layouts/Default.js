@@ -59,7 +59,7 @@ const Layout = ({ children }) => {
   } = useQuery(MINER_STATS_QUERY, {
     fetchPolicy: 'network-only',
     nextFetchPolicy: 'cache-and-network',
-    skip: !deviceType || deviceType === 'solo-node'
+    skip: typeof window === 'undefined' || !deviceType || deviceType === 'solo-node'
   });
 
   useEffect(() => {
@@ -120,7 +120,8 @@ const Layout = ({ children }) => {
     stopPolling: stopPollingSolo,
   } = useQuery(SOLO_STATS_QUERY, {
     fetchPolicy: 'network-only',
-    nextFetchPolicy: 'cache-and-network'
+    nextFetchPolicy: 'cache-and-network',
+    skip: typeof window === 'undefined'
   });
 
   useEffect(() => {
@@ -160,7 +161,8 @@ const Layout = ({ children }) => {
     stopPolling: stopPollingMcu,
   } = useQuery(MCU_STATS_QUERY, {
     fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first'
+    nextFetchPolicy: 'cache-first',
+    skip: typeof window === 'undefined'
   });
 
   useEffect(() => {
@@ -202,7 +204,8 @@ const Layout = ({ children }) => {
     stopPolling: stopPollingNode,
   } = useQuery(NODE_STATS_QUERY, {
     fetchPolicy: 'network-only',
-    nextFetchPolicy: 'cache-and-network'
+    nextFetchPolicy: 'cache-and-network',
+    skip: typeof window === 'undefined'
   });
 
   useEffect(() => {
@@ -244,7 +247,8 @@ const Layout = ({ children }) => {
     stopPolling: stopPollingSettings,
   } = useQuery(GET_SETTINGS_QUERY, {
     fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first'
+    nextFetchPolicy: 'cache-first',
+    skip: typeof window === 'undefined'
   });
 
   useEffect(() => {
@@ -286,7 +290,8 @@ const Layout = ({ children }) => {
     stopPolling: stopPollingServices,
   } = useQuery(SERVICES_STATUS_QUERY, {
     fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first'
+    nextFetchPolicy: 'cache-first',
+    skip: typeof window === 'undefined'
   });
 
   useEffect(() => {
