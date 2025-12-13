@@ -237,6 +237,10 @@
   },
   "solo_mining": {
     "title": "Minero Apollo BTC {hashrate}",
+    "node_not_synced": {
+      "title": "Nodo No Sincronizado",
+      "description": "Antes de poder usar tu Solo Pool, debes esperar a que el nodo esté completamente sincronizado. Verifica el estado desde la página Node."
+    },
     "banner": {
       "title": "Minería SOLO en LAN",
       "description": "Dirige cualquier minero de Bitcoin en tu red local a tu Solo Pool con la siguiente URL: {address}:3333 Usuario: [dirección bitcoin]",

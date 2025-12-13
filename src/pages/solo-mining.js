@@ -130,6 +130,9 @@ const SoloMining = () => {
   const { difficulty, networkhashps, blocksCount, blockHeader } =
     dataNode || {};
 
+  // Check if node is synced (same logic as in node.js)
+  const isNodeSynced = blocksCount === blockHeader && blocksCount > 0;
+
   // Mcu data
   const { data: dataMcu, error: errorMcu } = useSelector(
     mcuSelector,
@@ -351,8 +354,43 @@ const SoloMining = () => {
         </title>
       </Head>
 
+      {/* Show node not synced alert */}
+      {!isNodeSynced && (
+        <Flex minHeight="60vh" align="center" justify="center" p={4}>
+          <Alert
+            status="warning"
+            variant="subtle"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            maxW="600px"
+            borderRadius="lg"
+            p={8}
+          >
+            <AlertIcon boxSize="40px" mr={0} mb={4} />
+            <AlertTitle mt={4} mb={2} fontSize="lg">
+              {intl.formatMessage({ id: 'solo_mining.node_not_synced.title' })}
+            </AlertTitle>
+            <AlertDescription maxWidth="sm">
+              {intl.formatMessage({ id: 'solo_mining.node_not_synced.description' })}
+            </AlertDescription>
+            {blocksCount > 0 && blockHeader > 0 && (
+              <Box mt={4}>
+                <Text fontSize="sm" color="gray.600">
+                  {intl.formatMessage(
+                    { id: 'node.stats.synching' },
+                    { percentage: ((blocksCount / blockHeader) * 100).toFixed(2) }
+                  )}
+                </Text>
+              </Box>
+            )}
+          </Alert>
+        </Flex>
+      )}
+
       {/* Show SoloMiningStatus when solo service is not online */}
-      {servicesStatus?.solo?.status !== 'online' && (
+      {isNodeSynced && servicesStatus?.solo?.status !== 'online' && (
         <Flex height="60vh" align="center" justify="center">
           <SoloMiningStatus
             serviceStatus={servicesStatus}
@@ -365,8 +403,8 @@ const SoloMining = () => {
         </Flex>
       )}
       
-      {/* Show content only when solo service is online */}
-      {servicesStatus?.solo?.status === 'online' && (
+      {/* Show content only when solo service is online AND node is synced */}
+      {isNodeSynced && servicesStatus?.solo?.status === 'online' && (
         <>
           {showBanner || isVisibleBanner ? (
             <Alert mb="5" borderRadius={'10px'} status={'info'}>

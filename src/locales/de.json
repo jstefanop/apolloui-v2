@@ -254,6 +254,10 @@
   },
   "solo_mining": {
     "title": "Apollo BTC Miner {hashrate}",
+    "node_not_synced": {
+      "title": "Knoten Nicht Synchronisiert",
+      "description": "Bevor Sie Ihren Solo-Pool nutzen können, müssen Sie warten, bis der Knoten vollständig synchronisiert ist. Überprüfen Sie den Status auf der Node-Seite."
+    },
     "banner": {
       "title": "SOLO LAN Mining",
       "description": "Richten Sie jeden Bitcoin Miner in Ihrem lokalen Netzwerk auf Ihren Solo Pool mit der folgenden URL: {address}:3333 Benutzername: [bitcoin address]",
