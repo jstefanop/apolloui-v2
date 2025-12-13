@@ -59,16 +59,17 @@ const ProtectedRoute = ({ router, children }) => {
   }, [poolsData, poolCheckDone, router, deviceType]);
 
   useEffect(() => {
-    let setupDone = 'done';
-    if (!setup) return;
-    setupDone = setup?.Auth?.status?.result?.status;
+    // Wait for both setup data and session status to be ready
+    if (!setup || status === 'loading') return;
+    
+    let setupDone = setup?.Auth?.status?.result?.status;
 
     // Set Graphql token to localstorage
     if (data?.user?.name) localStorage.setItem('token', data.user.name);
 
     // Check if status has changed to prevent infinite loop
     if (status !== prevStatus) {
-      // Redirect unsetup users
+      // Redirect unsetup users - this should be checked FIRST
       if (setupDone !== 'done') {
         router.push('/setup');
       }

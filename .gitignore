@@ -39,3 +39,4 @@ dev-*.js
 next-env.d.ts
 .claudeignore
 .claudesync
+TEST*.md
