@@ -30,6 +30,7 @@ export const GET_SETTINGS_QUERY = gql`
             nodeAllowLan
             btcsig
             nodeSoftware
+            startdiff
           }
         }
         error {
@@ -69,6 +70,7 @@ export const SET_SETTINGS_QUERY = gql`
             nodeAllowLan
             btcsig
             nodeSoftware
+            startdiff
           }
         }
         error {
@@ -106,6 +108,7 @@ export const initialState = {
           nodeAllowLan: null,
           btcsig: null,
           nodeSoftware: null,
+          startdiff: null,
         },
       },
     },

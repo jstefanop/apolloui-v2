@@ -549,6 +549,8 @@
         "btc_signature": "Firma BTC",
         "btc_signature_placeholder": "TuNombre",
         "btc_signature_info": "Esta es la firma del bloque que se mostrará si encuentras un bloque en solo. Puedes dejarlo como predeterminado, o personalizarlo con tu propio mensaje/firma para que el mundo lo vea!",
+        "startdiff": "Dificultad Inicial",
+        "startdiff_info": "Modifica el valor de dificultad inicial para los mineros que se conectan al Solo Pool, útil para hashrate muy bajos o muy altos",
         "invalid_address": "Por favor, introduce una dirección Bitcoin válida",
         "incompatible_address": "Advertencia: Las direcciones P2WSH y P2TR no son válidas para la minería SOLO. Usa una dirección diferente."
       }

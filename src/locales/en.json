@@ -574,6 +574,8 @@
         "btc_signature": "BTC Signature",
         "btc_signature_placeholder": "YourName",
         "btc_signature_info": "This is the block signature displayed if you find a solo block. You can leave as default, or tag it with your own message/signature for the world to see!",
+        "startdiff": "Start Difficulty",
+        "startdiff_info": "Modify the start difficulty value for miners connecting to Solo Pool, this is useful for really low or really high hashrate",
         "invalid_address": "Please add a valid Bitcoin address",
         "incompatible_address": "Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address"
       }

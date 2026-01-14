@@ -69,6 +69,16 @@ const SoloSettings = () => {
     setSettings({ ...settings, btcsig: e.target.value });
   };
 
+  // Handle startdiff change
+  const handleStartdiffChange = (e) => {
+    setErrorForm(null);
+    const value = e.target.value;
+    // Only allow positive integers
+    if (value === '' || /^\d+$/.test(value)) {
+      setSettings({ ...settings, startdiff: value === '' ? null : parseInt(value, 10) });
+    }
+  };
+
   const handleSwitchSoloMiningMode = (e) => {
     setErrorForm(null);
     const v = e.target.value === 'true' ? true : false;
@@ -266,6 +276,46 @@ const SoloSettings = () => {
             color={infoTextColor}
           >
             {intl.formatMessage({ id: 'settings.sections.solo.btc_signature_info' })}
+          </Text>
+        </Flex>
+      </SimpleCard>
+
+      <SimpleCard title={intl.formatMessage({ id: 'settings.sections.solo.startdiff' })} textColor={textColor}>
+        <Input
+          color={inputTextColor}
+          name="startdiff"
+          type="text"
+          inputMode="numeric"
+          autoComplete="off"
+          data-lpignore="true"
+          data-form-type="other"
+          placeholder="1024"
+          value={settings.startdiff || ''}
+          onChange={handleStartdiffChange}
+        />
+        <Flex
+          mt="4"
+          p="4"
+          bg={infoBgColor}
+          borderRadius="md"
+          border="1px solid"
+          borderColor={infoBorderColor}
+          align="flex-start"
+        >
+          <Icon
+            as={MdInfo}
+            w="20px"
+            h="20px"
+            color={infoIconColor}
+            mr="3"
+            mt="1"
+            flexShrink={0}
+          />
+          <Text
+            fontSize="sm"
+            color={infoTextColor}
+          >
+            {intl.formatMessage({ id: 'settings.sections.solo.startdiff_info' })}
           </Text>
         </Flex>
       </SimpleCard>

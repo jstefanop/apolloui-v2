@@ -411,6 +411,7 @@ const SettingsTab = () => {
         powerLedOff,
         pool,
         btcsig,
+        startdiff,
       } = settings;
 
       // Ensure pool exists with default values
@@ -469,6 +470,7 @@ const SettingsTab = () => {
         nodeSoftware,
         powerLedOff,
         btcsig,
+        startdiff,
       };
 
       const poolInput = {
