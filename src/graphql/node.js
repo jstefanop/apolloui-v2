@@ -121,6 +121,41 @@ export const NODE_FORMAT_PROGRESS_QUERY = gql`
   }
 `;
 
+export const NODE_RECENT_BLOCKS_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query NODE_RECENT_BLOCKS($count: Int) {
+    Node {
+      recentBlocks(count: $count) {
+        result {
+          blocks {
+            id
+            height
+            timestamp
+            tx_count
+            size
+            weight
+            difficulty
+            extras {
+              reward
+              totalFees
+              pool {
+                name
+                slug
+              }
+              coinbaseAddress
+            }
+            error
+          }
+          error
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
 export const initialState = {
   Node: {
     stats: {
