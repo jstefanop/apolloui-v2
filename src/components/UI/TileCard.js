@@ -20,6 +20,7 @@ const TileCard = ({
   bigFont,
   ...props
 }) => {
+
   return (
     <Card
       py="15px"
@@ -39,8 +40,12 @@ const TileCard = ({
           </Text>
         </Flex>
         <Flex
-          justify={{ base: 'center' }}
+          direction="column"
+          align="center"
+          justify="center"
           paddingBottom={secondaryData ? '8' : '0'}
+          w="100%"
+          minH="0"
         >
           {errors && (Array.isArray(errors) ? errors.length > 0 : true) ? (
             <>
@@ -60,29 +65,37 @@ const TileCard = ({
           ) : (
             <>
               <IconBox
-                w="80px"
-                h="80px"
+                w={{ base: '60px', md: '70px', lg: '80px' }}
+                h={{ base: '60px', md: '70px', lg: '80px' }}
                 bg={iconBgColor}
-                icon={<Icon w="32px" h="32px" as={icon} color={iconColor} />}
-                marginRight="5"
+                icon={<Icon w={{ base: '24px', md: '28px', lg: '32px' }} h={{ base: '24px', md: '28px', lg: '32px' }} as={icon} color={iconColor} />}
+                mb="3"
               />
-              <Text
+              <Box
                 color="white"
                 fontSize={{
-                  base: '4xl',
-                  md: '3xl',
-                  lg: '3xl',
-                  xl: bigFont ? '6xl' : '4xl',
+                  base: '2.5rem',
+                  md: '3rem',
+                  lg: bigFont ? '4.5rem' : '3.5rem',
+                  xl: bigFont ? '5rem' : '4rem',
                 }}
                 fontWeight="800"
-                minW={{ base: '180px', md: '120px', lg: '120px' }}
-                my="auto"
                 textAlign="center"
-                wordBreak="break-word"
-                overflow="hidden"
+                lineHeight="1.2"
+                maxW="100%"
+                px="2"
+                w="100%"
               >
-                {loading ? <LoadingIcon /> : mainData}
-              </Text>
+                <Text
+                  as="span"
+                  color="white"
+                  fontWeight="800"
+                  display="inline-block"
+                  whiteSpace="nowrap"
+                >
+                  {loading ? <LoadingIcon /> : mainData}
+                </Text>
+              </Box>
             </>
           )}
         </Flex>
