@@ -361,7 +361,8 @@ const Layout = ({ children }) => {
         <Box
           float="right"
           height="100%"
-          overflow="auto"
+          overflowX="hidden"
+          overflowY="auto"
           position="relative"
           maxHeight="100%"
           w={{ base: '100%', xl: 'calc( 100% - 190px )' }}

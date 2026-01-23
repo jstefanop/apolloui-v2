@@ -134,11 +134,11 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
   return (
     <Drawer placement={placement} onClose={onClose} isOpen={isOpen} size="xl">
       <DrawerOverlay />
-      <DrawerContent bgColor={drawerBgColor}>
+      <DrawerContent bgColor={drawerBgColor} maxW="100vw" overflowX="hidden">
         <DrawerCloseButton />
         <DrawerHeader fontSize="3xl">Hashboards and Pools</DrawerHeader>
 
-        <DrawerBody>
+        <DrawerBody overflowX="hidden" width="100%" maxWidth="100%">
           <Tabs size="md" align={'center'} isLazy variant={'line'}>
             <TabList>
               <Tab>
@@ -178,11 +178,15 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                 {dataTableBoards.map((board, index) => (
                   <Card
                     py="15px"
+                    px="0"
                     bgColor={cardColor}
                     boxShadow={shadow}
                     h="100%"
                     key={index}
                     my="15px"
+                    width="100%"
+                    maxWidth="100%"
+                    overflow="hidden"
                   >
                     <PanelGrid
                       title={`Hashboard #${index}`}
@@ -201,11 +205,15 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
                 {dataTablePools.map((board, index) => (
                   <Card
                     py="15px"
+                    px="0"
                     bgColor={cardColor}
                     boxShadow={shadow}
                     h="100%"
                     key={index}
                     my="15px"
+                    width="100%"
+                    maxWidth="100%"
+                    overflow="hidden"
                   >
                     <PanelGrid
                       title={`${dataSorted[index].poolHost}:${dataSorted[index].poolPort}`}

@@ -767,7 +767,7 @@ const SoloMining = () => {
                   align={{ sm: 'flex-start', lg: 'center' }}
                   justify="space-between"
                 >
-                  <Flex m="2">
+                  <Flex m="2" mb="4">
                     <Text fontSize="lg" fontWeight="800">
                       {intl.formatMessage({ id: 'solo_mining.users.title' })}
                     </Text>
@@ -836,7 +836,8 @@ const SoloMining = () => {
                         </Flex>
                         <Flex
                           align="flex-start"
-                          mt={{ base: '0', md: '4' }}
+                          mt={{ base: '4', md: '6' }}
+                          mb={{ base: '2', md: '3' }}
                           mr={{ base: '4' }}
                         >
                           <Text fontSize="lg" fontWeight="800">

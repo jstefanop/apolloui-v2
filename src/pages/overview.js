@@ -262,7 +262,11 @@ const Overview = () => {
 
 
   return (
-    <Box>
+    <Box
+      width="100%"
+      maxWidth="100%"
+      overflowX="hidden"
+    >
       <Head>
         <title>
           <FormattedMessage
@@ -311,15 +315,20 @@ const Overview = () => {
               mb={'20px'}
               transition="all 0.3s ease-in-out"
               width="100%"
+              maxWidth="100%"
               position="relative"
+              overflowX="hidden"
             >
-              <GridItem gridArea="soloHashrate">
+              <GridItem gridArea="soloHashrate" width="100%" maxWidth="100%" overflow="hidden">
                 <Card
                   bgColor={cardColor}
                   boxShadow={shadow}
                   py="15px"
                   pb="30px"
                   height="100%"
+                  width="100%"
+                  maxWidth="100%"
+                  overflow="hidden"
                 >
                   <Flex
                     height="100%"
@@ -371,13 +380,16 @@ const Overview = () => {
                 </Card>
               </GridItem>
 
-              <GridItem gridArea="soloBestShare">
+              <GridItem gridArea="soloBestShare" width="100%" maxWidth="100%" overflow="hidden">
                 <Card
                   bgColor={cardColor}
                   boxShadow={shadow}
                   py="15px"
                   pb="30px"
                   height="100%"
+                  width="100%"
+                  maxWidth="100%"
+                  overflow="hidden"
                 >
                   <Flex
                     height="100%"
@@ -420,13 +432,16 @@ const Overview = () => {
                 </Card>
               </GridItem>
 
-              <GridItem gridArea="soloDailyChance">
+              <GridItem gridArea="soloDailyChance" width="100%" maxWidth="100%" overflow="hidden">
                 <Card
                   bgColor={cardColor}
                   boxShadow={shadow}
                   py="15px"
                   pb="30px"
                   height="100%"
+                  width="100%"
+                  maxWidth="100%"
+                  overflow="hidden"
                 >
                   <Flex
                     height="100%"
@@ -487,6 +502,9 @@ const Overview = () => {
               pb="30px"
               mb="20px"
               height="100px"
+              width="100%"
+              maxWidth="100%"
+              overflow="hidden"
             >
               {servicesStatus?.solo?.status === 'pending' ? (
                 <Flex
@@ -608,10 +626,12 @@ const Overview = () => {
             mb={'10px'}
             transition="all 0.3s ease-in-out"
             width="100%"
+            maxWidth="100%"
             position="relative"
+            overflowX="hidden"
           >
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="hashrate">
+              <GridItem gridArea="hashrate" width="100%" maxWidth="100%" overflow="hidden">
                 <HashrateCard
                   loading={loadingMiner}
                   errors={errorMiner}
@@ -629,8 +649,8 @@ const Overview = () => {
             )}
 
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="chart">
-                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
+              <GridItem gridArea="chart" width="100%" maxWidth="100%" overflow="hidden">
+                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px" width="100%" maxWidth="100%" overflow="hidden">
                   <Flex m="2" justify="space-between" align="center">
                     <Text fontSize="lg" fontWeight="800">
                       <FormattedMessage
@@ -678,8 +698,8 @@ const Overview = () => {
             )}
 
             {deviceType === 'solo-node' && (
-              <GridItem gridArea="soloChart">
-                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px">
+              <GridItem gridArea="soloChart" width="100%" maxWidth="100%" overflow="hidden">
+                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px" width="100%" maxWidth="100%" overflow="hidden">
                   <Flex m="2" justify="space-between" align="center">
                     <Text fontSize="lg" fontWeight="800">
                       <FormattedMessage
@@ -727,8 +747,8 @@ const Overview = () => {
             )}
 
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="temperatures">
-                <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow}>
+              <GridItem gridArea="temperatures" width="100%" maxWidth="100%" overflow="hidden">
+                <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow} width="100%" maxWidth="100%" overflow="hidden">
                   <Flex direction="column" my="auto">
                     {loadingMiner ? (
                       <BulletList />
@@ -852,7 +872,7 @@ const Overview = () => {
             )}
 
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="power">
+              <GridItem gridArea="power" width="100%" maxWidth="100%" overflow="hidden">
                 <PowerCard
                   loading={loadingMiner}
                   errors={errorMiner}
@@ -867,8 +887,8 @@ const Overview = () => {
               </GridItem>
             )}
 
-            <GridItem gridArea="node">
-              <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow}>
+            <GridItem gridArea="node" width="100%" maxWidth="100%" overflow="hidden">
+              <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow} width="100%" maxWidth="100%" overflow="hidden">
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
                     <FormattedMessage
@@ -1036,7 +1056,7 @@ const Overview = () => {
               </Card>
             </GridItem>
 
-            <GridItem gridArea="gauges">
+            <GridItem gridArea="gauges" width="100%" maxWidth="100%" overflow="hidden">
               <Stack
                 direction={{ base: 'column', md: 'row' }}
                 spacing="20px"

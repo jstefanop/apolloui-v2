@@ -33,11 +33,28 @@ const PanelGrid = ({
   };
 
   return (
-    <Flex mt="4" mx="5" direction="column">
-      <Flex justify="space-between" direction={{ base: 'column', md: 'row' }}>
-        <Flex direction={{ base: 'column', md: 'row' }}>
+    <Flex mt="4" px={{ base: '5', md: '8', lg: '10' }} direction="column" width="100%" maxWidth="100%" overflow="hidden">
+      <Flex 
+        justify="space-between" 
+        direction={{ base: 'column', md: 'row' }}
+        width="100%"
+        flexWrap="wrap"
+        gap={{ base: 2, md: 0 }}
+      >
+        <Flex 
+          direction={{ base: 'column', md: 'row' }}
+          flexWrap="wrap"
+          gap={{ base: 1, md: 0 }}
+          width={{ base: '100%', md: 'auto' }}
+          minW={0}
+          flex="1"
+        >
           {title && (
-            <Text fontSize="md" fontWeight="600">
+            <Text 
+              fontSize="md" 
+              fontWeight="600" 
+              width={{ base: '100%', md: 'auto' }}
+            >
               {title}
             </Text>
           )}
@@ -69,9 +86,15 @@ const PanelGrid = ({
           total !== null && (
             <ActiveBadge active={active} total={total} title="Active" />
           )}
-        <Flex my={{ base: '3', md: '0' }}>
+        <Flex 
+          my={{ base: '3', md: '0' }}
+          width={{ base: '100%', md: 'auto' }}
+          flexWrap="wrap"
+          gap={2}
+          align="center"
+        >
           {status && (
-            <Flex align="center">
+            <Flex align="center" flexShrink={0}>
               <Flex
                 align="center"
                 justify="center"
@@ -79,6 +102,7 @@ const PanelGrid = ({
                 h="20px"
                 w="20px"
                 borderRadius="30px"
+                flexShrink={0}
               >
                 <Icon
                   w="12px"
@@ -87,7 +111,7 @@ const PanelGrid = ({
                   as={status ? CheckIcon : ErrorIcon}
                 />
               </Flex>
-              <Text mx="3" fontWeight={600} fontSize="sm">
+              <Text mx="3" fontWeight={600} fontSize="sm" flexShrink={0}>
                 {status ? 'Active' : 'Inactive'}
               </Text>
             </Flex>
@@ -96,10 +120,11 @@ const PanelGrid = ({
             <Flex
               bgColor={badgeBgColor}
               borderRadius={'12px'}
-              ms="auto"
+              ms={{ base: '0', md: 'auto' }}
               p={'3px'}
               px={'10px'}
               align="center"
+              flexShrink={0}
             >
               {badgeText && (
                 <Text fontWeight="800" fontSize="sm">
@@ -116,17 +141,51 @@ const PanelGrid = ({
         </Flex>
       </Flex>
       {data && data.length && (
-        <SimpleGrid columns={{ base: '1', xl: '2' }} spacing={8} my="5" ml="2">
+        <SimpleGrid 
+          columns={{ base: '1', xl: '2' }} 
+          spacing={8} 
+          my="5" 
+          textAlign="left"
+        >
           {data.map((item, index) =>
             item.value !== null && item.value !== undefined && (
-              <Flex align="center" mb="4" key={index}>
-                <Icon as={item.icon} me="3" w="18px" h="18px" />
+              <Flex 
+                align="center" 
+                mb="4" 
+                key={index}
+                width="100%"
+                minH="24px"
+                flexWrap="nowrap"
+                justify="flex-start"
+              >
+                <Icon 
+                  as={item.icon} 
+                  me="3" 
+                  w="18px" 
+                  h="18px" 
+                  flexShrink={0}
+                />
                 {showName && (
-                  <Box fontWeight="400" color="gray.500" me="3">
+                  <Box 
+                    fontWeight="400" 
+                    color="gray.500" 
+                    me="3"
+                    minW={{ base: '100px', md: '120px' }}
+                    flexShrink={0}
+                    textAlign="left"
+                  >
                     {item.name}
                   </Box>
                 )}
-                <Box fontWeight="600" minWidth="100px">
+                <Box 
+                  fontWeight="600" 
+                  minWidth="100px"
+                  flex="1"
+                  textAlign="left"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  whiteSpace="nowrap"
+                >
                   {item.value}
                 </Box>
               </Flex>

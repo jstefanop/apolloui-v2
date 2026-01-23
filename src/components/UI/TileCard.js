@@ -25,6 +25,9 @@ const TileCard = ({
     <Card
       py="15px"
       h="100%"
+      width="100%"
+      maxWidth="100%"
+      overflow="hidden"
       {...props}
       style={
         bannerImage && {
@@ -91,7 +94,11 @@ const TileCard = ({
                   color="white"
                   fontWeight="800"
                   display="inline-block"
-                  whiteSpace="nowrap"
+                  whiteSpace={{ base: "normal", md: "nowrap" }}
+                  wordBreak="break-word"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  maxW="100%"
                 >
                   {loading ? <LoadingIcon /> : mainData}
                 </Text>
