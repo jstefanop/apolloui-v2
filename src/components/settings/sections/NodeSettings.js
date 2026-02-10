@@ -22,6 +22,7 @@ import { useSettings } from '../context/SettingsContext';
 import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { getNodeErrorMessage } from '../../../lib/utils';
+import { NODE_SOFTWARE_OPTIONS } from '../../../lib/nodeSoftware';
 
 const NodeSettings = () => {
   const intl = useIntl();
@@ -78,9 +79,9 @@ const NodeSettings = () => {
             onChange={handleNodeSoftwareChange}
             color={inputTextColor}
           >
-            <option value="core_25_1">Bitcoin Core 25.1</option>
-            <option value="core_28_1">Bitcoin Core 28.1 (Default)</option>
-            <option value="knots_29_2">Bitcoin Knots 29.2</option>
+            {NODE_SOFTWARE_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
           </Select>
         </SimpleCard>
 

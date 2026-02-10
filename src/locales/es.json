@@ -100,6 +100,7 @@
       "last_block": "Minutos desde el último bloque",
       "node_address": "Dirección local del nodo",
       "node_version": "Versión del nodo Bitcoin",
+      "configured": "Configurado: {version}",
       "percentage_completed": "Porcentaje completado {percentage}%",
       "processing_queue": "Procesando cola...",
       "initializing": "Inicializando...",
