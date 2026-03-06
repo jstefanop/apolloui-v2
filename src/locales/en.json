@@ -104,9 +104,7 @@
       "last_block": "Minutes since last block",
       "node_address": "Local node address",
       "node_version": "Bitcoin Node Version",
-      "configured_core_25_1": "Configured: Bitcoin Core 25.1",
-      "configured_core_28_1": "Configured: Bitcoin Core 28.1",
-      "configured_knots_29_2": "Configured: Bitcoin Knots 29.2",
+      "configured": "Configured: {version}",
       "percentage_completed": "Percentage completed {percentage}%",
       "processing_queue": "Processing queue...",
       "initializing": "Initializing...",
@@ -254,6 +252,10 @@
   },
   "solo_mining": {
     "title": "Apollo Miner {hashrate}",
+    "node_not_synced": {
+      "title": "Node Not Synced",
+      "description": "Before you can use your Solo Pool, you must wait for the node to be fully synced. Check the status from the Node page."
+    },
     "banner": {
       "title": "SOLO LAN Mining",
       "description": "Point any Bitcoin Miner on your local network to your Solo Pool with the following URL: {address}:3333 Username: [bitcoin address]",
@@ -570,6 +572,8 @@
         "btc_signature": "BTC Signature",
         "btc_signature_placeholder": "YourName",
         "btc_signature_info": "This is the block signature displayed if you find a solo block. You can leave as default, or tag it with your own message/signature for the world to see!",
+        "startdiff": "Start Difficulty",
+        "startdiff_info": "Modify the start difficulty value for miners connecting to Solo Pool, this is useful for really low or really high hashrate",
         "invalid_address": "Please add a valid Bitcoin address",
         "incompatible_address": "Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address"
       }

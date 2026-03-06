@@ -73,20 +73,22 @@ const System = () => {
 
   const {
     temperature: mcuTemperature,
-    cpu: { threads: cpuCores, usedPercent: cpuUsage },
-    disks,
-    memory,
+    cpu = {},
+    disks = [],
+    memory = {},
     architecture,
     activeWifi,
     hostname,
-    network,
+    network = [],
     operatingSystem,
     temperature,
     uptime,
     loadAverage,
-  } = dataMcu;
+  } = dataMcu || {};
 
-  const wifi = activeWifi && activeWifi.split(',')[0];
+  const { threads: cpuCores, usedPercent: cpuUsage } = cpu || {};
+
+  const wifi = activeWifi && typeof activeWifi === 'string' ? activeWifi.split(',')[0] : null;
   const eth0 = _.find(network, { name: 'eth0' });
   const wlan0 = _.find(network, { name: 'wlan0' });
 
@@ -117,7 +119,7 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.architecture' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {architecture}
+              {architecture || 'N/A'}
             </Text>
           </Flex>
         </Card>
@@ -134,7 +136,7 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.hostname' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {hostname}
+              {hostname || 'N/A'}
             </Text>
           </Flex>
         </Card>
@@ -151,7 +153,7 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.operating_system' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {operatingSystem}
+              {operatingSystem || 'N/A'}
             </Text>
           </Flex>
         </Card>
@@ -168,7 +170,7 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.system_uptime' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {moment(uptime).fromNow()}
+              {uptime ? moment(uptime).fromNow() : 'N/A'}
             </Text>
           </Flex>
         </Card>
@@ -263,7 +265,7 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.temperature' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {formatTemperature(temperature / 1000, temperatureUnit)}
+              {temperature != null ? formatTemperature(temperature / 1000, temperatureUnit) : 'N/A'}
             </Text>
           </Flex>
         </Card>
@@ -280,10 +282,10 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.load_average' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {loadAverage.split(' ')[0]}
+              {loadAverage && typeof loadAverage === 'string' ? loadAverage.split(' ')[0] : 'N/A'}
             </Text>
             <Text fontSize="xs" color="gray.500" mt="2px">
-              {loadAverage.split(' ').slice(1, 3).join(' ')}
+              {loadAverage && typeof loadAverage === 'string' ? loadAverage.split(' ').slice(1, 3).join(' ') : ''}
             </Text>
           </Flex>
         </Card>
@@ -300,10 +302,10 @@ const System = () => {
               {intl.formatMessage({ id: 'system.stats.memory_usage' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {bytesToSize(memoryUsed * 1024, 0)}
+              {memoryUsed != null ? bytesToSize(memoryUsed * 1024, 0) : 'N/A'}
             </Text>
             <Text fontSize="xs" color="gray.500" mt="2px">
-              {bytesToSize(memory.available * 1024, 0)} {intl.formatMessage({ id: 'system.stats.available' })}
+              {memory?.available != null ? `${bytesToSize(memory.available * 1024, 0)} ${intl.formatMessage({ id: 'system.stats.available' })}` : ''}
             </Text>
           </Flex>
         </Card>
@@ -358,10 +360,10 @@ const System = () => {
               />
             }
             name={intl.formatMessage({ id: 'system.stats.memory_usage' })}
-            legendValue={`${bytesToSize(
+            legendValue={memoryUsed != null && memoryTotal != null ? `${bytesToSize(
               memoryUsed * 1024,
               0
-            )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
+            )} / ${bytesToSize(memoryTotal * 1024, 0)}` : 'N/A'}
             rawValue={memoryUsed}
             total={memoryTotal}
             gauge={true}
@@ -385,11 +387,11 @@ const System = () => {
               />
             }
             name={intl.formatMessage({ id: 'system.stats.system_disk_usage' })}
-            legendValue={`${bytesToSize(
+            legendValue={diskUsed != null && diskTotal != null ? `${bytesToSize(
               diskUsed * 1024,
               0,
               false
-            )} / ${bytesToSize(diskTotal * 1024, 0)}`}
+            )} / ${bytesToSize(diskTotal * 1024, 0)}` : 'N/A'}
             rawValue={diskUsed}
             total={diskTotal}
             gauge={true}
@@ -414,11 +416,11 @@ const System = () => {
                 />
               }
               name={intl.formatMessage({ id: 'system.stats.node_disk_usage' })}
-              legendValue={`${bytesToSize(
+              legendValue={nodeDiskUsed != null && nodeDiskTotal != null ? `${bytesToSize(
                 nodeDiskUsed * 1024,
                 0,
                 false
-              )} / ${bytesToSize(nodeDiskTotal * 1024, 0)}`}
+              )} / ${bytesToSize(nodeDiskTotal * 1024, 0)}` : 'N/A'}
               rawValue={nodeDiskUsed}
               total={nodeDiskTotal}
               gauge={true}

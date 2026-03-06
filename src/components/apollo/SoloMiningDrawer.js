@@ -148,11 +148,11 @@ const SoloMiningDrawer = ({
   return (
     <Drawer placement={placement} onClose={onClose} isOpen={isOpen} size="xl">
       <DrawerOverlay />
-      <DrawerContent bgColor={drawerBgColor}>
+      <DrawerContent bgColor={drawerBgColor} maxW="100vw" overflowX="hidden">
         <DrawerCloseButton />
         <DrawerHeader fontSize="3xl">{user}</DrawerHeader>
 
-        <DrawerBody>
+        <DrawerBody overflowX="hidden" width="100%" maxWidth="100%">
           <Tabs size="md" align={'center'} isLazy variant={'line'}>
             <TabList>
               <Tab>
@@ -177,11 +177,15 @@ const SoloMiningDrawer = ({
                 {dataTableWorkers.map((worker, index) => (
                   <Card
                     py="15px"
+                    px="0"
                     bgColor={cardColor}
                     boxShadow={shadow}
                     h="100%"
                     key={index}
                     my="15px"
+                    width="100%"
+                    maxWidth="100%"
+                    overflow="hidden"
                   >
                     <PanelGrid
                       title={`Worker ${worker.workername}`}

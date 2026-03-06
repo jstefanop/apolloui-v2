@@ -13,6 +13,12 @@ export const DeviceConfigProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Skip API call during SSR (build time)
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
+
     // Fetch device configuration from API
     const fetchConfig = async () => {
       try {

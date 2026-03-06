@@ -100,6 +100,7 @@
       "last_block": "Minutos desde el último bloque",
       "node_address": "Dirección local del nodo",
       "node_version": "Versión del nodo Bitcoin",
+      "configured": "Configurado: {version}",
       "percentage_completed": "Porcentaje completado {percentage}%",
       "processing_queue": "Procesando cola...",
       "initializing": "Inicializando...",
@@ -237,6 +238,10 @@
   },
   "solo_mining": {
     "title": "Minero Apollo BTC {hashrate}",
+    "node_not_synced": {
+      "title": "Nodo No Sincronizado",
+      "description": "Antes de poder usar tu Solo Pool, debes esperar a que el nodo esté completamente sincronizado. Verifica el estado desde la página Node."
+    },
     "banner": {
       "title": "Minería SOLO en LAN",
       "description": "Dirige cualquier minero de Bitcoin en tu red local a tu Solo Pool con la siguiente URL: {address}:3333 Usuario: [dirección bitcoin]",
@@ -545,6 +550,8 @@
         "btc_signature": "Firma BTC",
         "btc_signature_placeholder": "TuNombre",
         "btc_signature_info": "Esta es la firma del bloque que se mostrará si encuentras un bloque en solo. Puedes dejarlo como predeterminado, o personalizarlo con tu propio mensaje/firma para que el mundo lo vea!",
+        "startdiff": "Dificultad Inicial",
+        "startdiff_info": "Modifica el valor de dificultad inicial para los mineros que se conectan al Solo Pool, útil para hashrate muy bajos o muy altos",
         "invalid_address": "Por favor, introduce una dirección Bitcoin válida",
         "incompatible_address": "Advertencia: Las direcciones P2WSH y P2TR no son válidas para la minería SOLO. Usa una dirección diferente."
       }

@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloRestart, loadingNodeStart, isSoloNode }) => {
   const intl = useIntl();
   const router = useRouter();
-  const textColor = useColorModeValue('brand.800', 'white');
+  const textColor = useColorModeValue('white', 'white');
   const buttonColor = useColorModeValue('gray.400', 'brand.300');
 
   const handleGoToLogin = () => {

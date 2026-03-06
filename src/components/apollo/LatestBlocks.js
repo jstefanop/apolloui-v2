@@ -13,8 +13,10 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import { useEffect, useState, useRef } from 'react';
+import { useQuery } from '@apollo/client';
 import moment from 'moment';
 import Confetti from '../UI/Confetti';
+import { NODE_RECENT_BLOCKS_QUERY } from '../../graphql/node';
 
 const BlockCard = ({ block, isLatest }) => {
   const isFutureBit = block.extras?.pool?.name?.toLowerCase().includes('futurebit');
@@ -84,10 +86,13 @@ const BlockCard = ({ block, isLatest }) => {
             </Text> */}
             
             <Text fontSize="lg" fontWeight="bold" color={valueColor}>
-              {(block.extras?.totalFees / 100000000).toFixed(4)} BTC
+              {block.extras?.reward ? block.extras.reward.toFixed(4) : '0.0000'} BTC
             </Text>
             <Text fontSize="xs" color={textColor} mt="-4">
-              Fees
+              Reward
+            </Text>
+            <Text fontSize="xs" color={textColor} mt="-1">
+              Fees: {block.extras?.totalFees ? block.extras.totalFees.toFixed(4) : '0.0000'} BTC
             </Text>
 
             {/* <Text fontSize="xs" color={valueColor}>
@@ -119,8 +124,6 @@ const BlockCard = ({ block, isLatest }) => {
 
 const LatestBlocks = () => {
   const [blocks, setBlocks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -129,6 +132,49 @@ const LatestBlocks = () => {
   const trackBg = useColorModeValue('gray.100', 'gray.700');
   const thumbBg = useColorModeValue('gray.300', 'gray.600');
   const thumbHoverBg = useColorModeValue('gray.400', 'gray.500');
+
+  // Use GraphQL query instead of fetch
+  const { loading, error, data } = useQuery(NODE_RECENT_BLOCKS_QUERY, {
+    variables: { count: 15 },
+    pollInterval: 60000, // Poll every 60 seconds (data updates every 5 min on server)
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
+  });
+
+  // Process blocks data from GraphQL response
+  useEffect(() => {
+    if (data?.Node?.recentBlocks?.result?.blocks) {
+      let updatedBlocks = [...data.Node.recentBlocks.result.blocks];
+      
+      // Add fake FutureBit block only in development
+      if (process.env.NODE_ENV === 'development' && updatedBlocks.length > 0) {
+        const futureBitBlock = {
+          id: 'futurebit-block',
+          height: updatedBlocks[0].height + 1,
+          size: 1000000,
+          tx_count: 2000,
+          timestamp: Math.floor(Date.now() / 1000),
+          extras: {
+            totalFees: 12300000,
+            pool: {
+              name: 'FutureBit-Apollo',
+              slug: 'futurebit-apollo'
+            }
+          }
+        };
+        
+        updatedBlocks = [
+          updatedBlocks[0],
+          futureBitBlock,
+          ...updatedBlocks.slice(1, 9)
+        ];
+      } else {
+        updatedBlocks = updatedBlocks.slice(0, 10);
+      }
+      
+      setBlocks(updatedBlocks);
+    }
+  }, [data]);
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
@@ -161,57 +207,10 @@ const LatestBlocks = () => {
     scrollContainerRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  useEffect(() => {
-    const fetchBlocks = async () => {
-      try {
-        const response = await fetch('https://mempool.space/api/v1/blocks');
-        if (!response.ok) {
-          throw new Error('Failed to fetch blocks from mempool.space. Trying again in 1 minute.');
-        }
-        const data = await response.json();
-        
-        let updatedBlocks = [...data];
-        
-        // Add fake FutureBit block only in development
-        if (process.env.NODE_ENV === 'development') {
-          const futureBitBlock = {
-            id: 'futurebit-block',
-            height: data[0].height + 1,
-            size: 1000000,
-            tx_count: 2000,
-            timestamp: Math.floor(Date.now() / 1000),
-            extras: {
-              totalFees: 12300000,
-              pool: {
-                name: 'FutureBit-Apollo',
-                url: 'https://futurebit.com'
-              }
-            }
-          };
-          
-          updatedBlocks = [
-            data[0],
-            futureBitBlock,
-            ...data.slice(1, 9)
-          ];
-        } else {
-          updatedBlocks = data.slice(0, 10);
-        }
-        
-        setBlocks(updatedBlocks);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching blocks:', err);
-        setError(err.message);
-        setLoading(false);
-      }
-    };
-
-    fetchBlocks();
-    const interval = setInterval(fetchBlocks, 60000); // Refresh every minute
-
-    return () => clearInterval(interval);
-  }, []);
+  // Determine error message from GraphQL response
+  const errorMessage = error?.message 
+    || data?.Node?.recentBlocks?.error?.message 
+    || data?.Node?.recentBlocks?.result?.error;
 
   if (loading) {
     return (
@@ -221,12 +220,14 @@ const LatestBlocks = () => {
     );
   }
 
-  if (error) {
+  if (errorMessage) {
     return (
       <Alert status="warning" borderRadius="10px" mb="5">
         <AlertIcon />
         <AlertTitle>Error</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
+        <AlertDescription>
+          {errorMessage || 'Failed to fetch blocks. Trying again in 1 minute.'}
+        </AlertDescription>
       </Alert>
     );
   }
