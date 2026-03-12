@@ -1,11 +1,11 @@
 {
   "name": "apolloui-v2",
-  "version": "2.1.0-beta",
+  "version": "2.1.1",
   "private": true,
   "description": "FutureBit Apollo OS 2",
   "author": "FutureBit LLC",
   "homepage": "https://www.futurebit.io",
-  "copyright": "Copyright 2025 FutureBit LLC",
+  "copyright": "Copyright 2026 FutureBit LLC",
   "license": "CC-BY-NC-ND-4.0",
   "repository": {
     "type": "git",
