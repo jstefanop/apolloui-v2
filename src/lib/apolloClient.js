@@ -20,30 +20,15 @@ export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
 const ls = typeof window !== 'undefined' ? localStorage : {};
 
-// Function to get the hostname/IP from the current browser URL
-const getHostFromBrowser = () => {
-  // Only works in browser environment
-  if (typeof window !== 'undefined') {
-    try {
-      return window.location.hostname;
-    } catch (error) {
-      console.error('Error getting hostname from browser:', error);
-      return 'localhost'; // Safe fallback
-    }
-  }
-  // Server-side fallback to hostname
-  return os.hostname();
-};
-
-const hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || getHostFromBrowser();
+// Server-side hostname fallback (SSR / Next.js API routes).
+// In the browser we always derive the host from window.location.hostname at
+// request time so every device automatically targets the interface it used to
+// open the UI — works correctly when both WiFi and Ethernet are active.
+const ssrHostname = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
 const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
 
-// Log the API endpoint for debugging
-if (process.env.NODE_ENV === 'development') {
-  const source = process.env.NEXT_PUBLIC_GRAPHQL_HOST ? 'environment variable' : 
-                 (typeof window !== 'undefined') ? 'browser URL' : 'server hostname';
-  console.log(`GraphQL API endpoint: http://${hostnameApi}:${portApi}/api/graphql (source: ${source})`);
-}
+const getApiHost = () =>
+  typeof window !== 'undefined' ? window.location.hostname : ssrHostname;
 
 let apolloClient;
 
@@ -106,7 +91,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: `http://${hostnameApi}:${portApi}/api/graphql`,
+  uri: () => `http://${getApiHost()}:${portApi}/api/graphql`,
   // Add a timeout to prevent long-hanging requests
   fetchOptions: {
     timeout: 10000, // 10 seconds timeout
@@ -140,7 +125,7 @@ const momentTransformLink = new ApolloLink((operation, forward) => {
 // Add a utility function to check if the backend is available
 export const checkBackendAvailability = async () => {
   try {
-    const response = await fetch(`http://${hostnameApi}:${portApi}/api/health`, {
+    const response = await fetch(`http://${getApiHost()}:${portApi}/api/health`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
