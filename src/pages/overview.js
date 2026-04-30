@@ -54,6 +54,7 @@ import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { settingsSelector } from '../redux/reselect/settings';
 import HashrateChart, { INTERVAL_CONFIG } from '../components/apollo/HashrateChart';
+import MinerMetricsGrid from '../components/apollo/MinerMetricsGrid';
 import { MdOfflineBolt } from 'react-icons/md';
 import { GiDiamondTrophy } from 'react-icons/gi';
 import CountUp from 'react-countup';
@@ -646,50 +647,48 @@ const Overview = () => {
 
             {deviceType !== 'solo-node' && (
               <GridItem gridArea="chart" width="100%" maxWidth="100%" overflow="hidden">
-                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px" width="100%" maxWidth="100%" overflow="hidden">
-                  <Flex m="2" justify="space-between" align="center">
-                    <Text fontSize="lg" fontWeight="800">
-                      <FormattedMessage
-                        id="overview.hashrate.chart.title"
-                        defaultMessage="Hashrate History"
-                      />
-                    </Text>
-                    <Select
-                      size="sm"
-                      value={chartInterval}
-                      onChange={(e) => setChartInterval(e.target.value)}
-                      w="auto"
-                      minW="130px"
-                      fontSize="xs"
-                      fontWeight="500"
-                      borderRadius="md"
-                      bg="transparent"
-                      borderColor={iconColorReversed}
-                      color={iconColorReversed}
-                      _hover={{ borderColor: 'brand.500' }}
-                      _focus={{ borderColor: 'brand.500', boxShadow: 'none' }}
-                      cursor="pointer"
-                    >
-                      <option value="tenmin" style={{ color: 'black' }}>
-                        {intl.formatMessage({ id: 'chart.interval.6hours', defaultMessage: 'Last 6 hours' })}
-                      </option>
-                      <option value="hour" style={{ color: 'black' }}>
-                        {intl.formatMessage({ id: 'chart.interval.24hours', defaultMessage: 'Last 24 hours' })}
-                      </option>
-                      <option value="day" style={{ color: 'black' }}>
-                        {intl.formatMessage({ id: 'chart.interval.30days', defaultMessage: 'Last 30 days' })}
-                      </option>
-                    </Select>
-                  </Flex>
-                  <Flex
-                    my="auto"
-                    align={{ base: 'center', xl: 'start' }}
-                    justify={{ base: 'center', xl: 'center' }}
-                    direction={{ base: 'column', md: 'row' }}
+                {/* Interval selector row */}
+                <Flex mb={3} justify="space-between" align="center" px={1}>
+                  <Text fontSize="lg" fontWeight="800">
+                    <FormattedMessage
+                      id="overview.hashrate.chart.title"
+                      defaultMessage="Miner Metrics"
+                    />
+                  </Text>
+                  <Select
+                    size="sm"
+                    value={chartInterval}
+                    onChange={(e) => setChartInterval(e.target.value)}
+                    w="auto"
+                    minW="130px"
+                    fontSize="xs"
+                    fontWeight="500"
+                    borderRadius="md"
+                    bg="transparent"
+                    borderColor={iconColorReversed}
+                    color={iconColorReversed}
+                    _hover={{ borderColor: 'brand.500' }}
+                    _focus={{ borderColor: 'brand.500', boxShadow: 'none' }}
+                    cursor="pointer"
                   >
-                    <HashrateChart source="miner" interval={chartInterval} />
-                  </Flex>
-                </Card>
+                    <option value="tenmin" style={{ color: 'black' }}>
+                      {intl.formatMessage({ id: 'chart.interval.6hours', defaultMessage: 'Last 6 hours' })}
+                    </option>
+                    <option value="hour" style={{ color: 'black' }}>
+                      {intl.formatMessage({ id: 'chart.interval.24hours', defaultMessage: 'Last 24 hours' })}
+                    </option>
+                    <option value="day" style={{ color: 'black' }}>
+                      {intl.formatMessage({ id: 'chart.interval.30days', defaultMessage: 'Last 30 days' })}
+                    </option>
+                  </Select>
+                </Flex>
+                {/* 2×2 mini charts — each card is standalone */}
+                <MinerMetricsGrid
+                  interval={chartInterval}
+                  currentHashrate={globalHashrate}
+                  currentTemp={avgBoardTemp}
+                  currentPower={minerPower}
+                />
               </GridItem>
             )}
 

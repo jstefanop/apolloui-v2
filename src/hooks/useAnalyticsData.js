@@ -37,14 +37,18 @@ export const useAnalyticsData = (rawData) => {
       return {
         labels: [],
         hashrates: [],
-        poolhashrates: []
+        poolhashrates: [],
+        temps: [],
+        watts: [],
       };
     }
 
     return {
       labels: limitedData.map(item => item.date),
       hashrates: limitedData.map(item => item.hashrate),
-      poolhashrates: limitedData.map(item => item.poolHashrate)
+      poolhashrates: limitedData.map(item => item.poolHashrate),
+      temps: limitedData.map(item => item.temperature),
+      watts: limitedData.map(item => item.watts),
     };
   }, [limitedData]);
 
