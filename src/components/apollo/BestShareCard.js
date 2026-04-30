@@ -11,7 +11,6 @@ const BestShare = ({
   loading,
   errors,
   data,
-  prevData,
 }) => {
   const intl = useIntl();
   const cardColor = useColorModeValue(
@@ -36,15 +35,12 @@ const BestShare = ({
       mainData={
         data !== null && data !== undefined ? (
           <CountUp
-            start={prevData || 0}
             end={data || 0}
             duration={1}
             decimals={0}
             suffix={``}
-            scrollSpyOnce
-          >
-            {({ countUpRef }) => <span ref={countUpRef} />}
-          </CountUp>
+            preserveValue
+          />
         ) : (
           <span>N/A</span>
         )

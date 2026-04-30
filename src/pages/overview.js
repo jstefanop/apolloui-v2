@@ -364,12 +364,12 @@ const Overview = () => {
                       >
                         {soloKPI?.hashrate ? (
                           <CountUp
-                            start={prevSoloData.current?.hashrate || 0}
                             end={soloKPI.hashrate}
                             duration={1.5}
                             separator=","
                             decimals={2}
                             suffix={` ${soloKPI.hashrateUnit || ''}`}
+                            preserveValue
                           />
                         ) : (
                           'N/A'
@@ -477,13 +477,13 @@ const Overview = () => {
                       >
                         {soloKPI?.dailyChance ? (
                           <CountUp
-                            start={prevSoloData.current?.dailyChance || 0}
                             end={soloKPI?.dailyChance || 0}
                             duration={2}
                             separator=","
                             decimals={0}
                             suffix=""
                             prefix="1 in "
+                            preserveValue
                           />
                         ) : (
                           'N/A'
@@ -637,10 +637,6 @@ const Overview = () => {
                   errors={errorMiner}
                   data={globalHashrate || { value: 0, unit: 'TH/s' }}
                   avgData={globalAvgHashrate || { value: 0, unit: 'TH/s' }}
-                  prevData={prevGlobalHashrate || { value: 0, unit: 'TH/s' }}
-                  prevAvgData={
-                    prevGlobalAvgHashrate || { value: 0, unit: 'TH/s' }
-                  }
                   shadow={shadow}
                   iconColor={iconColor}
                   status={servicesStatus?.miner?.status}
@@ -878,8 +874,6 @@ const Overview = () => {
                   errors={errorMiner}
                   data={minerPower || 0}
                   avgData={wattsPerTh || 0}
-                  prevData={prevMinerPower || 0}
-                  prevAvgData={prevWattsPerTh || 0}
                   shadow={shadow}
                   iconColor={iconColor}
                   serviceStatus={servicesStatus}

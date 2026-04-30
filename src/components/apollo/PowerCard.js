@@ -14,8 +14,6 @@ const PowerCard = ({
   errors,
   data,
   avgData,
-  prevData,
-  prevAvgData,
   serviceStatus,
 }) => {
   const powerCardColor = useColorModeValue(
@@ -29,33 +27,26 @@ const PowerCard = ({
 
   const { status } = serviceStatus?.miner || {};
 
-  // Determine the appropriate icon for the TileCard
   const tileCardIcon = (() => {
     if (status === 'offline') return MdOfflineBolt;
     if (status === 'pending') return Spinner;
     return PowerIcon;
   })();
 
-  // Determine what to display in the main data section
   const mainDataContent = (() => {
-    if (status === 'online' && data !== null && data !== undefined) {
+    if (status === 'online' && data != null) {
       return (
         <CountUp
-          start={prevData || 0}
-          end={data || 0}
+          end={data}
           duration={1}
           decimals={0}
           suffix={` Watts`}
-          enableScrollSpy
-          scrollSpyOnce
-        >
-          {({ countUpRef }) => <span ref={countUpRef} />}
-        </CountUp>
+          preserveValue
+        />
       );
-    } else if (status === 'offline') {
+    }
+    if (status === 'offline') {
       return <span><FormattedMessage id="miner.status.offline.tag" /></span>;
-    } else if (status === 'pending') {
-      return <span><FormattedMessage id="miner.status.pending" /></span>;
     }
     return <span><FormattedMessage id="miner.status.pending" /></span>;
   })();
@@ -73,18 +64,14 @@ const PowerCard = ({
       secondaryText={<FormattedMessage id="miner.power.watts_per_th" />}
       mainData={mainDataContent}
       secondaryData={
-        status === 'online' && avgData !== null && avgData !== undefined ? (
+        status === 'online' && avgData != null ? (
           <CountUp
-            start={prevAvgData || 0}
-            end={avgData || 0}
+            end={avgData}
             duration={1}
             decimals={2}
             suffix=""
-            enableScrollSpy
-            scrollSpyOnce
-          >
-            {({ countUpRef }) => <span ref={countUpRef} />}
-          </CountUp>
+            preserveValue
+          />
         ) : (
           <span>N/A</span>
         )

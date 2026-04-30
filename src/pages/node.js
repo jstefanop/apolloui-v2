@@ -141,7 +141,6 @@ const Node = () => {
       dataNode.stats.result.stats
     ) {
       prevData.current = dataNode;
-      console.log('prevData updated:', dataNode.stats.result.stats);
     }
   }, [dataNode]);
 
@@ -457,16 +456,12 @@ const Node = () => {
                       {isSynced ? (
                         <Flex direction="row" alignItems="baseline">
                           <CountUp
-                            start={prevData?.blocksCount || 0}
                             end={blocksCount || 0}
                             duration="1"
                             decimals="0"
                             separator=","
-                            enableScrollSpy
-                            scrollSpyOnce
-                          >
-                            {({ countUpRef }) => <span ref={countUpRef} />}
-                          </CountUp>
+                            preserveValue
+                          />
                           <Text
                             fontSize="sm"
                             fontWeight={500}

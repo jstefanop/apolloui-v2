@@ -276,6 +276,8 @@ export default function HeaderLinks({
                   ? 'green.500'
                   : soloOnline === 'offline'
                   ? 'gray.400'
+                  : soloOnline === 'pending'
+                  ? 'gray.300'
                   : 'orange.500'
               }
               h="20px"
@@ -291,6 +293,8 @@ export default function HeaderLinks({
                     ? CheckIcon
                     : soloOnline === 'offline'
                     ? PowerIcon
+                    : soloOnline === 'pending'
+                    ? Spinner
                     : WarningIcon
                 }
               />
@@ -323,7 +327,7 @@ export default function HeaderLinks({
                 <MinerIcon w="18px" h="18px" color={navbarIcon} />
               </Link>
             </Flex>
-            {globalHashrate?.value && minerStatusLabel === 'Online' && (
+            {!!globalHashrate?.value && minerStatusLabel === 'Online' && (
               <Text
                 align={'center'}
                 w="max-content"

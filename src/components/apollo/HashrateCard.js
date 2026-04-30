@@ -14,65 +14,42 @@ const HashrateCard = ({
   errors,
   data,
   avgData,
-  prevData,
-  prevAvgData,
-  status, // Status parameter (defaults to 'pending' if not provided)
-  title, // Custom title parameter
+  status,
+  title,
 }) => {
   const hashCardColor = useColorModeValue(
     'linear-gradient(135deg, #040406 0%, #4B5381 100%)',
     'linear-gradient(135deg, #4B5381 0%, #040406 100%)'
   );
-  const hashIconBgColor = useColorModeValue('blue.600', 'white');
   const hashSecondaryColor = useColorModeValue(
     'secondaryGray.600',
     'secondaryGray.200'
   );
 
-  // Default to 'pending' if status is not provided
   const currentStatus = status || 'pending';
 
-  // Determine the appropriate icon for the TileCard
   const tileCardIcon = (() => {
     if (currentStatus === 'offline') return MdOfflineBolt;
     if (currentStatus === 'pending') return Spinner;
     return MinerIcon;
   })();
 
-  // Determine what to display in the main data section
   const mainDataContent = (() => {
-    if (currentStatus === 'online' && data?.value !== null && data?.value !== undefined) {
+    if (currentStatus === 'online' && data?.value != null) {
       return (
         <CountUp
-          start={prevData?.value || 0}
-          end={data.value || 0}
+          end={data.value}
           duration={1}
           decimals={2}
           suffix={` ${data.unit || ''}`}
-          enableScrollSpy
-          scrollSpyOnce
-        >
-          {({ countUpRef }) => <span ref={countUpRef} />}
-        </CountUp>
-      );
-    } else if (currentStatus === 'offline') {
-      return (
-        <span>
-          <FormattedMessage id="miner.status.offline.tag" />
-        </span>
-      );
-    } else if (currentStatus === 'pending') {
-      return (
-        <span>
-          <FormattedMessage id="miner.status.pending" />
-        </span>
+          preserveValue
+        />
       );
     }
-    return (
-      <span>
-        <FormattedMessage id="miner.status.pending" />
-      </span>
-    );
+    if (currentStatus === 'offline') {
+      return <span><FormattedMessage id="miner.status.offline.tag" /></span>;
+    }
+    return <span><FormattedMessage id="miner.status.pending" /></span>;
   })();
 
   return (
@@ -91,18 +68,14 @@ const HashrateCard = ({
       errors={errors}
       mainData={mainDataContent}
       secondaryData={
-        currentStatus === 'online' && avgData?.value !== null && avgData?.value !== undefined ? (
+        currentStatus === 'online' && avgData?.value != null ? (
           <CountUp
-            start={prevAvgData?.value || 0}
-            end={avgData.value || 0}
+            end={avgData.value}
             duration={1}
             decimals={2}
             suffix={` ${avgData.unit || ''}`}
-            enableScrollSpy
-            scrollSpyOnce
-          >
-            {({ countUpRef }) => <span ref={countUpRef} />}
-          </CountUp>
+            preserveValue
+          />
         ) : (
           <span>N/A</span>
         )
