@@ -3,6 +3,7 @@ import { serializeError } from '../utils/errorUtils';
 
 const initialState = {
   data: null,
+  lastKnownData: null, // preserved through transient errors (timeouts, warmup)
   loading: false,
   error: null,
 };
@@ -12,9 +13,16 @@ const nodeSlice = createSlice({
   initialState,
   reducers: {
     updateNodeStats: (state, action) => {
-      state.data = action.payload.data;
+      const incoming = action.payload.data;
+      state.data = incoming;
       state.loading = action.payload.loading;
       state.error = serializeError(action.payload.error);
+
+      // Only update lastKnownData when we have valid stats with no RPC error
+      const nodeStats = incoming?.Node?.stats?.result?.stats;
+      if (nodeStats && !nodeStats.error) {
+        state.lastKnownData = incoming;
+      }
     },
   },
 });

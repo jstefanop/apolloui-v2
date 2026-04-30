@@ -112,6 +112,8 @@ const Node = () => {
     }
   }, [timestamp, blocksCount, blockHeader]);
 
+  const isStaleData = !!dataNode?.stale;
+
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode, intl);
 
@@ -248,7 +250,8 @@ const Node = () => {
 
   const shouldShowStats =
     (!isServiceError && !isBackendDown && hasMeaningfulData) ||
-    (isServiceError && hadValidData && !isBackendDown);
+    (isServiceError && hadValidData && !isBackendDown) ||
+    (!isBackendDown && isStaleData);
 
   // Debug logging only when key values change
   useEffect(() => {
@@ -372,6 +375,28 @@ const Node = () => {
                 </AlertTitle>
               </Flex>
               <AlertDescription>{errorNodeSentence}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Stale data banner — shown when timeout occurred but previous data is displayed */}
+          {isStaleData && (
+            <Alert
+              status="warning"
+              borderRadius="10px"
+              mb="5"
+              flexDirection="row"
+              alignItems="center"
+              textAlign="left"
+              width="100%"
+              px={6}
+            >
+              <AlertIcon />
+              <AlertDescription>
+                <FormattedMessage
+                  id="node.warning.stale_data"
+                  defaultMessage="Node data may be delayed — showing last available values."
+                />
+              </AlertDescription>
             </Alert>
           )}
 
