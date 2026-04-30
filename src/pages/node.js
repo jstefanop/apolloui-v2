@@ -12,6 +12,7 @@ import {
   useDisclosure,
   Center,
   Icon,
+  Badge,
 } from '@chakra-ui/react';
 import moment from 'moment';
 import CountUp from 'react-countup';
@@ -378,28 +379,6 @@ const Node = () => {
             </Alert>
           )}
 
-          {/* Stale data banner — shown when timeout occurred but previous data is displayed */}
-          {isStaleData && (
-            <Alert
-              status="warning"
-              borderRadius="10px"
-              mb="5"
-              flexDirection="row"
-              alignItems="center"
-              textAlign="left"
-              width="100%"
-              px={6}
-            >
-              <AlertIcon />
-              <AlertDescription>
-                <FormattedMessage
-                  id="node.warning.stale_data"
-                  defaultMessage="Node data may be delayed — showing last available values."
-                />
-              </AlertDescription>
-            </Alert>
-          )}
-
           {/* Show stats if service is online or if we had valid data before */}
           {shouldShowStats && (
             <Flex direction="column">
@@ -520,10 +499,18 @@ const Node = () => {
                   mt="-230px"
                 >
                   {/* BOTTOM */}
-                  <Flex m="2">
+                  <Flex m="2" align="center" gap={2}>
                     <Text fontSize="lg" fontWeight="800">
                       <FormattedMessage id="node.stats.details" />
                     </Text>
+                    {isStaleData && (
+                      <Badge colorScheme="orange" fontSize="0.65em" px={2} py={0.5} borderRadius="md">
+                        <FormattedMessage
+                          id="node.warning.stale_data"
+                          defaultMessage="data delayed"
+                        />
+                      </Badge>
+                    )}
                   </Flex>
                   {loadingNode ? (
                     <List />
