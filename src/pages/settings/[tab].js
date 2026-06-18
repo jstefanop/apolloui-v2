@@ -212,8 +212,8 @@ const SettingsTab = () => {
     } = dataSettings;
 
     // Use the first pool if it exists, otherwise create a default empty pool
-    const poolToUse = poolsData && poolsData.length > 0 
-      ? poolsData[0] 
+    const poolToUse = poolsData && poolsData.length > 0
+      ? poolsData[0]
       : {
           enabled: true,
           url: deviceType === 'solo-node' ? 'stratum+tcp://127.0.0.1:3333' : '',
@@ -222,7 +222,13 @@ const SettingsTab = () => {
           index: 1,
         };
 
-    const finalSettings = { ...settingsData, pool: poolToUse };
+    // Backup pool (Apollo III feature, retro-active for BTC/II if firmware accepts).
+    // Persisted as pools[1] in the pools table (index=2).
+    const backupPoolToUse = poolsData && poolsData.length > 1
+      ? { ...poolsData[1], enabled: !!poolsData[1].enabled }
+      : { enabled: false, url: '', username: '', password: 'x', index: 2 };
+
+    const finalSettings = { ...settingsData, pool: poolToUse, backupPool: backupPoolToUse };
     setSettings(finalSettings);
     setCurrentSettings(finalSettings);
     setBackupData({ settings: settingsData, pools: poolsData });
@@ -243,6 +249,7 @@ const SettingsTab = () => {
       'frequency',
       'voltage',
       'pool',
+      'backupPool',
       'fan_low',
       'fan_high',
       'powerLedOff',
@@ -410,6 +417,7 @@ const SettingsTab = () => {
         nodeSoftware,
         powerLedOff,
         pool,
+        backupPool,
         btcsig,
         startdiff,
       } = settings;
@@ -481,16 +489,32 @@ const SettingsTab = () => {
         index: index !== undefined ? index : 1, // Default to 1 if not set
       };
 
+      // Build the pools payload: primary always, backup only when enabled and valid.
+      const poolsPayload = [poolInput];
+      if (backupPool && backupPool.enabled && backupPool.url) {
+        if (!backupPool.url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/)) {
+          setIsSaving(false);
+          return setErrorForm('Invalid backup pool URL');
+        }
+        poolsPayload.push({
+          enabled: true,
+          url: backupPool.url,
+          username: backupPool.username || username,
+          password: backupPool.password || 'x',
+          index: 2,
+        });
+      }
+
       // Save settings and pools
       const settingsResult = await saveSettings({ variables: { input } });
-      
+
       // Check for errors in settings update response
       if (settingsResult?.data?.Settings?.update?.error) {
         setIsSaving(false);
         return setErrorForm(settingsResult.data.Settings.update.error.message);
       }
-      
-      const poolsResult = await savePools({ variables: { input: { pools: [poolInput] } } });
+
+      const poolsResult = await savePools({ variables: { input: { pools: poolsPayload } } });
       
       // Check for errors in pools update response
       if (poolsResult?.data?.Pool?.update?.error) {

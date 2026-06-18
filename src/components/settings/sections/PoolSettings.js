@@ -6,6 +6,7 @@ import {
   Flex,
   Grid,
   GridItem,
+  Switch,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -20,6 +21,7 @@ const PoolSettings = () => {
   const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
   const [pool, setPool] = useState();
+  const [backupPreset, setBackupPreset] = useState();
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
 
@@ -56,6 +58,55 @@ const PoolSettings = () => {
       nodeEnableSoloMining: false,
       pool: poolChanged,
     });
+  };
+
+  const handleBackupPoolChange = (e) => {
+    setErrorForm(null);
+
+    const backupChanged = {
+      ...(settings.backupPool || { enabled: false, password: 'x', index: 2 }),
+    };
+
+    backupChanged[e.target.name] = e.target.value;
+
+    setSettings({
+      ...settings,
+      backupPool: backupChanged,
+    });
+  };
+
+  const handleBackupPoolPreset = (e) => {
+    const preset = presetPools[e.target.value];
+    const current = settings.backupPool || {
+      enabled: true,
+      url: '',
+      username: '',
+      password: 'x',
+      index: 2,
+    };
+    const next = { ...current };
+    if (preset && preset.id !== 'custom') next.url = preset.url;
+    setSettings({ ...settings, backupPool: next });
+    setBackupPreset(preset);
+  };
+
+  const handleBackupPoolToggle = (e) => {
+    setErrorForm(null);
+
+    setSettings({
+      ...settings,
+      backupPool: {
+        ...(settings.backupPool || { url: '', username: '', password: 'x', index: 2 }),
+        enabled: e.target.checked,
+      },
+    });
+  };
+
+  const backupPool = settings.backupPool || {
+    enabled: false,
+    url: '',
+    username: '',
+    password: 'x',
   };
 
   return (
@@ -154,6 +205,123 @@ const PoolSettings = () => {
           </SimpleCard>
         </GridItem>
       </Grid>
+
+      <SimpleCard title={''} textColor={textColor}>
+        <Flex justifyContent="space-between" alignItems="center">
+          <FormLabel
+            htmlFor="backupPoolEnabled"
+            color={textColor}
+            fontWeight="bold"
+            mb="0"
+            _hover={{ cursor: 'pointer' }}
+          >
+            {intl.formatMessage({ id: 'settings.sections.pool.backup.title' })}
+          </FormLabel>
+          <Switch
+            id="backupPoolEnabled"
+            isChecked={!!backupPool.enabled}
+            onChange={handleBackupPoolToggle}
+            isDisabled={settings.nodeEnableSoloMining}
+          />
+        </Flex>
+        <Text fontSize="sm" color="gray.500" mt="1">
+          {intl.formatMessage({ id: 'settings.sections.pool.backup.description' })}
+        </Text>
+      </SimpleCard>
+
+      {backupPool.enabled && (
+        <SimpleCard title={''} textColor={textColor}>
+          <FormLabel
+            display="flex"
+            htmlFor={'backupPoolPreset'}
+            color={textColor}
+            fontWeight="bold"
+            _hover={{ cursor: 'pointer' }}
+          >
+            {intl.formatMessage({ id: 'settings.sections.pool.select_pool' })}
+          </FormLabel>
+          <Select
+            id="backupPoolPreset"
+            isRequired={true}
+            fontSize="sm"
+            label="Select a backup pool *"
+            onChange={handleBackupPoolPreset}
+            disabled={settings.nodeEnableSoloMining}
+          >
+            <option></option>
+            {presetPools.map((item, index) => (
+              <option
+                value={index}
+                key={index}
+                selected={backupPreset && item.name === backupPreset.name}
+              >
+                {item.name}
+              </option>
+            ))}
+          </Select>
+          {backupPreset && backupPreset.webUrl && (
+            <Flex flexDir="row" mt="2">
+              <a href={backupPreset.webUrl} target="_blank" rel="noreferrer">
+                <Text fontSize={'sm'}>
+                  {intl.formatMessage({ id: 'settings.sections.pool.learn_more' })}
+                </Text>
+              </a>
+            </Flex>
+          )}
+        </SimpleCard>
+      )}
+
+      {backupPool.enabled && (
+        <Grid
+          templateColumns={{
+            base: 'repeat(1, 1fr)',
+            md: 'repeat(6, 1fr)',
+          }}
+          gap={2}
+        >
+          <GridItem colSpan={{ base: '', md: 3 }}>
+            <SimpleCard title={intl.formatMessage({ id: 'settings.sections.pool.url.title' })} textColor={textColor}>
+              <Input
+                color={inputTextColor}
+                name="url"
+                type="text"
+                placeholder={intl.formatMessage({ id: 'settings.sections.pool.url.placeholder' })}
+                value={backupPool.url || ''}
+                onChange={handleBackupPoolChange}
+                disabled={
+                  settings.nodeEnableSoloMining || (backupPreset && backupPreset.id !== 'custom')
+                }
+              />
+            </SimpleCard>
+          </GridItem>
+          <GridItem colSpan={{ base: '', md: 2 }}>
+            <SimpleCard title={intl.formatMessage({ id: 'settings.sections.pool.username.title' })} textColor={textColor}>
+              <Input
+                color={inputTextColor}
+                name="username"
+                type="text"
+                placeholder={intl.formatMessage({ id: 'settings.sections.pool.username.placeholder' })}
+                value={backupPool.username || ''}
+                onChange={handleBackupPoolChange}
+                disabled={settings.nodeEnableSoloMining}
+              />
+            </SimpleCard>
+          </GridItem>
+          <GridItem colSpan={{ base: '', md: 1 }}>
+            <SimpleCard title={intl.formatMessage({ id: 'settings.sections.pool.password.title' })} textColor={textColor}>
+              <Input
+                color={inputTextColor}
+                name="password"
+                type="text"
+                placeholder={intl.formatMessage({ id: 'settings.sections.pool.password.placeholder' })}
+                value={backupPool.password || ''}
+                onChange={handleBackupPoolChange}
+                disabled={settings.nodeEnableSoloMining}
+              />
+            </SimpleCard>
+          </GridItem>
+        </Grid>
+      )}
     </PanelCard>
   );
 };
