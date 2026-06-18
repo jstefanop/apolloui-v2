@@ -329,6 +329,14 @@
     "title": "Sistema Apollo BTC",
     "dashboard": "Panel de control",
     "memory_stats": "Estadísticas de Memoria",
+    "device": {
+      "solo_node": "Solo Node",
+      "solo_node_miner": "Solo Node + miner USB",
+      "apollo_btc": "Apollo BTC",
+      "apollo_ii": "Apollo II",
+      "apollo_iii": "Apollo III",
+      "apollo_iii_usb": "Apollo III + miner USB"
+    },
     "stats": {
       "architecture": "Arquitectura",
       "hostname": "Nombre del host",
@@ -408,6 +416,12 @@
               "description": "Puedes establecer una frecuencia personalizada o restablecer a los valores por defecto.",
               "min": "Mín",
               "max": "Máx"
+            },
+            "target": {
+              "title": "Dispositivo objetivo",
+              "description": "Apollo II y Apollo III tienen parámetros distintos. Elige a qué hardware se aplican estos ajustes personalizados.",
+              "apollo_btc_ii": "Apollo BTC / II (USB)",
+              "apollo_iii": "Apollo III (interno)"
             }
           }
         },
@@ -534,6 +548,10 @@
         "password": {
           "title": "Contraseña",
           "placeholder": "x"
+        },
+        "backup": {
+          "title": "Pool de respaldo",
+          "description": "Si el pool principal deja de estar disponible, el miner conmutará automáticamente a este pool de respaldo."
         }
       },
       "solo": {

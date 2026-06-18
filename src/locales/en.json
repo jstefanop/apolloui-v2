@@ -351,6 +351,14 @@
     "title": "Apollo OS System",
     "dashboard": "Dashboard",
     "memory_stats": "Memory Statistics",
+    "device": {
+      "solo_node": "Solo Node",
+      "solo_node_miner": "Solo Node + USB miner",
+      "apollo_btc": "Apollo BTC",
+      "apollo_ii": "Apollo II",
+      "apollo_iii": "Apollo III",
+      "apollo_iii_usb": "Apollo III + USB miner"
+    },
     "stats": {
       "architecture": "Architecture",
       "hostname": "Hostname",
@@ -430,6 +438,12 @@
               "description": "You can set your miner custom frequency or reset to default value.",
               "min": "Min",
               "max": "Max"
+            },
+            "target": {
+              "title": "Target device",
+              "description": "Apollo II and Apollo III have different tunables. Pick which hardware these custom settings apply to.",
+              "apollo_btc_ii": "Apollo BTC / II (USB)",
+              "apollo_iii": "Apollo III (internal)"
             }
           }
         },
@@ -556,6 +570,10 @@
         "password": {
           "title": "Password",
           "placeholder": "x"
+        },
+        "backup": {
+          "title": "Backup pool",
+          "description": "If the primary pool becomes unreachable, the miner will failover to this backup."
         }
       },
       "solo": {
