@@ -90,7 +90,7 @@ const MinerMetricsGrid = React.memo(({
 
   return (
     <SimpleGrid columns={{ base: 1, md: 2 }} gap={4} width="100%">
-      {/* Hashrate — blue/purple */}
+      {/* Hashrate (miner + pool) — same unit, single y-axis */}
       <MiniMetricChart
         title="Hashrate"
         icon={MinerIcon}
@@ -103,24 +103,19 @@ const MinerMetricsGrid = React.memo(({
         tooltipFormatter={hashrateTooltipFmt}
         interval={interval}
         loading={isLoading}
+        secondary={{
+          title: 'Pool',
+          valueNum: poolParts.num,
+          valueUnit: poolParts.unit,
+          data: poolData,
+          colorFrom: '#38B2AC',
+          colorTo: '#1D4044',
+          tooltipFormatter: hashrateTooltipFmt,
+          tooltipUnit: '',
+        }}
       />
 
-      {/* Pool Hashrate — teal */}
-      <MiniMetricChart
-        title="Pool Hashrate"
-        icon={PoolIcon}
-        valueNum={poolParts.num}
-        valueUnit={poolParts.unit}
-        labels={labels}
-        data={poolData}
-        colorFrom="#38B2AC"
-        colorTo="#1D4044"
-        tooltipFormatter={hashrateTooltipFmt}
-        interval={interval}
-        loading={isLoading}
-      />
-
-      {/* Temperature — orange → red */}
+      {/* Temperature + Power — different units, dual y-axis */}
       <MiniMetricChart
         title="Temperature"
         icon={MinerTempIcon}
@@ -133,21 +128,15 @@ const MinerMetricsGrid = React.memo(({
         tooltipUnit="°C"
         interval={interval}
         loading={isLoading}
-      />
-
-      {/* Power Usage — amber → red */}
-      <MiniMetricChart
-        title="Power Usage"
-        icon={PowerIcon}
-        valueNum={powerParts.num}
-        valueUnit={powerParts.unit}
-        labels={labels}
-        data={wattData}
-        colorFrom="#ECC94B"
-        colorTo="#9B2335"
-        tooltipUnit="W"
-        interval={interval}
-        loading={isLoading}
+        secondary={{
+          title: 'Power',
+          valueNum: powerParts.num,
+          valueUnit: powerParts.unit,
+          data: wattData,
+          colorFrom: '#ECC94B',
+          colorTo: '#9B2335',
+          tooltipUnit: 'W',
+        }}
       />
     </SimpleGrid>
   );
