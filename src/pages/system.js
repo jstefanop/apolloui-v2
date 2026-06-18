@@ -30,14 +30,47 @@ import { TimeIcon } from '../components/UI/Icons/TimeIcon';
 import moment from 'moment';
 import MultiStatistics from '../components/UI/MultiStatistics';
 import { NetworkIcon } from '../components/UI/Icons/NetworkIcon';
-import { FaWifi, FaEthernet, FaCopy, FaThermometerHalf, FaServer } from 'react-icons/fa';
+import { FaWifi, FaEthernet, FaCopy, FaThermometerHalf, FaServer, FaMicrochip } from 'react-icons/fa';
+import { useDeviceConfig } from '../contexts/DeviceConfigContext';
+import { version as appVersion } from '../../package.json';
+
+const deriveDeviceLabel = (mode, usbMiners) => {
+  // Returns the i18n suffix that matches the active device state. Falls back
+  // to a generic "Apollo" label if the env hasn't been populated yet.
+  switch (mode) {
+    case 'apollo-iii':
+      return 'apollo_iii';
+    case 'apollo-iii+usb':
+      return 'apollo_iii_usb';
+    case 'apollo-ii': {
+      // Distinguish Apollo BTC (Apollo I USB only) from Apollo II.
+      const onlyBtc =
+        Array.isArray(usbMiners) &&
+        usbMiners.length === 1 &&
+        usbMiners[0] === 'apollo-i';
+      return onlyBtc ? 'apollo_btc' : 'apollo_ii';
+    }
+    case 'solo-node+miner':
+      return 'solo_node_miner';
+    case 'solo-node':
+      return 'solo_node';
+    default:
+      return 'apollo_ii';
+  }
+};
 
 const System = () => {
   const intl = useIntl();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
+  const headingColor = useColorModeValue('brand.900', 'white');
+  const badgeBg = useColorModeValue('gray.100', 'whiteAlpha.200');
   const toast = useToast();
+
+  const { mode, usbMiners, hasInternalMiner } = useDeviceConfig();
+  const deviceLabelKey = deriveDeviceLabel(mode, usbMiners);
+  const DeviceBadgeIcon = hasInternalMiner ? FaMicrochip : FaServer;
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(
@@ -105,7 +138,37 @@ const System = () => {
       <Head>
         <title>{intl.formatMessage({ id: 'system.title' })}</title>
       </Head>
-      
+
+      <Flex
+        align="center"
+        justify="space-between"
+        mb="20px"
+        gap="12px"
+        flexWrap="wrap"
+      >
+        <Flex align="baseline" gap="8px" flexWrap="wrap">
+          <Text fontSize="2xl" fontWeight="bold" color={headingColor}>
+            {intl.formatMessage({ id: 'system.title' })}
+          </Text>
+          <Text fontSize="sm" color="gray.500">
+            v{appVersion}
+          </Text>
+        </Flex>
+        <Flex
+          align="center"
+          gap="8px"
+          px="12px"
+          py="6px"
+          borderRadius="full"
+          bg={badgeBg}
+        >
+          <Icon as={DeviceBadgeIcon} color={iconColorReversed} />
+          <Text fontSize="sm" fontWeight="medium">
+            {intl.formatMessage({ id: `system.device.${deviceLabelKey}` })}
+          </Text>
+        </Flex>
+      </Flex>
+
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing="20px" mb="20px">
         <Card py="15px" bgColor={cardColor}>
           <Flex direction="column" h="100%">
