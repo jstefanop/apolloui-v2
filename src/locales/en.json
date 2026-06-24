@@ -410,6 +410,11 @@
         "modes": {
           "title": "Miner modes settings",
           "description": "Manage miner specific configurations",
+          "apollo_iii_only": "Apollo III only",
+          "super_eco": {
+            "title": "SUPER ECO",
+            "description": "Super ECO pushes efficiency even further than ECO for the lowest power draw and noise. Available on Apollo III only."
+          },
           "eco": {
             "title": "ECO",
             "description": "In ECO mode your miner will be at its most efficient, but its hashrate will be slightly slower. This mode is recommended, and will produce the least amount of noise and heat."
@@ -573,7 +578,8 @@
         },
         "backup": {
           "title": "Backup pool",
-          "description": "If the primary pool becomes unreachable, the miner will failover to this backup."
+          "description": "If the primary pool becomes unreachable, the miner will failover to this backup.",
+          "apollo_iii_only": "Apollo III only"
         }
       },
       "solo": {
