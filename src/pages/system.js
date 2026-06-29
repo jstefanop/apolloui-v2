@@ -32,7 +32,9 @@ import MultiStatistics from '../components/UI/MultiStatistics';
 import { NetworkIcon } from '../components/UI/Icons/NetworkIcon';
 import { FaWifi, FaEthernet, FaCopy, FaThermometerHalf, FaServer, FaMicrochip } from 'react-icons/fa';
 import { useDeviceConfig } from '../contexts/DeviceConfigContext';
-import { version as appVersion } from '../../package.json';
+import packageInfo from '../../package.json';
+
+const appVersion = packageInfo.version;
 
 const deriveDeviceLabel = (mode, usbMiners) => {
   // Returns the i18n suffix that matches the active device state. Falls back
