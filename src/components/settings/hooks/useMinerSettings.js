@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSettings } from '../context/SettingsContext';
-import { useDeviceConfig } from '../../../contexts/DeviceConfigContext';
 import { useIntl } from 'react-intl';
 import _ from 'lodash';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
@@ -8,17 +7,9 @@ import { FaBalanceScale } from 'react-icons/fa';
 import { RiUserSettingsFill } from 'react-icons/ri';
 import { MdHdrAuto } from 'react-icons/md';
 
-const deriveDefaultCustomTarget = (chassis, hasInternalMiner, hasUsbMiners) => {
-  // Hybrid → default to Apollo III (the internal miner is the headline hardware).
-  if (hasInternalMiner && hasUsbMiners) return 'apollo-iii';
-  if (chassis === 'apollo-iii' || hasInternalMiner) return 'apollo-iii';
-  return 'apollo-btc-ii';
-};
-
 export const useMinerSettings = () => {
   const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
-  const { chassis, hasInternalMiner, hasUsbMiners, isHybrid } = useDeviceConfig();
 
   // Initial configurations for miner modes
   const { current: minerInitialModes } = useRef([
@@ -268,28 +259,6 @@ export const useMinerSettings = () => {
     setSettings({ ...settings, powerLedOff: v });
   };
 
-  // Custom-mode target device (Apollo BTC/II vs Apollo III).
-  // The selector is interactive only in hybrid mode (state #5); in single-family
-  // states it's locked to the detected family.
-  // TBD: John — once the Apollo III custom tunables schema lands, wire each
-  // target to its own sliders and persist via customMode: { apolloBtcIi, apolloIii }.
-  const [customTarget, setCustomTargetState] = useState(() =>
-    deriveDefaultCustomTarget(chassis, hasInternalMiner, hasUsbMiners)
-  );
-
-  useEffect(() => {
-    if (!isHybrid) {
-      setCustomTargetState(
-        deriveDefaultCustomTarget(chassis, hasInternalMiner, hasUsbMiners)
-      );
-    }
-  }, [chassis, hasInternalMiner, hasUsbMiners, isHybrid]);
-
-  const setCustomTarget = (next) => {
-    if (!isHybrid) return; // locked outside hybrid
-    setCustomTargetState(next);
-  };
-
   return {
     minerModes,
     fanMode,
@@ -302,8 +271,5 @@ export const useMinerSettings = () => {
     handleCustomFanModeChange,
     handleCustomFanModeReset,
     handleSwitchPowerLedOff,
-    customTarget,
-    setCustomTarget,
-    customTargetSelectable: isHybrid,
   };
 };
