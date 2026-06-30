@@ -23,15 +23,6 @@ export const useMinerSettings = () => {
   // Initial configurations for miner modes
   const { current: minerInitialModes } = useRef([
     {
-      id: 'super-eco',
-      icon: IoLeaf,
-      color: 'green',
-      isIiiOnly: true,
-      title: intl.formatMessage({ id: 'settings.sections.miner.modes.super_eco.title' }),
-      selected: false,
-      description: intl.formatMessage({ id: 'settings.sections.miner.modes.super_eco.description' }),
-    },
-    {
       id: 'eco',
       icon: IoLeaf,
       color: 'brand',
@@ -143,9 +134,7 @@ export const useMinerSettings = () => {
     ],
   };
 
-  const [minerModes, setMinerModes] = useState(() =>
-    minerInitialModes.filter((mode) => !mode.isIiiOnly || hasInternalMiner)
-  );
+  const [minerModes, setMinerModes] = useState(minerInitialModes);
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [currentMode, setCurrentMode] = useState({ id: 'loading' });
   const [minerPowerLedMode, setMinerPowerLedMode] = useState({
@@ -164,25 +153,16 @@ export const useMinerSettings = () => {
     setCurrentMode(_.find(minerInitialModes, { id: settings.minerMode }));
 
     setMinerModes(
-      _.chain(minerInitialModes)
-        // Apollo III-only presets are hidden on devices without an internal III.
-        .filter((mode) => !mode.isIiiOnly || hasInternalMiner)
-        .map((mode) => {
-          mode.selected = mode.id === settings.minerMode;
+      _.map(minerInitialModes, (mode) => {
+        if (mode.id === settings.minerMode) mode.selected = true;
+        else mode.selected = false;
 
-          if (mode.id === 'custom') {
-            mode.frequency = settings.frequency;
-            mode.voltage = settings.voltage;
-          }
-          // "Apollo III only" badge shown only in hybrid (mixed III + USB).
-          if (mode.isIiiOnly) {
-            mode.alertBadge = isHybrid
-              ? intl.formatMessage({ id: 'settings.sections.miner.modes.apollo_iii_only' })
-              : undefined;
-          }
-          return mode;
-        })
-        .value()
+        if (mode.id === 'custom') {
+          mode.frequency = settings.frequency;
+          mode.voltage = settings.voltage;
+        }
+        return mode;
+      })
     );
 
     setFanMode((el) => {
@@ -200,7 +180,7 @@ export const useMinerSettings = () => {
         selected: !settings.powerLedOff,
       };
     });
-  }, [settings, minerInitialModes, hasInternalMiner, isHybrid, intl]);
+  }, [settings, minerInitialModes]);
 
   // Handle miner mode change
   const handleSwitchMinerMode = (e) => {

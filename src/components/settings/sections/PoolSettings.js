@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Badge,
   FormLabel,
   Select,
   Input,
@@ -16,15 +15,11 @@ import { PoolIcon } from '../../UI/Icons/PoolIcon';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
 import { useSettings } from '../context/SettingsContext';
-import { useDeviceConfig } from '../../../contexts/DeviceConfigContext';
 import { presetPools } from '../../../lib/utils';
 
 const PoolSettings = () => {
   const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
-  // Backup pool is an Apollo III-only feature: hidden without an internal III,
-  // badged "Apollo III only" in hybrid (mixed III + USB), plain on pure III.
-  const { hasInternalMiner, isHybrid } = useDeviceConfig();
   const [pool, setPool] = useState();
   const [backupPreset, setBackupPreset] = useState();
   const textColor = useColorModeValue('brands.900', 'white');
@@ -211,26 +206,17 @@ const PoolSettings = () => {
         </GridItem>
       </Grid>
 
-      {hasInternalMiner && (
-        <>
       <SimpleCard title={''} textColor={textColor}>
         <Flex justifyContent="space-between" alignItems="center">
-          <Flex align="center">
-            <FormLabel
-              htmlFor="backupPoolEnabled"
-              color={textColor}
-              fontWeight="bold"
-              mb="0"
-              _hover={{ cursor: 'pointer' }}
-            >
-              {intl.formatMessage({ id: 'settings.sections.pool.backup.title' })}
-            </FormLabel>
-            {isHybrid && (
-              <Badge variant="solid" colorScheme="gray">
-                {intl.formatMessage({ id: 'settings.sections.pool.backup.apollo_iii_only' })}
-              </Badge>
-            )}
-          </Flex>
+          <FormLabel
+            htmlFor="backupPoolEnabled"
+            color={textColor}
+            fontWeight="bold"
+            mb="0"
+            _hover={{ cursor: 'pointer' }}
+          >
+            {intl.formatMessage({ id: 'settings.sections.pool.backup.title' })}
+          </FormLabel>
           <Switch
             id="backupPoolEnabled"
             isChecked={!!backupPool.enabled}
@@ -335,8 +321,6 @@ const PoolSettings = () => {
             </SimpleCard>
           </GridItem>
         </Grid>
-      )}
-        </>
       )}
     </PanelCard>
   );

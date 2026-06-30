@@ -410,11 +410,6 @@
         "modes": {
           "title": "Miner-Modus-Einstellungen",
           "description": "Spezifische Miner-Konfigurationen verwalten",
-          "apollo_iii_only": "Nur Apollo III",
-          "super_eco": {
-            "title": "SUPER ECO",
-            "description": "Super ECO steigert die Effizienz noch über den ECO-Modus hinaus für minimalen Stromverbrauch und Geräuschpegel. Nur auf Apollo III verfügbar."
-          },
           "eco": {
             "title": "ECO",
             "description": "Im ECO-Modus arbeitet Ihr Miner am effizientesten, hat aber eine etwas geringere Hashrate. Dieser Modus wird empfohlen und erzeugt die geringste Geräusch- und Wärmeentwicklung."
@@ -579,8 +574,7 @@
         },
         "backup": {
           "title": "Backup-Pool",
-          "description": "Wenn der primäre Pool nicht erreichbar ist, wechselt der Miner automatisch auf diesen Backup-Pool.",
-          "apollo_iii_only": "Nur Apollo III"
+          "description": "Wenn der primäre Pool nicht erreichbar ist, wechselt der Miner automatisch auf diesen Backup-Pool."
         }
       },
       "solo": {
