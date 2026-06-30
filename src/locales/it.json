@@ -469,7 +469,8 @@
         "connect": "Connetti",
         "software": {
           "title": "Software del Nodo",
-          "description": "Scegli tra Bitcoin Core e Bitcoin Knots"
+          "description": "Scegli tra Bitcoin Core e Bitcoin Knots",
+          "default": "Predefinito"
         },
         "tor_mode": {
           "title": "Modalità TOR",
@@ -588,6 +589,8 @@
         "btc_signature_info": "Questa è la firma del blocco che verrà visualizzata se trovi un blocco in solo. Puoi lasciare il valore predefinito, o personalizzarlo con il tuo messaggio/firma da mostrare al mondo!",
         "startdiff": "Difficoltà Iniziale",
         "startdiff_info": "Modifica il valore della difficoltà iniziale per i miner che si connettono al Solo Pool, utile per hashrate molto bassi o molto alti",
+        "mindiff": "Difficoltà Minima",
+        "mindiff_info": "Imposta una difficoltà minima più alta per impedire al vardiff di scendere sotto questo livello, utile per noleggio/hashrate elevato per mantenere basso il numero di share al secondo",
         "invalid_address": "Aggiungi un indirizzo Bitcoin valido",
         "incompatible_address": "Attenzione: gli indirizzi Bitcoin P2WSH e P2TR non sono validi per il solo mining. Aggiungi un indirizzo Bitcoin diverso"
       }

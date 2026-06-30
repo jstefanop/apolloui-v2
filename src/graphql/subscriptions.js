@@ -161,6 +161,7 @@ export const SETTINGS_SUBSCRIPTION = gql`
           btcsig
           nodeSoftware
           startdiff
+          mindiff
         }
       }
       error {

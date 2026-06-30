@@ -420,6 +420,7 @@ const SettingsTab = () => {
         backupPool,
         btcsig,
         startdiff,
+        mindiff,
       } = settings;
 
       // Ensure pool exists with default values
@@ -479,6 +480,7 @@ const SettingsTab = () => {
         powerLedOff,
         btcsig,
         startdiff,
+        mindiff,
       };
 
       const poolInput = {

@@ -479,7 +479,8 @@
         "connect": "Connect",
         "software": {
           "title": "Node Software",
-          "description": "Choose between Bitcoin Core and Bitcoin Knots"
+          "description": "Choose between Bitcoin Core and Bitcoin Knots",
+          "default": "Default"
         },
         "tor_mode": {
           "title": "TOR mode",
@@ -598,6 +599,8 @@
         "btc_signature_info": "This is the block signature displayed if you find a solo block. You can leave as default, or tag it with your own message/signature for the world to see!",
         "startdiff": "Start Difficulty",
         "startdiff_info": "Modify the start difficulty value for miners connecting to Solo Pool, this is useful for really low or really high hashrate",
+        "mindiff": "Minimum Difficulty",
+        "mindiff_info": "Set a higher minimum difficulty to force var diff to not fall below this level, useful for rental/high hashpower to keep shares per second low",
         "invalid_address": "Please add a valid Bitcoin address",
         "incompatible_address": "Warning: P2WSH and P2TR Bitcoin address are not valid for SOLO mining. Please add a different Bitcoin address"
       }

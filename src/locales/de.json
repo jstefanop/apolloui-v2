@@ -479,7 +479,8 @@
         "connect": "Verbinden",
         "software": {
           "title": "Node-Software",
-          "description": "Wählen Sie zwischen Bitcoin Core und Bitcoin Knots"
+          "description": "Wählen Sie zwischen Bitcoin Core und Bitcoin Knots",
+          "default": "Standard"
         },
         "tor_mode": {
           "title": "TOR-Modus",
@@ -598,6 +599,8 @@
         "btc_signature_info": "Dies ist die Blocksignatur, die angezeigt wird, wenn Sie einen Solo-Block finden. Sie können den Standardwert belassen oder ihn mit Ihrer eigenen Nachricht/Signatur versehen, die die ganze Welt sehen kann!",
         "startdiff": "Start-Schwierigkeit",
         "startdiff_info": "Ändern Sie den Start-Schwierigkeitswert für Miner, die sich mit dem Solo Pool verbinden. Dies ist nützlich für sehr niedrige oder sehr hohe Hashraten",
+        "mindiff": "Minimale Schwierigkeit",
+        "mindiff_info": "Legen Sie eine höhere minimale Schwierigkeit fest, damit Vardiff nicht unter dieses Niveau fällt – nützlich bei Vermietung/hoher Hashrate, um die Shares pro Sekunde niedrig zu halten",
         "invalid_address": "Bitte fügen Sie eine gültige Bitcoin-Adresse hinzu",
         "incompatible_address": "Warnung: P2WSH- und P2TR-Bitcoin-Adresse sind für SOLO-Mining nicht gültig. Bitte fügen Sie eine andere Bitcoin-Adresse hinzu"
       }
