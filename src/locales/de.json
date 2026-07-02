@@ -325,7 +325,6 @@
         "title": "Unerwarteter Solo-Service-Status",
         "description": "Der Solo-Service ist online, sollte aber angehalten werden. Bitte überprüfen Sie seinen Status oder starten Sie ihn neu."
       },
-
       "waiting_share": {
         "title": "Warten auf ersten Share",
         "description": "Bitte warten Sie, bis der erste Share empfangen wird."
@@ -688,10 +687,6 @@
         "title": "Solo-Mining Erfordert Synchronisierte Node",
         "description": "Solo-Mining kann nur verwendet werden, wenn Ihre Node vollständig synchronisiert ist. Sie können es jetzt konfigurieren, aber das Mining beginnt erst, wenn die Node-Synchronisierung abgeschlossen ist."
       },
-      "node_not_synced": {
-        "title": "Node nicht vollständig synchronisiert",
-        "description": "Solo-Mining beginnt erst, wenn Ihr Node zu 100% synchronisiert ist. Sie können diese Option jetzt auswählen, aber das Mining beginnt automatisch, wenn die Synchronisierung abgeschlossen ist."
-      },
       "solo": {
         "title": "Solo-Mining",
         "description": "Sie konkurrieren mit dem gesamten Netzwerk um einen vollständigen Bitcoin-Block (die gesamte BTC-Belohnung). Sie erhalten während des Minings keine Belohnungen, in der Hoffnung, den gesamten Block zu finden. Dies wird auch als \"Lotterie\"-Mining bezeichnet, da die Chancen gering sind, aber es maximale Dezentralisierung des Bitcoin-Netzwerks erzeugt. Wenn es Millionen von Solo-Minern gibt, werden täglich Solo-Blöcke gefunden und sichergestellt, dass Bitcoin niemals zensiert werden kann!"
@@ -737,8 +732,7 @@
     },
     "common": {
       "previous": "Zurück",
-      "next": "Weiter",
-      "get_started": "Setup-Prozess starten"
+      "next": "Weiter"
     }
   },
   "footer": {

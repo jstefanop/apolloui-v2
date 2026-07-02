@@ -325,7 +325,6 @@
         "title": "Unexpected solo service status",
         "description": "The solo service is online, but it was requested to stop. Please verify its state or restart."
       },
-
       "waiting_share": {
         "title": "Waiting for first share",
         "description": "Please wait until the first share is received."
