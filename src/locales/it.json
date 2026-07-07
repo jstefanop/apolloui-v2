@@ -24,10 +24,7 @@
       "cpu_usage": "Utilizzo CPU",
       "memory_usage": "Utilizzo memoria",
       "disk_usage": "Utilizzo disco di sistema",
-      "cores": "core",
-      "stats": {
-        "available": "Disponibile"
-      }
+      "cores": "core"
     },
     "solo": {
       "title": "Stato Solo",
@@ -85,6 +82,10 @@
       },
       "online": {
         "message": "Il tuo nodo è <strong>online</strong> e operativo."
+      },
+      "unknown": {
+        "title": "Stato nodo sconosciuto",
+        "description": "Lo stato del servizio nodo è al momento sconosciuto. Attendi qualche minuto affinché il sistema determini lo stato del servizio."
       }
     },
     "table": {
@@ -234,7 +235,11 @@
       "online": {
         "message": "Il tuo miner è <strong>online</strong> e operativo."
       },
-      "pending": "In attesa"
+      "pending": "In attesa",
+      "unknown": {
+        "title": "Stato miner sconosciuto",
+        "description": "Lo stato del servizio miner è al momento sconosciuto. Attendi qualche minuto affinché il sistema determini lo stato del servizio."
+      }
     },
     "hashrate": {
       "current": "Hashrate del miner",
@@ -320,7 +325,6 @@
         "title": "Stato inatteso del servizio solo",
         "description": "Il servizio solo è online, ma è stato richiesto di arrestarlo. Verifica il suo stato o riavvia."
       },
-
       "waiting_share": {
         "title": "In attesa della prima share",
         "description": "Attendere fino a quando non viene ricevuta la prima share."
@@ -335,6 +339,10 @@
       },
       "online": {
         "message": "Il tuo servizio solo mining è <strong>online</strong> e operativo."
+      },
+      "solo_unknown": {
+        "title": "Stato servizio solo sconosciuto",
+        "description": "Lo stato del servizio solo mining è al momento sconosciuto. Attendi qualche minuto affinché il sistema determini lo stato del servizio."
       }
     }
   },
@@ -364,7 +372,8 @@
       "memory_total": "Memoria Totale",
       "memory_used": "Memoria Utilizzata",
       "memory_available": "Memoria Disponibile",
-      "memory_cache": "Memoria Cache"
+      "memory_cache": "Memoria Cache",
+      "available": "Disponibile"
     }
   },
   "settings": {
@@ -450,7 +459,8 @@
         "connect": "Connetti",
         "software": {
           "title": "Software del Nodo",
-          "description": "Scegli tra Bitcoin Core e Bitcoin Knots"
+          "description": "Scegli tra Bitcoin Core e Bitcoin Knots",
+          "default": "Predefinito"
         },
         "tor_mode": {
           "title": "Modalità TOR",
@@ -564,6 +574,8 @@
         "btc_signature_info": "Questa è la firma del blocco che verrà visualizzata se trovi un blocco in solo. Puoi lasciare il valore predefinito, o personalizzarlo con il tuo messaggio/firma da mostrare al mondo!",
         "startdiff": "Difficoltà Iniziale",
         "startdiff_info": "Modifica il valore della difficoltà iniziale per i miner che si connettono al Solo Pool, utile per hashrate molto bassi o molto alti",
+        "mindiff": "Difficoltà Minima",
+        "mindiff_info": "Imposta una difficoltà minima più alta per impedire al vardiff di scendere sotto questo livello, utile per noleggio/hashrate elevato per mantenere basso il numero di share al secondo",
         "invalid_address": "Aggiungi un indirizzo Bitcoin valido",
         "incompatible_address": "Attenzione: gli indirizzi Bitcoin P2WSH e P2TR non sono validi per il solo mining. Aggiungi un indirizzo Bitcoin diverso"
       }
@@ -675,10 +687,6 @@
         "title": "Il Mining in Solo Richiede un Nodo Sincronizzato",
         "description": "Il mining in solo può essere utilizzato solo quando il tuo nodo è completamente sincronizzato. Puoi configurarlo ora, ma il mining inizierà solo quando la sincronizzazione del nodo sarà completa."
       },
-      "node_not_synced": {
-        "title": "Nodo non completamente sincronizzato",
-        "description": "Il mining in solo inizierà solo quando il tuo nodo sarà sincronizzato al 100%. Puoi selezionare questa opzione ora, ma il mining inizierà automaticamente quando la sincronizzazione sarà completata."
-      },
       "solo": {
         "title": "Mining in Solo",
         "description": "Stai competendo con l'intera rete per un blocco Bitcoin completo (l'intera ricompensa BTC). Non ricevi ricompense durante il mining, nella speranza di trovare l'intero blocco. Questo è anche chiamato mining \"lotteria\" perché le probabilità sono basse, ma produce la massima decentralizzazione della rete bitcoin. Se ci sono milioni di miner in solo, i blocchi in solo verranno trovati ogni giorno e garantiranno che Bitcoin non possa mai essere censurato!"
@@ -724,8 +732,7 @@
     },
     "common": {
       "previous": "Precedente",
-      "next": "Avanti",
-      "get_started": "Inizia la configurazione"
+      "next": "Avanti"
     }
   },
   "footer": {

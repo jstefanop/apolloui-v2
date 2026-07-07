@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Portal, Box, useDisclosure } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
@@ -7,29 +7,47 @@ import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
 import Navbar from '../navbar/NavbarAdmin';
 import BlockFoundCelebration from '../UI/BlockFoundCelebration';
+import BackendOfflineScreen from '../UI/BackendOfflineScreen';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { useQuery } from '@apollo/client';
+import { useSubscription, useQuery } from '@apollo/client';
 import { updateNodeStats } from '../../redux/slices/nodeSlice';
-import { NODE_STATS_QUERY } from '../../graphql/node';
-import { MINER_STATS_QUERY } from '../../graphql/miner';
 import { updateMinerStats } from '../../redux/slices/minerSlice';
-import { SOLO_STATS_QUERY } from '../../graphql/solo';
 import { updateSoloStats } from '../../redux/slices/soloSlice';
-import { MCU_STATS_QUERY } from '../../graphql/mcu';
 import { updateMcuStats } from '../../redux/slices/mcuSlice';
-import { GET_SETTINGS_QUERY } from '../../graphql/settings';
 import { updateSettings } from '../../redux/slices/settingsSlice';
-import { settingsSelector } from '../../redux/reselect/settings';
-import { SERVICES_STATUS_QUERY } from '../../graphql/services';
 import { updateServicesStatus } from '../../redux/slices/servicesSlice';
+import { settingsSelector } from '../../redux/reselect/settings';
 import { minerSelector } from '../../redux/reselect/miner';
 import { isAuthError } from '../../redux/utils/errorUtils';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 import { getRoutes } from '../../routes';
+import { GET_SETTINGS_QUERY } from '../../graphql/settings';
+import { subscribeWsStatus } from '../../lib/apolloClient';
+import {
+  MINER_SUBSCRIPTION,
+  NODE_SUBSCRIPTION,
+  MCU_SUBSCRIPTION,
+  SOLO_SUBSCRIPTION,
+  SERVICES_SUBSCRIPTION,
+  SETTINGS_SUBSCRIPTION,
+} from '../../graphql/subscriptions';
+
+// Hook that tracks the WebSocket connection status by subscribing to
+// the module-level tracker maintained in apolloClient.js.
+function useWsConnectionStatus() {
+  const [status, setStatus] = useState('connecting');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const unsubscribe = subscribeWsStatus(setStatus);
+    return unsubscribe;
+  }, []);
+
+  return status;
+}
 
 const createSerializableError = (error) => {
   if (!error) return null;
-  
   return {
     message: error.message || 'Unknown error',
     operationName: error.operation?.operationName || 'Unknown operation',
@@ -40,310 +58,223 @@ const createSerializableError = (error) => {
 const Layout = ({ children }) => {
   const { onOpen } = useDisclosure();
   const dispatch = useDispatch();
-  const minerPollingTime = process.env.NEXT_PUBLIC_POLLING_TIME;
-  const nodePollingTime = process.env.NEXT_PUBLIC_POLLING_TIME_NODE;
   const deviceType = useDeviceType();
-  
+  const wsStatus = useWsConnectionStatus();
+
   // Generate routes dynamically based on device type
-  // Fallback to 'miner' if deviceType is not yet loaded
   const dynamicRoutes = getRoutes(deviceType || 'miner');
   let routes = dynamicRoutes;
 
-  // Miner data - only fetch if not solo-node device
+  // ---------------------------------------------------------------------------
+  // Miner subscription — skip for solo-node devices
+  // ---------------------------------------------------------------------------
   const {
     loading: loadingMiner,
     error: errorMiner,
     data: dataMiner,
-    startPolling: startPollingMiner,
-    stopPolling: stopPollingMiner,
-  } = useQuery(MINER_STATS_QUERY, {
-    fetchPolicy: 'network-only',
-    nextFetchPolicy: 'cache-and-network',
-    skip: typeof window === 'undefined' || !deviceType || deviceType === 'solo-node'
+  } = useSubscription(MINER_SUBSCRIPTION, {
+    skip: typeof window === 'undefined' || !deviceType || deviceType === 'solo-node',
   });
 
   useEffect(() => {
-    // Skip miner polling and data processing for solo-node devices
-    if (!deviceType || deviceType === 'solo-node') {
-      return;
-    }
+    if (!deviceType || deviceType === 'solo-node') return;
 
-    startPollingMiner(minerPollingTime);
-
-    // Create a serializable error object
-    const serializableError = createSerializableError(errorMiner);
-
-    // Prepare the data if available
     const safeData = dataMiner ? {
-      ...dataMiner,
-      Miner: dataMiner.Miner ? {
-        ...dataMiner.Miner,
-        stats: dataMiner.Miner.stats ? {
-          ...dataMiner.Miner.stats,
-          result: dataMiner.Miner.stats.result ? {
-            ...dataMiner.Miner.stats.result,
-            stats: dataMiner.Miner.stats.result.stats
-          } : null
-        } : null
-      } : null
+      Miner: {
+        stats: dataMiner.miner?.stats
+          ? {
+              ...dataMiner.miner.stats,
+              result: dataMiner.miner.stats.result
+                ? {
+                    ...dataMiner.miner.stats.result,
+                    stats: dataMiner.miner.stats.result.stats,
+                  }
+                : null,
+            }
+          : null,
+        online: dataMiner.miner?.online ?? null,
+      },
     } : null;
 
-    // Single dispatch with current state
     dispatch(
       updateMinerStats({
         loading: loadingMiner,
-        error: serializableError,
+        error: createSerializableError(errorMiner),
         data: safeData,
       })
     );
+  }, [loadingMiner, errorMiner, dataMiner, dispatch, deviceType]);
 
-    return () => {
-      stopPollingMiner(); // Stop polling
-    };
-  }, [
-    startPollingMiner,
-    dispatch,
-    loadingMiner,
-    errorMiner,
-    dataMiner,
-    minerPollingTime,
-    stopPollingMiner,
-    deviceType
-  ]);
-
-  // Solo data
+  // ---------------------------------------------------------------------------
+  // Solo subscription
+  // ---------------------------------------------------------------------------
   const {
     loading: loadingSolo,
     error: errorSolo,
     data: dataSolo,
-    startPolling: startPollingSolo,
-    stopPolling: stopPollingSolo,
-  } = useQuery(SOLO_STATS_QUERY, {
-    fetchPolicy: 'network-only',
-    nextFetchPolicy: 'cache-and-network',
-    skip: typeof window === 'undefined'
+  } = useSubscription(SOLO_SUBSCRIPTION, {
+    skip: typeof window === 'undefined',
   });
 
   useEffect(() => {
-    startPollingSolo(minerPollingTime);
-
-    // Create a serializable error object
-    const serializableError = createSerializableError(errorSolo);
-
-    // Single dispatch with current state
     dispatch(
       updateSoloStats({
         loading: loadingSolo,
-        error: serializableError,
-        data: dataSolo,
+        error: createSerializableError(errorSolo),
+        // re-wrap to match { Solo: { stats: SoloStatsOutput } }
+        data: dataSolo ? { Solo: { stats: dataSolo.solo } } : null,
       })
     );
+  }, [loadingSolo, errorSolo, dataSolo, dispatch]);
 
-    return () => {
-      stopPollingSolo(); // Stop polling
-    };
-  }, [
-    startPollingSolo,
-    dispatch,
-    loadingSolo,
-    errorSolo,
-    dataSolo,
-    minerPollingTime,
-    stopPollingSolo
-  ]);
-
-  // Mcu data
+  // ---------------------------------------------------------------------------
+  // MCU subscription
+  // ---------------------------------------------------------------------------
   const {
     loading: loadingMcu,
     error: errorMcu,
     data: dataMcu,
-    startPolling: startPollingMcu,
-    stopPolling: stopPollingMcu,
-  } = useQuery(MCU_STATS_QUERY, {
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
-    skip: typeof window === 'undefined'
+  } = useSubscription(MCU_SUBSCRIPTION, {
+    skip: typeof window === 'undefined',
   });
 
   useEffect(() => {
-    startPollingMcu(minerPollingTime);
-    
-    // Only dispatch if we have data or if the error is not an authentication error
     if (dataMcu || (errorMcu && !isAuthError(errorMcu))) {
-      // Create a serializable error object
-      const serializableError = createSerializableError(errorMcu);
-      
       dispatch(
         updateMcuStats({
           loading: loadingMcu,
-          error: serializableError,
-          data: dataMcu,
+          error: createSerializableError(errorMcu),
+          // re-wrap to match { Mcu: { stats: McuStatsOutput } }
+          data: dataMcu ? { Mcu: { stats: dataMcu.mcu } } : null,
         })
       );
     }
+  }, [loadingMcu, errorMcu, dataMcu, dispatch]);
 
-    return () => {
-      stopPollingMcu(); // Stop polling
-    };
-  }, [
-    startPollingMcu,
-    dispatch,
-    loadingMcu,
-    errorMcu,
-    dataMcu,
-    minerPollingTime,
-    stopPollingMcu
-  ]);
-
-  // Node data
+  // ---------------------------------------------------------------------------
+  // Node subscription
+  // ---------------------------------------------------------------------------
   const {
     loading: loadingNode,
     error: errorNode,
     data: dataNode,
-    startPolling: startPollingNode,
-    stopPolling: stopPollingNode,
-  } = useQuery(NODE_STATS_QUERY, {
-    fetchPolicy: 'network-only',
-    nextFetchPolicy: 'cache-and-network',
-    skip: typeof window === 'undefined'
+  } = useSubscription(NODE_SUBSCRIPTION, {
+    skip: typeof window === 'undefined',
   });
 
   useEffect(() => {
-    startPollingNode(nodePollingTime);
-    
-    // Only dispatch if we have data or if the error is not an authentication error
     if (dataNode || (errorNode && !isAuthError(errorNode))) {
-      // Create a serializable error object
-      const serializableError = createSerializableError(errorNode);
-      
       dispatch(
         updateNodeStats({
           loading: loadingNode,
-          error: serializableError,
-          data: dataNode,
+          error: createSerializableError(errorNode),
+          // re-wrap to match { Node: { stats: NodeStatsOutput } }
+          data: dataNode ? { Node: { stats: dataNode.node } } : null,
         })
       );
     }
+  }, [loadingNode, errorNode, dataNode, dispatch]);
 
-    return () => {
-      stopPollingNode(); // Stop polling
-    };
-  }, [
-    startPollingNode,
-    dispatch,
-    loadingNode,
-    errorNode,
-    dataNode,
-    nodePollingTime,
-    stopPollingNode
-  ]);
+  // ---------------------------------------------------------------------------
+  // Settings — initial fetch via query, then live updates via subscription
+  // ---------------------------------------------------------------------------
 
-  // Settings data
+  // One-shot query to populate settings immediately on mount (subscription only
+  // fires when settings are mutated, so it cannot serve the initial load).
   const {
-    loading: loadingSettings,
-    error: errorSettings,
-    data: dataSettings,
-    startPolling: startPollingSettings,
-    stopPolling: stopPollingSettings,
+    loading: loadingSettingsQuery,
+    error: errorSettingsQuery,
+    data: dataSettingsQuery,
   } = useQuery(GET_SETTINGS_QUERY, {
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
-    skip: typeof window === 'undefined'
+    fetchPolicy: 'network-only',
+    skip: typeof window === 'undefined',
   });
 
   useEffect(() => {
-    startPollingSettings(minerPollingTime);
-    
-    // Only dispatch if we have data or if the error is not an authentication error
-    if (dataSettings || (errorSettings && !isAuthError(errorSettings))) {
-      // Create a serializable error object
-      const serializableError = createSerializableError(errorSettings);
-      
+    if (dataSettingsQuery || (errorSettingsQuery && !isAuthError(errorSettingsQuery))) {
       dispatch(
         updateSettings({
-          loading: loadingSettings,
-          error: serializableError,
-          data: dataSettings,
+          loading: loadingSettingsQuery,
+          error: createSerializableError(errorSettingsQuery),
+          // GET_SETTINGS_QUERY returns { Settings: { read: SettingsUpdateOutput } }
+          data: dataSettingsQuery ?? null,
         })
       );
     }
+  }, [loadingSettingsQuery, errorSettingsQuery, dataSettingsQuery, dispatch]);
 
-    return () => {
-      stopPollingSettings(); // Stop polling
-    };
-  }, [
-    startPollingSettings,
-    dispatch,
-    loadingSettings,
-    errorSettings,
-    dataSettings,
-    minerPollingTime,
-    stopPollingSettings
-  ]);
+  // Subscription picks up any subsequent settings changes (e.g. from another tab/device)
+  const {
+    data: dataSettingsSub,
+    error: errorSettingsSub,
+  } = useSubscription(SETTINGS_SUBSCRIPTION, {
+    skip: typeof window === 'undefined',
+  });
 
-  // Services data
+  useEffect(() => {
+    if (dataSettingsSub) {
+      dispatch(
+        updateSettings({
+          loading: false,
+          error: createSerializableError(errorSettingsSub),
+          data: { Settings: { read: dataSettingsSub.settings } },
+        })
+      );
+    }
+  }, [dataSettingsSub, errorSettingsSub, dispatch]);
+
+  // ---------------------------------------------------------------------------
+  // Services subscription
+  // ---------------------------------------------------------------------------
   const {
     loading: loadingServices,
     error: errorServices,
     data: dataServices,
-    startPolling: startPollingServices,
-    stopPolling: stopPollingServices,
-  } = useQuery(SERVICES_STATUS_QUERY, {
-    fetchPolicy: 'cache-and-network',
-    nextFetchPolicy: 'cache-first',
-    skip: typeof window === 'undefined'
+  } = useSubscription(SERVICES_SUBSCRIPTION, {
+    skip: typeof window === 'undefined',
   });
 
   useEffect(() => {
-    startPollingServices(2000);
-    
-    // Only dispatch if we have data or if the error is not an authentication error
     if (dataServices || (errorServices && !isAuthError(errorServices))) {
-      // Create a serializable error object
-      const serializableError = createSerializableError(errorServices);
-      
       dispatch(
         updateServicesStatus({
           loading: loadingServices,
-          error: serializableError,
-          data: dataServices,
+          error: createSerializableError(errorServices),
+          // re-wrap to match { Services: { stats: StatusOutput } }
+          data: dataServices ? { Services: { stats: dataServices.services } } : null,
         })
       );
     }
+  }, [loadingServices, errorServices, dataServices, dispatch]);
 
-    return () => {
-      stopPollingServices(); // Stop polling
-    };
-  }, [
-    startPollingServices,
-    dispatch,
-    loadingServices,
-    errorServices,
-    dataServices,
-    stopPollingServices
-  ]);
-
-  // Settings data reselected
+  // ---------------------------------------------------------------------------
+  // Derived state for routing and UI
+  // ---------------------------------------------------------------------------
   const {
     data: { nodeEnableSoloMining },
   } = useSelector(settingsSelector, shallowEqual);
 
-  // Get block found status from minerData
-  const {
-    data: {
-      stats: { blockFound },
-    },
-  } = useSelector(minerSelector, shallowEqual);
+  const { data: minerData } = useSelector(minerSelector, shallowEqual);
+  // data.stats can be `false` when there are errors, so use optional access
+  const blockFound = minerData?.stats?.blockFound ?? null;
 
-  // Reparsing routes
   routes = routes.filter((route) => {
-    // Show solo-mining route if device is solo-node OR if nodeEnableSoloMining is enabled
     if (route.path === '/solo-mining' && deviceType !== 'solo-node' && !nodeEnableSoloMining) return false;
     return true;
   });
 
   const { status } = useSession();
   if (status === 'loading' || status === 'unauthenticated') return <></>;
+
+  // Show the full-screen offline overlay when the WS connection is completely lost.
+  // The 'connecting' state is transient (retry in progress) so we only block on 'offline'.
+  if (wsStatus === 'offline') {
+    return (
+      <BackendOfflineScreen
+        onRetry={() => window.location.reload()}
+      />
+    );
+  }
 
   return (
     <motion.div
@@ -383,7 +314,6 @@ const Layout = ({ children }) => {
             </Box>
           </Portal>
 
-          {/* Block Found Celebration */}
           {blockFound && (
             <Box
               mx="auto"

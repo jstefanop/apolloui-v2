@@ -1,5 +1,10 @@
 import React from 'react';
 import {
+  Box,
+  Flex,
+  Text,
+  Badge,
+  Icon,
   Divider,
   Textarea,
   Input,
@@ -9,10 +14,9 @@ import {
   AlertIcon,
   AlertDescription,
   useColorModeValue,
-  Select
 } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
-import { MdSettings } from 'react-icons/md';
+import { MdSettings, MdCheck } from 'react-icons/md';
 import { NodeIcon } from '../../UI/Icons/NodeIcon';
 import PanelCardNode from '../../UI/PanelCardNode';
 import SimpleCard from '../../UI/SimpleCard';
@@ -22,7 +26,7 @@ import { useSettings } from '../context/SettingsContext';
 import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { getNodeErrorMessage } from '../../../lib/utils';
-import { NODE_SOFTWARE_OPTIONS } from '../../../lib/nodeSoftware';
+import { getGroupedNodeSoftware } from '../../../lib/nodeSoftware';
 
 const NodeSettings = () => {
   const intl = useIntl();
@@ -45,6 +49,14 @@ const NodeSettings = () => {
   const sliderTextColor = useColorModeValue('secondaryGray.800', 'gray.300');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
   const bgColor = useColorModeValue('white', 'navy.800');
+
+  // Node software selector styling
+  const swGroups = getGroupedNodeSoftware();
+  const swSelectedBg = useColorModeValue('brand.500', 'brand.400');
+  const swIdleBg = useColorModeValue('white', 'navy.700');
+  const swIdleBorder = useColorModeValue('secondaryGray.400', 'whiteAlpha.300');
+  const swIdleText = useColorModeValue('secondaryGray.900', 'gray.200');
+  const swGroupLabel = useColorModeValue('secondaryGray.600', 'gray.400');
 
   // Node data from Redux
   const { data: dataNode, error: errorNode, loading: loadingNode } = useSelector(nodeSelector, shallowEqual);
@@ -73,16 +85,68 @@ const NodeSettings = () => {
         mb={'20px'}
       >
         <SimpleCard title={intl.formatMessage({ id: 'settings.sections.node.software.title' })} textColor={textColor}>
-          <Select
-            mt={4}
-            value={nodeSoftware}
-            onChange={handleNodeSoftwareChange}
-            color={inputTextColor}
-          >
-            {NODE_SOFTWARE_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>{label}</option>
+          <Flex direction="column" gap="20px" mt={4}>
+            {swGroups.map((group) => (
+              <Box key={group.id}>
+                <Text
+                  fontSize="xs"
+                  fontWeight="bold"
+                  color={swGroupLabel}
+                  mb="10px"
+                  textTransform="uppercase"
+                  letterSpacing="0.6px"
+                >
+                  {group.label}
+                </Text>
+                <Flex wrap="wrap" gap="10px">
+                  {group.options.map((opt) => {
+                    const isSelected = opt.value === nodeSoftware;
+                    return (
+                      <Flex
+                        key={opt.value}
+                        as="button"
+                        type="button"
+                        onClick={() => handleNodeSoftwareChange(opt.value)}
+                        align="center"
+                        justify="center"
+                        gap="8px"
+                        h="46px"
+                        px="16px"
+                        borderRadius="14px"
+                        border="2px solid"
+                        borderColor={isSelected ? swSelectedBg : swIdleBorder}
+                        bg={isSelected ? swSelectedBg : swIdleBg}
+                        color={isSelected ? 'white' : swIdleText}
+                        fontWeight="600"
+                        boxShadow={isSelected ? 'md' : 'none'}
+                        transition="all 0.15s ease"
+                        _hover={{
+                          borderColor: swSelectedBg,
+                          transform: 'translateY(-1px)',
+                        }}
+                      >
+                        {isSelected && <Icon as={MdCheck} w="18px" h="18px" />}
+                        <Text fontSize="md" lineHeight="1">
+                          {opt.version}
+                        </Text>
+                        {opt.isDefault && (
+                          <Badge
+                            colorScheme={isSelected ? 'whiteAlpha' : 'gray'}
+                            variant={isSelected ? 'solid' : 'subtle'}
+                            borderRadius="full"
+                            fontSize="0.6rem"
+                            px="6px"
+                          >
+                            {intl.formatMessage({ id: 'settings.sections.node.software.default' })}
+                          </Badge>
+                        )}
+                      </Flex>
+                    );
+                  })}
+                </Flex>
+              </Box>
             ))}
-          </Select>
+          </Flex>
         </SimpleCard>
 
         <Divider mb="10px" mt="10px" />

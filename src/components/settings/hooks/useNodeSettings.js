@@ -85,10 +85,11 @@ export const useNodeSettings = () => {
     setSettings({ ...settings, nodeAllowLan: !v });
   };
 
-  // Handle Node Software change
-  const handleNodeSoftwareChange = (e) => {
+  // Handle Node Software change. Accepts either a value directly (badge selector)
+  // or a change event (legacy <select>), so it is robust to either call style.
+  const handleNodeSoftwareChange = (arg) => {
     setErrorForm(null);
-    const newSoftware = e.target.value;
+    const newSoftware = arg && typeof arg === 'object' && arg.target ? arg.target.value : arg;
     setNodeSoftware(newSoftware);
     setSettings({ ...settings, nodeSoftware: newSoftware });
   };

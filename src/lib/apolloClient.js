@@ -3,22 +3,24 @@ import {
   ApolloClient,
   ApolloLink,
   HttpLink,
-  from,
   InMemoryCache,
+  split,
+  from,
 } from '@apollo/client';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+import { getMainDefinition } from '@apollo/client/utilities';
 import os from 'os';
 import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from './moment';
-import { sendFeedback, resetFeedback } from '../redux/slices/feedbackSlice';
+import { sendFeedback } from '../redux/slices/feedbackSlice';
 import { store } from '../redux/store';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 
-const ls = typeof window !== 'undefined' ? localStorage : {};
+const ls = typeof window !== 'undefined' ? localStorage : { getItem: () => null };
 
 // Server-side hostname fallback (SSR / Next.js API routes).
 // In the browser we always derive the host from window.location.hostname at
@@ -48,7 +50,6 @@ const convertMomentToString = (obj) => {
   }
 
   if (typeof obj === 'object' && obj !== null) {
-    // Skip handling special objects that could cause circular references
     if (obj._reactFragment || obj.constructor.name !== 'Object') {
       return obj;
     }
@@ -79,37 +80,25 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
     } else {
       err = `[Network error]: ${networkError.message}, Operation: ${operation.operationName}`;
     }
-    
-    // Dispatch a serializable error message (only message and type, no error object)
-    store.dispatch(sendFeedback({ 
-      message: err, 
-      type: 'error'
-    }));
-    
+    store.dispatch(sendFeedback({ message: err, type: 'error' }));
     console.log(err);
   }
 });
 
 const httpLink = new HttpLink({
   uri: () => `http://${getApiHost()}:${portApi}/api/graphql`,
-  // Add a timeout to prevent long-hanging requests
   fetchOptions: {
-    timeout: 10000, // 10 seconds timeout
+    timeout: 10000,
   },
 });
 
 const authLink = new ApolloLink((operation, forward) => {
-  // Retrieve the authorization token from local storage.
   const token = ls.getItem('token');
-
-  // Use the setContext method to set the HTTP headers.
   operation.setContext({
     headers: {
       authorization: token ? `Bearer ${token}` : '',
     },
   });
-
-  // Call the next link in the middleware chain.
   return forward(operation);
 });
 
@@ -125,12 +114,9 @@ const momentTransformLink = new ApolloLink((operation, forward) => {
 // Add a utility function to check if the backend is available
 export const checkBackendAvailability = async () => {
   try {
-    const response = await fetch(`http://${getApiHost()}:${portApi}/api/health`, {
+    const response = await fetch(`http://${getApiHost()}:${portApi}/health`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Short timeout for health check
+      headers: { 'Content-Type': 'application/json' },
       signal: AbortSignal.timeout(3000),
     });
     return response.ok;
@@ -140,42 +126,103 @@ export const checkBackendAvailability = async () => {
   }
 };
 
-// Add a link to check backend availability before making requests
-const healthCheckLink = new ApolloLink((operation, forward) => {
-  // Skip health check for certain operations if needed
-  if (operation.operationName === 'HealthCheck') {
-    return forward(operation);
-  }
-  
-  // For now, let's disable the health check to avoid the error
-  // We'll implement a better solution later
-  return forward(operation);
-});
+// ---------------------------------------------------------------------------
+// WS connection status — tracked module-level, published to React subscribers
+// ---------------------------------------------------------------------------
+// Status values: 'connecting' | 'online' | 'offline'
+let _wsStatus = 'connecting';
+const _wsStatusListeners = new Set();
+// True once we successfully connect for the first time in this page session.
+let _everConnected = false;
+// Reference to the single pending offline timer. We only ever start ONE timer
+// and never reset it on subsequent retry 'closed' events — that was the bug
+// where every failed retry would restart the countdown from zero.
+let _offlineTimer = null;
 
-// Add a retry link for network errors
-const retryLink = new ApolloLink((operation, forward) => {
-  return forward(operation).map((response) => {
-    // If the response has errors, retry the operation
-    if (response.errors) {
-      const retryCount = operation.getContext().retryCount || 0;
-      
-      // Only retry up to 3 times
-      if (retryCount < 3) {
-        // Set the retry count in the operation context
-        operation.setContext({ retryCount: retryCount + 1 });
-        
-        // Retry the operation after a delay
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(forward(operation));
-          }, 1000 * (retryCount + 1)); // Exponential backoff
-        });
-      }
-    }
-    
-    return response;
-  });
-});
+// Grace period before declaring the backend offline:
+//  - 8 s if we have never successfully connected (fresh page load, backend down)
+//  - 15 s if we lost a previously-working connection (brief drop / restart)
+const WS_FIRST_CONNECT_TIMEOUT_MS = 8000;
+const WS_RECONNECT_TIMEOUT_MS = 15000;
+
+function _setWsStatus(next) {
+  if (next === _wsStatus) return;
+  _wsStatus = next;
+  _wsStatusListeners.forEach((cb) => cb(next));
+}
+
+/**
+ * Subscribe to WebSocket connection status changes.
+ * Returns an unsubscribe function.
+ * The callback is invoked immediately with the current status.
+ */
+export function subscribeWsStatus(callback) {
+  _wsStatusListeners.add(callback);
+  callback(_wsStatus);
+  return () => _wsStatusListeners.delete(callback);
+}
+
+// Creates a WebSocket link that authenticates via connectionParams.
+// Called lazily (browser-only) so it never runs during SSR.
+function createWsLink() {
+  return new GraphQLWsLink(
+    createClient({
+      url: () => `ws://${getApiHost()}:${portApi}/api/graphql`,
+      // connectionParams is a function so it re-evaluates on every (re)connect,
+      // picking up the latest token automatically.
+      connectionParams: () => {
+        const token = ls.getItem('token');
+        return { authorization: token ? `Bearer ${token}` : '' };
+      },
+      retryAttempts: Infinity,
+      shouldRetry: () => true,
+      on: {
+        connecting: () => {
+          // Retries are in progress — don't touch the timer here.
+          // The timer must keep ticking so it eventually fires if the backend
+          // stays down through multiple retries.
+        },
+        connected: () => {
+          // Connection (re)established — cancel any pending offline timer and go online.
+          _everConnected = true;
+          clearTimeout(_offlineTimer);
+          _offlineTimer = null;
+          _setWsStatus('online');
+        },
+        closed: () => {
+          // Move from 'online' → 'connecting' so the UI knows data may be stale,
+          // but don't show the full offline screen yet — wait for an 'error' event
+          // or for the grace-period timer to fire.
+          if (_wsStatus === 'online') {
+            _setWsStatus('connecting');
+          }
+
+          // Start the offline timer ONLY IF one isn't already running.
+          // Subsequent 'closed' events during retries must NOT reset the timer —
+          // otherwise the countdown never finishes while retries keep happening.
+          if (!_offlineTimer) {
+            const delay = _everConnected
+              ? WS_RECONNECT_TIMEOUT_MS
+              : WS_FIRST_CONNECT_TIMEOUT_MS;
+            _offlineTimer = setTimeout(() => {
+              _offlineTimer = null;
+              _setWsStatus('offline');
+            }, delay);
+          }
+        },
+        error: () => {
+          // The browser fires this immediately when the TCP connection is refused
+          // (e.g. backend is completely down). No need to wait for a timer — show
+          // the offline screen right away. If the next retry succeeds, 'connected'
+          // will fire and the screen will disappear automatically.
+          clearTimeout(_offlineTimer);
+          _offlineTimer = null;
+          _setWsStatus('offline');
+        },
+      },
+    })
+  );
+}
 
 function createApolloClient() {
   const cache = new InMemoryCache({
@@ -195,74 +242,16 @@ function createApolloClient() {
       NodeActions: {
         merge: true,
       },
-      MinerStatsResult: {
-        fields: {
-          stats: {
-            read(data) {
-              return data.map((board) => {
-                if (!board.pool) return board;
-
-                let boardStatus = true;
-                let poolStatus = true;
-
-                const sharesSent = board.pool.intervals.int_0.sharesSent;
-                const shareTime = moment(board.date);
-                let storedBoard = ls.getItem(`board_${board.uuid}`);
-                if (storedBoard) storedBoard = JSON.parse(storedBoard);
-
-                const interval = moment.duration(moment().diff(shareTime));
-                const maxStatusInterval =
-                  process.env.NEXT_PUBLIC_ENV === 'development' ? 10 : 1;
-
-                if (interval.asMinutes() > maxStatusInterval) {
-                  boardStatus = false;
-                  poolStatus = false;
-                }
-
-                let lastsharetime = storedBoard ? storedBoard.date : shareTime;
-
-                if (!storedBoard || storedBoard.sent !== sharesSent) {
-                  ls.setItem(
-                    `board_${board.uuid}`,
-                    JSON.stringify({
-                      date: shareTime,
-                      sent: sharesSent,
-                    })
-                  );
-                  lastsharetime = shareTime;
-                }
-
-                return {
-                  ...board,
-                  status: boardStatus,
-                  lastsharetime,
-                  date: moment(board.date).format(),
-                  pool: {
-                    ...board.pool,
-                    status: poolStatus,
-                  },
-                };
-              });
-            },
-          },
-        },
-      },
       Query: {
         fields: {
           Node: {
             merge(existing, incoming) {
-              return {
-                ...existing,
-                ...incoming,
-              };
+              return { ...existing, ...incoming };
             },
           },
           Mcu: {
             merge(existing, incoming) {
-              return {
-                ...existing,
-                ...incoming,
-              };
+              return { ...existing, ...incoming };
             },
           },
         },
@@ -270,80 +259,34 @@ function createApolloClient() {
     },
   });
 
-  // Add cache size monitoring
-  const MAX_CACHE_SIZE = 50 * 1024 * 1024; // 50MB limit
-  let lastCacheSize = 0;
-  let lastMemoryUsage = 0;
+  // Build the HTTP chain (used for queries and mutations)
+  const httpChain = from([errorLink, authLink, momentTransformLink, httpLink]);
 
-  const checkCacheSize = () => {
-    const currentSize = JSON.stringify(cache.extract()).length;
-    const memoryUsage = window.performance.memory?.usedJSHeapSize || 0;
-    const totalJSHeapSize = window.performance.memory?.totalJSHeapSize || 0;
-    const jsHeapSizeLimit = window.performance.memory?.jsHeapSizeLimit || 0;
-    
-    // Log detailed memory information only in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Memory Usage Report:', {
-        cacheSize: `${(currentSize / 1024 / 1024).toFixed(2)}MB`,
-        jsHeapSize: memoryUsage ? `${(memoryUsage / 1024 / 1024).toFixed(2)}MB` : 'N/A',
-        totalJSHeapSize: totalJSHeapSize ? `${(totalJSHeapSize / 1024 / 1024).toFixed(2)}MB` : 'N/A',
-        jsHeapSizeLimit: jsHeapSizeLimit ? `${(jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB` : 'N/A',
-        heapUsagePercentage: totalJSHeapSize ? `${((memoryUsage / totalJSHeapSize) * 100).toFixed(2)}%` : 'N/A',
-        cacheEntries: Object.keys(cache.extract()).length,
-        timestamp: new Date().toISOString()
-      });
-      
-      // Log memory warning if usage is high
-      if (memoryUsage > jsHeapSizeLimit * 0.8) {
-        console.warn('High memory usage detected! Consider investigating memory leaks.');
-      }
-      
-      if (currentSize > MAX_CACHE_SIZE) {
-        console.log(`Cache size exceeded limit (${(currentSize / 1024 / 1024).toFixed(2)}MB), performing cleanup`);
-      }
-      
-      // Log significant changes
-      if (Math.abs(currentSize - lastCacheSize) > 1024 * 1024 || 
-          (memoryUsage && Math.abs(memoryUsage - lastMemoryUsage) > 50 * 1024 * 1024)) {
-        console.log(`Significant change detected:
-          Cache size: ${(currentSize / 1024 / 1024).toFixed(2)}MB
-          JS Heap size: ${memoryUsage ? (memoryUsage / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}
-          Total JS Heap: ${totalJSHeapSize ? (totalJSHeapSize / 1024 / 1024).toFixed(2) + 'MB' : 'N/A'}
-          Heap Usage: ${((memoryUsage / totalJSHeapSize) * 100).toFixed(2)}%`);
-      }
-    }
-    
-    // Always perform cleanup if needed, regardless of environment
-    if (currentSize > MAX_CACHE_SIZE) {
-      cache.gc();
-    }
-    
-    lastCacheSize = currentSize;
-    lastMemoryUsage = memoryUsage;
-  };
-
-  // Monitor cache size more frequently
+  // Build the link: subscriptions go through WS, everything else through HTTP.
+  // wsLink is created lazily to avoid instantiating a WS connection during SSR.
+  let link;
   if (typeof window !== 'undefined') {
-    setInterval(checkCacheSize, 30 * 1000); // Check every 30 seconds
+    const wsLink = createWsLink();
+    link = split(
+      ({ query }) => {
+        const def = getMainDefinition(query);
+        return def.kind === 'OperationDefinition' && def.operation === 'subscription';
+      },
+      wsLink,
+      httpChain
+    );
+  } else {
+    link = httpChain;
   }
 
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: from([
-      errorLink,
-      healthCheckLink,
-      retryLink,
-      authLink,
-      momentTransformLink,
-      httpLink
-    ]),
+    link,
     cache,
     defaultOptions: {
       watchQuery: {
         fetchPolicy: 'network-only',
         errorPolicy: 'all',
-        retry: 3,
-        retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 30000),
       },
       query: {
         fetchPolicy: 'network-only',
@@ -356,36 +299,12 @@ function createApolloClient() {
   });
 }
 
-// Add cache cleanup function
-export const cleanupApolloCache = () => {
-  if (apolloClient) {
-    const beforeSize = JSON.stringify(apolloClient.cache.extract()).length;
-    apolloClient.cache.gc();
-    const afterSize = JSON.stringify(apolloClient.cache.extract()).length;
-    console.log(`Cache cleanup performed:
-      Before: ${(beforeSize / 1024 / 1024).toFixed(2)}MB
-      After: ${(afterSize / 1024 / 1024).toFixed(2)}MB
-      Reduction: ${(((beforeSize - afterSize) / beforeSize) * 100).toFixed(2)}%`);
-  }
-};
-
-// Add periodic cache cleanup
-if (typeof window !== 'undefined') {
-  setInterval(cleanupApolloCache, 2 * 60 * 1000); // Clean cache every 2 minutes
-}
-
 export function initializeApollo(initialState = null) {
   const _apolloClient = apolloClient ?? createApolloClient();
 
-  // If your page has Next.js data fetching methods that use Apollo Client, the initial state
-  // gets hydrated here
   if (initialState) {
-    // Get existing cache, loaded during client side data fetching
     const existingCache = _apolloClient.extract();
-
-    // Merge the initialState from getStaticProps/getServerSideProps in the existing cache
     const data = merge(existingCache, initialState, {
-      // combine arrays using object equality (like in sets)
       arrayMerge: (destinationArray, sourceArray) => [
         ...sourceArray,
         ...destinationArray.filter((d) =>
@@ -393,13 +312,10 @@ export function initializeApollo(initialState = null) {
         ),
       ],
     });
-
-    // Restore the cache with the merged data
     _apolloClient.cache.restore(data);
   }
-  // For SSG and SSR always create a new Apollo Client
+
   if (typeof window === 'undefined') return _apolloClient;
-  // Create the Apollo Client once in the client
   if (!apolloClient) apolloClient = _apolloClient;
 
   return _apolloClient;
@@ -409,7 +325,6 @@ export function addApolloState(client, pageProps) {
   if (pageProps?.props) {
     pageProps.props[APOLLO_STATE_PROP_NAME] = client.cache.extract();
   }
-
   return pageProps;
 }
 
@@ -417,65 +332,4 @@ export function useApollo(pageProps) {
   const state = pageProps[APOLLO_STATE_PROP_NAME];
   const store = useMemo(() => initializeApollo(state), [state]);
   return store;
-}
-
-// Add React component monitoring
-if (process.env.NODE_ENV === 'development') {
-  const originalCreateElement = React.createElement;
-  React.createElement = function(type, props, ...children) {
-    const componentName = type?.displayName || type?.name || 'Unknown';
-    
-    // Monitor component creation
-    if (typeof type === 'function') {
-      const originalRender = type.prototype?.render;
-      if (originalRender) {
-        type.prototype.render = function() {
-          return originalRender.apply(this);
-        };
-      }
-    }
-    
-    return originalCreateElement(type, props, ...children);
-  };
-}
-
-// Add memory monitoring for React components
-const monitorReactMemory = () => {
-  if (process.env.NODE_ENV === 'development') {
-    const observer = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        if (entry.name.includes('react-dom-client.development.js')) {
-          console.log('React DOM Memory Usage:', {
-            component: entry.name,
-            duration: entry.duration,
-            timestamp: new Date().toISOString()
-          });
-        }
-      }
-    });
-    
-    observer.observe({ entryTypes: ['measure'] });
-    
-    // Monitor component mounting
-    const originalCreateRoot = ReactDOM.createRoot;
-    ReactDOM.createRoot = function(container, options) {
-      const root = originalCreateRoot(container, options);
-      const originalRender = root.render;
-      
-      root.render = function(element) {
-        console.log('Root render called with:', {
-          elementType: element?.type?.name || 'Unknown',
-          timestamp: new Date().toISOString()
-        });
-        return originalRender.call(this, element);
-      };
-      
-      return root;
-    };
-  }
-};
-
-// Call the monitoring function
-if (typeof window !== 'undefined') {
-  monitorReactMemory();
 }

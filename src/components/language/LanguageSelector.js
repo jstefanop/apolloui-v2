@@ -1,5 +1,7 @@
 import React from 'react';
+import Image from 'next/image';
 import {
+  Box,
   Link,
   Menu,
   MenuButton,
@@ -7,16 +9,51 @@ import {
   MenuItem,
   Text,
   HStack,
+  Icon,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { FaGlobe } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  // English uses a globe — the app ships in English by default for any locale,
+  // so a country flag (UK / US) would be misleading.
+  { code: 'en', name: 'English', icon: FaGlobe },
+  { code: 'it', name: 'Italiano', flag: '/flags/it.svg' },
+  { code: 'de', name: 'Deutsch', flag: '/flags/de.svg' },
+  { code: 'es', name: 'Español', flag: '/flags/es.svg' },
 ];
+
+const LanguageIcon = ({ lang, size = 20 }) => {
+  if (lang.icon) {
+    return (
+      <Box
+        width={`${size}px`}
+        height={`${size}px`}
+        borderRadius="full"
+        flexShrink={0}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        color="gray.500"
+      >
+        <Icon as={lang.icon} boxSize={`${size}px`} />
+      </Box>
+    );
+  }
+  return (
+    <Box
+      width={`${size}px`}
+      height={`${size}px`}
+      borderRadius="full"
+      overflow="hidden"
+      flexShrink={0}
+      boxShadow="0 0 0 1px rgba(0,0,0,0.1)"
+    >
+      <Image src={lang.flag} alt={lang.name} width={size} height={size} />
+    </Box>
+  );
+};
 
 export default function LanguageSelector() {
   const textColor = useColorModeValue('gray.600', 'white');
@@ -40,7 +77,7 @@ export default function LanguageSelector() {
         _hover={{ textDecoration: 'none' }}
       >
         <HStack spacing={2}>
-          <Text fontSize="xl">{selectedLanguage.flag}</Text>
+          <LanguageIcon lang={selectedLanguage} />
           <Text>{selectedLanguage.name}</Text>
         </HStack>
       </MenuButton>
@@ -53,7 +90,7 @@ export default function LanguageSelector() {
             _hover={{ bg: menuHoverBg }}
           >
             <HStack spacing={2}>
-              <Text fontSize="xl">{lang.flag}</Text>
+              <LanguageIcon lang={lang} />
               <Text>{lang.name}</Text>
             </HStack>
           </MenuItem>

@@ -52,6 +52,7 @@ const NoCardStatisticsGauge = React.memo(({
 
   const gaugeColor = percentColor(roundedPercentage);
 
+
   const chartOptions = {
     chart: {
       sparkline: {
@@ -95,8 +96,16 @@ const NoCardStatisticsGauge = React.memo(({
     },
     colors: [gaugeColor],
     fill: {
-      type: 'solid',
-      opacity: '1',
+      type: 'gradient',
+      gradient: {
+        shade: 'light',
+        type: 'horizontal',
+        gradientToColors: [gaugeColor],
+        inverseColors: false,
+        opacityFrom: 0.15,
+        opacityTo: 1,
+        stops: [0, 100],
+      },
     },
   };
 

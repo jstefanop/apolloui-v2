@@ -54,6 +54,7 @@ import PowerCard from '../components/apollo/PowerCard';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { settingsSelector } from '../redux/reselect/settings';
 import HashrateChart, { INTERVAL_CONFIG } from '../components/apollo/HashrateChart';
+import MinerMetricsGrid from '../components/apollo/MinerMetricsGrid';
 import { MdOfflineBolt } from 'react-icons/md';
 import { GiDiamondTrophy } from 'react-icons/gi';
 import CountUp from 'react-countup';
@@ -364,12 +365,12 @@ const Overview = () => {
                       >
                         {soloKPI?.hashrate ? (
                           <CountUp
-                            start={prevSoloData.current?.hashrate || 0}
                             end={soloKPI.hashrate}
                             duration={1.5}
                             separator=","
                             decimals={2}
                             suffix={` ${soloKPI.hashrateUnit || ''}`}
+                            preserveValue
                           />
                         ) : (
                           'N/A'
@@ -477,13 +478,13 @@ const Overview = () => {
                       >
                         {soloKPI?.dailyChance ? (
                           <CountUp
-                            start={prevSoloData.current?.dailyChance || 0}
                             end={soloKPI?.dailyChance || 0}
                             duration={2}
                             separator=","
                             decimals={0}
                             suffix=""
                             prefix="1 in "
+                            preserveValue
                           />
                         ) : (
                           'N/A'
@@ -637,10 +638,6 @@ const Overview = () => {
                   errors={errorMiner}
                   data={globalHashrate || { value: 0, unit: 'TH/s' }}
                   avgData={globalAvgHashrate || { value: 0, unit: 'TH/s' }}
-                  prevData={prevGlobalHashrate || { value: 0, unit: 'TH/s' }}
-                  prevAvgData={
-                    prevGlobalAvgHashrate || { value: 0, unit: 'TH/s' }
-                  }
                   shadow={shadow}
                   iconColor={iconColor}
                   status={servicesStatus?.miner?.status}
@@ -650,50 +647,48 @@ const Overview = () => {
 
             {deviceType !== 'solo-node' && (
               <GridItem gridArea="chart" width="100%" maxWidth="100%" overflow="hidden">
-                <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px" width="100%" maxWidth="100%" overflow="hidden">
-                  <Flex m="2" justify="space-between" align="center">
-                    <Text fontSize="lg" fontWeight="800">
-                      <FormattedMessage
-                        id="overview.hashrate.chart.title"
-                        defaultMessage="Hashrate History"
-                      />
-                    </Text>
-                    <Select
-                      size="sm"
-                      value={chartInterval}
-                      onChange={(e) => setChartInterval(e.target.value)}
-                      w="auto"
-                      minW="130px"
-                      fontSize="xs"
-                      fontWeight="500"
-                      borderRadius="md"
-                      bg="transparent"
-                      borderColor={iconColorReversed}
-                      color={iconColorReversed}
-                      _hover={{ borderColor: 'brand.500' }}
-                      _focus={{ borderColor: 'brand.500', boxShadow: 'none' }}
-                      cursor="pointer"
-                    >
-                      <option value="tenmin" style={{ color: 'black' }}>
-                        {intl.formatMessage({ id: 'chart.interval.6hours', defaultMessage: 'Last 6 hours' })}
-                      </option>
-                      <option value="hour" style={{ color: 'black' }}>
-                        {intl.formatMessage({ id: 'chart.interval.24hours', defaultMessage: 'Last 24 hours' })}
-                      </option>
-                      <option value="day" style={{ color: 'black' }}>
-                        {intl.formatMessage({ id: 'chart.interval.30days', defaultMessage: 'Last 30 days' })}
-                      </option>
-                    </Select>
-                  </Flex>
-                  <Flex
-                    my="auto"
-                    align={{ base: 'center', xl: 'start' }}
-                    justify={{ base: 'center', xl: 'center' }}
-                    direction={{ base: 'column', md: 'row' }}
+                {/* Interval selector row */}
+                <Flex mb={3} justify="space-between" align="center" px={1}>
+                  <Text fontSize="lg" fontWeight="800">
+                    <FormattedMessage
+                      id="overview.hashrate.chart.title"
+                      defaultMessage="Miner Metrics"
+                    />
+                  </Text>
+                  <Select
+                    size="sm"
+                    value={chartInterval}
+                    onChange={(e) => setChartInterval(e.target.value)}
+                    w="auto"
+                    minW="130px"
+                    fontSize="xs"
+                    fontWeight="500"
+                    borderRadius="md"
+                    bg="transparent"
+                    borderColor={iconColorReversed}
+                    color={iconColorReversed}
+                    _hover={{ borderColor: 'brand.500' }}
+                    _focus={{ borderColor: 'brand.500', boxShadow: 'none' }}
+                    cursor="pointer"
                   >
-                    <HashrateChart source="miner" interval={chartInterval} />
-                  </Flex>
-                </Card>
+                    <option value="tenmin" style={{ color: 'black' }}>
+                      {intl.formatMessage({ id: 'chart.interval.6hours', defaultMessage: 'Last 6 hours' })}
+                    </option>
+                    <option value="hour" style={{ color: 'black' }}>
+                      {intl.formatMessage({ id: 'chart.interval.24hours', defaultMessage: 'Last 24 hours' })}
+                    </option>
+                    <option value="day" style={{ color: 'black' }}>
+                      {intl.formatMessage({ id: 'chart.interval.30days', defaultMessage: 'Last 30 days' })}
+                    </option>
+                  </Select>
+                </Flex>
+                {/* 2×2 mini charts — each card is standalone */}
+                <MinerMetricsGrid
+                  interval={chartInterval}
+                  currentHashrate={globalHashrate}
+                  currentTemp={avgBoardTemp}
+                  currentPower={minerPower}
+                />
               </GridItem>
             )}
 
@@ -878,8 +873,6 @@ const Overview = () => {
                   errors={errorMiner}
                   data={minerPower || 0}
                   avgData={wattsPerTh || 0}
-                  prevData={prevMinerPower || 0}
-                  prevAvgData={prevWattsPerTh || 0}
                   shadow={shadow}
                   iconColor={iconColor}
                   serviceStatus={servicesStatus}

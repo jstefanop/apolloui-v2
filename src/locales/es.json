@@ -82,6 +82,10 @@
       },
       "online": {
         "message": "Tu nodo está <strong>en línea</strong> y operativo."
+      },
+      "unknown": {
+        "title": "Estado del nodo desconocido",
+        "description": "El estado del servicio del nodo es desconocido por el momento. Espera unos minutos más para que el sistema determine el estado del servicio."
       }
     },
     "table": {
@@ -112,7 +116,9 @@
       "in": "Entrada: {count}",
       "out": "Salida: {count}",
       "total_connections": "Total conexiones",
-      "verification_progress": "Progreso de verificación"
+      "verification_progress": "Progreso de verificación",
+      "accepted_shares": "Shares aceptados",
+      "rejected_shares": "Shares rechazados"
     },
     "panel": {
       "connect_tooltip": "Conéctate a tu nodo",
@@ -225,7 +231,15 @@
       "online": {
         "message": "Tu minero está <strong>en línea</strong> y operativo."
       },
-      "pending": "Pendiente"
+      "pending": "Pendiente",
+      "error": {
+        "title": "Error del servicio del minero",
+        "description": "El servicio del minero está experimentando un error. Comprueba la configuración del sistema o intenta reiniciar el minero desde el menú superior."
+      },
+      "unknown": {
+        "title": "Estado del minero desconocido",
+        "description": "El estado del servicio del minero es desconocido por el momento. Espera unos minutos más para que el sistema determine el estado del servicio."
+      }
     },
     "hashrate": {
       "current": "Hashrate del minero",
@@ -307,7 +321,6 @@
         "title": "Estado inesperado del servicio solo",
         "description": "El servicio solo está en línea, pero se solicitó detenerlo. Verifica su estado o reinícialo."
       },
-
       "waiting_share": {
         "title": "Esperando la primera share",
         "description": "Espera hasta que se reciba la primera share."
@@ -322,6 +335,14 @@
       },
       "online": {
         "message": "Tu servicio solo mining está <strong>en línea</strong> y operativo."
+      },
+      "error": {
+        "title": "Error del servicio solo",
+        "description": "El servicio de solo mining está experimentando un error. Comprueba la configuración del sistema o intenta reiniciar el servicio solo desde el menú superior."
+      },
+      "solo_unknown": {
+        "title": "Estado del servicio solo desconocido",
+        "description": "El estado del servicio de solo mining es desconocido por el momento. Espera unos minutos más para que el sistema determine el estado del servicio."
       }
     }
   },
@@ -438,7 +459,8 @@
         "connect": "Conectar",
         "software": {
           "title": "Software del Nodo",
-          "description": "Elige entre Bitcoin Core y Bitcoin Knots"
+          "description": "Elige entre Bitcoin Core y Bitcoin Knots",
+          "default": "Predeterminado"
         },
         "tor_mode": {
           "title": "Modo TOR",
@@ -552,6 +574,8 @@
         "btc_signature_info": "Esta es la firma del bloque que se mostrará si encuentras un bloque en solo. Puedes dejarlo como predeterminado, o personalizarlo con tu propio mensaje/firma para que el mundo lo vea!",
         "startdiff": "Dificultad Inicial",
         "startdiff_info": "Modifica el valor de dificultad inicial para los mineros que se conectan al Solo Pool, útil para hashrate muy bajos o muy altos",
+        "mindiff": "Dificultad Mínima",
+        "mindiff_info": "Establece una dificultad mínima más alta para evitar que el vardiff baje de este nivel, útil para alquiler/alto hashrate para mantener bajas las shares por segundo",
         "invalid_address": "Por favor, introduce una dirección Bitcoin válida",
         "incompatible_address": "Advertencia: Las direcciones P2WSH y P2TR no son válidas para la minería SOLO. Usa una dirección diferente."
       }
@@ -659,10 +683,6 @@
     },
     "mining_type": {
       "title": "Seleccionar tipo de minería",
-      "node_not_synced": {
-        "title": "Nodo no totalmente sincronizado",
-        "description": "La minería SOLO comenzará solo cuando tu nodo esté sincronizado al 100%. Puedes seleccionar esta opción ahora, pero la minería empezará automáticamente al completar la sincronización."
-      },
       "solo": {
         "title": "Minería Solo",
         "description": "Compites contra toda la red para encontrar un bloque completo de Bitcoin (la recompensa completa en BTC). No recibes recompensas mientras minas, esperando encontrar un bloque completo. También se le llama minería tipo \"lotería\" porque las probabilidades son bajas, pero ayuda a la máxima descentralización de la red. ¡Si hay millones de mineros solo, se encontrarán bloques todos los días y Bitcoin no podrá ser censurado!"
@@ -678,6 +698,10 @@
         "part3": "Al usar Apollo II para minería solo, los usuarios aceptan que FutureBit no es responsable por ningún bloque huérfano o perdido debido a problemas de hardware, software o red. FutureBit no se hace responsable por pérdidas derivadas de la minería solo. El usuario asume todo el riesgo y se recomienda una conexión Ethernet estable y de alta velocidad.",
         "accept": "Aceptar",
         "cancel": "Cancelar"
+      },
+      "solo_warning": {
+        "title": "El solo mining requiere un nodo sincronizado",
+        "description": "El solo mining solo puede usarse cuando tu nodo está totalmente sincronizado. Puedes configurarlo ahora, pero el mining comenzará solo cuando la sincronización del nodo esté completa."
       }
     },
     "wallet": {
@@ -687,7 +711,8 @@
       "error": {
         "invalid_address": "Por favor, introduce una dirección válida de Bitcoin",
         "incompatible_address": "Las direcciones P2WSH y P2TR no son válidas para minería solo"
-      }
+      },
+      "description": "Introduce tu dirección de wallet para el pago del solo mining. Es la dirección a la que irá la recompensa completa del bloque si encuentras uno. NO uses una dirección de exchange y usa solo una dirección Bitcoin que controles por completo. Si tu unidad venía con una FutureBit Satscard, puedes acercar la tarjeta a un teléfono con NFC para ver la dirección de pago y copiarla abajo. Ten en cuenta que el solo mining no empezará hasta que tu nodo esté totalmente sincronizado, lo que puede tardar varios días."
     },
     "pool": {
       "title": "Establecer pool de minería",
@@ -702,7 +727,8 @@
     "complete": {
       "title": "¡Configuración completada!",
       "subtitle": "¡Empecemos a minar Bitcoin!",
-      "button": "Comenzar minería"
+      "button": "Comenzar minería",
+      "button_solo": "Iniciar Solo Node"
     },
     "common": {
       "previous": "Anterior",
@@ -742,6 +768,56 @@
       "complete_title": "¡Hasta pronto!",
       "complete_description": "El sistema se ha apagado. Puedes desconectar la alimentación de forma segura.",
       "button": "Apagar"
+    }
+  },
+  "action": {
+    "miner": {
+      "start": {
+        "title": "Iniciando el minero",
+        "description": "Tu minero estará disponible en un momento, espera por favor"
+      },
+      "stop": {
+        "title": "Deteniendo el minero",
+        "description": "Tu minero se detendrá en unos segundos"
+      },
+      "restart": {
+        "title": "Reiniciando el minero",
+        "description": "Tu minero estará disponible en un momento, espera por favor"
+      }
+    },
+    "node": {
+      "start": {
+        "title": "Iniciando el nodo Bitcoin",
+        "description": "Tu nodo estará disponible en un momento, espera por favor"
+      },
+      "stop": {
+        "title": "Deteniendo el nodo Bitcoin",
+        "description": "Tu nodo se detendrá en unos segundos"
+      }
+    },
+    "solo": {
+      "start": {
+        "title": "Iniciando el Solo Pool",
+        "description": "Tu servicio de solo pool estará disponible en un momento, espera por favor"
+      },
+      "stop": {
+        "title": "Deteniendo el Solo Pool",
+        "description": "Tu servicio de solo pool se detendrá en unos segundos"
+      },
+      "restart": {
+        "title": "Reiniciando el Solo Pool",
+        "description": "Tu servicio de solo pool estará disponible en un momento, espera por favor"
+      }
+    },
+    "system": {
+      "reboot": {
+        "title": "Reiniciando el sistema",
+        "description": "El sistema se está reiniciando, espera al menos 1 minuto y deberías ver las estadísticas de nuevo"
+      },
+      "shutdown": {
+        "title": "Apagando el sistema",
+        "description": "El sistema se está apagando, deberás encenderlo manualmente. Hasta pronto."
+      }
     }
   }
 }

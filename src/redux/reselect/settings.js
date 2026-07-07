@@ -10,11 +10,11 @@ export const settingsSelector = createSelector(
   settingsErrorSelector,
   settingsLoadingSelector,
   (settingsData, settingsError, settingsLoading) => {
-    const {
-      Settings: {
-        read: { error, result: settings },
-      },
-    } = settingsData ?? initialState;
+    // Backend may return { Settings: null } on auth error before the JWT lands.
+    // Fall back to the initial shape so the selector never throws.
+    const source =
+      settingsData && settingsData.Settings ? settingsData : initialState;
+    const { error, result: settings } = source.Settings.read || {};
 
     const errors = [settingsError, error].filter(Boolean);
 

@@ -78,27 +78,18 @@ const Miner = () => {
   // Services data reselected
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
-  // Set Previous state for CountUp component
-  const prevData = useRef(null);
-
+  // Track previous values for flash animations (no cleanup — avoids stale-ref issues)
+  const prevDataRef = useRef(null);
   useEffect(() => {
     if (dataMiner) {
-      // Keep only the values needed for CountUp animations
-      prevData.current = {
+      prevDataRef.current = {
         totalBoardAccepted: dataMiner.totalBoardAccepted,
         totalBoardRejected: dataMiner.totalBoardRejected,
-        avgBoardErrors: dataMiner.avgBoardErrors,
-        avgBoardTemp: dataMiner.avgBoardTemp,
-        globalHashrate: dataMiner.globalHashrate,
-        globalAvgHashrate: dataMiner.globalAvgHashrate,
-        minerPower: dataMiner.minerPower,
-        avgBoardEfficiency: dataMiner.avgBoardEfficiency
       };
     }
-    return () => {
-      prevData.current = null;
-    };
   }, [dataMiner]);
+  const { totalBoardAccepted: prevTotalBoardAccepted, totalBoardRejected: prevAvgBoardRejected } =
+    prevDataRef.current || {};
 
   // Extract only the current values we need
   const {
@@ -126,18 +117,6 @@ const Miner = () => {
     boards,
     soloMining
   } = dataMiner || {};
-
-  // Keep only the previous values needed for CountUp animations
-  const {
-    totalBoardAccepted: prevTotalBoardAccepted,
-    totalBoardRejected: prevAvgBoardRejected,
-    avgBoardErrors: prevAvgBoardErrors,
-    avgBoardTemp: prevAvgBoardTemp,
-    globalHashrate: prevGlobalHashrate,
-    globalAvgHashrate: prevGlobalAvgHashrate,
-    minerPower: prevMinerPower,
-    avgBoardEfficiency: prevAvgBoardEfficiency
-  } = prevData.current || {};
 
   const { minerMode, fanHigh, fanLow, frequency, voltage, temperatureUnit } = dataSettings || {};
 
@@ -241,8 +220,6 @@ const Miner = () => {
                 errors={errorMiner}
                 data={globalHashrate}
                 avgData={globalAvgHashrate}
-                prevData={prevGlobalHashrate}
-                prevAvgData={prevGlobalAvgHashrate}
                 shadow={shadow}
                 iconColor={iconColor}
                 status={servicesStatus?.miner?.status}
@@ -255,8 +232,6 @@ const Miner = () => {
                 errors={errorMiner}
                 data={minerPower}
                 avgData={avgBoardEfficiency || 0}
-                prevData={prevMinerPower}
-                prevAvgData={prevAvgBoardEfficiency}
                 shadow={shadow}
                 iconColor={iconColor}
                 serviceStatus={servicesStatus}
