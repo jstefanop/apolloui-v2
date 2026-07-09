@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../test-utils';
-import Setup from './setup';
+import Setup from '../pages/setup';
 
 jest.mock('next/router', () => ({ useRouter: () => ({ reload: jest.fn() }) }));
 jest.mock('../contexts/DeviceConfigContext', () => ({
