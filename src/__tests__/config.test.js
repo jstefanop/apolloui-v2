@@ -1,4 +1,4 @@
-import handler from './config';
+import handler from '../pages/api/config';
 
 const mockRes = () => {
   const res = {};

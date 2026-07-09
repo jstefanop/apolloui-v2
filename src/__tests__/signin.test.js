@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { useRouter } from 'next/router';
 import { signIn, getSession } from 'next-auth/react';
 import { renderWithProviders } from '../test-utils';
-import SignIn from './signin';
+import SignIn from '../pages/signin';
 
 jest.mock('next/router', () => ({ useRouter: jest.fn() }));
 jest.mock('next-auth/react', () => ({ signIn: jest.fn(), getSession: jest.fn() }));
