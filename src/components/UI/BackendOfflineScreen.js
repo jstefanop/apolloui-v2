@@ -14,12 +14,11 @@ import {
   Badge,
 } from '@chakra-ui/react';
 import { WarningTwoIcon, RepeatIcon, ExternalLinkIcon } from '@chakra-ui/icons';
-
-const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
+import { getBackendUrl } from '../../lib/apolloClient';
 
 function getHealthUrl() {
   if (typeof window === 'undefined') return null;
-  return `http://${window.location.hostname}:${portApi}/health`;
+  return getBackendUrl('/health');
 }
 
 // Elapsed seconds counter — updates every second while visible.

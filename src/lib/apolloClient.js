@@ -23,14 +23,34 @@ export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
 const ls = typeof window !== 'undefined' ? localStorage : { getItem: () => null };
 
 // Server-side hostname fallback (SSR / Next.js API routes).
-// In the browser we always derive the host from window.location.hostname at
-// request time so every device automatically targets the interface it used to
-// open the UI — works correctly when both WiFi and Ethernet are active.
 const ssrHostname = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
 const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
 
-const getApiHost = () =>
-  typeof window !== 'undefined' ? window.location.hostname : ssrHostname;
+// Build a backend URL for the given path (e.g. '/api/graphql', '/health'),
+// deriving scheme/host/port from window.location at request time. Two modes:
+//
+//  - HTTP page (direct LAN access, the common case): the backend runs as a
+//    separate service on the same host at port 5000 → http://<host>:5000<path>.
+//    Using window.location.hostname means every device targets the interface it
+//    was opened from (works with WiFi + Ethernet both active).
+//
+//  - HTTPS page: the device itself only serves plain HTTP, so an HTTPS page is
+//    necessarily behind a reverse proxy that terminates TLS. Use the SAME
+//    origin (window.location.host, no explicit port) so the proxy can forward
+//    /api/graphql (with WS upgrade) and /health to the backend. This avoids
+//    mixed-content blocking and uses wss:// for subscriptions.
+//
+// `ws: true` selects the WebSocket scheme (ws/wss) instead of http/https.
+export function getBackendUrl(path, { ws = false } = {}) {
+  if (typeof window === 'undefined') {
+    return `${ws ? 'ws' : 'http'}://${ssrHostname}:${portApi}${path}`;
+  }
+  const { protocol, hostname, host } = window.location;
+  if (protocol === 'https:') {
+    return `${ws ? 'wss' : 'https'}://${host}${path}`;
+  }
+  return `${ws ? 'ws' : 'http'}://${hostname}:${portApi}${path}`;
+}
 
 let apolloClient;
 
@@ -86,7 +106,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
 });
 
 const httpLink = new HttpLink({
-  uri: () => `http://${getApiHost()}:${portApi}/api/graphql`,
+  uri: () => getBackendUrl('/api/graphql'),
   fetchOptions: {
     timeout: 10000,
   },
@@ -114,7 +134,7 @@ const momentTransformLink = new ApolloLink((operation, forward) => {
 // Add a utility function to check if the backend is available
 export const checkBackendAvailability = async () => {
   try {
-    const response = await fetch(`http://${getApiHost()}:${portApi}/health`, {
+    const response = await fetch(getBackendUrl('/health'), {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       signal: AbortSignal.timeout(3000),
@@ -167,7 +187,7 @@ export function subscribeWsStatus(callback) {
 function createWsLink() {
   return new GraphQLWsLink(
     createClient({
-      url: () => `ws://${getApiHost()}:${portApi}/api/graphql`,
+      url: () => getBackendUrl('/api/graphql', { ws: true }),
       // connectionParams is a function so it re-evaluates on every (re)connect,
       // picking up the latest token automatically.
       connectionParams: () => {
