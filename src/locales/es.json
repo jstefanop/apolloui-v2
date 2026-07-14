@@ -665,7 +665,8 @@
     "soloMining": "Minería SOLO",
     "node": "Nodo",
     "system": "Sistema",
-    "settings": "Configuraciones"
+    "settings": "Configuraciones",
+    "automation": "Automatización"
   },
   "signin": {
     "title": "Bienvenido a Apollo Web OS 2",
@@ -828,6 +829,159 @@
         "title": "Apagando el sistema",
         "description": "El sistema se está apagando, deberás encenderlo manualmente. Hasta pronto."
       }
+    }
+  },
+  "automation": {
+    "title": "Automatización",
+    "status": {
+      "title": "Automatización",
+      "description": "Las reglas deciden cuándo funciona el miner y a qué potencia.",
+      "enabled": "Activa",
+      "dry_run": "Solo observar",
+      "dry_run.tooltip": "Evalúa las reglas y registra cada decisión, sin tocar nunca el miner.",
+      "dry_run.banner": "Modo observación: las decisiones se registran pero el miner no se toca. Desactívalo cuando confíes en las reglas.",
+      "paused": "Automatización en pausa hasta las {time} — has tomado el control manual.",
+      "resume": "Reanudar ahora",
+      "miner": "Miner",
+      "running": "Encendido",
+      "stopped": "Apagado",
+      "decision": "Decisión actual",
+      "held_back": "Retenida",
+      "target.none": "No tocar nada",
+      "target.off": "Apagar el miner",
+      "target.mode": "Funcionar en {mode}"
+    },
+    "rules": {
+      "title": "Reglas",
+      "description": "Se evalúan por prioridad: gana la primera que coincide.",
+      "add": "Añadir regla",
+      "empty": "Aún no hay reglas. Añade una para que la automatización actúe.",
+      "safety": "Seguridad",
+      "active": "Al mando",
+      "edit": "Editar regla",
+      "delete": "Eliminar regla"
+    },
+    "rule": {
+      "if_all": "Si {conditions} → {action}",
+      "if_any": "Si {conditions} → {action}",
+      "and": " y ",
+      "or": " o ",
+      "between": "{signal} entre {from} y {to}",
+      "not_between": "{signal} fuera de {from} y {to}",
+      "in": "{signal} es uno de {values}",
+      "not_in": "{signal} no es ninguno de {values}",
+      "action.off": "apagar el miner",
+      "action.mode": "funcionar en {mode}"
+    },
+    "signal": {
+      "stale": "no disponible",
+      "clock.time": "Hora del día",
+      "clock.weekday": "Día de la semana",
+      "clock.date": "Fecha",
+      "sun.isDay": "Es de día",
+      "sun.minutesToSunset": "Minutos hasta el ocaso",
+      "sun.minutesToSunrise": "Minutos hasta el amanecer",
+      "miner.temperature": "Temperatura de placa (máx.)",
+      "miner.temperatureAvg": "Temperatura de placa (media)",
+      "miner.running": "Miner encendido",
+      "miner.mode": "Modo del miner",
+      "energy.price": "Precio de la energía",
+      "energy.band": "Franja tarifaria"
+    },
+    "editor": {
+      "new_title": "Nueva regla",
+      "edit_title": "Editar regla",
+      "name": "Nombre",
+      "name_placeholder": "p. ej. Protección térmica",
+      "priority": "Prioridad",
+      "match": "Coincidencia",
+      "match_all": "Todas las condiciones",
+      "match_any": "Al menos una condición",
+      "safety": "Regla de seguridad",
+      "safety_label": "Siempre se aplica",
+      "safety_tooltip": "Una regla de seguridad actúa incluso con la automatización en pausa y salta los límites de protección. Úsala para el sobrecalentamiento.",
+      "conditions": "Condiciones",
+      "add_condition": "Añadir condición",
+      "remove_condition": "Quitar condición",
+      "range_placeholder": "p. ej. 23:00, 07:00",
+      "list_placeholder": "p. ej. 6, 7",
+      "hysteresis": "Histéresis",
+      "hysteresis_tooltip": "Mantiene el umbral estable mientras esta regla manda: apagar por encima de X, reanudar solo por debajo de X menos la histéresis. Sin ella, un valor que oscila en el umbral haría ciclar el miner.",
+      "action": "Entonces",
+      "action_off": "Apagar el miner",
+      "action_mode": "Funcionar en modo",
+      "mode": "Modo",
+      "mode_restart_warning": "Cambiar de modo reinicia el miner y cuesta unos minutos de parada.",
+      "cancel": "Cancelar",
+      "save": "Guardar regla"
+    },
+    "guards": {
+      "title": "Límites de protección",
+      "description": "A los miners no les sientan bien los ciclos rápidos, y cambiar de modo los reinicia. Estos límites evitan que una señal ruidosa desgaste el hardware.",
+      "minOnMinutes": "Tiempo mín. encendido",
+      "minOnMinutes.tooltip": "Una vez encendido, el miner permanece así al menos este tiempo.",
+      "minOffMinutes": "Tiempo mín. apagado",
+      "minOffMinutes.tooltip": "Una vez apagado, el miner permanece así al menos este tiempo.",
+      "minChangeMinutes": "Mín. entre cambios",
+      "minChangeMinutes.tooltip": "Intervalo mínimo entre dos cambios de cualquier tipo, incluidos los de modo.",
+      "maxCyclesPerHour": "Máx. arranques",
+      "maxCyclesPerHour.tooltip": "Cuántas veces se puede encender el miner en una hora.",
+      "defaultHysteresis": "Histéresis por defecto",
+      "defaultHysteresis.tooltip": "Se aplica a los umbrales numéricos cuando una regla no define la suya.",
+      "overrideMinutes": "Pausa manual",
+      "overrideMinutes.tooltip": "Cuánto tiempo queda en pausa la automatización después de que enciendas o apagues el miner a mano.",
+      "fallback": "Si ninguna regla coincide",
+      "fallback.tooltip": "Qué hacer cuando no se aplica ninguna regla. «No tocar nada» deja el miner como está.",
+      "fallback.keep": "No tocar nada",
+      "fallback.off": "Apagar el miner"
+    },
+    "tariff": {
+      "title": "Coste de la energía",
+      "description": "Introducido a mano: no existe una API mundial de precios. Las reglas pueden entonces actuar sobre el precio.",
+      "current": "Ahora: {price} {currency}/kWh",
+      "currency": "Moneda",
+      "flat_price": "Precio fijo /kWh",
+      "bands": "Franjas horarias",
+      "add_band": "Añadir franja",
+      "from": "Desde",
+      "to": "Hasta",
+      "price": "Precio /kWh",
+      "band_name": "Nombre de la franja",
+      "remove_band": "Quitar franja",
+      "days_hint": "Ningún día seleccionado = todos los días. Una franja que cruza la medianoche pertenece al día en que empezó."
+    },
+    "weekday": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mié",
+      "4": "Jue",
+      "5": "Vie",
+      "6": "Sáb",
+      "7": "Dom"
+    },
+    "location": {
+      "title": "Ubicación",
+      "description": "Sirve para calcular el amanecer y el ocaso en local. Sin ella, las señales del sol quedan no disponibles.",
+      "latitude": "Latitud",
+      "longitude": "Longitud",
+      "detect": "Usar mi posición",
+      "timezone": "Zona horaria",
+      "detect_timezone": "Detectar"
+    },
+    "events": {
+      "title": "Historial",
+      "description": "Qué ha hecho el motor, y los valores detrás de la decisión.",
+      "empty": "Nada todavía.",
+      "dry_run": "observado"
+    },
+    "actions": {
+      "save": "Guardar"
+    },
+    "feedback": {
+      "saved": "Ajustes de automatización guardados.",
+      "rule_saved": "Regla guardada.",
+      "rule_deleted": "Regla eliminada.",
+      "resumed": "Automatización reanudada."
     }
   }
 }

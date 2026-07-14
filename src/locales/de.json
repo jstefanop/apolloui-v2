@@ -665,7 +665,8 @@
     "soloMining": "SOLO-Mining",
     "node": "Node",
     "system": "System",
-    "settings": "Einstellungen"
+    "settings": "Einstellungen",
+    "automation": "Automatisierung"
   },
   "signin": {
     "title": "Willkommen bei Apollo Web OS 2",
@@ -828,6 +829,159 @@
       "complete_title": "Bis bald!",
       "complete_description": "Das System wurde heruntergefahren. Sie können die Stromversorgung sicher trennen.",
       "button": "Herunterfahren"
+    }
+  },
+  "automation": {
+    "title": "Automatisierung",
+    "status": {
+      "title": "Automatisierung",
+      "description": "Regeln entscheiden, wann der Miner läuft und mit welcher Leistung.",
+      "enabled": "Aktiv",
+      "dry_run": "Nur beobachten",
+      "dry_run.tooltip": "Regeln auswerten und jede Entscheidung protokollieren, ohne den Miner anzufassen.",
+      "dry_run.banner": "Beobachtungsmodus: Entscheidungen werden protokolliert, der Miner bleibt unberührt. Schalte das aus, wenn du den Regeln vertraust.",
+      "paused": "Automatisierung pausiert bis {time} — du hast manuell eingegriffen.",
+      "resume": "Jetzt fortsetzen",
+      "miner": "Miner",
+      "running": "Läuft",
+      "stopped": "Gestoppt",
+      "decision": "Aktuelle Entscheidung",
+      "held_back": "Zurückgehalten",
+      "target.none": "Nichts ändern",
+      "target.off": "Miner stoppen",
+      "target.mode": "In {mode} laufen"
+    },
+    "rules": {
+      "title": "Regeln",
+      "description": "Nach Priorität ausgewertet: die erste passende gewinnt.",
+      "add": "Regel hinzufügen",
+      "empty": "Noch keine Regeln. Füge eine hinzu, damit die Automatisierung handeln kann.",
+      "safety": "Sicherheit",
+      "active": "Aktiv",
+      "edit": "Regel bearbeiten",
+      "delete": "Regel löschen"
+    },
+    "rule": {
+      "if_all": "Wenn {conditions} → {action}",
+      "if_any": "Wenn {conditions} → {action}",
+      "and": " und ",
+      "or": " oder ",
+      "between": "{signal} zwischen {from} und {to}",
+      "not_between": "{signal} außerhalb von {from} und {to}",
+      "in": "{signal} ist eines von {values}",
+      "not_in": "{signal} ist keines von {values}",
+      "action.off": "Miner stoppen",
+      "action.mode": "in {mode} laufen"
+    },
+    "signal": {
+      "stale": "nicht verfügbar",
+      "clock.time": "Uhrzeit",
+      "clock.weekday": "Wochentag",
+      "clock.date": "Datum",
+      "sun.isDay": "Tageslicht",
+      "sun.minutesToSunset": "Minuten bis Sonnenuntergang",
+      "sun.minutesToSunrise": "Minuten bis Sonnenaufgang",
+      "miner.temperature": "Board-Temperatur (höchste)",
+      "miner.temperatureAvg": "Board-Temperatur (Durchschnitt)",
+      "miner.running": "Miner läuft",
+      "miner.mode": "Miner-Modus",
+      "energy.price": "Energiepreis",
+      "energy.band": "Tarifzone"
+    },
+    "editor": {
+      "new_title": "Neue Regel",
+      "edit_title": "Regel bearbeiten",
+      "name": "Name",
+      "name_placeholder": "z. B. Thermischer Schutz",
+      "priority": "Priorität",
+      "match": "Verknüpfung",
+      "match_all": "Alle Bedingungen",
+      "match_any": "Mindestens eine Bedingung",
+      "safety": "Sicherheitsregel",
+      "safety_label": "Gilt immer",
+      "safety_tooltip": "Eine Sicherheitsregel greift auch bei pausierter Automatisierung und umgeht die Schutzgrenzen. Für Überhitzung gedacht.",
+      "conditions": "Bedingungen",
+      "add_condition": "Bedingung hinzufügen",
+      "remove_condition": "Bedingung entfernen",
+      "range_placeholder": "z. B. 23:00, 07:00",
+      "list_placeholder": "z. B. 6, 7",
+      "hysteresis": "Hysterese",
+      "hysteresis_tooltip": "Hält die Schwelle stabil, solange diese Regel greift: über X stoppen, erst unter X minus Hysterese wieder starten. Ohne sie würde ein Wert an der Schwelle den Miner ständig takten.",
+      "action": "Dann",
+      "action_off": "Miner stoppen",
+      "action_mode": "In Modus laufen",
+      "mode": "Modus",
+      "mode_restart_warning": "Ein Moduswechsel startet den Miner neu und kostet einige Minuten Ausfallzeit.",
+      "cancel": "Abbrechen",
+      "save": "Regel speichern"
+    },
+    "guards": {
+      "title": "Schutzgrenzen",
+      "description": "Miner mögen kein schnelles Takten, und ein Moduswechsel startet sie neu. Diese Grenzen verhindern, dass ein unruhiges Signal die Hardware verschleißt.",
+      "minOnMinutes": "Min. Laufzeit",
+      "minOnMinutes.tooltip": "Nach dem Start läuft der Miner mindestens so lange.",
+      "minOffMinutes": "Min. Stoppzeit",
+      "minOffMinutes.tooltip": "Nach dem Stopp bleibt der Miner mindestens so lange aus.",
+      "minChangeMinutes": "Min. zwischen Änderungen",
+      "minChangeMinutes.tooltip": "Mindestabstand zwischen zwei Änderungen, auch Moduswechseln.",
+      "maxCyclesPerHour": "Max. Starts",
+      "maxCyclesPerHour.tooltip": "Wie oft der Miner innerhalb einer Stunde gestartet werden darf.",
+      "defaultHysteresis": "Standard-Hysterese",
+      "defaultHysteresis.tooltip": "Gilt für numerische Schwellen, wenn eine Regel keine eigene angibt.",
+      "overrideMinutes": "Manuelle Pause",
+      "overrideMinutes.tooltip": "Wie lange die Automatisierung pausiert, nachdem du den Miner von Hand startest oder stoppst.",
+      "fallback": "Wenn keine Regel passt",
+      "fallback.tooltip": "Was passiert, wenn keine Regel greift. „Nichts ändern“ lässt den Miner in Ruhe.",
+      "fallback.keep": "Nichts ändern",
+      "fallback.off": "Miner stoppen"
+    },
+    "tariff": {
+      "title": "Energiekosten",
+      "description": "Von Hand eingetragen: es gibt keine weltweite Preis-API. Regeln können dann auf den Preis reagieren.",
+      "current": "Jetzt: {price} {currency}/kWh",
+      "currency": "Währung",
+      "flat_price": "Fixpreis /kWh",
+      "bands": "Zeitzonen",
+      "add_band": "Zone hinzufügen",
+      "from": "Von",
+      "to": "Bis",
+      "price": "Preis /kWh",
+      "band_name": "Name der Zone",
+      "remove_band": "Zone entfernen",
+      "days_hint": "Kein Tag ausgewählt = jeden Tag. Eine Zone über Mitternacht gehört zu dem Tag, an dem sie begann."
+    },
+    "weekday": {
+      "1": "Mo",
+      "2": "Di",
+      "3": "Mi",
+      "4": "Do",
+      "5": "Fr",
+      "6": "Sa",
+      "7": "So"
+    },
+    "location": {
+      "title": "Standort",
+      "description": "Für die lokale Berechnung von Sonnenauf- und -untergang. Ohne ihn bleiben die Sonnensignale nicht verfügbar.",
+      "latitude": "Breitengrad",
+      "longitude": "Längengrad",
+      "detect": "Meine Position verwenden",
+      "timezone": "Zeitzone",
+      "detect_timezone": "Erkennen"
+    },
+    "events": {
+      "title": "Verlauf",
+      "description": "Was die Engine getan hat — und die Werte dahinter.",
+      "empty": "Noch nichts.",
+      "dry_run": "beobachtet"
+    },
+    "actions": {
+      "save": "Speichern"
+    },
+    "feedback": {
+      "saved": "Automatisierungs-Einstellungen gespeichert.",
+      "rule_saved": "Regel gespeichert.",
+      "rule_deleted": "Regel gelöscht.",
+      "resumed": "Automatisierung fortgesetzt."
     }
   }
 }

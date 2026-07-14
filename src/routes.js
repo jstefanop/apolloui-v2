@@ -5,6 +5,7 @@ import { NodeIcon } from './components/UI/Icons/NodeIcon';
 import { SettingsIcon } from './components/UI/Icons/SettingsIcon';
 import { SystemIcon } from './components/UI/Icons/SystemIcon';
 import { GrUserWorker } from 'react-icons/gr';
+import { MdSchedule } from 'react-icons/md';
 import { FormattedMessage } from 'react-intl';
 
 // Function to generate routes based on device type
@@ -37,6 +38,13 @@ export const getRoutes = (deviceType) => {
       icon: <NodeIcon width='20px' height='20px' color='inherit' />,
       path: '/node',
     },
+    // Nothing to schedule on a solo-node: it has no miner.
+    ...(deviceType !== 'solo-node' ? [{
+      name: <FormattedMessage id="routes.automation" />,
+      layout: '/admin',
+      path: '/automation',
+      icon: <MdSchedule size='1.2em' color='inherit' />,
+    }] : []),
     {
       name: <FormattedMessage id="routes.system" />,
       layout: '/admin',

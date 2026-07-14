@@ -30,6 +30,7 @@ export const LOG_TYPES = [
   { value: 'CKPOOL', label: 'Apollo Solo' },
   { value: 'MINER', label: 'Bitcoin Miner' },
   { value: 'NODE', label: 'Bitcoin Node' },
+  { value: 'APOLLO_API', label: 'Apollo API' },
   { value: 'SYSLOG', label: 'System' },
 ];
 

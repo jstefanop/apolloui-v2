@@ -665,7 +665,8 @@
     "soloMining": "Pool SOLO",
     "node": "Nodo",
     "system": "Sistema",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "automation": "Automazione"
   },
   "signin": {
     "title": "Benvenuto in Apollo Web OS 2",
@@ -828,6 +829,159 @@
       "complete_title": "A presto!",
       "complete_description": "Il sistema è stato spento. Puoi scollegare l'alimentazione in sicurezza.",
       "button": "Spegni"
+    }
+  },
+  "automation": {
+    "title": "Automazione",
+    "status": {
+      "title": "Automazione",
+      "description": "Le regole decidono quando il miner lavora, e a che potenza.",
+      "enabled": "Attiva",
+      "dry_run": "Solo osserva",
+      "dry_run.tooltip": "Valuta le regole e registra ogni decisione, senza mai toccare il miner.",
+      "dry_run.banner": "Modalità osservazione: le decisioni vengono registrate ma il miner non viene toccato. Disattivala quando ti fidi delle regole.",
+      "paused": "Automazione in pausa fino alle {time} — hai preso il controllo manuale.",
+      "resume": "Riprendi ora",
+      "miner": "Miner",
+      "running": "Acceso",
+      "stopped": "Spento",
+      "decision": "Decisione attuale",
+      "held_back": "Trattenuta",
+      "target.none": "Non toccare nulla",
+      "target.off": "Spegni il miner",
+      "target.mode": "Accendi in {mode}"
+    },
+    "rules": {
+      "title": "Regole",
+      "description": "Valutate per priorità: vince la prima che corrisponde.",
+      "add": "Aggiungi regola",
+      "empty": "Ancora nessuna regola. Aggiungine una per far agire l’automazione.",
+      "safety": "Sicurezza",
+      "active": "Al comando",
+      "edit": "Modifica regola",
+      "delete": "Elimina regola"
+    },
+    "rule": {
+      "if_all": "Se {conditions} → {action}",
+      "if_any": "Se {conditions} → {action}",
+      "and": " e ",
+      "or": " oppure ",
+      "between": "{signal} tra {from} e {to}",
+      "not_between": "{signal} fuori da {from} e {to}",
+      "in": "{signal} è uno tra {values}",
+      "not_in": "{signal} non è tra {values}",
+      "action.off": "spegni il miner",
+      "action.mode": "accendi in {mode}"
+    },
+    "signal": {
+      "stale": "non disponibile",
+      "clock.time": "Ora del giorno",
+      "clock.weekday": "Giorno della settimana",
+      "clock.date": "Data",
+      "sun.isDay": "È giorno",
+      "sun.minutesToSunset": "Minuti al tramonto",
+      "sun.minutesToSunrise": "Minuti all’alba",
+      "miner.temperature": "Temperatura board (max)",
+      "miner.temperatureAvg": "Temperatura board (media)",
+      "miner.running": "Miner acceso",
+      "miner.mode": "Modo del miner",
+      "energy.price": "Prezzo energia",
+      "energy.band": "Fascia tariffaria"
+    },
+    "editor": {
+      "new_title": "Nuova regola",
+      "edit_title": "Modifica regola",
+      "name": "Nome",
+      "name_placeholder": "es. Protezione termica",
+      "priority": "Priorità",
+      "match": "Corrispondenza",
+      "match_all": "Tutte le condizioni",
+      "match_any": "Almeno una condizione",
+      "safety": "Regola di sicurezza",
+      "safety_label": "Vale sempre",
+      "safety_tooltip": "Una regola di sicurezza agisce anche con l’automazione in pausa e scavalca i guard rail. Usala per il surriscaldamento.",
+      "conditions": "Condizioni",
+      "add_condition": "Aggiungi condizione",
+      "remove_condition": "Rimuovi condizione",
+      "range_placeholder": "es. 23:00, 07:00",
+      "list_placeholder": "es. 6, 7",
+      "hysteresis": "Isteresi",
+      "hysteresis_tooltip": "Rende la soglia “appiccicosa” finché la regola è al comando: spegni sopra X, riaccendi solo sotto X meno l’isteresi. Senza, un valore che oscilla sulla soglia farebbe ciclare il miner.",
+      "action": "Allora",
+      "action_off": "Spegni il miner",
+      "action_mode": "Accendi in modo",
+      "mode": "Modo",
+      "mode_restart_warning": "Cambiare modo riavvia il miner e costa qualche minuto di fermo.",
+      "cancel": "Annulla",
+      "save": "Salva regola"
+    },
+    "guards": {
+      "title": "Guard rail",
+      "description": "I miner non amano i cicli rapidi, e cambiare modo li riavvia. Questi limiti evitano che un segnale rumoroso logori l’hardware.",
+      "minOnMinutes": "Tempo minimo acceso",
+      "minOnMinutes.tooltip": "Una volta acceso, il miner resta acceso almeno per questo tempo.",
+      "minOffMinutes": "Tempo minimo spento",
+      "minOffMinutes.tooltip": "Una volta spento, il miner resta spento almeno per questo tempo.",
+      "minChangeMinutes": "Minimo tra due cambi",
+      "minChangeMinutes.tooltip": "Intervallo minimo tra due cambiamenti di qualunque tipo, cambio di modo incluso.",
+      "maxCyclesPerHour": "Max accensioni",
+      "maxCyclesPerHour.tooltip": "Quante volte il miner può essere acceso in un’ora.",
+      "defaultHysteresis": "Isteresi predefinita",
+      "defaultHysteresis.tooltip": "Applicata alle soglie numeriche quando una regola non ne specifica una propria.",
+      "overrideMinutes": "Pausa manuale",
+      "overrideMinutes.tooltip": "Quanto resta in pausa l’automazione dopo che accendi o spegni il miner a mano.",
+      "fallback": "Se nessuna regola corrisponde",
+      "fallback.tooltip": "Cosa fare quando nessuna regola si applica. “Non toccare nulla” lascia il miner com’è.",
+      "fallback.keep": "Non toccare nulla",
+      "fallback.off": "Spegni il miner"
+    },
+    "tariff": {
+      "title": "Costo energia",
+      "description": "Inserito a mano: non esiste un’API mondiale dei prezzi. Le regole possono poi agire sul prezzo.",
+      "current": "Ora: {price} {currency}/kWh",
+      "currency": "Valuta",
+      "flat_price": "Prezzo fisso /kWh",
+      "bands": "Fasce orarie",
+      "add_band": "Aggiungi fascia",
+      "from": "Dalle",
+      "to": "Alle",
+      "price": "Prezzo /kWh",
+      "band_name": "Nome fascia",
+      "remove_band": "Rimuovi fascia",
+      "days_hint": "Nessun giorno selezionato = tutti i giorni. Una fascia che scavalca la mezzanotte appartiene al giorno in cui è iniziata."
+    },
+    "weekday": {
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mer",
+      "4": "Gio",
+      "5": "Ven",
+      "6": "Sab",
+      "7": "Dom"
+    },
+    "location": {
+      "title": "Posizione",
+      "description": "Serve a calcolare alba e tramonto in locale. Senza, i segnali del sole restano non disponibili.",
+      "latitude": "Latitudine",
+      "longitude": "Longitudine",
+      "detect": "Usa la mia posizione",
+      "timezone": "Fuso orario",
+      "detect_timezone": "Rileva"
+    },
+    "events": {
+      "title": "Storico",
+      "description": "Cosa ha fatto il motore, e i valori dietro alla decisione.",
+      "empty": "Ancora niente.",
+      "dry_run": "osservato"
+    },
+    "actions": {
+      "save": "Salva"
+    },
+    "feedback": {
+      "saved": "Impostazioni automazione salvate.",
+      "rule_saved": "Regola salvata.",
+      "rule_deleted": "Regola eliminata.",
+      "resumed": "Automazione ripresa."
     }
   }
 }

@@ -665,7 +665,8 @@
     "soloMining": "Solo Pool",
     "node": "Node",
     "system": "System",
-    "settings": "Settings"
+    "settings": "Settings",
+    "automation": "Automation"
   },
   "signin": {
     "title": "Welcome to Apollo Web OS 2",
@@ -828,6 +829,159 @@
       "complete_title": "See you soon!",
       "complete_description": "The system has been shut down. You can safely disconnect the power.",
       "button": "Shutdown"
+    }
+  },
+  "automation": {
+    "title": "Automation",
+    "status": {
+      "title": "Automation",
+      "description": "Rules decide when the miner runs, and at which power level.",
+      "enabled": "Enabled",
+      "dry_run": "Observe only",
+      "dry_run.tooltip": "Evaluate the rules and record every decision, without ever touching the miner.",
+      "dry_run.banner": "Observation mode: decisions are recorded but the miner is not touched. Turn this off when you trust the rules.",
+      "paused": "Automation paused until {time} — you took manual control.",
+      "resume": "Resume now",
+      "miner": "Miner",
+      "running": "Running",
+      "stopped": "Stopped",
+      "decision": "Current decision",
+      "held_back": "Held back",
+      "target.none": "Leave as is",
+      "target.off": "Stop the miner",
+      "target.mode": "Run in {mode}"
+    },
+    "rules": {
+      "title": "Rules",
+      "description": "Evaluated by priority: the first one that matches wins.",
+      "add": "Add rule",
+      "empty": "No rules yet. Add one to let the automation act.",
+      "safety": "Safety",
+      "active": "In charge",
+      "edit": "Edit rule",
+      "delete": "Delete rule"
+    },
+    "rule": {
+      "if_all": "If {conditions} → {action}",
+      "if_any": "If {conditions} → {action}",
+      "and": " and ",
+      "or": " or ",
+      "between": "{signal} between {from} and {to}",
+      "not_between": "{signal} outside {from} and {to}",
+      "in": "{signal} is one of {values}",
+      "not_in": "{signal} is not one of {values}",
+      "action.off": "stop the miner",
+      "action.mode": "run in {mode}"
+    },
+    "signal": {
+      "stale": "unavailable",
+      "clock.time": "Time of day",
+      "clock.weekday": "Day of week",
+      "clock.date": "Date",
+      "sun.isDay": "Daylight",
+      "sun.minutesToSunset": "Minutes to sunset",
+      "sun.minutesToSunrise": "Minutes to sunrise",
+      "miner.temperature": "Board temperature (hottest)",
+      "miner.temperatureAvg": "Board temperature (average)",
+      "miner.running": "Miner running",
+      "miner.mode": "Miner mode",
+      "energy.price": "Energy price",
+      "energy.band": "Tariff band"
+    },
+    "editor": {
+      "new_title": "New rule",
+      "edit_title": "Edit rule",
+      "name": "Name",
+      "name_placeholder": "e.g. Thermal protection",
+      "priority": "Priority",
+      "match": "Match",
+      "match_all": "All conditions",
+      "match_any": "Any condition",
+      "safety": "Safety rule",
+      "safety_label": "Always applies",
+      "safety_tooltip": "A safety rule runs even while the automation is paused, and bypasses the guard rails. Use it for overheating.",
+      "conditions": "Conditions",
+      "add_condition": "Add condition",
+      "remove_condition": "Remove condition",
+      "range_placeholder": "e.g. 23:00, 07:00",
+      "list_placeholder": "e.g. 6, 7",
+      "hysteresis": "Hysteresis",
+      "hysteresis_tooltip": "Keeps the threshold sticky while this rule is in charge: stop above X, resume only below X minus the hysteresis. Without it a value hovering on the threshold would cycle the miner.",
+      "action": "Then",
+      "action_off": "Stop the miner",
+      "action_mode": "Run in mode",
+      "mode": "Mode",
+      "mode_restart_warning": "Changing mode restarts the miner and costs a few minutes of downtime.",
+      "cancel": "Cancel",
+      "save": "Save rule"
+    },
+    "guards": {
+      "title": "Guard rails",
+      "description": "Miners dislike fast cycling, and a mode change restarts them. These limits keep a noisy signal from wearing out the hardware.",
+      "minOnMinutes": "Min on time",
+      "minOnMinutes.tooltip": "Once started, the miner stays on at least this long.",
+      "minOffMinutes": "Min off time",
+      "minOffMinutes.tooltip": "Once stopped, the miner stays off at least this long.",
+      "minChangeMinutes": "Min between changes",
+      "minChangeMinutes.tooltip": "Minimum interval between two changes of any kind, including mode changes.",
+      "maxCyclesPerHour": "Max starts",
+      "maxCyclesPerHour.tooltip": "How many times the miner may be started within one hour.",
+      "defaultHysteresis": "Default hysteresis",
+      "defaultHysteresis.tooltip": "Applied to numeric thresholds when a rule does not set its own.",
+      "overrideMinutes": "Manual pause",
+      "overrideMinutes.tooltip": "How long the automation stays paused after you start or stop the miner by hand.",
+      "fallback": "When no rule matches",
+      "fallback.tooltip": "What to do when no rule applies. \"Leave as is\" never touches the miner.",
+      "fallback.keep": "Leave as is",
+      "fallback.off": "Stop the miner"
+    },
+    "tariff": {
+      "title": "Energy cost",
+      "description": "Entered by hand: there is no worldwide price API. Rules can then act on the price.",
+      "current": "Now: {price} {currency}/kWh",
+      "currency": "Currency",
+      "flat_price": "Flat price /kWh",
+      "bands": "Time bands",
+      "add_band": "Add band",
+      "from": "From",
+      "to": "To",
+      "price": "Price /kWh",
+      "band_name": "Band name",
+      "remove_band": "Remove band",
+      "days_hint": "No day selected = every day. A band crossing midnight belongs to the day it started on."
+    },
+    "weekday": {
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat",
+      "7": "Sun"
+    },
+    "location": {
+      "title": "Location",
+      "description": "Used to compute sunrise and sunset locally. Without it, the sun signals stay unavailable.",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "detect": "Use my position",
+      "timezone": "Timezone",
+      "detect_timezone": "Detect"
+    },
+    "events": {
+      "title": "History",
+      "description": "What the engine did, and the values behind it.",
+      "empty": "Nothing yet.",
+      "dry_run": "observed"
+    },
+    "actions": {
+      "save": "Save"
+    },
+    "feedback": {
+      "saved": "Automation settings saved.",
+      "rule_saved": "Rule saved.",
+      "rule_deleted": "Rule deleted.",
+      "resumed": "Automation resumed."
     }
   }
 }
