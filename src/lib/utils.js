@@ -37,7 +37,7 @@ export const displayHashrate = (
     ? `${parseFloat(hashrate).toFixed(precision)} ${hashrateUnits[i]}`
     : returnObject
     ? {
-        value: parseFloat(hashrate).toFixed(precision),
+        value: parseFloat(parseFloat(hashrate).toFixed(precision)),
         unit: hashrateUnits[i],
       }
     : parseFloat(parseFloat(hashrate).toFixed(precision));

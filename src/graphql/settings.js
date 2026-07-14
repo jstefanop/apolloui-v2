@@ -31,6 +31,7 @@ export const GET_SETTINGS_QUERY = gql`
             btcsig
             nodeSoftware
             startdiff
+            mindiff
           }
         }
         error {
@@ -71,6 +72,7 @@ export const SET_SETTINGS_QUERY = gql`
             btcsig
             nodeSoftware
             startdiff
+            mindiff
           }
         }
         error {
@@ -109,6 +111,7 @@ export const initialState = {
           btcsig: null,
           nodeSoftware: null,
           startdiff: null,
+          mindiff: null,
         },
       },
     },

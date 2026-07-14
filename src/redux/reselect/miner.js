@@ -31,10 +31,11 @@ export const minerSelector = createSelector(
     let stats;
 
     if (minerStats) {
+      const maxStatusInterval =
+        process.env.NEXT_PUBLIC_ENV === 'development' ? 10 : 1;
+
       const boards = minerStats.map((board) => {
         const {
-          status,
-          lastsharetime,
           date,
           version,
           comport,
@@ -54,7 +55,6 @@ export const minerSelector = createSelector(
           },
           slots: {
             int_0: {
-              // ghs: hashrateInGh,
               temperature,
               errorRate,
               chips,
@@ -62,7 +62,6 @@ export const minerSelector = createSelector(
           },
           pool: {
             diff,
-            status: poolStatus,
             userName: poolUsername,
             host: poolHost,
             port: poolPort,
@@ -74,6 +73,13 @@ export const minerSelector = createSelector(
             int_0: { rpm: fanRpm },
           },
         } = board;
+
+        // Compute board liveness from the stat file timestamp
+        const shareTime = moment(date);
+        const ageMinutes = moment.duration(moment().diff(shareTime)).asMinutes();
+        const status = ageMinutes <= maxStatusInterval;
+        const poolStatus = status;
+        const lastsharetime = shareTime;
 
         const poolHashrateInGh = avgPoolHashrateInGh;
 
@@ -89,8 +95,8 @@ export const minerSelector = createSelector(
           avgPoolHashrateInGh,
           upTime,
           version,
-          lastShareTimeX: parseInt(moment(lastsharetime).format('X')),
-          lastShareTime: moment(lastsharetime, 'X').fromNow(),
+          lastShareTimeX: parseInt(lastsharetime.format('X')),
+          lastShareTime: lastsharetime.fromNow(),
           wattPerGHs,
           wattTotal,
           hashrateInGh,

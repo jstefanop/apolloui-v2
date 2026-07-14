@@ -12,6 +12,7 @@ import {
   useDisclosure,
   Center,
   Icon,
+  Badge,
 } from '@chakra-ui/react';
 import moment from 'moment';
 import CountUp from 'react-countup';
@@ -112,6 +113,8 @@ const Node = () => {
     }
   }, [timestamp, blocksCount, blockHeader]);
 
+  const isStaleData = !!dataNode?.stale;
+
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode, intl);
 
@@ -141,7 +144,6 @@ const Node = () => {
       dataNode.stats.result.stats
     ) {
       prevData.current = dataNode;
-      console.log('prevData updated:', dataNode.stats.result.stats);
     }
   }, [dataNode]);
 
@@ -249,7 +251,8 @@ const Node = () => {
 
   const shouldShowStats =
     (!isServiceError && !isBackendDown && hasMeaningfulData) ||
-    (isServiceError && hadValidData && !isBackendDown);
+    (isServiceError && hadValidData && !isBackendDown) ||
+    (!isBackendDown && isStaleData);
 
   // Debug logging only when key values change
   useEffect(() => {
@@ -457,16 +460,12 @@ const Node = () => {
                       {isSynced ? (
                         <Flex direction="row" alignItems="baseline">
                           <CountUp
-                            start={prevData?.blocksCount || 0}
                             end={blocksCount || 0}
                             duration="1"
                             decimals="0"
                             separator=","
-                            enableScrollSpy
-                            scrollSpyOnce
-                          >
-                            {({ countUpRef }) => <span ref={countUpRef} />}
-                          </CountUp>
+                            preserveValue
+                          />
                           <Text
                             fontSize="sm"
                             fontWeight={500}
@@ -500,10 +499,18 @@ const Node = () => {
                   mt="-230px"
                 >
                   {/* BOTTOM */}
-                  <Flex m="2">
+                  <Flex m="2" align="center" gap={2}>
                     <Text fontSize="lg" fontWeight="800">
                       <FormattedMessage id="node.stats.details" />
                     </Text>
+                    {isStaleData && (
+                      <Badge colorScheme="orange" fontSize="0.65em" px={2} py={0.5} borderRadius="md">
+                        <FormattedMessage
+                          id="node.warning.stale_data"
+                          defaultMessage="data delayed"
+                        />
+                      </Badge>
+                    )}
                   </Flex>
                   {loadingNode ? (
                     <List />

@@ -9,8 +9,6 @@ export const MINER_STATS_FRAGMENT = gql`
         uuid
         version
         date
-        lastsharetime @client
-        status @client
         statVersion
         comport
         versions {
@@ -102,7 +100,6 @@ export const MINER_STATS_FRAGMENT = gql`
           port
           userName
           diff
-          status @client
           intervals {
             int_0 {
               name

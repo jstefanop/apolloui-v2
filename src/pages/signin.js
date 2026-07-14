@@ -1,4 +1,5 @@
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import { MdOutlineRemoveRedEye } from 'react-icons/md';
 import { RiEyeCloseLine } from 'react-icons/ri';
 // Chakra imports
@@ -22,6 +23,7 @@ import { useIntl } from 'react-intl';
 
 const SignIn = () => {
   const intl = useIntl();
+  const router = useRouter();
   // Chakra color mode
   const textColor = useColorModeValue('brand.800', 'white');
   const textColorSecondary = useColorModeValue('gray.600', 'gray.500');
@@ -42,7 +44,7 @@ const SignIn = () => {
       redirect: false,
     });
     const { error } = response;
-    
+
     if (error) {
       switch (error) {
         case 'CredentialsSignin':
@@ -51,8 +53,15 @@ const SignIn = () => {
         default:
           setError('Something went wrong');
       }
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    // signIn({ redirect: false }) sets the session cookie but does not reliably
+    // update useSession() client-side, so the route guard would stay on /signin
+    // until a manual reload. Force a session refresh, then navigate ourselves.
+    await getSession();
+    router.push('/overview');
   };
 
   return (
