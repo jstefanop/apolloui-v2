@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl';
 import WifiSettings from '../sections/WifiSettings';
 import PasswordSettings from '../sections/PasswordSettings';
 import TemperatureSettings from '../sections/TemperatureSettings';
+import TimezoneSettings from '../sections/TimezoneSettings';
 
 const SystemTab = () => {
   const intl = useIntl();
@@ -16,6 +17,7 @@ const SystemTab = () => {
       </Box>
       <Box>
         <TemperatureSettings />
+        <TimezoneSettings />
       </Box>
       <Box>
         <PasswordSettings />

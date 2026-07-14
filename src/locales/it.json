@@ -526,6 +526,13 @@
         "logs": {
           "title": "Log di Sistema",
           "description": "Visualizza e monitora i log di sistema per i vari componenti"
+        },
+        "timezone": {
+          "title": "Fuso orario",
+          "description": "L’etichetta dell’orologio del device. Sbagliata qui, e sballano i timestamp dei log, i grafici e le regole orarie dell’automazione.",
+          "current": "Il device è su {timezone} — ora locale {time}",
+          "use_browser": "Usa il fuso di questo browser ({timezone})",
+          "saved": "Fuso orario aggiornato."
         }
       },
       "extra": {

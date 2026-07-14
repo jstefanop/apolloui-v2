@@ -526,6 +526,13 @@
         "logs": {
           "title": "System Logs",
           "description": "View and monitor system logs for different components"
+        },
+        "timezone": {
+          "title": "Timezone",
+          "description": "The device clock label. Wrong here, and log timestamps, charts and time-based automation rules all drift.",
+          "current": "Device is on {timezone} — local time {time}",
+          "use_browser": "Use this browser’s timezone ({timezone})",
+          "saved": "Timezone updated."
         }
       },
       "extra": {

@@ -526,6 +526,13 @@
         "logs": {
           "title": "Registros del Sistema",
           "description": "Ver y monitorear los registros del sistema para diferentes componentes"
+        },
+        "timezone": {
+          "title": "Zona horaria",
+          "description": "La zona horaria del dispositivo. Si es incorrecta, se desajustan las marcas de tiempo de los registros, los gráficos y las reglas horarias de la automatización.",
+          "current": "El dispositivo está en {timezone} — hora local {time}",
+          "use_browser": "Usar la zona horaria de este navegador ({timezone})",
+          "saved": "Zona horaria actualizada."
         }
       },
       "extra": {

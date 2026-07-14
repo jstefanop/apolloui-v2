@@ -526,6 +526,13 @@
         "logs": {
           "title": "Systemprotokolle",
           "description": "Systemprotokolle für verschiedene Komponenten anzeigen und überwachen"
+        },
+        "timezone": {
+          "title": "Zeitzone",
+          "description": "Die Zeitzone des Geräts. Ist sie falsch, verschieben sich Log-Zeitstempel, Diagramme und zeitbasierte Automatisierungsregeln.",
+          "current": "Gerät steht auf {timezone} — Ortszeit {time}",
+          "use_browser": "Zeitzone dieses Browsers verwenden ({timezone})",
+          "saved": "Zeitzone aktualisiert."
         }
       },
       "extra": {

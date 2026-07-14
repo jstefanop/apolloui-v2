@@ -103,6 +103,39 @@ export const MCU_WIFI_DISCONNECT_QUERY = gql`
   }
 `;
 
+export const MCU_TIMEZONE_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_TIMEZONE {
+    Mcu {
+      timezone {
+        result {
+          timezone
+          available
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
+export const MCU_SET_TIMEZONE_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query MCU_SET_TIMEZONE($input: McuSetTimezoneInput!) {
+    Mcu {
+      setTimezone(input: $input) {
+        result {
+          timezone
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
 export const MCU_SHUTDOWN_QUERY = gql`
   ${ERROR_FRAGMENT}
   query MCU_SHUTDOWN {
