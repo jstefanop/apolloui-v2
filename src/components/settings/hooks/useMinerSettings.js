@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { useDeviceConfig } from '../../../contexts/DeviceConfigContext';
 import { useIntl } from 'react-intl';
 import _ from 'lodash';
 import { IoLeaf, IoRocket } from 'react-icons/io5';
@@ -10,6 +11,7 @@ import { MdHdrAuto } from 'react-icons/md';
 export const useMinerSettings = () => {
   const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
+  const { hasInternalMiner, isHybrid } = useDeviceConfig();
 
   // Initial configurations for miner modes
   const { current: minerInitialModes } = useRef([
