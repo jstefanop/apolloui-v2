@@ -1052,7 +1052,15 @@
       "test": "Probar conexión",
       "testing": "Probando…",
       "test_ok": "Conectado",
-      "test_failed": "Conexión fallida"
+      "test_failed": "Conexión fallida",
+      "browse": "Explorar topics",
+      "browse_title": "Explorar topics MQTT",
+      "browse_prefix": "Filtro de prefijo (opcional, p. ej. sun2000)",
+      "browse_scan": "Escanear (5s)",
+      "browse_scanning": "Escuchando el broker…",
+      "browse_none": "Ningún topic en la ventana de escaneo. Reintenta u otro prefijo.",
+      "browse_failed": "Escaneo fallido",
+      "browse_use": "Usar topic"
     }
   }
 }

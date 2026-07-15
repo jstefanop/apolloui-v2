@@ -14,9 +14,10 @@ import {
 import { useEffect, useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { useIntl } from 'react-intl';
-import { MdAdd, MdCheckCircle, MdDelete, MdError } from 'react-icons/md';
+import { MdAdd, MdCheckCircle, MdDelete, MdError, MdSearch } from 'react-icons/md';
 import Card from '../card/Card';
 import { TEST_AUTOMATION_MQTT_QUERY } from '../../graphql/automation';
+import MqttBrowseModal from './MqttBrowseModal';
 
 /**
  * MQTT / Home Assistant input.
@@ -33,6 +34,7 @@ const MqttCard = ({ config, onSave, isSaving }) => {
 
   const [draft, setDraft] = useState({ enabled: false, host: '', port: 1883, username: '', password: '', tls: false, inputs: [] });
   const [testResult, setTestResult] = useState(null);
+  const [browseOpen, setBrowseOpen] = useState(false);
 
   const [testMqtt, { loading: testing }] = useLazyQuery(TEST_AUTOMATION_MQTT_QUERY, { fetchPolicy: 'no-cache' });
 
@@ -144,19 +146,37 @@ const MqttCard = ({ config, onSave, isSaving }) => {
 
         <Divider />
 
-        <Flex justify="space-between" align="center">
+        <Flex justify="space-between" align="center" wrap="wrap" gap="8px">
           <Text fontSize="sm" fontWeight="600" color={textColor}>
             {intl.formatMessage({ id: 'automation.mqtt.inputs' })}
           </Text>
-          <Button
-            size="xs"
-            variant="light"
-            leftIcon={<MdAdd />}
-            onClick={() => setDraft({ ...draft, inputs: [...draft.inputs, { name: '', topic: '', jsonPath: '', unit: '' }] })}
-          >
-            {intl.formatMessage({ id: 'automation.mqtt.add_input' })}
-          </Button>
+          <Flex gap="8px">
+            <Button
+              size="xs"
+              variant="light"
+              leftIcon={<MdSearch />}
+              onClick={() => setBrowseOpen(true)}
+              isDisabled={!draft.host}
+            >
+              {intl.formatMessage({ id: 'automation.mqtt.browse' })}
+            </Button>
+            <Button
+              size="xs"
+              variant="light"
+              leftIcon={<MdAdd />}
+              onClick={() => setDraft({ ...draft, inputs: [...draft.inputs, { name: '', topic: '', jsonPath: '', unit: '' }] })}
+            >
+              {intl.formatMessage({ id: 'automation.mqtt.add_input' })}
+            </Button>
+          </Flex>
         </Flex>
+
+        <MqttBrowseModal
+          isOpen={browseOpen}
+          onClose={() => setBrowseOpen(false)}
+          brokerInput={brokerInput}
+          onPick={(input) => setDraft((d) => ({ ...d, inputs: [...d.inputs, input] }))}
+        />
 
         {!draft.inputs.length && (
           <Text fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.inputs_hint' })}</Text>

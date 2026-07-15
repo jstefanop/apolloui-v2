@@ -161,6 +161,22 @@ export const TEST_AUTOMATION_MQTT_QUERY = gql`
   }
 `;
 
+export const DISCOVER_AUTOMATION_MQTT_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query DISCOVER_AUTOMATION_MQTT($input: MqttConfigInput!, $prefix: String, $seconds: Int) {
+    Automation {
+      discoverMqtt(input: $input, prefix: $prefix, seconds: $seconds) {
+        result {
+          ok
+          error
+          topics { topic sample jsonPaths }
+        }
+        error { ...ErrorFragment }
+      }
+    }
+  }
+`;
+
 export const CLEAR_AUTOMATION_OVERRIDE_QUERY = gql`
   ${ERROR_FRAGMENT}
   query CLEAR_AUTOMATION_OVERRIDE {
