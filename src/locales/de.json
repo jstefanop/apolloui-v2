@@ -533,6 +533,17 @@
           "current": "Gerät steht auf {timezone} — Ortszeit {time}",
           "use_browser": "Zeitzone dieses Browsers verwenden ({timezone})",
           "saved": "Zeitzone aktualisiert."
+        },
+        "location": {
+          "title": "Standort",
+          "description": "Breiten- und Längengrad, von der Automatisierung zur lokalen Berechnung von Sonnenauf- und -untergang genutzt.",
+          "latitude": "Breitengrad",
+          "longitude": "Längengrad",
+          "detect": "Meine Position verwenden",
+          "hint": "Eine Stadt suchen, um die Koordinaten zu füllen, oder von Hand eingeben. Nie aus der IP abgeleitet. Leer lassen, wenn keine sonnenbasierten Regeln genutzt werden.",
+          "search": "Stadt suchen",
+          "search_placeholder": "z. B. New York",
+          "search_failed": "Standortdienst nicht erreichbar. Koordinaten von Hand eingeben."
         }
       },
       "extra": {
@@ -860,13 +871,14 @@
     },
     "rules": {
       "title": "Regeln",
-      "description": "Nach Priorität ausgewertet: die erste passende gewinnt.",
+      "description": "Von oben nach unten geprüft — die erste passende Regel gewinnt. Zum Umsortieren ziehen.",
       "add": "Regel hinzufügen",
       "empty": "Noch keine Regeln. Füge eine hinzu, damit die Automatisierung handeln kann.",
       "safety": "Sicherheit",
       "active": "Aktiv",
       "edit": "Regel bearbeiten",
-      "delete": "Regel löschen"
+      "delete": "Regel löschen",
+      "drag": "Zum Umsortieren ziehen"
     },
     "rule": {
       "if_all": "Wenn {conditions} → {action}",
@@ -878,7 +890,8 @@
       "in": "{signal} ist eines von {values}",
       "not_in": "{signal} ist keines von {values}",
       "action.off": "Miner stoppen",
-      "action.mode": "in {mode} laufen"
+      "action.mode": "in {mode} laufen",
+      "if": "Wenn"
     },
     "signal": {
       "stale": "nicht verfügbar",
@@ -893,7 +906,7 @@
       "miner.running": "Miner läuft",
       "miner.mode": "Miner-Modus",
       "energy.price": "Energiepreis",
-      "energy.band": "Tarifzone"
+      "energy.band": "Preiszone"
     },
     "editor": {
       "new_title": "Neue Regel",
@@ -920,7 +933,10 @@
       "mode": "Modus",
       "mode_restart_warning": "Ein Moduswechsel startet den Miner neu und kostet einige Minuten Ausfallzeit.",
       "cancel": "Abbrechen",
-      "save": "Regel speichern"
+      "save": "Regel speichern",
+      "yes": "Ja",
+      "no": "Nein",
+      "and": "und"
     },
     "guards": {
       "title": "Schutzgrenzen",
@@ -929,11 +945,11 @@
       "minOnMinutes.tooltip": "Nach dem Start läuft der Miner mindestens so lange.",
       "minOffMinutes": "Min. Stoppzeit",
       "minOffMinutes.tooltip": "Nach dem Stopp bleibt der Miner mindestens so lange aus.",
-      "minChangeMinutes": "Min. zwischen Änderungen",
+      "minChangeMinutes": "Min. Intervall",
       "minChangeMinutes.tooltip": "Mindestabstand zwischen zwei Änderungen, auch Moduswechseln.",
       "maxCyclesPerHour": "Max. Starts",
       "maxCyclesPerHour.tooltip": "Wie oft der Miner innerhalb einer Stunde gestartet werden darf.",
-      "defaultHysteresis": "Standard-Hysterese",
+      "defaultHysteresis": "Hysterese",
       "defaultHysteresis.tooltip": "Gilt für numerische Schwellen, wenn eine Regel keine eigene angibt.",
       "overrideMinutes": "Manuelle Pause",
       "overrideMinutes.tooltip": "Wie lange die Automatisierung pausiert, nachdem du den Miner von Hand startest oder stoppst.",
@@ -948,14 +964,15 @@
       "current": "Jetzt: {price} {currency}/kWh",
       "currency": "Währung",
       "flat_price": "Fixpreis /kWh",
-      "bands": "Zeitzonen",
+      "bands": "Preiszonen",
       "add_band": "Zone hinzufügen",
       "from": "Von",
       "to": "Bis",
       "price": "Preis /kWh",
       "band_name": "Name der Zone",
       "remove_band": "Zone entfernen",
-      "days_hint": "Kein Tag ausgewählt = jeden Tag. Eine Zone über Mitternacht gehört zu dem Tag, an dem sie begann."
+      "all_days": "Alle",
+      "no_days_error": "Jede Zeitzone braucht mindestens einen ausgewählten Tag."
     },
     "weekday": {
       "1": "Mo",
@@ -965,15 +982,6 @@
       "5": "Fr",
       "6": "Sa",
       "7": "So"
-    },
-    "location": {
-      "title": "Standort",
-      "description": "Für die lokale Berechnung von Sonnenauf- und -untergang. Ohne ihn bleiben die Sonnensignale nicht verfügbar.",
-      "latitude": "Breitengrad",
-      "longitude": "Längengrad",
-      "detect": "Meine Position verwenden",
-      "timezone": "Zeitzone",
-      "detect_timezone": "Erkennen"
     },
     "events": {
       "title": "Verlauf",
@@ -989,6 +997,34 @@
       "rule_saved": "Regel gespeichert.",
       "rule_deleted": "Regel gelöscht.",
       "resumed": "Automatisierung fortgesetzt."
+    },
+    "location_alert": "Eine Regel nutzt Sonnenauf-/-untergang, aber es ist kein Standort gesetzt, daher greift sie nie. {link}",
+    "location_alert_link": "Standort in Einstellungen → System festlegen",
+    "signal_hint": {
+      "clock.time": "Basierend auf der Uhrzeit.",
+      "clock.weekday": "Basierend auf dem Wochentag.",
+      "clock.date": "Basierend auf einem bestimmten Datum.",
+      "sun.isDay": "Wahr, solange die Sonne an deinem Standort scheint. Standort in den Einstellungen nötig.",
+      "sun.minutesToSunset": "Minuten bis zum Sonnenuntergang. Standort in den Einstellungen nötig.",
+      "sun.minutesToSunrise": "Minuten bis zum Sonnenaufgang. Standort in den Einstellungen nötig.",
+      "miner.temperature": "Die aktuell heißeste Board-Temperatur.",
+      "miner.temperatureAvg": "Die aktuelle durchschnittliche Board-Temperatur.",
+      "miner.running": "Ob der Miner gerade läuft.",
+      "miner.mode": "Der aktuelle Leistungsmodus des Miners. Am nützlichsten mit einer weiteren Bedingung.",
+      "energy.price": "Der aktuell gültige Energiepreis aus dem Tarif unten.",
+      "energy.band": "Der Name der aktuell gültigen Preiszone."
+    },
+    "op": {
+      "<": "kleiner als",
+      "<=": "≤",
+      ">": "größer als",
+      ">=": "≥",
+      "==": "ist",
+      "!=": "ist nicht",
+      "between": "zwischen",
+      "not_between": "nicht zwischen",
+      "in": "eines von",
+      "not_in": "keines von"
     }
   }
 }

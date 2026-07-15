@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertIcon,
   Badge,
   Button,
   Flex,
@@ -6,6 +8,7 @@ import {
   FormLabel,
   IconButton,
   Input,
+  Select,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
@@ -16,6 +19,35 @@ import Card from '../card/Card';
 
 const WEEKDAYS = [1, 2, 3, 4, 5, 6, 7];
 
+// A short list of widely used currencies beats a free-text field that could hold
+// anything. ISO 4217 codes; the label carries the symbol for recognition.
+const CURRENCIES = [
+  ['EUR', '€ EUR'],
+  ['USD', '$ USD'],
+  ['GBP', '£ GBP'],
+  ['JPY', '¥ JPY'],
+  ['CHF', 'CHF'],
+  ['CAD', '$ CAD'],
+  ['AUD', '$ AUD'],
+  ['NZD', '$ NZD'],
+  ['CNY', '¥ CNY'],
+  ['HKD', '$ HKD'],
+  ['SGD', '$ SGD'],
+  ['SEK', 'SEK'],
+  ['NOK', 'NOK'],
+  ['DKK', 'DKK'],
+  ['PLN', 'PLN'],
+  ['CZK', 'CZK'],
+  ['HUF', 'HUF'],
+  ['RON', 'RON'],
+  ['TRY', '₺ TRY'],
+  ['BRL', 'R$ BRL'],
+  ['MXN', '$ MXN'],
+  ['INR', '₹ INR'],
+  ['ZAR', 'ZAR'],
+  ['AED', 'AED'],
+];
+
 /**
  * Hand-entered energy cost.
  *
@@ -23,7 +55,7 @@ const WEEKDAYS = [1, 2, 3, 4, 5, 6, 7];
  * the baseline that works everywhere, with no key and no account. Spot-price
  * providers can plug in later without changing any of this.
  */
-const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
+const TariffCard = ({ config, currentPrice, currentBand, onSave, isSaving }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
@@ -32,14 +64,20 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
   const [currency, setCurrency] = useState('EUR');
   const [flatPrice, setFlatPrice] = useState('');
   const [periods, setPeriods] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!config) return;
-    setCurrency(config.tariff?.currency || 'EUR');
+    // A currency saved before this was a dropdown (free text like "qwwqw") is not
+    // in the list; fall back to EUR so the select and the badge agree.
+    const saved = config.tariff?.currency;
+    setCurrency(CURRENCIES.some(([code]) => code === saved) ? saved : 'EUR');
     setFlatPrice(config.tariff?.flatPrice ?? '');
     setPeriods(
       (config.tariff?.periods || []).map((p) => ({
-        days: p.days || [],
+        // An empty list historically meant "every day"; surface it as all days
+        // selected so the UI never shows a confusing empty state.
+        days: p.days && p.days.length ? p.days : [...WEEKDAYS],
         from: p.from,
         to: p.to,
         price: p.price,
@@ -58,7 +96,15 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
         : [...periods[index].days, day].sort(),
     });
 
-  const save = () =>
+  const selectAllDays = (index) => setPeriod(index, { days: [...WEEKDAYS] });
+
+  const save = () => {
+    // A band with no day would silently never match — block it with a clear message.
+    if (periods.some((p) => !p.days.length)) {
+      setError(intl.formatMessage({ id: 'automation.tariff.no_days_error' }));
+      return;
+    }
+    setError(null);
     onSave({
       tariff: {
         currency,
@@ -72,6 +118,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
         })),
       },
     });
+  };
 
   return (
     <Card p="20px">
@@ -86,29 +133,45 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
             </Text>
           </Flex>
           {currentPrice != null && (
-            <Badge colorScheme="green" fontSize="sm" p="6px 10px" borderRadius="8px">
-              {intl.formatMessage(
-                { id: 'automation.tariff.current' },
-                { price: currentPrice, currency }
-              )}
+            <Badge colorScheme="green" fontSize="sm" p="6px 10px" borderRadius="8px" textTransform="none">
+              {intl.formatMessage({ id: 'automation.tariff.current' }, { price: currentPrice, currency })}
+              {/* Show which band is driving the price, so its live nature is visible. */}
+              {currentBand && currentBand !== 'flat' ? ` · ${currentBand}` : ''}
             </Badge>
           )}
         </Flex>
+
+        {error && (
+          <Alert status="warning" borderRadius="10px" fontSize="sm" py="8px">
+            <AlertIcon />
+            {error}
+          </Alert>
+        )}
 
         <Flex gap="12px" wrap="wrap">
           <FormControl w="120px">
             <FormLabel fontSize="xs" color={subTextColor}>
               {intl.formatMessage({ id: 'automation.tariff.currency' })}
             </FormLabel>
-            <Input variant="auth" size="sm" value={currency} onChange={(e) => setCurrency(e.target.value)} />
+            <Select variant="auth" size="sm" value={currency} onChange={(e) => setCurrency(e.target.value)}>
+              {CURRENCIES.map(([code, label]) => (
+                <option key={code} value={code}>
+                  {label}
+                </option>
+              ))}
+            </Select>
           </FormControl>
 
           <FormControl w="180px">
             <FormLabel fontSize="xs" color={subTextColor}>
               {intl.formatMessage({ id: 'automation.tariff.flat_price' })}
             </FormLabel>
-            <Input variant="auth"
+            <Input
+              variant="auth"
               size="sm"
+              type="number"
+              step="0.01"
+              min="0"
               value={flatPrice}
               onChange={(e) => setFlatPrice(e.target.value)}
               placeholder="0.25"
@@ -125,7 +188,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
             variant="light"
             leftIcon={<MdAdd />}
             onClick={() =>
-              setPeriods([...periods, { days: [], from: '23:00', to: '07:00', price: '', band: '' }])
+              setPeriods([...periods, { days: [...WEEKDAYS], from: '23:00', to: '07:00', price: '', band: '' }])
             }
           >
             {intl.formatMessage({ id: 'automation.tariff.add_band' })}
@@ -139,7 +202,8 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.from' })}
                 </FormLabel>
-                <Input variant="auth"
+                <Input
+                  variant="auth"
                   size="sm"
                   value={period.from}
                   onChange={(e) => setPeriod(index, { from: e.target.value })}
@@ -151,7 +215,8 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.to' })}
                 </FormLabel>
-                <Input variant="auth"
+                <Input
+                  variant="auth"
                   size="sm"
                   value={period.to}
                   onChange={(e) => setPeriod(index, { to: e.target.value })}
@@ -163,8 +228,12 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.price' })}
                 </FormLabel>
-                <Input variant="auth"
+                <Input
+                  variant="auth"
                   size="sm"
+                  type="number"
+                  step="0.01"
+                  min="0"
                   value={period.price}
                   onChange={(e) => setPeriod(index, { price: e.target.value })}
                   placeholder="0.12"
@@ -175,7 +244,8 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.band_name' })}
                 </FormLabel>
-                <Input variant="auth"
+                <Input
+                  variant="auth"
                   size="sm"
                   value={period.band}
                   onChange={(e) => setPeriod(index, { band: e.target.value })}
@@ -194,23 +264,22 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
 
             {/* A band crossing midnight belongs to the day it started on — Friday
                 night is still Friday at 01:00 on Saturday. */}
-            <Flex gap="6px" wrap="wrap">
+            <Flex gap="6px" wrap="wrap" align="center">
               {WEEKDAYS.map((day) => (
-                <Badge
+                <Button
                   key={day}
-                  as="button"
-                  onClick={() => toggleDay(index, day)}
-                  colorScheme={period.days.includes(day) ? 'brand' : 'gray'}
+                  size="xs"
+                  minW="44px"
                   px="8px"
-                  py="4px"
-                  borderRadius="6px"
+                  variant={period.days.includes(day) ? 'brand' : 'light'}
+                  onClick={() => toggleDay(index, day)}
                 >
                   {intl.formatMessage({ id: `automation.weekday.${day}` })}
-                </Badge>
+                </Button>
               ))}
-              <Text fontSize="xs" color={subTextColor} alignSelf="center">
-                {intl.formatMessage({ id: 'automation.tariff.days_hint' })}
-              </Text>
+              <Button size="xs" variant="ghost" onClick={() => selectAllDays(index)}>
+                {intl.formatMessage({ id: 'automation.tariff.all_days' })}
+              </Button>
             </Flex>
           </Flex>
         ))}

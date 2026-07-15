@@ -117,7 +117,7 @@ describe('AutomationStatusCard', () => {
 });
 
 describe('RulesList', () => {
-  it('reads a rule back as a sentence, not as JSON', () => {
+  it('reads a rule back as coloured chips, not JSON', () => {
     renderUI(
       <RulesList
         rules={[thermalRule]}
@@ -130,11 +130,78 @@ describe('RulesList', () => {
       />
     );
 
-    expect(
-      screen.getByText(/Board temperature \(hottest\) > 80 °C → stop the miner/)
-    ).toBeInTheDocument();
+    // Condition and action read as human text, each in its own chip — and the
+    // operator is spelled out so it can't be misread as "=".
+    expect(screen.getByText('Board temperature (hottest) greater than 80 °C')).toBeInTheDocument();
+    expect(screen.getByText('stop the miner')).toBeInTheDocument();
     expect(screen.getByText('Safety')).toBeInTheDocument();
     expect(screen.getByText('In charge')).toBeInTheDocument();
+  });
+
+  it('shows weekdays as names and booleans as Yes/No, not raw values', () => {
+    const wkDescriptors = [
+      { id: 'clock.weekday', type: 'number', widget: 'weekday', ops: ['in', 'not_in'], supportsHysteresis: false },
+      { id: 'sun.isDay', type: 'boolean', widget: 'boolean', ops: ['==', '!='], supportsHysteresis: false },
+    ];
+    const rule = {
+      id: 2,
+      name: 'Weekend day',
+      enabled: true,
+      priority: 100,
+      isSafety: false,
+      match: 'all',
+      conditions: [
+        { signal: 'clock.weekday', op: 'in', values: ['6', '7'] },
+        { signal: 'sun.isDay', op: '==', value: 'true' },
+      ],
+      action: { type: 'mode', mode: 'turbo' },
+    };
+
+    renderUI(
+      <RulesList
+        rules={[rule]}
+        descriptors={wkDescriptors}
+        onCreate={() => {}}
+        onEdit={() => {}}
+        onToggle={() => {}}
+        onDelete={() => {}}
+      />
+    );
+
+    expect(screen.getByText('Day of week: Sat, Sun')).toBeInTheDocument();
+    expect(screen.getByText('Daylight: Yes')).toBeInTheDocument();
+    expect(screen.getByText('run in turbo')).toBeInTheDocument();
+  });
+
+  it('shows temperatures in the user unit (Fahrenheit)', () => {
+    renderUI(
+      <RulesList
+        rules={[thermalRule]}
+        descriptors={descriptors}
+        temperatureUnit="f"
+        onCreate={() => {}}
+        onEdit={() => {}}
+        onToggle={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    // 80 °C → 176 °F in the chip.
+    expect(screen.getByText('Board temperature (hottest) greater than 176 °F')).toBeInTheDocument();
+  });
+
+  it('gives each rule a drag handle so precedence is reorderable', () => {
+    renderUI(
+      <RulesList
+        rules={[thermalRule, { ...thermalRule, id: 9, name: 'Second' }]}
+        descriptors={descriptors}
+        onCreate={() => {}}
+        onEdit={() => {}}
+        onToggle={() => {}}
+        onDelete={() => {}}
+        onReorder={() => {}}
+      />
+    );
+    expect(screen.getAllByLabelText('Drag to reorder')).toHaveLength(2);
   });
 
   it('invites the first rule when there are none', () => {

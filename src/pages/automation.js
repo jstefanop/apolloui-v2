@@ -1,9 +1,21 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { Box, Grid, GridItem, Spinner, Flex } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import {
+  Box,
+  Grid,
+  GridItem,
+  Spinner,
+  Flex,
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  Link,
+} from '@chakra-ui/react';
 import { useQuery, useLazyQuery, useSubscription } from '@apollo/client';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useIntl } from 'react-intl';
+import { settingsSelector } from '../redux/reselect/settings';
 
 import {
   GET_AUTOMATION_QUERY,
@@ -21,27 +33,44 @@ import RulesList from '../components/automation/RulesList';
 import RuleEditorModal from '../components/automation/RuleEditorModal';
 import GuardRailsCard from '../components/automation/GuardRailsCard';
 import TariffCard from '../components/automation/TariffCard';
-import LocationCard from '../components/automation/LocationCard';
 import EventsTimeline from '../components/automation/EventsTimeline';
 
 const Automation = () => {
   const intl = useIntl();
   const dispatch = useDispatch();
 
+  // Temperature is stored in °C; the UI shows/accepts it in the user's unit.
+  const { data: settingsData } = useSelector(settingsSelector, shallowEqual);
+  const temperatureUnit = settingsData?.temperatureUnit || 'c';
+
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
   const [liveState, setLiveState] = useState(null);
+  const [liveEvents, setLiveEvents] = useState([]);
 
   const { data, loading, refetch } = useQuery(GET_AUTOMATION_QUERY, {
     fetchPolicy: 'network-only',
   });
 
+  // Re-seed the history from the DB on every (re)fetch; between fetches the
+  // subscription appends new events (below).
+  useEffect(() => {
+    if (data?.Automation?.events?.result) setLiveEvents(data.Automation.events.result);
+  }, [data]);
+
   // The scheduler pushes a fresh decision every tick, so the page reflects what
-  // the engine is thinking without polling it.
+  // the engine is thinking without polling it — and carries the freshly recorded
+  // event, if any, so the history updates the moment the engine acts.
   useSubscription(AUTOMATION_SUBSCRIPTION, {
     onData: ({ data: pushed }) => {
       const result = pushed?.data?.automation?.result;
-      if (result) setLiveState(result);
+      if (!result) return;
+      setLiveState(result);
+      if (result.event) {
+        setLiveEvents((prev) =>
+          prev.some((e) => e.id === result.event.id) ? prev : [result.event, ...prev].slice(0, 30)
+        );
+      }
     },
   });
 
@@ -66,7 +95,7 @@ const Automation = () => {
   const config = data?.Automation?.config?.result;
   const rules = data?.Automation?.rules?.result || [];
   const descriptors = data?.Automation?.signals?.result || [];
-  const events = data?.Automation?.events?.result || [];
+  const events = liveEvents;
   const state = liveState || data?.Automation?.state?.result;
 
   // Reset the pushed state when the config changes underneath it (e.g. the
@@ -92,9 +121,14 @@ const Automation = () => {
   };
 
   const handleSaveRule = async ({ id, input }) => {
+    // Priority is set by the list order (drag to reorder), not typed in. A brand
+    // new rule goes to the bottom = lowest precedence.
+    const nextPriority = (rules.reduce((max, r) => Math.max(max, r.priority || 0), 0) || 0) + 10;
+    const payloadInput = id ? input : { ...input, priority: nextPriority };
+
     const { data: result } = id
-      ? await updateRule({ variables: { id, input } })
-      : await createRule({ variables: { input } });
+      ? await updateRule({ variables: { id, input: payloadInput } })
+      : await createRule({ variables: { input: payloadInput } });
 
     const payload = id ? result?.Automation?.updateRule : result?.Automation?.createRule;
     if (!report(payload?.error, 'automation.feedback.rule_saved')) return;
@@ -109,13 +143,44 @@ const Automation = () => {
     if (report(result?.Automation?.deleteRule?.error, 'automation.feedback.rule_deleted')) await refetch();
   };
 
+  // Persist the dragged order as priorities (top of the list wins). Only the
+  // rules whose position actually changed are written.
+  const handleReorder = async (orderedRules) => {
+    const updates = orderedRules
+      .map((rule, i) => ({ id: rule.id, priority: (i + 1) * 10 }))
+      .filter(({ id, priority }) => rules.find((r) => r.id === id)?.priority !== priority);
+    if (!updates.length) return;
+
+    for (const u of updates) {
+      // eslint-disable-next-line no-await-in-loop
+      await updateRule({ variables: { id: u.id, input: { priority: u.priority } } });
+    }
+    await refetch();
+  };
+
   const handleClearOverride = async () => {
     const { data: result } = await clearOverride();
     if (report(result?.Automation?.clearOverride?.error, 'automation.feedback.resumed')) await refetch();
   };
 
   const price = state?.signals?.find((s) => s.id === 'energy.price' && !s.stale)?.value;
-  const sunSignals = (state?.signals || []).filter((s) => s.id.startsWith('sun.'));
+  const band = state?.signals?.find((s) => s.id === 'energy.band' && !s.stale)?.value;
+
+  // Location lives in Settings now. Nudge the user there only when it actually
+  // matters: a rule reads a sun signal but no coordinates are set, so that rule
+  // can never match (the signal is stale).
+  // Single source of truth for the miner modes: the backend descriptor.
+  const minerModes = descriptors.find((d) => d.id === 'miner.mode')?.options || [];
+
+  // The tariff band names currently defined — the "energy.band" condition can
+  // only reference one of these, and cannot be added when there are none.
+  const bands = [...new Set((config?.tariff?.periods || []).map((p) => p.band).filter(Boolean))];
+
+  const locationMissing = config && (config.latitude == null || config.longitude == null);
+  const usesSunSignal = rules.some((rule) =>
+    (rule.conditions || []).some((c) => c.signal?.startsWith('sun.'))
+  );
+  const showLocationAlert = locationMissing && usesSunSignal;
 
   if (loading && !data) {
     return (
@@ -140,8 +205,28 @@ const Automation = () => {
         onSave={handleSaveRule}
         rule={editingRule}
         descriptors={descriptors}
+        bands={bands}
+        temperatureUnit={temperatureUnit}
         isSaving={isSaving}
       />
+
+      {showLocationAlert && (
+        <Alert status="warning" borderRadius="12px" mb="20px">
+          <AlertIcon />
+          <AlertDescription>
+            {intl.formatMessage(
+              { id: 'automation.location_alert' },
+              {
+                link: (
+                  <Link as={NextLink} href="/settings/system" fontWeight="700" textDecoration="underline">
+                    {intl.formatMessage({ id: 'automation.location_alert_link' })}
+                  </Link>
+                ),
+              }
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Grid templateColumns={{ base: '1fr', xl: '2fr 1fr' }} gap="20px">
         <GridItem colSpan={{ base: 1, xl: 2 }}>
@@ -160,6 +245,7 @@ const Automation = () => {
             <RulesList
               rules={rules}
               descriptors={descriptors}
+              temperatureUnit={temperatureUnit}
               activeRuleId={state?.decision?.ruleId}
               isSaving={isSaving}
               onCreate={() => {
@@ -172,11 +258,13 @@ const Automation = () => {
               }}
               onToggle={(rule, enabled) => handleSaveRule({ id: rule.id, input: { enabled } })}
               onDelete={handleDeleteRule}
+              onReorder={handleReorder}
             />
 
             <TariffCard
               config={config}
               currentPrice={price}
+              currentBand={band}
               isSaving={isSaving}
               onSave={handleSaveConfig}
             />
@@ -185,13 +273,7 @@ const Automation = () => {
 
         <GridItem>
           <Flex direction="column" gap="20px">
-            <GuardRailsCard config={config} isSaving={isSaving} onSave={handleSaveConfig} />
-            <LocationCard
-              config={config}
-              sunSignals={sunSignals}
-              isSaving={isSaving}
-              onSave={handleSaveConfig}
-            />
+            <GuardRailsCard config={config} minerModes={minerModes} isSaving={isSaving} onSave={handleSaveConfig} />
             <EventsTimeline events={events} />
           </Flex>
         </GridItem>

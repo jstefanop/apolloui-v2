@@ -533,6 +533,17 @@
           "current": "Il device è su {timezone} — ora locale {time}",
           "use_browser": "Usa il fuso di questo browser ({timezone})",
           "saved": "Fuso orario aggiornato."
+        },
+        "location": {
+          "title": "Posizione",
+          "description": "Latitudine e longitudine, usate dall’automazione per calcolare alba e tramonto in locale.",
+          "latitude": "Latitudine",
+          "longitude": "Longitudine",
+          "detect": "Usa la mia posizione",
+          "hint": "Cerca una città per compilare le coordinate, oppure inseriscile a mano. Mai dedotte dall’IP. Lascia vuoto se non usi regole basate sul sole.",
+          "search": "Cerca una città",
+          "search_placeholder": "es. New York",
+          "search_failed": "Servizio di localizzazione non raggiungibile. Inserisci le coordinate a mano."
         }
       },
       "extra": {
@@ -860,13 +871,14 @@
     },
     "rules": {
       "title": "Regole",
-      "description": "Valutate per priorità: vince la prima che corrisponde.",
+      "description": "Valutate dall’alto in basso: vince la prima che corrisponde. Trascina per riordinare.",
       "add": "Aggiungi regola",
       "empty": "Ancora nessuna regola. Aggiungine una per far agire l’automazione.",
       "safety": "Sicurezza",
       "active": "Al comando",
       "edit": "Modifica regola",
-      "delete": "Elimina regola"
+      "delete": "Elimina regola",
+      "drag": "Trascina per riordinare"
     },
     "rule": {
       "if_all": "Se {conditions} → {action}",
@@ -878,7 +890,8 @@
       "in": "{signal} è uno tra {values}",
       "not_in": "{signal} non è tra {values}",
       "action.off": "spegni il miner",
-      "action.mode": "accendi in {mode}"
+      "action.mode": "accendi in {mode}",
+      "if": "Se"
     },
     "signal": {
       "stale": "non disponibile",
@@ -893,7 +906,7 @@
       "miner.running": "Miner acceso",
       "miner.mode": "Modo del miner",
       "energy.price": "Prezzo energia",
-      "energy.band": "Fascia tariffaria"
+      "energy.band": "Fascia di prezzo"
     },
     "editor": {
       "new_title": "Nuova regola",
@@ -920,7 +933,10 @@
       "mode": "Modo",
       "mode_restart_warning": "Cambiare modo riavvia il miner e costa qualche minuto di fermo.",
       "cancel": "Annulla",
-      "save": "Salva regola"
+      "save": "Salva regola",
+      "yes": "Sì",
+      "no": "No",
+      "and": "e"
     },
     "guards": {
       "title": "Guard rail",
@@ -929,11 +945,11 @@
       "minOnMinutes.tooltip": "Una volta acceso, il miner resta acceso almeno per questo tempo.",
       "minOffMinutes": "Tempo minimo spento",
       "minOffMinutes.tooltip": "Una volta spento, il miner resta spento almeno per questo tempo.",
-      "minChangeMinutes": "Minimo tra due cambi",
+      "minChangeMinutes": "Intervallo min",
       "minChangeMinutes.tooltip": "Intervallo minimo tra due cambiamenti di qualunque tipo, cambio di modo incluso.",
       "maxCyclesPerHour": "Max accensioni",
       "maxCyclesPerHour.tooltip": "Quante volte il miner può essere acceso in un’ora.",
-      "defaultHysteresis": "Isteresi predefinita",
+      "defaultHysteresis": "Isteresi",
       "defaultHysteresis.tooltip": "Applicata alle soglie numeriche quando una regola non ne specifica una propria.",
       "overrideMinutes": "Pausa manuale",
       "overrideMinutes.tooltip": "Quanto resta in pausa l’automazione dopo che accendi o spegni il miner a mano.",
@@ -948,14 +964,15 @@
       "current": "Ora: {price} {currency}/kWh",
       "currency": "Valuta",
       "flat_price": "Prezzo fisso /kWh",
-      "bands": "Fasce orarie",
+      "bands": "Fasce di prezzo",
       "add_band": "Aggiungi fascia",
       "from": "Dalle",
       "to": "Alle",
       "price": "Prezzo /kWh",
       "band_name": "Nome fascia",
       "remove_band": "Rimuovi fascia",
-      "days_hint": "Nessun giorno selezionato = tutti i giorni. Una fascia che scavalca la mezzanotte appartiene al giorno in cui è iniziata."
+      "all_days": "Tutti",
+      "no_days_error": "Ogni fascia deve avere almeno un giorno selezionato."
     },
     "weekday": {
       "1": "Lun",
@@ -965,15 +982,6 @@
       "5": "Ven",
       "6": "Sab",
       "7": "Dom"
-    },
-    "location": {
-      "title": "Posizione",
-      "description": "Serve a calcolare alba e tramonto in locale. Senza, i segnali del sole restano non disponibili.",
-      "latitude": "Latitudine",
-      "longitude": "Longitudine",
-      "detect": "Usa la mia posizione",
-      "timezone": "Fuso orario",
-      "detect_timezone": "Rileva"
     },
     "events": {
       "title": "Storico",
@@ -989,6 +997,34 @@
       "rule_saved": "Regola salvata.",
       "rule_deleted": "Regola eliminata.",
       "resumed": "Automazione ripresa."
+    },
+    "location_alert": "Una regola usa alba/tramonto ma la posizione non è impostata, quindi non può mai attivarsi. {link}",
+    "location_alert_link": "Imposta la posizione in Impostazioni → Sistema",
+    "signal_hint": {
+      "clock.time": "In base all’ora del giorno.",
+      "clock.weekday": "In base al giorno della settimana.",
+      "clock.date": "In base a una data specifica.",
+      "sun.isDay": "Vero quando c’è il sole alla tua posizione. Richiede la posizione impostata in Impostazioni.",
+      "sun.minutesToSunset": "Minuti che mancano al tramonto. Richiede la posizione impostata in Impostazioni.",
+      "sun.minutesToSunrise": "Minuti che mancano all’alba. Richiede la posizione impostata in Impostazioni.",
+      "miner.temperature": "La temperatura della board più calda in questo momento.",
+      "miner.temperatureAvg": "La temperatura media delle board in questo momento.",
+      "miner.running": "Se il miner è attualmente acceso.",
+      "miner.mode": "La modalità di potenza attuale del miner. Utile soprattutto combinata con un’altra condizione.",
+      "energy.price": "Il prezzo dell’energia attivo adesso, preso dalla tariffa qui sotto.",
+      "energy.band": "Il nome della fascia di prezzo attiva adesso."
+    },
+    "op": {
+      "<": "minore di",
+      "<=": "≤",
+      ">": "maggiore di",
+      ">=": "≥",
+      "==": "è",
+      "!=": "non è",
+      "between": "tra",
+      "not_between": "non tra",
+      "in": "è uno di",
+      "not_in": "non è uno di"
     }
   }
 }

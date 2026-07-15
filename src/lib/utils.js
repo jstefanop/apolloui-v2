@@ -386,6 +386,20 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
   return `${tempCelsius.toFixed(precision)}°C`;
 };
 
+// Temperatures live in °C everywhere (sensors, storage, the rules engine). These
+// convert only at the UI edge to the user's chosen unit ('c' | 'f'). Absolute
+// values shift by 32; a hysteresis/delta does not.
+const round1 = (x) => Math.round(x * 10) / 10;
+export const celsiusToUnit = (c, unit) =>
+  c === '' || c == null ? c : round1(unit === 'f' ? (Number(c) * 9) / 5 + 32 : Number(c));
+export const unitToCelsius = (v, unit) =>
+  v === '' || v == null ? v : round1(unit === 'f' ? ((Number(v) - 32) * 5) / 9 : Number(v));
+export const celsiusDeltaToUnit = (d, unit) =>
+  d === '' || d == null ? d : round1(unit === 'f' ? (Number(d) * 9) / 5 : Number(d));
+export const unitDeltaToCelsius = (v, unit) =>
+  v === '' || v == null ? v : round1(unit === 'f' ? (Number(v) * 5) / 9 : Number(v));
+export const temperatureUnitLabel = (unit) => (unit === 'f' ? '°F' : '°C');
+
 export const calculateWattsPerTh = (powerWatts, hashrateTh) => {
   if (!powerWatts || !hashrateTh || hashrateTh === 0) return 0;
   

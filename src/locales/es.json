@@ -533,6 +533,17 @@
           "current": "El dispositivo está en {timezone} — hora local {time}",
           "use_browser": "Usar la zona horaria de este navegador ({timezone})",
           "saved": "Zona horaria actualizada."
+        },
+        "location": {
+          "title": "Ubicación",
+          "description": "Latitud y longitud, usadas por la automatización para calcular el amanecer y el ocaso en local.",
+          "latitude": "Latitud",
+          "longitude": "Longitud",
+          "detect": "Usar mi posición",
+          "hint": "Busca una ciudad para rellenar las coordenadas, o introdúcelas a mano. Nunca deducidas de la IP. Déjalo vacío si no usas reglas basadas en el sol.",
+          "search": "Buscar una ciudad",
+          "search_placeholder": "p. ej. New York",
+          "search_failed": "No se pudo contactar el servicio de ubicación. Introduce las coordenadas a mano."
         }
       },
       "extra": {
@@ -860,13 +871,14 @@
     },
     "rules": {
       "title": "Reglas",
-      "description": "Se evalúan por prioridad: gana la primera que coincide.",
+      "description": "Se evalúan de arriba a abajo: gana la primera que coincide. Arrastra para reordenar.",
       "add": "Añadir regla",
       "empty": "Aún no hay reglas. Añade una para que la automatización actúe.",
       "safety": "Seguridad",
       "active": "Al mando",
       "edit": "Editar regla",
-      "delete": "Eliminar regla"
+      "delete": "Eliminar regla",
+      "drag": "Arrastra para reordenar"
     },
     "rule": {
       "if_all": "Si {conditions} → {action}",
@@ -878,7 +890,8 @@
       "in": "{signal} es uno de {values}",
       "not_in": "{signal} no es ninguno de {values}",
       "action.off": "apagar el miner",
-      "action.mode": "funcionar en {mode}"
+      "action.mode": "funcionar en {mode}",
+      "if": "Si"
     },
     "signal": {
       "stale": "no disponible",
@@ -893,7 +906,7 @@
       "miner.running": "Miner encendido",
       "miner.mode": "Modo del miner",
       "energy.price": "Precio de la energía",
-      "energy.band": "Franja tarifaria"
+      "energy.band": "Franja de precio"
     },
     "editor": {
       "new_title": "Nueva regla",
@@ -920,7 +933,10 @@
       "mode": "Modo",
       "mode_restart_warning": "Cambiar de modo reinicia el miner y cuesta unos minutos de parada.",
       "cancel": "Cancelar",
-      "save": "Guardar regla"
+      "save": "Guardar regla",
+      "yes": "Sí",
+      "no": "No",
+      "and": "y"
     },
     "guards": {
       "title": "Límites de protección",
@@ -929,11 +945,11 @@
       "minOnMinutes.tooltip": "Una vez encendido, el miner permanece así al menos este tiempo.",
       "minOffMinutes": "Tiempo mín. apagado",
       "minOffMinutes.tooltip": "Una vez apagado, el miner permanece así al menos este tiempo.",
-      "minChangeMinutes": "Mín. entre cambios",
+      "minChangeMinutes": "Intervalo mín",
       "minChangeMinutes.tooltip": "Intervalo mínimo entre dos cambios de cualquier tipo, incluidos los de modo.",
       "maxCyclesPerHour": "Máx. arranques",
       "maxCyclesPerHour.tooltip": "Cuántas veces se puede encender el miner en una hora.",
-      "defaultHysteresis": "Histéresis por defecto",
+      "defaultHysteresis": "Histéresis",
       "defaultHysteresis.tooltip": "Se aplica a los umbrales numéricos cuando una regla no define la suya.",
       "overrideMinutes": "Pausa manual",
       "overrideMinutes.tooltip": "Cuánto tiempo queda en pausa la automatización después de que enciendas o apagues el miner a mano.",
@@ -948,14 +964,15 @@
       "current": "Ahora: {price} {currency}/kWh",
       "currency": "Moneda",
       "flat_price": "Precio fijo /kWh",
-      "bands": "Franjas horarias",
+      "bands": "Franjas de precio",
       "add_band": "Añadir franja",
       "from": "Desde",
       "to": "Hasta",
       "price": "Precio /kWh",
       "band_name": "Nombre de la franja",
       "remove_band": "Quitar franja",
-      "days_hint": "Ningún día seleccionado = todos los días. Una franja que cruza la medianoche pertenece al día en que empezó."
+      "all_days": "Todos",
+      "no_days_error": "Cada franja necesita al menos un día seleccionado."
     },
     "weekday": {
       "1": "Lun",
@@ -965,15 +982,6 @@
       "5": "Vie",
       "6": "Sáb",
       "7": "Dom"
-    },
-    "location": {
-      "title": "Ubicación",
-      "description": "Sirve para calcular el amanecer y el ocaso en local. Sin ella, las señales del sol quedan no disponibles.",
-      "latitude": "Latitud",
-      "longitude": "Longitud",
-      "detect": "Usar mi posición",
-      "timezone": "Zona horaria",
-      "detect_timezone": "Detectar"
     },
     "events": {
       "title": "Historial",
@@ -989,6 +997,34 @@
       "rule_saved": "Regla guardada.",
       "rule_deleted": "Regla eliminada.",
       "resumed": "Automatización reanudada."
+    },
+    "location_alert": "Una regla usa amanecer/ocaso pero no hay ubicación configurada, así que nunca puede activarse. {link}",
+    "location_alert_link": "Configura la ubicación en Ajustes → Sistema",
+    "signal_hint": {
+      "clock.time": "Según la hora del día.",
+      "clock.weekday": "Según el día de la semana.",
+      "clock.date": "Según una fecha concreta.",
+      "sun.isDay": "Verdadero mientras hay sol en tu ubicación. Requiere ubicación en Ajustes.",
+      "sun.minutesToSunset": "Minutos que faltan para el ocaso. Requiere ubicación en Ajustes.",
+      "sun.minutesToSunrise": "Minutos que faltan para el amanecer. Requiere ubicación en Ajustes.",
+      "miner.temperature": "La temperatura de la placa más caliente ahora mismo.",
+      "miner.temperatureAvg": "La temperatura media de las placas ahora mismo.",
+      "miner.running": "Si el miner está encendido ahora.",
+      "miner.mode": "El modo de potencia actual del miner. Más útil combinado con otra condición.",
+      "energy.price": "El precio de la energía activo ahora, tomado de la tarifa de abajo.",
+      "energy.band": "El nombre de la franja de precio activa ahora."
+    },
+    "op": {
+      "<": "menor que",
+      "<=": "≤",
+      ">": "mayor que",
+      ">=": "≥",
+      "==": "es",
+      "!=": "no es",
+      "between": "entre",
+      "not_between": "no entre",
+      "in": "es uno de",
+      "not_in": "no es uno de"
     }
   }
 }

@@ -5,6 +5,7 @@ import {
   FormLabel,
   Input,
   Select,
+  SimpleGrid,
   Text,
   Tooltip,
   useColorModeValue,
@@ -22,7 +23,7 @@ const FIELDS = [
   { key: 'overrideMinutes', unit: 'min' },
 ];
 
-const GuardRailsCard = ({ config, onSave, isSaving }) => {
+const GuardRailsCard = ({ config, minerModes = [], onSave, isSaving }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
@@ -55,42 +56,50 @@ const GuardRailsCard = ({ config, onSave, isSaving }) => {
           </Text>
         </Flex>
 
-        <Flex gap="12px" wrap="wrap">
+        {/* Two even columns, so a longer label like "Min interval (min)" has room
+            instead of wrapping in the narrow card. */}
+        <SimpleGrid columns={2} spacingX="12px" spacingY="10px">
           {FIELDS.map(({ key, unit }) => (
-            <FormControl key={key} w="150px">
+            <FormControl key={key}>
               <Tooltip label={intl.formatMessage({ id: `automation.guards.${key}.tooltip` })}>
-                <FormLabel fontSize="xs" color={subTextColor}>
+                <FormLabel fontSize="xs" color={subTextColor} noOfLines={1}>
                   {intl.formatMessage({ id: `automation.guards.${key}` })}
                   {unit && ` (${unit})`}
                 </FormLabel>
               </Tooltip>
-              <Input variant="auth"
+              <Input
+                variant="auth"
                 size="sm"
+                type="number"
                 value={draft[key] ?? ''}
                 onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
               />
             </FormControl>
           ))}
 
-          <FormControl w="220px">
+          <FormControl gridColumn="span 2">
             <Tooltip label={intl.formatMessage({ id: 'automation.guards.fallback.tooltip' })}>
               <FormLabel fontSize="xs" color={subTextColor}>
                 {intl.formatMessage({ id: 'automation.guards.fallback' })}
               </FormLabel>
             </Tooltip>
-            <Select variant="auth"
+            <Select
+              variant="auth"
               size="sm"
               value={draft.fallbackAction || 'keep'}
               onChange={(e) => setDraft({ ...draft, fallbackAction: e.target.value })}
             >
               <option value="keep">{intl.formatMessage({ id: 'automation.guards.fallback.keep' })}</option>
               <option value="off">{intl.formatMessage({ id: 'automation.guards.fallback.off' })}</option>
-              <option value="on:eco">on:eco</option>
-              <option value="on:balanced">on:balanced</option>
-              <option value="on:turbo">on:turbo</option>
+              {/* Modes come from the same backend source of truth as everywhere else. */}
+              {minerModes.map((mode) => (
+                <option key={mode} value={`on:${mode}`}>
+                  on:{mode}
+                </option>
+              ))}
             </Select>
           </FormControl>
-        </Flex>
+        </SimpleGrid>
 
         <Flex justify="flex-end">
           <Button

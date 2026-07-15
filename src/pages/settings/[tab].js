@@ -30,6 +30,10 @@ import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../../graphql/settings';
 import { GET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../../graphql/pools';
 import { MINER_RESTART_QUERY } from '../../graphql/miner';
 import { MCU_TIMEZONE_QUERY, MCU_SET_TIMEZONE_QUERY } from '../../graphql/mcu';
+import {
+  GET_AUTOMATION_CONFIG_QUERY,
+  SET_AUTOMATION_CONFIG_QUERY,
+} from '../../graphql/automation';
 import { SOLO_RESTART_QUERY } from '../../graphql/solo';
 import {
   NODE_START_QUERY,
@@ -191,6 +195,20 @@ const SettingsTab = () => {
 
   const systemTimezone = dataTimezone?.Mcu?.timezone?.result?.timezone;
 
+  // Device location (lat/long) is stored in the automation config but edited here
+  // in Settings, riding the same save bar. Only the sun signals use it.
+  const { data: dataAutomation, refetch: refetchAutomation } = useQuery(
+    GET_AUTOMATION_CONFIG_QUERY,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  const [saveAutomationConfig, { loading: loadingSaveLocation }] = useLazyQuery(
+    SET_AUTOMATION_CONFIG_QUERY,
+    { fetchPolicy: 'no-cache' }
+  );
+
+  const automationConfig = dataAutomation?.Automation?.config?.result;
+
   // Handle tab change
   const handleTabChange = (index) => {
     const tabNames = deviceType === 'solo-node' 
@@ -261,6 +279,21 @@ const SettingsTab = () => {
     setSettings((s) => ({ ...s, timezone: systemTimezone }));
     setCurrentSettings((s) => ({ ...s, timezone: systemTimezone }));
   }, [systemTimezone, currentSettings]);
+
+  // Same for the device location, seeded once from the automation config. The
+  // `_seeded` flag lets a value of null (no location set) still count as a
+  // baseline, so clearing it later is detected as a change.
+  useEffect(() => {
+    if (!automationConfig || !currentSettings || currentSettings._locationSeeded) return;
+    const patch = (s) => ({
+      ...s,
+      latitude: automationConfig.latitude ?? null,
+      longitude: automationConfig.longitude ?? null,
+      _locationSeeded: true,
+    });
+    setSettings(patch);
+    setCurrentSettings(patch);
+  }, [automationConfig, currentSettings]);
 
   // Detect changes and restart needs
   useEffect(() => {
@@ -555,6 +588,27 @@ const SettingsTab = () => {
         await refetchTimezone();
       }
 
+      // Device location: saved to the automation config, no restart. Same story
+      // as the timezone — settings query does not carry it, so sync the baseline.
+      if (
+        settings.latitude !== currentSettings?.latitude ||
+        settings.longitude !== currentSettings?.longitude
+      ) {
+        const locResult = await saveAutomationConfig({
+          variables: { input: { latitude: settings.latitude ?? null, longitude: settings.longitude ?? null } },
+        });
+        if (locResult?.data?.Automation?.updateConfig?.error) {
+          setIsSaving(false);
+          return setErrorForm(locResult.data.Automation.updateConfig.error.message);
+        }
+        setCurrentSettings((c) => ({
+          ...c,
+          latitude: settings.latitude ?? null,
+          longitude: settings.longitude ?? null,
+        }));
+        await refetchAutomation();
+      }
+
       await refetchSettings();
       await refetchPools();
 
@@ -621,6 +675,7 @@ const SettingsTab = () => {
     loadingNodeStart ||
     loadingNodeStop ||
     loadingSetTimezone ||
+    loadingSaveLocation ||
     changeLockPasswordLoading;
 
   // Errors

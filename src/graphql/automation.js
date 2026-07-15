@@ -41,6 +41,24 @@ const STATE_FIELDS = `
   guard { apply changeType blockedBy message }
   miner { running mode lastChangeAt cyclesLastHour overrideUntil }
   signals { id value stale error }
+  event {
+    id ruleName decision changeType applied dryRun blockedBy message createdAt
+    signals { id value stale }
+  }
+`;
+
+// Config only — used by Settings, which edits the device location (lat/long)
+// without needing the rules, events and live state the automation page loads.
+export const GET_AUTOMATION_CONFIG_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query GET_AUTOMATION_CONFIG {
+    Automation {
+      config {
+        result { ${CONFIG_FIELDS} }
+        error { ...ErrorFragment }
+      }
+    }
+  }
 `;
 
 // Everything the page needs, in one round trip.
@@ -57,7 +75,7 @@ export const GET_AUTOMATION_QUERY = gql`
         error { ...ErrorFragment }
       }
       signals {
-        result { id type unit ops supportsHysteresis }
+        result { id type widget options unit ops supportsHysteresis }
         error { ...ErrorFragment }
       }
       state {
