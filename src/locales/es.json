@@ -1048,7 +1048,11 @@
       "name": "Nombre de señal",
       "topic": "Topic",
       "json_path": "Ruta JSON",
-      "unit": "Unidad"
+      "unit": "Unidad",
+      "test": "Probar conexión",
+      "testing": "Probando…",
+      "test_ok": "Conectado",
+      "test_failed": "Conexión fallida"
     }
   }
 }

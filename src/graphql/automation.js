@@ -149,6 +149,18 @@ export const DELETE_AUTOMATION_RULE_QUERY = gql`
   }
 `;
 
+export const TEST_AUTOMATION_MQTT_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query TEST_AUTOMATION_MQTT($input: MqttConfigInput!) {
+    Automation {
+      testMqtt(input: $input) {
+        result { ok message }
+        error { ...ErrorFragment }
+      }
+    }
+  }
+`;
+
 export const CLEAR_AUTOMATION_OVERRIDE_QUERY = gql`
   ${ERROR_FRAGMENT}
   query CLEAR_AUTOMATION_OVERRIDE {

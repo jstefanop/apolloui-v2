@@ -12,9 +12,11 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { useLazyQuery } from '@apollo/client';
 import { useIntl } from 'react-intl';
-import { MdAdd, MdDelete } from 'react-icons/md';
+import { MdAdd, MdCheckCircle, MdDelete, MdError } from 'react-icons/md';
 import Card from '../card/Card';
+import { TEST_AUTOMATION_MQTT_QUERY } from '../../graphql/automation';
 
 /**
  * MQTT / Home Assistant input.
@@ -30,6 +32,27 @@ const MqttCard = ({ config, onSave, isSaving }) => {
   const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
 
   const [draft, setDraft] = useState({ enabled: false, host: '', port: 1883, username: '', password: '', tls: false, inputs: [] });
+  const [testResult, setTestResult] = useState(null);
+
+  const [testMqtt, { loading: testing }] = useLazyQuery(TEST_AUTOMATION_MQTT_QUERY, { fetchPolicy: 'no-cache' });
+
+  const brokerInput = () => ({
+    enabled: draft.enabled,
+    host: draft.host || null,
+    port: Number(draft.port) || 1883,
+    username: draft.username || null,
+    ...(draft.password ? { password: draft.password } : {}),
+    tls: draft.tls,
+    inputs: [],
+  });
+
+  const runTest = async () => {
+    setTestResult(null);
+    const { data } = await testMqtt({ variables: { input: brokerInput() } });
+    const r = data?.Automation?.testMqtt;
+    if (r?.error) setTestResult({ ok: false, message: r.error.message });
+    else setTestResult({ ok: r?.result?.ok, message: r?.result?.message });
+  };
 
   useEffect(() => {
     const m = config?.mqtt;
@@ -167,10 +190,32 @@ const MqttCard = ({ config, onSave, isSaving }) => {
           </Flex>
         ))}
 
-        <Flex justify="flex-end">
-          <Button size="sm" variant="brand" onClick={save} isLoading={isSaving}>
-            {intl.formatMessage({ id: 'automation.actions.save' })}
-          </Button>
+        <Flex justify="space-between" align="center" wrap="wrap" gap="8px">
+          <Flex align="center" gap="8px" minH="20px">
+            {testing && (
+              <Text fontSize="sm" color={subTextColor}>
+                {intl.formatMessage({ id: 'automation.mqtt.testing' })}
+              </Text>
+            )}
+            {!testing && testResult && (
+              <Flex align="center" gap="6px" color={testResult.ok ? 'green.400' : 'red.400'}>
+                {testResult.ok ? <MdCheckCircle /> : <MdError />}
+                <Text fontSize="sm">
+                  {testResult.ok
+                    ? intl.formatMessage({ id: 'automation.mqtt.test_ok' })
+                    : testResult.message || intl.formatMessage({ id: 'automation.mqtt.test_failed' })}
+                </Text>
+              </Flex>
+            )}
+          </Flex>
+          <Flex gap="8px">
+            <Button size="sm" variant="light" onClick={runTest} isLoading={testing} isDisabled={!draft.host}>
+              {intl.formatMessage({ id: 'automation.mqtt.test' })}
+            </Button>
+            <Button size="sm" variant="brand" onClick={save} isLoading={isSaving}>
+              {intl.formatMessage({ id: 'automation.actions.save' })}
+            </Button>
+          </Flex>
         </Flex>
       </Flex>
     </Card>

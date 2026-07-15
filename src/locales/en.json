@@ -1048,7 +1048,11 @@
       "name": "Signal name",
       "topic": "Topic",
       "json_path": "JSON path",
-      "unit": "Unit"
+      "unit": "Unit",
+      "test": "Test connection",
+      "testing": "Testing…",
+      "test_ok": "Connected",
+      "test_failed": "Connection failed"
     }
   }
 }

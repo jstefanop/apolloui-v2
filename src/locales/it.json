@@ -1048,7 +1048,11 @@
       "name": "Nome segnale",
       "topic": "Topic",
       "json_path": "Percorso JSON",
-      "unit": "Unità"
+      "unit": "Unità",
+      "test": "Prova connessione",
+      "testing": "Verifica in corso…",
+      "test_ok": "Connesso",
+      "test_failed": "Connessione fallita"
     }
   }
 }
