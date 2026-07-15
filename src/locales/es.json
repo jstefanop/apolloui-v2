@@ -909,7 +909,8 @@
       "energy.band": "Franja de precio",
       "weather.temperature": "Temperatura exterior",
       "weather.cloudCover": "Nubosidad",
-      "weather.solarRadiation": "Radiación solar"
+      "weather.solarRadiation": "Radiación solar",
+      "mqtt_input": "MQTT: {name}"
     },
     "editor": {
       "new_title": "Nueva regla",
@@ -1018,7 +1019,8 @@
       "energy.band": "El nombre de la franja de precio activa ahora.",
       "weather.temperature": "La temperatura del aire exterior en tu ubicación (Open-Meteo). Requiere ubicación en Ajustes.",
       "weather.cloudCover": "Cuán nublado está ahora, 0–100% (Open-Meteo). Más bajo, más sol.",
-      "weather.solarRadiation": "Radiación solar actual en W/m² (Open-Meteo). Más alta, más sol para tus paneles."
+      "weather.solarRadiation": "Radiación solar actual en W/m² (Open-Meteo). Más alta, más sol para tus paneles.",
+      "mqtt_input": "Un valor leído de un topic MQTT (Home Assistant). Stale mientras el broker está desconectado."
     },
     "op": {
       "<": "menor que",

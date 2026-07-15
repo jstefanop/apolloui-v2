@@ -909,7 +909,8 @@
       "energy.band": "Preiszone",
       "weather.temperature": "Außentemperatur",
       "weather.cloudCover": "Bewölkung",
-      "weather.solarRadiation": "Sonneneinstrahlung"
+      "weather.solarRadiation": "Sonneneinstrahlung",
+      "mqtt_input": "MQTT: {name}"
     },
     "editor": {
       "new_title": "Neue Regel",
@@ -1018,7 +1019,8 @@
       "energy.band": "Der Name der aktuell gültigen Preiszone.",
       "weather.temperature": "Die Außenlufttemperatur an deinem Standort (Open-Meteo). Standort in den Einstellungen nötig.",
       "weather.cloudCover": "Wie bewölkt es gerade ist, 0–100% (Open-Meteo). Niedriger heißt sonniger.",
-      "weather.solarRadiation": "Aktuelle Sonneneinstrahlung in W/m² (Open-Meteo). Höher heißt mehr Sonne für die Module."
+      "weather.solarRadiation": "Aktuelle Sonneneinstrahlung in W/m² (Open-Meteo). Höher heißt mehr Sonne für die Module.",
+      "mqtt_input": "Ein von einem MQTT-Topic gelesener Wert (Home Assistant). Stale, solange der Broker getrennt ist."
     },
     "op": {
       "<": "kleiner als",

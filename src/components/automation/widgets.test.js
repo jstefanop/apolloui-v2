@@ -23,6 +23,7 @@ const descriptors = [
   { id: 'miner.mode', type: 'string', widget: 'enum', options: ['eco', 'balanced', 'turbo', 'custom'], ops: ['==', '!='], supportsHysteresis: false },
   { id: 'miner.temperature', type: 'number', widget: 'number', unit: '°C', ops: ['<', '>'], supportsHysteresis: true },
   { id: 'energy.band', type: 'string', widget: 'band', ops: ['==', '!='], supportsHysteresis: false },
+  { id: 'input.surplus', type: 'number', widget: 'number', unit: 'W', ops: ['<', '>'], supportsHysteresis: true },
 ];
 
 const ruleWith = (condition) => ({
@@ -95,6 +96,14 @@ describe('RuleEditorModal — per-widget condition inputs', () => {
     open(ruleWith({ signal: 'energy.band', op: '==', value: 'night' }), descriptors, ['night', 'peak']);
     expect(screen.getByRole('option', { name: 'night' })).toBeInTheDocument();
     expect(screen.getByRole('option', { name: 'peak' })).toBeInTheDocument();
+  });
+
+  it('labels an MQTT input signal as "MQTT: <name>", not "input.<name>"', () => {
+    open(ruleWith({ signal: 'input.surplus', op: '>', value: '800' }));
+    expect(screen.getByRole('option', { name: 'MQTT: surplus' })).toBeInTheDocument();
+    expect(screen.queryByRole('option', { name: 'input.surplus' })).not.toBeInTheDocument();
+    // Generic hint for MQTT inputs.
+    expect(screen.getByText(/read from an MQTT topic/i)).toBeInTheDocument();
   });
 
   it('does not offer the tariff-band condition when no bands exist', () => {

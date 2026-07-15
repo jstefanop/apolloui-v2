@@ -123,8 +123,12 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, bands = [
   const removeCondition = (index) =>
     setDraft((d) => ({ ...d, conditions: d.conditions.filter((_, i) => i !== index) }));
 
+  // User-defined MQTT inputs get a friendly "MQTT: <name>" label instead of the
+  // raw "input.<name>" id.
   const label = (id) =>
-    intl.formatMessage({ id: `automation.signal.${id}`, defaultMessage: id });
+    id.startsWith('input.')
+      ? intl.formatMessage({ id: 'automation.signal.mqtt_input' }, { name: id.slice('input.'.length) })
+      : intl.formatMessage({ id: `automation.signal.${id}`, defaultMessage: id });
 
   // Values travel to the backend as strings; the engine casts them by signal type.
   // Temperatures are converted from the user's unit back to the canonical °C.
@@ -449,10 +453,12 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, bands = [
 
                   {/* Per-condition hint: says in words what this signal reasons about. */}
                   <Text fontSize="xs" color={subTextColor}>
-                    {intl.formatMessage({
-                      id: `automation.signal_hint.${condition.signal}`,
-                      defaultMessage: '',
-                    })}
+                    {condition.signal.startsWith('input.')
+                      ? intl.formatMessage({ id: 'automation.signal_hint.mqtt_input' })
+                      : intl.formatMessage({
+                          id: `automation.signal_hint.${condition.signal}`,
+                          defaultMessage: '',
+                        })}
                   </Text>
                 </Flex>
               );

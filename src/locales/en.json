@@ -909,7 +909,8 @@
       "energy.band": "Price band",
       "weather.temperature": "Outdoor temperature",
       "weather.cloudCover": "Cloud cover",
-      "weather.solarRadiation": "Solar radiation"
+      "weather.solarRadiation": "Solar radiation",
+      "mqtt_input": "MQTT: {name}"
     },
     "editor": {
       "new_title": "New rule",
@@ -1018,7 +1019,8 @@
       "energy.band": "The name of the price band active right now.",
       "weather.temperature": "The outdoor air temperature at your location (Open-Meteo). Needs a location set in Settings.",
       "weather.cloudCover": "How overcast it is now, 0–100% (Open-Meteo). Lower is sunnier.",
-      "weather.solarRadiation": "Current solar radiation in W/m² (Open-Meteo). Higher means more sun for your panels."
+      "weather.solarRadiation": "Current solar radiation in W/m² (Open-Meteo). Higher means more sun for your panels.",
+      "mqtt_input": "A value read from an MQTT topic (Home Assistant). Stale while the broker is disconnected."
     },
     "op": {
       "<": "less than",

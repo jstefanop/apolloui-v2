@@ -43,10 +43,9 @@ const describeCondition = (condition, descriptors, intl, temperatureUnit = 'c') 
     ? ` ${descriptor.unit}`
     : '';
   const shown = (v) => (isTemp ? celsiusToUnit(v, temperatureUnit) : v);
-  const name = intl.formatMessage({
-    id: `automation.signal.${condition.signal}`,
-    defaultMessage: condition.signal,
-  });
+  const name = condition.signal.startsWith('input.')
+    ? intl.formatMessage({ id: 'automation.signal.mqtt_input' }, { name: condition.signal.slice('input.'.length) })
+    : intl.formatMessage({ id: `automation.signal.${condition.signal}`, defaultMessage: condition.signal });
   const weekday = (n) => intl.formatMessage({ id: `automation.weekday.${n}`, defaultMessage: n });
 
   if (widget === 'weekday') {

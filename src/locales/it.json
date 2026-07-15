@@ -909,7 +909,8 @@
       "energy.band": "Fascia di prezzo",
       "weather.temperature": "Temperatura esterna",
       "weather.cloudCover": "Copertura nuvolosa",
-      "weather.solarRadiation": "Irraggiamento solare"
+      "weather.solarRadiation": "Irraggiamento solare",
+      "mqtt_input": "MQTT: {name}"
     },
     "editor": {
       "new_title": "Nuova regola",
@@ -1018,7 +1019,8 @@
       "energy.band": "Il nome della fascia di prezzo attiva adesso.",
       "weather.temperature": "La temperatura dell’aria esterna alla tua posizione (Open-Meteo). Richiede la posizione impostata in Impostazioni.",
       "weather.cloudCover": "Quanto è coperto il cielo adesso, 0–100% (Open-Meteo). Più basso = più sole.",
-      "weather.solarRadiation": "Irraggiamento solare attuale in W/m² (Open-Meteo). Più alto = più sole per i pannelli."
+      "weather.solarRadiation": "Irraggiamento solare attuale in W/m² (Open-Meteo). Più alto = più sole per i pannelli.",
+      "mqtt_input": "Un valore letto da un topic MQTT (Home Assistant). Stale se il broker è disconnesso."
     },
     "op": {
       "<": "minore di",
