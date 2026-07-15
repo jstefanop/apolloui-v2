@@ -54,10 +54,17 @@ const Automation = () => {
     fetchPolicy: 'network-only',
   });
 
-  // Re-seed the history from the DB on every (re)fetch; between fetches the
-  // subscription appends new events (below).
+  // Merge the DB history with what's on screen on every (re)fetch — a union by id,
+  // newest first. Replacing would race the subscription: a refetch triggered by a
+  // save could wipe an event the subscription just appended.
   useEffect(() => {
-    if (data?.Automation?.events?.result) setLiveEvents(data.Automation.events.result);
+    const queryEvents = data?.Automation?.events?.result;
+    if (!queryEvents) return;
+    setLiveEvents((prev) => {
+      const byId = new Map();
+      [...prev, ...queryEvents].forEach((e) => byId.set(e.id, e));
+      return [...byId.values()].sort((a, b) => b.id - a.id).slice(0, 30);
+    });
   }, [data]);
 
   // The scheduler pushes a fresh decision every tick, so the page reflects what
