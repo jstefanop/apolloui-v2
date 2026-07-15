@@ -29,6 +29,7 @@ const CONFIG_FIELDS = `
     tls
     status { connected error }
     inputs { name topic jsonPath unit }
+    output { enabled control deviceId }
   }
 `;
 

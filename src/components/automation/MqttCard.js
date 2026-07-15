@@ -20,11 +20,13 @@ import { TEST_AUTOMATION_MQTT_QUERY } from '../../graphql/automation';
 import MqttBrowseModal from './MqttBrowseModal';
 
 /**
- * MQTT / Home Assistant input.
+ * MQTT / Home Assistant.
  *
- * Connect to the broker you already run for Home Assistant, and map topics to
- * input.<name> signals the rules can react to — e.g. the solar surplus the
- * SUN2000→MQTT bridge publishes. Read-only for now (no publishing yet).
+ * Connect to the broker you already run for Home Assistant. Two directions:
+ *  - input: map topics to input.<name> signals the rules can react to — e.g. the
+ *    solar surplus the SUN2000→MQTT bridge publishes;
+ *  - output: publish the device state and (optionally) expose command topics, so
+ *    the Apollo shows up in Home Assistant via MQTT Discovery.
  */
 const MqttCard = ({ config, onSave, isSaving }) => {
   const intl = useIntl();
@@ -32,7 +34,16 @@ const MqttCard = ({ config, onSave, isSaving }) => {
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
   const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
 
-  const [draft, setDraft] = useState({ enabled: false, host: '', port: 1883, username: '', password: '', tls: false, inputs: [] });
+  const [draft, setDraft] = useState({
+    enabled: false,
+    host: '',
+    port: 1883,
+    username: '',
+    password: '',
+    tls: false,
+    inputs: [],
+    output: { enabled: false, control: true },
+  });
   const [testResult, setTestResult] = useState(null);
   const [browseOpen, setBrowseOpen] = useState(false);
 
@@ -66,6 +77,7 @@ const MqttCard = ({ config, onSave, isSaving }) => {
       password: '', // never returned by the API; blank means "unchanged"
       tls: !!m?.tls,
       inputs: (m?.inputs || []).map((i) => ({ name: i.name, topic: i.topic, jsonPath: i.jsonPath || '', unit: i.unit || '' })),
+      output: { enabled: !!m?.output?.enabled, control: m?.output?.control !== false },
     });
   }, [config]);
 
@@ -86,6 +98,7 @@ const MqttCard = ({ config, onSave, isSaving }) => {
         inputs: draft.inputs
           .filter((x) => x.name && x.topic)
           .map((x) => ({ name: x.name, topic: x.topic, jsonPath: x.jsonPath || null, unit: x.unit || null })),
+        output: { enabled: draft.output.enabled, control: draft.output.control },
       },
     });
 
@@ -209,6 +222,52 @@ const MqttCard = ({ config, onSave, isSaving }) => {
             />
           </Flex>
         ))}
+
+        <Divider />
+
+        <Flex justify="space-between" align="center" wrap="wrap" gap="8px">
+          <Flex direction="column" pr="12px">
+            <Text fontSize="sm" fontWeight="600" color={textColor}>
+              {intl.formatMessage({ id: 'automation.mqtt.output' })}
+            </Text>
+            <Text fontSize="xs" color={subTextColor}>
+              {intl.formatMessage({ id: 'automation.mqtt.output_hint' })}
+            </Text>
+          </Flex>
+          <Switch
+            isChecked={draft.output.enabled}
+            onChange={(e) => setDraft((d) => ({ ...d, output: { ...d.output, enabled: e.target.checked } }))}
+            colorScheme="green"
+          />
+        </Flex>
+
+        {draft.output.enabled && (
+          <Flex bg={rowBg} borderRadius="10px" p="12px" direction="column" gap="10px">
+            <FormControl display="flex" alignItems="center" justifyContent="space-between">
+              <Flex direction="column" pr="12px">
+                <FormLabel fontSize="sm" mb="2px" color={textColor}>
+                  {intl.formatMessage({ id: 'automation.mqtt.output_control' })}
+                </FormLabel>
+                <Text fontSize="xs" color={subTextColor}>
+                  {intl.formatMessage({ id: 'automation.mqtt.output_control_hint' })}
+                </Text>
+              </Flex>
+              <Switch
+                isChecked={draft.output.control}
+                onChange={(e) => setDraft((d) => ({ ...d, output: { ...d.output, control: e.target.checked } }))}
+                colorScheme="green"
+              />
+            </FormControl>
+            {config?.mqtt?.output?.deviceId && (
+              <Text fontSize="xs" color={subTextColor}>
+                {intl.formatMessage(
+                  { id: 'automation.mqtt.output_device' },
+                  { id: <b>{config.mqtt.output.deviceId}</b> }
+                )}
+              </Text>
+            )}
+          </Flex>
+        )}
 
         <Flex justify="space-between" align="center" wrap="wrap" gap="8px">
           <Flex align="center" gap="8px" minH="20px">
