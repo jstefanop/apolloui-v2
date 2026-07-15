@@ -43,7 +43,11 @@ const AutomationStatusCard = ({
   const guard = state?.guard;
   const miner = state?.miner;
 
-  const overrideActive = config?.overrideUntil && new Date(config.overrideUntil) > new Date();
+  // Prefer the live value pushed by the subscription (state.miner.overrideUntil)
+  // over the config query, which only refetches on save/reload — so the banner
+  // appears and clears without a reload.
+  const overrideUntil = miner?.overrideUntil || config?.overrideUntil;
+  const overrideActive = overrideUntil && new Date(overrideUntil) > new Date();
 
   return (
     <Card p="20px">
@@ -105,7 +109,7 @@ const AutomationStatusCard = ({
               <Text fontSize="sm">
                 {intl.formatMessage(
                   { id: 'automation.status.paused' },
-                  { time: moment(config.overrideUntil).format('HH:mm') }
+                  { time: moment(overrideUntil).format('HH:mm') }
                 )}
               </Text>
             </Flex>

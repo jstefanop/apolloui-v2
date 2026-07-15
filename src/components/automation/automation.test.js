@@ -101,6 +101,20 @@ describe('AutomationStatusCard', () => {
     expect(onClearOverride).toHaveBeenCalled();
   });
 
+  it('shows the paused banner from the live state alone (no config refetch)', () => {
+    const inAnHour = new Date(Date.now() + 3600 * 1000).toISOString();
+    renderUI(
+      <AutomationStatusCard
+        config={{ enabled: true, dryRun: false }} // no overrideUntil in config
+        state={{ ...state, miner: { running: true, mode: 'balanced', overrideUntil: inAnHour } }}
+        onToggleEnabled={() => {}}
+        onToggleDryRun={() => {}}
+        onClearOverride={() => {}}
+      />
+    );
+    expect(screen.getByText(/Automation paused until/)).toBeInTheDocument();
+  });
+
   it('warns while in observation mode', () => {
     renderUI(
       <AutomationStatusCard
