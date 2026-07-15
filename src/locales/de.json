@@ -906,7 +906,10 @@
       "miner.running": "Miner läuft",
       "miner.mode": "Miner-Modus",
       "energy.price": "Energiepreis",
-      "energy.band": "Preiszone"
+      "energy.band": "Preiszone",
+      "weather.temperature": "Außentemperatur",
+      "weather.cloudCover": "Bewölkung",
+      "weather.solarRadiation": "Sonneneinstrahlung"
     },
     "editor": {
       "new_title": "Neue Regel",
@@ -1012,7 +1015,10 @@
       "miner.running": "Ob der Miner gerade läuft.",
       "miner.mode": "Der aktuelle Leistungsmodus des Miners. Am nützlichsten mit einer weiteren Bedingung.",
       "energy.price": "Der aktuell gültige Energiepreis aus dem Tarif unten.",
-      "energy.band": "Der Name der aktuell gültigen Preiszone."
+      "energy.band": "Der Name der aktuell gültigen Preiszone.",
+      "weather.temperature": "Die Außenlufttemperatur an deinem Standort (Open-Meteo). Standort in den Einstellungen nötig.",
+      "weather.cloudCover": "Wie bewölkt es gerade ist, 0–100% (Open-Meteo). Niedriger heißt sonniger.",
+      "weather.solarRadiation": "Aktuelle Sonneneinstrahlung in W/m² (Open-Meteo). Höher heißt mehr Sonne für die Module."
     },
     "op": {
       "<": "kleiner als",

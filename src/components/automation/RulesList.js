@@ -25,6 +25,7 @@ const CHIP_COLOR = {
   sun: 'orange',
   miner: 'purple',
   energy: 'teal',
+  weather: 'cyan',
 };
 const chipColor = (signal) => CHIP_COLOR[String(signal).split('.')[0]] || 'gray';
 

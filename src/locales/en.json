@@ -906,7 +906,10 @@
       "miner.running": "Miner running",
       "miner.mode": "Miner mode",
       "energy.price": "Energy price",
-      "energy.band": "Price band"
+      "energy.band": "Price band",
+      "weather.temperature": "Outdoor temperature",
+      "weather.cloudCover": "Cloud cover",
+      "weather.solarRadiation": "Solar radiation"
     },
     "editor": {
       "new_title": "New rule",
@@ -1012,7 +1015,10 @@
       "miner.running": "Whether the miner is currently on.",
       "miner.mode": "The miner’s current power mode. Most useful combined with another condition.",
       "energy.price": "The energy price active right now, taken from the tariff below.",
-      "energy.band": "The name of the price band active right now."
+      "energy.band": "The name of the price band active right now.",
+      "weather.temperature": "The outdoor air temperature at your location (Open-Meteo). Needs a location set in Settings.",
+      "weather.cloudCover": "How overcast it is now, 0–100% (Open-Meteo). Lower is sunnier.",
+      "weather.solarRadiation": "Current solar radiation in W/m² (Open-Meteo). Higher means more sun for your panels."
     },
     "op": {
       "<": "less than",

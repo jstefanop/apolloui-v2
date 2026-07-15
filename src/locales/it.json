@@ -906,7 +906,10 @@
       "miner.running": "Miner acceso",
       "miner.mode": "Modo del miner",
       "energy.price": "Prezzo energia",
-      "energy.band": "Fascia di prezzo"
+      "energy.band": "Fascia di prezzo",
+      "weather.temperature": "Temperatura esterna",
+      "weather.cloudCover": "Copertura nuvolosa",
+      "weather.solarRadiation": "Irraggiamento solare"
     },
     "editor": {
       "new_title": "Nuova regola",
@@ -1012,7 +1015,10 @@
       "miner.running": "Se il miner è attualmente acceso.",
       "miner.mode": "La modalità di potenza attuale del miner. Utile soprattutto combinata con un’altra condizione.",
       "energy.price": "Il prezzo dell’energia attivo adesso, preso dalla tariffa qui sotto.",
-      "energy.band": "Il nome della fascia di prezzo attiva adesso."
+      "energy.band": "Il nome della fascia di prezzo attiva adesso.",
+      "weather.temperature": "La temperatura dell’aria esterna alla tua posizione (Open-Meteo). Richiede la posizione impostata in Impostazioni.",
+      "weather.cloudCover": "Quanto è coperto il cielo adesso, 0–100% (Open-Meteo). Più basso = più sole.",
+      "weather.solarRadiation": "Irraggiamento solare attuale in W/m² (Open-Meteo). Più alto = più sole per i pannelli."
     },
     "op": {
       "<": "minore di",
