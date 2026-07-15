@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Button,
   Flex,
@@ -7,15 +7,14 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useQuery, useLazyQuery } from '@apollo/client';
-import { useDispatch } from 'react-redux';
+import { useQuery } from '@apollo/client';
 import { useIntl } from 'react-intl';
 import { MdSchedule } from 'react-icons/md';
 import moment from 'moment';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
-import { MCU_TIMEZONE_QUERY, MCU_SET_TIMEZONE_QUERY } from '../../../graphql/mcu';
-import { sendFeedback } from '../../../redux/slices/feedbackSlice';
+import { useSettings } from '../context/SettingsContext';
+import { MCU_TIMEZONE_QUERY } from '../../../graphql/mcu';
 
 /**
  * System timezone.
@@ -25,48 +24,25 @@ import { sendFeedback } from '../../../redux/slices/feedbackSlice';
  * timestamps, the timestamps behind the charts, and the hour at which a
  * time-based automation rule fires.
  *
- * Applied immediately, like the WiFi settings: it is a system action, not a
- * value that belongs in the settings save bar.
+ * Edited into the shared settings state, exactly like the temperature unit:
+ * the global save/discard bar picks up the change and applies it on save. No
+ * private save button, and nothing restarts.
  */
 const TimezoneSettings = () => {
   const intl = useIntl();
-  const dispatch = useDispatch();
+  const { settings, setSettings } = useSettings();
   const textColor = useColorModeValue('brands.900', 'white');
 
-  const [selected, setSelected] = useState('');
-
-  const { data, loading, refetch } = useQuery(MCU_TIMEZONE_QUERY, { fetchPolicy: 'no-cache' });
-  const [setTimezone, { loading: saving }] = useLazyQuery(MCU_SET_TIMEZONE_QUERY, {
-    fetchPolicy: 'no-cache',
-  });
-
-  const current = data?.Mcu?.timezone?.result?.timezone;
+  // Read-only: fetches the dropdown options and the current system value. The
+  // pending selection lives in the settings context, seeded by the settings page.
+  const { data, loading } = useQuery(MCU_TIMEZONE_QUERY, { fetchPolicy: 'cache-first' });
   const available = data?.Mcu?.timezone?.result?.available || [];
 
-  useEffect(() => {
-    if (current) setSelected(current);
-  }, [current]);
+  const value = settings?.timezone || '';
+
+  const handleChange = (e) => setSettings({ ...settings, timezone: e.target.value });
 
   const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const isChanged = selected && selected !== current;
-
-  const handleSave = async () => {
-    const { data: result } = await setTimezone({ variables: { input: { timezone: selected } } });
-    const error = result?.Mcu?.setTimezone?.error;
-
-    if (error) {
-      dispatch(sendFeedback({ message: error.message, type: 'error' }));
-      return;
-    }
-
-    dispatch(
-      sendFeedback({
-        message: intl.formatMessage({ id: 'settings.sections.system.timezone.saved' }),
-        type: 'success',
-      })
-    );
-    await refetch();
-  };
 
   return (
     <PanelCard
@@ -79,12 +55,9 @@ const TimezoneSettings = () => {
       <SimpleCard textColor={textColor}>
         <Flex direction="column" gap="10px">
           <FormControl>
-            <Select
-              value={selected}
-              onChange={(e) => setSelected(e.target.value)}
-              isDisabled={loading || saving}
-              size="sm"
-            >
+            <Select value={value} onChange={handleChange} isDisabled={loading} size="sm">
+              {/* Keep the current value selectable even before the list resolves. */}
+              {value && !available.includes(value) && <option value={value}>{value}</option>}
               {available.map((zone) => (
                 <option key={zone} value={zone}>
                   {zone}
@@ -96,17 +69,17 @@ const TimezoneSettings = () => {
           <Text fontSize="xs" color="secondaryGray.600">
             {intl.formatMessage(
               { id: 'settings.sections.system.timezone.current' },
-              { timezone: current || '—', time: moment().format('HH:mm') }
+              { timezone: value || '—', time: moment().format('HH:mm') }
             )}
           </Text>
 
           {/* The browser knows where the user is; the device often does not. */}
-          {detected && detected !== current && (
+          {detected && detected !== value && (
             <Button
               size="xs"
               variant="link"
               alignSelf="flex-start"
-              onClick={() => setSelected(detected)}
+              onClick={() => setSettings({ ...settings, timezone: detected })}
             >
               {intl.formatMessage(
                 { id: 'settings.sections.system.timezone.use_browser' },
@@ -114,17 +87,6 @@ const TimezoneSettings = () => {
               )}
             </Button>
           )}
-
-          <Button
-            size="sm"
-            colorScheme="brand"
-            alignSelf="flex-start"
-            isDisabled={!isChanged}
-            isLoading={saving}
-            onClick={handleSave}
-          >
-            {intl.formatMessage({ id: 'settings.actions.save' })}
-          </Button>
         </Flex>
       </SimpleCard>
     </PanelCard>
