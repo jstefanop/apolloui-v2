@@ -55,7 +55,7 @@ const TimezoneSettings = () => {
       <SimpleCard textColor={textColor}>
         <Flex direction="column" gap="10px">
           <FormControl>
-            <Select value={value} onChange={handleChange} isDisabled={loading} size="sm">
+            <Select variant="auth" value={value} onChange={handleChange} isDisabled={loading} size="sm">
               {/* Keep the current value selectable even before the list resolves. */}
               {value && !available.includes(value) && <option value={value}>{value}</option>}
               {available.map((zone) => (

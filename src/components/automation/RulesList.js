@@ -59,7 +59,7 @@ const RulesList = ({ rules, descriptors, activeRuleId, onCreate, onEdit, onToggl
             {intl.formatMessage({ id: 'automation.rules.description' })}
           </Text>
         </Flex>
-        <Button leftIcon={<MdAdd />} colorScheme="brand" size="sm" onClick={onCreate}>
+        <Button leftIcon={<MdAdd />} variant="brand" size="sm" onClick={onCreate}>
           {intl.formatMessage({ id: 'automation.rules.add' })}
         </Button>
       </Flex>

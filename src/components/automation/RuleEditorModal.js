@@ -125,7 +125,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
               <FormLabel fontSize="sm">
                 {intl.formatMessage({ id: 'automation.editor.name' })}
               </FormLabel>
-              <Input
+              <Input variant="auth"
                 value={draft.name}
                 onChange={(e) => setDraft({ ...draft, name: e.target.value })}
                 placeholder={intl.formatMessage({ id: 'automation.editor.name_placeholder' })}
@@ -137,7 +137,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
                 <FormLabel fontSize="sm">
                   {intl.formatMessage({ id: 'automation.editor.priority' })}
                 </FormLabel>
-                <NumberInput
+                <NumberInput variant="auth"
                   value={draft.priority}
                   onChange={(value) => setDraft({ ...draft, priority: value })}
                   min={0}
@@ -150,7 +150,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
                 <FormLabel fontSize="sm">
                   {intl.formatMessage({ id: 'automation.editor.match' })}
                 </FormLabel>
-                <Select
+                <Select variant="auth"
                   value={draft.match}
                   onChange={(e) => setDraft({ ...draft, match: e.target.value })}
                 >
@@ -180,7 +180,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
               <FormLabel fontSize="sm" mb="0">
                 {intl.formatMessage({ id: 'automation.editor.conditions' })}
               </FormLabel>
-              <Button size="xs" leftIcon={<MdAdd />} onClick={addCondition}>
+              <Button size="xs" variant="light" leftIcon={<MdAdd />} onClick={addCondition}>
                 {intl.formatMessage({ id: 'automation.editor.add_condition' })}
               </Button>
             </Flex>
@@ -192,7 +192,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
               return (
                 <Flex key={index} gap="8px" align="flex-end" wrap="wrap">
                   <FormControl flex="2" minW="180px">
-                    <Select
+                    <Select variant="auth"
                       size="sm"
                       value={condition.signal}
                       onChange={(e) => {
@@ -220,7 +220,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
                   </FormControl>
 
                   <FormControl w="110px">
-                    <Select
+                    <Select variant="auth"
                       size="sm"
                       value={condition.op}
                       onChange={(e) => setCondition(index, { op: e.target.value, value: '', values: [] })}
@@ -235,7 +235,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
 
                   {needsRange(condition.op) || needsList(condition.op) ? (
                     <FormControl flex="2" minW="160px">
-                      <Input
+                      <Input variant="auth"
                         size="sm"
                         value={(condition.values || []).join(',')}
                         onChange={(e) =>
@@ -252,7 +252,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
                     </FormControl>
                   ) : (
                     <FormControl flex="1" minW="110px">
-                      <Input
+                      <Input variant="auth"
                         size="sm"
                         value={condition.value ?? ''}
                         onChange={(e) => setCondition(index, { value: e.target.value })}
@@ -264,7 +264,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
                   {descriptor?.supportsHysteresis && (
                     <FormControl w="120px">
                       <Tooltip label={intl.formatMessage({ id: 'automation.editor.hysteresis_tooltip' })}>
-                        <Input
+                        <Input variant="auth"
                           size="sm"
                           value={condition.hysteresis ?? ''}
                           onChange={(e) => setCondition(index, { hysteresis: e.target.value })}
@@ -290,7 +290,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
                 <FormLabel fontSize="sm">
                   {intl.formatMessage({ id: 'automation.editor.action' })}
                 </FormLabel>
-                <Select
+                <Select variant="auth"
                   value={draft.action.type}
                   onChange={(e) =>
                     setDraft({
@@ -309,7 +309,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
                   <FormLabel fontSize="sm">
                     {intl.formatMessage({ id: 'automation.editor.mode' })}
                   </FormLabel>
-                  <Select
+                  <Select variant="auth"
                     value={draft.action.mode || 'eco'}
                     onChange={(e) => setDraft({ ...draft, action: { type: 'mode', mode: e.target.value } })}
                   >
@@ -335,7 +335,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, isSaving 
           <Button variant="ghost" onClick={onClose}>
             {intl.formatMessage({ id: 'automation.editor.cancel' })}
           </Button>
-          <Button colorScheme="brand" onClick={save} isDisabled={!canSave} isLoading={isSaving}>
+          <Button variant="brand" onClick={save} isDisabled={!canSave} isLoading={isSaving}>
             {intl.formatMessage({ id: 'automation.editor.save' })}
           </Button>
         </ModalFooter>

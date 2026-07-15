@@ -62,17 +62,17 @@ const LocationCard = ({ config, sunSignals, onSave, isSaving }) => {
             <FormLabel fontSize="xs" color={subTextColor}>
               {intl.formatMessage({ id: 'automation.location.latitude' })}
             </FormLabel>
-            <Input size="sm" value={latitude} onChange={(e) => setLatitude(e.target.value)} />
+            <Input variant="auth" size="sm" value={latitude} onChange={(e) => setLatitude(e.target.value)} />
           </FormControl>
 
           <FormControl w="140px">
             <FormLabel fontSize="xs" color={subTextColor}>
               {intl.formatMessage({ id: 'automation.location.longitude' })}
             </FormLabel>
-            <Input size="sm" value={longitude} onChange={(e) => setLongitude(e.target.value)} />
+            <Input variant="auth" size="sm" value={longitude} onChange={(e) => setLongitude(e.target.value)} />
           </FormControl>
 
-          <Button size="sm" variant="outline" onClick={detect}>
+          <Button size="sm" variant="light" onClick={detect}>
             {intl.formatMessage({ id: 'automation.location.detect' })}
           </Button>
 
@@ -80,10 +80,10 @@ const LocationCard = ({ config, sunSignals, onSave, isSaving }) => {
             <FormLabel fontSize="xs" color={subTextColor}>
               {intl.formatMessage({ id: 'automation.location.timezone' })}
             </FormLabel>
-            <Input size="sm" value={timezone} onChange={(e) => setTimezone(e.target.value)} />
+            <Input variant="auth" size="sm" value={timezone} onChange={(e) => setTimezone(e.target.value)} />
           </FormControl>
 
-          <Button size="sm" variant="outline" onClick={detectTimezone}>
+          <Button size="sm" variant="light" onClick={detectTimezone}>
             {intl.formatMessage({ id: 'automation.location.detect_timezone' })}
           </Button>
         </Flex>
@@ -103,7 +103,7 @@ const LocationCard = ({ config, sunSignals, onSave, isSaving }) => {
         <Flex justify="flex-end">
           <Button
             size="sm"
-            colorScheme="brand"
+            variant="brand"
             isLoading={isSaving}
             onClick={() =>
               onSave({

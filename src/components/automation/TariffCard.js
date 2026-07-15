@@ -100,14 +100,14 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
             <FormLabel fontSize="xs" color={subTextColor}>
               {intl.formatMessage({ id: 'automation.tariff.currency' })}
             </FormLabel>
-            <Input size="sm" value={currency} onChange={(e) => setCurrency(e.target.value)} />
+            <Input variant="auth" size="sm" value={currency} onChange={(e) => setCurrency(e.target.value)} />
           </FormControl>
 
           <FormControl w="180px">
             <FormLabel fontSize="xs" color={subTextColor}>
               {intl.formatMessage({ id: 'automation.tariff.flat_price' })}
             </FormLabel>
-            <Input
+            <Input variant="auth"
               size="sm"
               value={flatPrice}
               onChange={(e) => setFlatPrice(e.target.value)}
@@ -122,6 +122,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
           </Text>
           <Button
             size="xs"
+            variant="light"
             leftIcon={<MdAdd />}
             onClick={() =>
               setPeriods([...periods, { days: [], from: '23:00', to: '07:00', price: '', band: '' }])
@@ -138,7 +139,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.from' })}
                 </FormLabel>
-                <Input
+                <Input variant="auth"
                   size="sm"
                   value={period.from}
                   onChange={(e) => setPeriod(index, { from: e.target.value })}
@@ -150,7 +151,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.to' })}
                 </FormLabel>
-                <Input
+                <Input variant="auth"
                   size="sm"
                   value={period.to}
                   onChange={(e) => setPeriod(index, { to: e.target.value })}
@@ -162,7 +163,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.price' })}
                 </FormLabel>
-                <Input
+                <Input variant="auth"
                   size="sm"
                   value={period.price}
                   onChange={(e) => setPeriod(index, { price: e.target.value })}
@@ -174,7 +175,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
                 <FormLabel fontSize="xs" color={subTextColor}>
                   {intl.formatMessage({ id: 'automation.tariff.band_name' })}
                 </FormLabel>
-                <Input
+                <Input variant="auth"
                   size="sm"
                   value={period.band}
                   onChange={(e) => setPeriod(index, { band: e.target.value })}
@@ -215,7 +216,7 @@ const TariffCard = ({ config, currentPrice, onSave, isSaving }) => {
         ))}
 
         <Flex justify="flex-end">
-          <Button size="sm" colorScheme="brand" onClick={save} isLoading={isSaving}>
+          <Button size="sm" variant="brand" onClick={save} isLoading={isSaving}>
             {intl.formatMessage({ id: 'automation.actions.save' })}
           </Button>
         </Flex>

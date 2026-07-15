@@ -64,7 +64,7 @@ const GuardRailsCard = ({ config, onSave, isSaving }) => {
                   {unit && ` (${unit})`}
                 </FormLabel>
               </Tooltip>
-              <Input
+              <Input variant="auth"
                 size="sm"
                 value={draft[key] ?? ''}
                 onChange={(e) => setDraft({ ...draft, [key]: e.target.value })}
@@ -78,7 +78,7 @@ const GuardRailsCard = ({ config, onSave, isSaving }) => {
                 {intl.formatMessage({ id: 'automation.guards.fallback' })}
               </FormLabel>
             </Tooltip>
-            <Select
+            <Select variant="auth"
               size="sm"
               value={draft.fallbackAction || 'keep'}
               onChange={(e) => setDraft({ ...draft, fallbackAction: e.target.value })}
@@ -95,7 +95,7 @@ const GuardRailsCard = ({ config, onSave, isSaving }) => {
         <Flex justify="flex-end">
           <Button
             size="sm"
-            colorScheme="brand"
+            variant="brand"
             isLoading={isSaving}
             onClick={() =>
               onSave({
