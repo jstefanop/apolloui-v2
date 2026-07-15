@@ -1063,6 +1063,9 @@
       "browse_none": "Nessun topic nella finestra di scansione. Riprova o cambia prefisso.",
       "browse_failed": "Scansione fallita",
       "browse_use": "Usa topic"
+    },
+    "conditions": {
+      "title": "Condizioni attuali"
     }
   }
 }

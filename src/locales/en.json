@@ -1063,6 +1063,9 @@
       "browse_none": "No topics seen in the scan window. Try again or a different prefix.",
       "browse_failed": "Scan failed",
       "browse_use": "Use topic"
+    },
+    "conditions": {
+      "title": "Current conditions"
     }
   }
 }

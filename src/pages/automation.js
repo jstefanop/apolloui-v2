@@ -29,6 +29,7 @@ import {
 import { sendFeedback } from '../redux/slices/feedbackSlice';
 
 import AutomationStatusCard from '../components/automation/AutomationStatusCard';
+import CurrentConditionsCard from '../components/automation/CurrentConditionsCard';
 import RulesList from '../components/automation/RulesList';
 import RuleEditorModal from '../components/automation/RuleEditorModal';
 import GuardRailsCard from '../components/automation/GuardRailsCard';
@@ -238,6 +239,15 @@ const Automation = () => {
             onToggleEnabled={(enabled) => handleSaveConfig({ enabled })}
             onToggleDryRun={(dryRun) => handleSaveConfig({ dryRun })}
             onClearOverride={handleClearOverride}
+          />
+        </GridItem>
+
+        <GridItem colSpan={{ base: 1, xl: 2 }}>
+          <CurrentConditionsCard
+            signals={state?.signals}
+            descriptors={descriptors}
+            temperatureUnit={temperatureUnit}
+            currency={config?.tariff?.currency || 'EUR'}
           />
         </GridItem>
 

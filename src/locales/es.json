@@ -1063,6 +1063,9 @@
       "browse_none": "Ningún topic en la ventana de escaneo. Reintenta u otro prefijo.",
       "browse_failed": "Escaneo fallido",
       "browse_use": "Usar topic"
+    },
+    "conditions": {
+      "title": "Condiciones actuales"
     }
   }
 }
