@@ -548,6 +548,10 @@ const SettingsTab = () => {
           setIsSaving(false);
           return setErrorForm(tzResult.data.Mcu.setTimezone.error.message);
         }
+        // Timezone is not a field of the settings query, so refetching it returns
+        // the same data and does not rebuild the baseline. Move currentSettings to
+        // the saved value ourselves, or the save/discard bar never clears.
+        setCurrentSettings((c) => ({ ...c, timezone: settings.timezone }));
         await refetchTimezone();
       }
 
