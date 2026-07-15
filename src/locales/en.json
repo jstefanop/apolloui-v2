@@ -1031,6 +1031,24 @@
       "not_between": "not between",
       "in": "is one of",
       "not_in": "is not one of"
+    },
+    "mqtt": {
+      "title": "MQTT / Home Assistant",
+      "description": "Read values from your MQTT broker as signals — e.g. the solar surplus published by Home Assistant.",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "host": "Broker host",
+      "port": "Port",
+      "username": "Username",
+      "password": "Password",
+      "inputs": "Input signals",
+      "inputs_hint": "Map a topic to a signal (e.g. name “surplus”, topic “sun2000/surplus”) to use it in rules.",
+      "add_input": "Add input",
+      "remove_input": "Remove input",
+      "name": "Signal name",
+      "topic": "Topic",
+      "json_path": "JSON path",
+      "unit": "Unit"
     }
   }
 }

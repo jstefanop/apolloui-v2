@@ -1031,6 +1031,24 @@
       "not_between": "no entre",
       "in": "es uno de",
       "not_in": "no es uno de"
+    },
+    "mqtt": {
+      "title": "MQTT / Home Assistant",
+      "description": "Lee valores de tu broker MQTT como señales — p. ej. el excedente solar publicado por Home Assistant.",
+      "connected": "Conectado",
+      "disconnected": "Desconectado",
+      "host": "Host del broker",
+      "port": "Puerto",
+      "username": "Usuario",
+      "password": "Contraseña",
+      "inputs": "Señales de entrada",
+      "inputs_hint": "Asigna un topic a una señal (p. ej. nombre «surplus», topic «sun2000/surplus») para usarla en las reglas.",
+      "add_input": "Añadir entrada",
+      "remove_input": "Quitar entrada",
+      "name": "Nombre de señal",
+      "topic": "Topic",
+      "json_path": "Ruta JSON",
+      "unit": "Unidad"
     }
   }
 }

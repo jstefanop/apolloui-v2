@@ -21,6 +21,15 @@ const CONFIG_FIELDS = `
     flatPrice
     periods { days from to price band }
   }
+  mqtt {
+    enabled
+    host
+    port
+    username
+    tls
+    status { connected error }
+    inputs { name topic jsonPath unit }
+  }
 `;
 
 const RULE_FIELDS = `

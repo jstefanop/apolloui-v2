@@ -33,6 +33,7 @@ import RulesList from '../components/automation/RulesList';
 import RuleEditorModal from '../components/automation/RuleEditorModal';
 import GuardRailsCard from '../components/automation/GuardRailsCard';
 import TariffCard from '../components/automation/TariffCard';
+import MqttCard from '../components/automation/MqttCard';
 import EventsTimeline from '../components/automation/EventsTimeline';
 
 const Automation = () => {
@@ -268,6 +269,8 @@ const Automation = () => {
               isSaving={isSaving}
               onSave={handleSaveConfig}
             />
+
+            <MqttCard config={config} isSaving={isSaving} onSave={handleSaveConfig} />
           </Flex>
         </GridItem>
 
