@@ -117,12 +117,13 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
       )}
 
       <SimpleSwitchSettingsItem
-        item={item('mqttOutput', t('output'), t('output_hint'), v.output?.enabled)}
+        item={item('mqttOutput', t('output'), t('output_hint'), v.enabled && v.output?.enabled)}
         textColor={textColor}
+        isDisabled={!v.enabled}
         handleSwitch={(e) => setOutput({ enabled: e.target.checked })}
       />
 
-      {v.output?.enabled && (
+      {v.enabled && v.output?.enabled && (
         <>
           <SimpleSwitchSettingsItem
             item={item('mqttControl', t('output_control'), t('output_control_hint'), v.output?.control)}
