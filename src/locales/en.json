@@ -1073,7 +1073,8 @@
       "browse_no_value": "not seen in this scan"
     },
     "conditions": {
-      "title": "Current conditions"
+      "title": "Current conditions",
+      "loading": "loading…"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Flex, Icon, SimpleGrid, Text, useColorModeValue } from '@chakra-ui/react';
+import { Flex, Icon, SimpleGrid, Spinner, Text, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 import {
   MdAccessTime,
@@ -91,7 +91,7 @@ const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', cu
               bg={tileBg}
               borderRadius="12px"
               p="12px"
-              opacity={s.stale ? 0.45 : 1}
+              opacity={s.stale && !s.pending ? 0.45 : 1}
             >
               <Flex align="center" gap="6px" minW="0">
                 <Icon as={iconOf(s.id)} color={`${accent}.400`} boxSize="16px" />
@@ -99,9 +99,18 @@ const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', cu
                   {label(s.id)}
                 </Text>
               </Flex>
-              <Text fontSize="lg" fontWeight="700" color={textColor} noOfLines={1}>
-                {s.stale ? '—' : format(s.id, s.value)}
-              </Text>
+              {s.stale && s.pending ? (
+                <Flex align="center" gap="6px" h="27px">
+                  <Spinner size="sm" color={`${accent}.400`} thickness="2px" speed="0.7s" />
+                  <Text fontSize="xs" color={subTextColor}>
+                    {intl.formatMessage({ id: 'automation.conditions.loading' })}
+                  </Text>
+                </Flex>
+              ) : (
+                <Text fontSize="lg" fontWeight="700" color={textColor} noOfLines={1}>
+                  {s.stale ? '—' : format(s.id, s.value)}
+                </Text>
+              )}
             </Flex>
           );
         })}

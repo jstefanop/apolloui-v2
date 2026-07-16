@@ -50,7 +50,7 @@ const STATE_FIELDS = `
   decision { target ruleId ruleName reason }
   guard { apply changeType blockedBy message }
   miner { running mode lastChangeAt cyclesLastHour overrideUntil }
-  signals { id value stale error }
+  signals { id value stale pending error }
   event {
     id ruleName decision changeType applied dryRun blockedBy message createdAt
     signals { id value stale }

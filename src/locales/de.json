@@ -1073,7 +1073,8 @@
       "browse_no_value": "in diesem Scan nicht gesehen"
     },
     "conditions": {
-      "title": "Aktuelle Bedingungen"
+      "title": "Aktuelle Bedingungen",
+      "loading": "lädt…"
     }
   }
 }

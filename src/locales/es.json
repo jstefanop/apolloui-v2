@@ -1073,7 +1073,8 @@
       "browse_no_value": "no visto en este escaneo"
     },
     "conditions": {
-      "title": "Condiciones actuales"
+      "title": "Condiciones actuales",
+      "loading": "cargando…"
     }
   }
 }
