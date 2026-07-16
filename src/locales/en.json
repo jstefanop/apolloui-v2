@@ -936,6 +936,7 @@
       "action_mode": "Run in mode",
       "mode": "Mode",
       "mode_restart_warning": "Changing mode restarts the miner and costs a few minutes of downtime.",
+      "running_only_warning": "{signals} can only be read while the miner runs, so this rule could never turn it back on. Use it to stop the miner (over-temperature) instead, and turn the miner on with a signal available while off — time, sunrise/sunset, or outdoor temperature.",
       "cancel": "Cancel",
       "save": "Save rule",
       "yes": "Yes",

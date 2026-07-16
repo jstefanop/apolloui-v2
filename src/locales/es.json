@@ -936,6 +936,7 @@
       "action_mode": "Funcionar en modo",
       "mode": "Modo",
       "mode_restart_warning": "Cambiar de modo reinicia el miner y cuesta unos minutos de parada.",
+      "running_only_warning": "{signals} solo se puede leer mientras el miner está en marcha, así que esta regla nunca podría volver a encenderlo. Úsalo para apagar el miner (sobretemperatura), y enciéndelo con una señal disponible también apagado — hora, amanecer/atardecer o temperatura exterior.",
       "cancel": "Cancelar",
       "save": "Guardar regla",
       "yes": "Sí",

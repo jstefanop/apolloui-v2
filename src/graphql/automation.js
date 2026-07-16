@@ -85,7 +85,7 @@ export const GET_AUTOMATION_QUERY = gql`
         error { ...ErrorFragment }
       }
       signals {
-        result { id type widget options unit ops supportsHysteresis }
+        result { id type widget options unit ops supportsHysteresis availableWhileOff }
         error { ...ErrorFragment }
       }
       state {

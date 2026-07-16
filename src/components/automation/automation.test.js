@@ -253,6 +253,29 @@ describe('RuleEditorModal', () => {
     expect(screen.getByDisplayValue('80')).toBeInTheDocument();
   });
 
+  it('blocks a "turn on" rule that hinges on a running-only signal', () => {
+    const runningOnlyDescriptors = [
+      { id: 'miner.temperature', type: 'number', unit: '°C', ops: ['<', '>'], supportsHysteresis: true, availableWhileOff: false },
+    ];
+    const resumeRule = {
+      id: 5,
+      name: 'Resume when cool',
+      enabled: true,
+      priority: 0,
+      isSafety: false,
+      match: 'all',
+      conditions: [{ signal: 'miner.temperature', op: '<', value: '60' }],
+      action: { type: 'mode', mode: 'turbo' },
+    };
+
+    renderUI(
+      <RuleEditorModal isOpen onClose={() => {}} onSave={() => {}} rule={resumeRule} descriptors={runningOnlyDescriptors} />
+    );
+
+    expect(screen.getByText(/can only be read while the miner runs/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save rule' })).toBeDisabled();
+  });
+
   it('sends condition values as strings, the way the engine expects them', async () => {
     const onSave = jest.fn();
 

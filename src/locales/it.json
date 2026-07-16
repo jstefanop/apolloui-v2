@@ -936,6 +936,7 @@
       "action_mode": "Accendi in modo",
       "mode": "Modo",
       "mode_restart_warning": "Cambiare modo riavvia il miner e costa qualche minuto di fermo.",
+      "running_only_warning": "{signals} è leggibile solo mentre il miner gira, quindi questa regola non potrebbe mai riaccenderlo. Usalo per spegnere il miner (over-temperatura), e accendilo con un segnale disponibile anche da spento — orario, alba/tramonto o temperatura esterna.",
       "cancel": "Annulla",
       "save": "Salva regola",
       "yes": "Sì",

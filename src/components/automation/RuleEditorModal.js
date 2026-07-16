@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Button,
   Checkbox,
   Flex,
@@ -170,7 +173,18 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, bands = [
     });
   };
 
-  const canSave = draft.name?.trim() && draft.conditions.length > 0;
+  // A rule that turns the miner on must be evaluable while it is off. Board
+  // temperature (availableWhileOff === false) is unreadable then, so such a rule
+  // could never fire — block it and say why. Mirrors the backend validation.
+  const runningOnlyOffenders =
+    draft.action.type === 'mode'
+      ? draft.conditions.filter((c) => descriptorFor(c.signal)?.availableWhileOff === false).map((c) => c.signal)
+      : [];
+  const cannotFireWhileOff =
+    runningOnlyOffenders.length > 0 &&
+    ((draft.match || 'all') === 'all' || runningOnlyOffenders.length === draft.conditions.length);
+
+  const canSave = draft.name?.trim() && draft.conditions.length > 0 && !cannotFireWhileOff;
 
   // The value control for a condition, chosen by the signal's widget.
   const renderValue = (condition, descriptor, index) => {
@@ -508,6 +522,18 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, bands = [
               <Text fontSize="xs" color="orange.400">
                 {intl.formatMessage({ id: 'automation.editor.mode_restart_warning' })}
               </Text>
+            )}
+
+            {cannotFireWhileOff && (
+              <Alert status="warning" borderRadius="10px">
+                <AlertIcon />
+                <AlertDescription fontSize="sm">
+                  {intl.formatMessage(
+                    { id: 'automation.editor.running_only_warning' },
+                    { signals: runningOnlyOffenders.map(label).join(', ') }
+                  )}
+                </AlertDescription>
+              </Alert>
             )}
           </Flex>
         </ModalBody>
