@@ -1064,12 +1064,14 @@
       "browse_title": "Explorar topics MQTT",
       "browse_prefix": "Filtro de prefijo (opcional, p. ej. sun2000)",
       "browse_scan": "Escanear (5s)",
+      "browse_scan_long": "Escaneo largo (45s)",
+      "browse_value_hint": "Los valores retenidos aparecen al instante. Un topic que solo publica por intervalos (no retenido) puede necesitar el escaneo largo — o compruébalo en Home Assistant.",
       "browse_scanning": "Escuchando el broker…",
       "browse_none": "Ningún topic en la ventana de escaneo. Reintenta u otro prefijo.",
       "browse_failed": "Escaneo fallido",
       "browse_use": "Usar topic",
       "browse_ha": "Home Assistant",
-      "browse_no_value": "sin valor aún"
+      "browse_no_value": "no visto en este escaneo"
     },
     "conditions": {
       "title": "Condiciones actuales"
