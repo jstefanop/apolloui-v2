@@ -1094,7 +1094,8 @@
     },
     "conditions": {
       "title": "Condizioni attuali",
-      "loading": "in caricamento…"
+      "loading": "in caricamento…",
+      "location_hint": "Le condizioni di luce solare e meteo richiedono la posizione. {link} per abilitarle."
     },
     "templates": {
       "browse": "Sfoglia template",

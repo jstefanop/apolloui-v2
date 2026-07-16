@@ -1094,7 +1094,8 @@
     },
     "conditions": {
       "title": "Aktuelle Bedingungen",
-      "loading": "lädt…"
+      "loading": "lädt…",
+      "location_hint": "Sonnen- und Wetterbedingungen benötigen deinen Standort. {link}, um sie zu aktivieren."
     },
     "templates": {
       "browse": "Vorlagen durchsuchen",

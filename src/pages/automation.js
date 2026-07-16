@@ -307,6 +307,7 @@ const Automation = () => {
                 descriptors={descriptors}
                 temperatureUnit={temperatureUnit}
                 currency={config?.tariff?.currency || 'EUR'}
+                locationSet={config?.latitude != null && config?.longitude != null}
               />
 
               <Grid templateColumns={{ base: '1fr', xl: '2fr 1fr' }} gap="20px">

@@ -1094,7 +1094,8 @@
     },
     "conditions": {
       "title": "Condiciones actuales",
-      "loading": "cargando…"
+      "loading": "cargando…",
+      "location_hint": "Las condiciones de sol y clima necesitan tu ubicación. {link} para habilitarlas."
     },
     "templates": {
       "browse": "Ver plantillas",

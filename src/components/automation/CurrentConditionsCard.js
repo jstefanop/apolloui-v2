@@ -1,4 +1,16 @@
-import { Flex, Icon, SimpleGrid, Spinner, Text, useColorModeValue } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Flex,
+  Icon,
+  Link,
+  SimpleGrid,
+  Spinner,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import NextLink from 'next/link';
 import { useIntl } from 'react-intl';
 import {
   MdAccessTime,
@@ -41,13 +53,22 @@ const ICON = {
 };
 const iconOf = (id) => ICON[id] || (id.startsWith('input.') ? MdRssFeed : MdSchedule);
 
-const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', currency = 'EUR' }) => {
+const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', currency = 'EUR', locationSet = true }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
   const tileBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
 
   if (!signals || !signals.length) return null;
+
+  // The board has one temperature sensor, so "hottest" and "average" are the same
+  // value on a single-board device — showing both reads as broken. Drop the average
+  // tile when it equals the hottest; keep it when they actually differ (multi-board).
+  const visibleSignals = signals.filter((s) => {
+    if (s.id !== 'miner.temperatureAvg') return true;
+    const hottest = signals.find((x) => x.id === 'miner.temperature');
+    return !(hottest && !hottest.stale && !s.stale && String(hottest.value) === String(s.value));
+  });
 
   const descriptorFor = (id) => descriptors.find((d) => d.id === id);
 
@@ -80,8 +101,26 @@ const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', cu
         {intl.formatMessage({ id: 'automation.conditions.title' })}
       </Text>
 
+      {!locationSet && (
+        <Alert status="info" borderRadius="10px" mb="14px">
+          <AlertIcon />
+          <AlertDescription fontSize="sm">
+            {intl.formatMessage(
+              { id: 'automation.conditions.location_hint' },
+              {
+                link: (
+                  <Link as={NextLink} href="/settings/system" fontWeight="700" textDecoration="underline">
+                    {intl.formatMessage({ id: 'automation.location_alert_link' })}
+                  </Link>
+                ),
+              }
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <SimpleGrid columns={{ base: 2, md: 4, xl: 6 }} spacing="12px">
-        {signals.map((s) => {
+        {visibleSignals.map((s) => {
           const accent = accentOf(s.id);
           return (
             <Flex
