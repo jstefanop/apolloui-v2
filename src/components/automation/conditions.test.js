@@ -75,36 +75,6 @@ describe('CurrentConditionsCard', () => {
     expect(screen.getByText('176 °F')).toBeInTheDocument(); // 80 °C
   });
 
-  it('hides the average board temperature when it equals the hottest (single-board)', () => {
-    const withEqualTemps = [
-      { id: 'miner.temperature', value: '73', stale: false },
-      { id: 'miner.temperatureAvg', value: '73', stale: false },
-    ];
-    const descs = [
-      { id: 'miner.temperature', type: 'number', unit: '°C' },
-      { id: 'miner.temperatureAvg', type: 'number', unit: '°C' },
-    ];
-    renderUI(<CurrentConditionsCard signals={withEqualTemps} descriptors={descs} />);
-
-    expect(screen.getByText('Board temperature (hottest)')).toBeInTheDocument();
-    expect(screen.queryByText('Board temperature (average)')).not.toBeInTheDocument();
-  });
-
-  it('keeps the average when it actually differs from the hottest (multi-board)', () => {
-    const withDifferentTemps = [
-      { id: 'miner.temperature', value: '78', stale: false },
-      { id: 'miner.temperatureAvg', value: '71', stale: false },
-    ];
-    const descs = [
-      { id: 'miner.temperature', type: 'number', unit: '°C' },
-      { id: 'miner.temperatureAvg', type: 'number', unit: '°C' },
-    ];
-    renderUI(<CurrentConditionsCard signals={withDifferentTemps} descriptors={descs} />);
-
-    expect(screen.getByText('Board temperature (hottest)')).toBeInTheDocument();
-    expect(screen.getByText('Board temperature (average)')).toBeInTheDocument();
-  });
-
   it('nudges to set the location when it is missing, and not when it is set', () => {
     const { rerender } = renderUI(
       <CurrentConditionsCard signals={signals} descriptors={descriptors} locationSet={false} />

@@ -42,7 +42,6 @@ const ICON = {
   'sun.minutesToSunset': MdWbTwilight,
   'sun.minutesToSunrise': MdWbTwilight,
   'miner.temperature': MdDeviceThermostat,
-  'miner.temperatureAvg': MdDeviceThermostat,
   'miner.running': MdBolt,
   'miner.mode': MdSpeed,
   'weather.temperature': MdThermostat,
@@ -60,15 +59,6 @@ const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', cu
   const tileBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
 
   if (!signals || !signals.length) return null;
-
-  // The board has one temperature sensor, so "hottest" and "average" are the same
-  // value on a single-board device — showing both reads as broken. Drop the average
-  // tile when it equals the hottest; keep it when they actually differ (multi-board).
-  const visibleSignals = signals.filter((s) => {
-    if (s.id !== 'miner.temperatureAvg') return true;
-    const hottest = signals.find((x) => x.id === 'miner.temperature');
-    return !(hottest && !hottest.stale && !s.stale && String(hottest.value) === String(s.value));
-  });
 
   const descriptorFor = (id) => descriptors.find((d) => d.id === id);
 
@@ -120,7 +110,7 @@ const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', cu
       )}
 
       <SimpleGrid columns={{ base: 2, md: 4, xl: 6 }} spacing="12px">
-        {visibleSignals.map((s) => {
+        {signals.map((s) => {
           const accent = accentOf(s.id);
           return (
             <Flex
