@@ -24,6 +24,8 @@ import { DISCOVER_AUTOMATION_MQTT_QUERY } from '../../graphql/automation';
 const nameFromTopic = (topic) =>
   (topic.split('/').filter(Boolean).pop() || 'input').replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 24);
 
+const sanitizeName = (s) => String(s || '').replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 24);
+
 /**
  * Browse the broker: scan for topics (wildcard subscription for a few seconds),
  * then pick one — or a numeric field inside a JSON payload — to add as an input.
@@ -48,8 +50,14 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
     setTopics(r.result.topics);
   };
 
-  const pick = (topic, jsonPath) => {
-    onPick({ name: nameFromTopic(topic) + (jsonPath ? `_${jsonPath.split('.').pop()}` : ''), topic, jsonPath: jsonPath || '', unit: '' });
+  const pick = (topic, jsonPath, name, unit) => {
+    // Prefer the resolved field/name as the signal name; fall back to the topic.
+    const suggested = jsonPath
+      ? sanitizeName(jsonPath.split('.').pop())
+      : name
+      ? sanitizeName(name)
+      : nameFromTopic(topic);
+    onPick({ name: suggested, topic, jsonPath: jsonPath || '', unit: unit || '' });
     onClose();
   };
 
@@ -96,28 +104,54 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
 
           <Flex direction="column" gap="8px">
             {(topics || []).map((t) => (
-              <Box key={t.topic} bg={rowBg} borderRadius="10px" p="10px 12px">
+              <Box key={t.name ? `${t.topic}#${t.jsonPath || ''}` : t.topic} bg={rowBg} borderRadius="10px" p="10px 12px">
                 <Flex justify="space-between" align="center" gap="10px" wrap="wrap">
                   <Box minW="0" flex="1">
-                    <Text fontSize="sm" fontWeight="600" wordBreak="break-all">
-                      {t.topic}
-                    </Text>
-                    {t.sample && (
-                      <Text fontSize="xs" color={subTextColor} noOfLines={1}>
-                        {t.sample}
-                      </Text>
+                    {/* A resolved Home Assistant sensor: show its name, and the real
+                        topic/field it maps to underneath. */}
+                    {t.name ? (
+                      <>
+                        <Flex align="center" gap="6px" wrap="wrap">
+                          <Text fontSize="sm" fontWeight="600" wordBreak="break-word">
+                            {t.name}
+                          </Text>
+                          {t.unit && (
+                            <Text fontSize="xs" color={subTextColor}>
+                              ({t.unit})
+                            </Text>
+                          )}
+                          <Badge colorScheme="green" fontSize="0.6rem">
+                            {intl.formatMessage({ id: 'automation.mqtt.browse_ha' })}
+                          </Badge>
+                        </Flex>
+                        <Text fontSize="xs" color={subTextColor} noOfLines={1} wordBreak="break-all">
+                          {t.topic}
+                          {t.jsonPath ? ` · ${t.jsonPath}` : ''}
+                        </Text>
+                      </>
+                    ) : (
+                      <>
+                        <Text fontSize="sm" fontWeight="600" wordBreak="break-all">
+                          {t.topic}
+                        </Text>
+                        {t.sample && (
+                          <Text fontSize="xs" color={subTextColor} noOfLines={1}>
+                            {t.sample}
+                          </Text>
+                        )}
+                      </>
                     )}
                   </Box>
-                  {/* A plain (non-JSON) payload maps the topic directly. */}
-                  {(!t.jsonPaths || !t.jsonPaths.length) && (
-                    <Button size="xs" variant="light" onClick={() => pick(t.topic)}>
+                  {/* Resolved sensor or a plain (non-JSON) payload: one-click map. */}
+                  {(t.name || !t.jsonPaths || !t.jsonPaths.length) && (
+                    <Button size="xs" variant="light" onClick={() => pick(t.topic, t.jsonPath, t.name, t.unit)}>
                       {intl.formatMessage({ id: 'automation.mqtt.browse_use' })}
                     </Button>
                   )}
                 </Flex>
 
                 {/* JSON payload: offer the numeric fields as clickable paths. */}
-                {t.jsonPaths && t.jsonPaths.length > 0 && (
+                {!t.name && t.jsonPaths && t.jsonPaths.length > 0 && (
                   <Flex gap="6px" mt="8px" wrap="wrap">
                     {t.jsonPaths.map((p) => (
                       <Badge

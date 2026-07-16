@@ -1067,7 +1067,8 @@
       "browse_scanning": "Escuchando el broker…",
       "browse_none": "Ningún topic en la ventana de escaneo. Reintenta u otro prefijo.",
       "browse_failed": "Escaneo fallido",
-      "browse_use": "Usar topic"
+      "browse_use": "Usar topic",
+      "browse_ha": "Home Assistant"
     },
     "conditions": {
       "title": "Condiciones actuales"
