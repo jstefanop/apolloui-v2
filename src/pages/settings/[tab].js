@@ -480,6 +480,34 @@ const SettingsTab = () => {
     setIsSaving(true);
     setErrorForm(null);
     try {
+      // MQTT (broker + output) is system-level and independent of the miner/pool
+      // settings, so save it first — before the pool validations below can early
+      // return and skip it. Only runs when it actually changed.
+      if (settings.mqtt && !_.isEqual(settings.mqtt, currentSettings?.mqtt)) {
+        const m = settings.mqtt;
+        const mqttResult = await saveMqtt({
+          variables: {
+            input: {
+              enabled: m.enabled,
+              host: m.host || null,
+              port: Number(m.port) || 1883,
+              username: m.username || null,
+              tls: m.tls,
+              output: { enabled: m.output?.enabled, control: m.output?.control, exports: m.output?.exports },
+              ...(m.password ? { password: m.password } : {}),
+            },
+          },
+        });
+        if (mqttResult?.data?.Mqtt?.updateConfig?.error) {
+          setIsSaving(false);
+          return setErrorForm(mqttResult.data.Mqtt.updateConfig.error.message);
+        }
+        const synced = { ...m, password: '' };
+        setSettings((s) => ({ ...s, mqtt: synced }));
+        setCurrentSettings((c) => ({ ...c, mqtt: synced }));
+        await refetchMqtt();
+      }
+
       // Extract values from settings
       const {
         agree,
@@ -638,33 +666,6 @@ const SettingsTab = () => {
           longitude: settings.longitude ?? null,
         }));
         await refetchAutomation();
-      }
-
-      // MQTT broker + output: system-level, saved via the Mqtt namespace. Rides the
-      // same bar; the settings query doesn't carry it, so sync the baseline.
-      if (settings.mqtt && !_.isEqual(settings.mqtt, currentSettings?.mqtt)) {
-        const m = settings.mqtt;
-        const mqttResult = await saveMqtt({
-          variables: {
-            input: {
-              enabled: m.enabled,
-              host: m.host || null,
-              port: Number(m.port) || 1883,
-              username: m.username || null,
-              tls: m.tls,
-              output: { enabled: m.output?.enabled, control: m.output?.control, exports: m.output?.exports },
-              ...(m.password ? { password: m.password } : {}),
-            },
-          },
-        });
-        if (mqttResult?.data?.Mqtt?.updateConfig?.error) {
-          setIsSaving(false);
-          return setErrorForm(mqttResult.data.Mqtt.updateConfig.error.message);
-        }
-        const synced = { ...m, password: '' };
-        setSettings((s) => ({ ...s, mqtt: synced }));
-        setCurrentSettings((c) => ({ ...c, mqtt: synced }));
-        await refetchMqtt();
       }
 
       await refetchSettings();
