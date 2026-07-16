@@ -77,18 +77,18 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
     <Card p="20px">
       <Flex direction="column" gap="14px">
         <Flex justify="space-between" align="center" wrap="wrap" gap="8px">
-          <Flex direction="column">
-            <Text color={textColor} fontSize="lg" fontWeight="700">
-              {intl.formatMessage({ id: 'automation.mqtt.title' })}
-            </Text>
-            <Text color={subTextColor} fontSize="sm">
-              {intl.formatMessage({ id: 'automation.mqtt.description' })}
-            </Text>
-          </Flex>
-          <Flex align="center" gap="10px">
-            {statusBadge()}
+          <Flex align="center" gap="12px">
             <Switch isChecked={v.enabled} onChange={(e) => set({ enabled: e.target.checked })} colorScheme="green" />
+            <Flex direction="column">
+              <Text color={textColor} fontSize="lg" fontWeight="700">
+                {intl.formatMessage({ id: 'automation.mqtt.title' })}
+              </Text>
+              <Text color={subTextColor} fontSize="sm">
+                {intl.formatMessage({ id: 'automation.mqtt.description' })}
+              </Text>
+            </Flex>
           </Flex>
+          {statusBadge()}
         </Flex>
 
         <Flex gap="10px" wrap="wrap">
@@ -116,22 +116,22 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
 
         <Divider />
 
-        <Flex justify="space-between" align="center" wrap="wrap" gap="8px">
-          <Flex direction="column" pr="12px">
+        <Flex align="center" gap="12px" wrap="wrap">
+          <Switch isChecked={v.output?.enabled} onChange={(e) => setOutput({ enabled: e.target.checked })} colorScheme="green" />
+          <Flex direction="column">
             <Text fontSize="sm" fontWeight="600" color={textColor}>{intl.formatMessage({ id: 'automation.mqtt.output' })}</Text>
             <Text fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.output_hint' })}</Text>
           </Flex>
-          <Switch isChecked={v.output?.enabled} onChange={(e) => setOutput({ enabled: e.target.checked })} colorScheme="green" />
         </Flex>
 
         {v.output?.enabled && (
           <Flex bg={rowBg} borderRadius="10px" p="12px" direction="column" gap="10px">
-            <FormControl display="flex" alignItems="center" justifyContent="space-between">
-              <Flex direction="column" pr="12px">
+            <FormControl display="flex" alignItems="center" gap="12px">
+              <Switch isChecked={v.output?.control} onChange={(e) => setOutput({ control: e.target.checked })} colorScheme="green" />
+              <Flex direction="column">
                 <FormLabel fontSize="sm" mb="2px" color={textColor}>{intl.formatMessage({ id: 'automation.mqtt.output_control' })}</FormLabel>
                 <Text fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.output_control_hint' })}</Text>
               </Flex>
-              <Switch isChecked={v.output?.control} onChange={(e) => setOutput({ control: e.target.checked })} colorScheme="green" />
             </FormControl>
 
             <Divider />
