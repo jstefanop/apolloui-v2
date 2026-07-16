@@ -1091,7 +1091,10 @@
       "export_miner": "Miner",
       "export_node": "Nodo",
       "export_solo": "Solo",
-      "export_mcu": "Sistema"
+      "export_mcu": "Sistema",
+      "enable": "Activar MQTT",
+      "enable_hint": "Conéctate a tu broker MQTT para señales de entrada y la salida a Home Assistant.",
+      "broker": "Broker"
     },
     "tabs": {
       "rules": "Reglas",

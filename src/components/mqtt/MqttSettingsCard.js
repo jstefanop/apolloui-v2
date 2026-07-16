@@ -1,7 +1,6 @@
 import {
   Badge,
   Button,
-  Divider,
   Flex,
   FormControl,
   FormLabel,
@@ -13,8 +12,10 @@ import {
 import { useState } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { useIntl } from 'react-intl';
-import { MdCheckCircle, MdError } from 'react-icons/md';
-import Card from '../card/Card';
+import { MdCheckCircle, MdError, MdWifiTethering } from 'react-icons/md';
+import PanelCard from '../UI/PanelCard';
+import SimpleCard from '../UI/SimpleCard';
+import SimpleSwitchSettingsItem from '../UI/SimpleSwitchSettingsItem';
 import { TEST_MQTT_QUERY } from '../../graphql/mqtt';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
@@ -22,8 +23,8 @@ import { useDeviceType } from '../../contexts/DeviceConfigContext';
  * MQTT broker + output — a system-level setting (Settings → MQTT).
  *
  * Controlled: the editable values live in the Settings page state so they ride
- * its save/discard bar like the timezone and device location. `status`/`deviceId`
- * are live, read from the server config (not edited here).
+ * its save/discard bar. Follows the same layout as the other settings sections
+ * (PanelCard header, SimpleSwitchSettingsItem toggles, SimpleCard groups).
  */
 const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
   const intl = useIntl();
@@ -31,7 +32,6 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
   const hasMiner = deviceType !== 'solo-node';
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 
   const [testMqtt, { loading: testing }] = useLazyQuery(TEST_MQTT_QUERY, { fetchPolicy: 'no-cache' });
   const [testResult, setTestResult] = useState(null);
@@ -42,13 +42,9 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
   const exports = v.output?.exports || {};
   const setExport = (domain, val) => setOutput({ exports: { ...exports, [domain]: val } });
 
-  // Which domains this device can export (a solo-node has no miner).
-  const domains = [
-    ...(hasMiner ? ['miner'] : []),
-    'node',
-    'solo',
-    'mcu',
-  ];
+  const domains = [...(hasMiner ? ['miner'] : []), 'node', 'solo', 'mcu'];
+
+  const t = (id) => intl.formatMessage({ id: `automation.mqtt.${id}` });
 
   const brokerInput = () => ({
     enabled: v.enabled,
@@ -67,117 +63,91 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
     else setTestResult({ ok: r?.result?.ok, message: r?.result?.message });
   };
 
-  const statusBadge = () => {
-    if (!v.enabled) return null;
-    if (status?.connected) return <Badge colorScheme="green">{intl.formatMessage({ id: 'automation.mqtt.connected' })}</Badge>;
-    return <Badge colorScheme="red">{status?.error || intl.formatMessage({ id: 'automation.mqtt.disconnected' })}</Badge>;
-  };
+  const item = (id, title, description, selected) => ({ id, color: 'green', title, description, selected });
 
   return (
-    <Card p="20px">
-      <Flex direction="column" gap="14px">
-        <Flex justify="space-between" align="center" wrap="wrap" gap="8px">
-          <Flex align="center" gap="12px">
-            <Switch isChecked={v.enabled} onChange={(e) => set({ enabled: e.target.checked })} colorScheme="green" />
-            <Flex direction="column">
-              <Text color={textColor} fontSize="lg" fontWeight="700">
-                {intl.formatMessage({ id: 'automation.mqtt.title' })}
-              </Text>
-              <Text color={subTextColor} fontSize="sm">
-                {intl.formatMessage({ id: 'automation.mqtt.description' })}
-              </Text>
-            </Flex>
-          </Flex>
-          {statusBadge()}
-        </Flex>
+    <PanelCard title={t('title')} description={t('description')} icon={MdWifiTethering} textColor={textColor}>
+      <SimpleSwitchSettingsItem
+        item={item('mqttEnabled', t('enable'), t('enable_hint'), v.enabled)}
+        textColor={textColor}
+        handleSwitch={(e) => set({ enabled: e.target.checked })}
+      />
 
-        <Flex gap="10px" wrap="wrap">
-          <FormControl flex="2" minW="180px">
-            <FormLabel fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.host' })}</FormLabel>
-            <Input variant="auth" size="sm" value={v.host} onChange={(e) => set({ host: e.target.value })} placeholder="192.168.1.10" />
-          </FormControl>
-          <FormControl w="90px">
-            <FormLabel fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.port' })}</FormLabel>
-            <Input variant="auth" size="sm" type="number" value={v.port} onChange={(e) => set({ port: e.target.value })} />
-          </FormControl>
-          <FormControl w="120px">
-            <FormLabel fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.username' })}</FormLabel>
-            <Input variant="auth" size="sm" value={v.username} onChange={(e) => set({ username: e.target.value })} />
-          </FormControl>
-          <FormControl w="140px">
-            <FormLabel fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.password' })}</FormLabel>
-            <Input variant="auth" size="sm" type="password" value={v.password} onChange={(e) => set({ password: e.target.value })} placeholder="••••••" />
-          </FormControl>
-          <FormControl w="80px" display="flex" flexDirection="column">
-            <FormLabel fontSize="xs" color={subTextColor}>TLS</FormLabel>
-            <Switch mt="6px" isChecked={v.tls} onChange={(e) => set({ tls: e.target.checked })} />
-          </FormControl>
-        </Flex>
-
-        <Divider />
-
-        <Flex align="center" gap="12px" wrap="wrap">
-          <Switch isChecked={v.output?.enabled} onChange={(e) => setOutput({ enabled: e.target.checked })} colorScheme="green" />
-          <Flex direction="column">
-            <Text fontSize="sm" fontWeight="600" color={textColor}>{intl.formatMessage({ id: 'automation.mqtt.output' })}</Text>
-            <Text fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.output_hint' })}</Text>
-          </Flex>
-        </Flex>
-
-        {v.output?.enabled && (
-          <Flex bg={rowBg} borderRadius="10px" p="12px" direction="column" gap="10px">
-            <FormControl display="flex" alignItems="center" gap="12px">
-              <Switch isChecked={v.output?.control} onChange={(e) => setOutput({ control: e.target.checked })} colorScheme="green" />
-              <Flex direction="column">
-                <FormLabel fontSize="sm" mb="2px" color={textColor}>{intl.formatMessage({ id: 'automation.mqtt.output_control' })}</FormLabel>
-                <Text fontSize="xs" color={subTextColor}>{intl.formatMessage({ id: 'automation.mqtt.output_control_hint' })}</Text>
-              </Flex>
+      {v.enabled && (
+        <SimpleCard title={t('broker')} textColor={textColor}>
+          <Flex gap="10px" wrap="wrap">
+            <FormControl flex="2" minW="180px">
+              <FormLabel fontSize="xs" color={subTextColor}>{t('host')}</FormLabel>
+              <Input variant="auth" size="sm" value={v.host} onChange={(e) => set({ host: e.target.value })} placeholder="192.168.1.10" />
             </FormControl>
+            <FormControl w="90px">
+              <FormLabel fontSize="xs" color={subTextColor}>{t('port')}</FormLabel>
+              <Input variant="auth" size="sm" type="number" value={v.port} onChange={(e) => set({ port: e.target.value })} />
+            </FormControl>
+            <FormControl w="120px">
+              <FormLabel fontSize="xs" color={subTextColor}>{t('username')}</FormLabel>
+              <Input variant="auth" size="sm" value={v.username} onChange={(e) => set({ username: e.target.value })} />
+            </FormControl>
+            <FormControl w="140px">
+              <FormLabel fontSize="xs" color={subTextColor}>{t('password')}</FormLabel>
+              <Input variant="auth" size="sm" type="password" value={v.password} onChange={(e) => set({ password: e.target.value })} placeholder="••••••" />
+            </FormControl>
+            <FormControl w="80px" display="flex" flexDirection="column">
+              <FormLabel fontSize="xs" color={subTextColor}>TLS</FormLabel>
+              <Switch mt="6px" isChecked={v.tls} onChange={(e) => set({ tls: e.target.checked })} />
+            </FormControl>
+          </Flex>
 
-            <Divider />
+          <Flex align="center" gap="10px" mt="12px" minH="20px">
+            <Button size="sm" variant="light" onClick={runTest} isLoading={testing} isDisabled={!v.host}>
+              {t('test')}
+            </Button>
+            {status?.connected && <Badge colorScheme="green">{t('connected')}</Badge>}
+            {!status?.connected && v.enabled && <Badge colorScheme="red">{status?.error || t('disconnected')}</Badge>}
+            {!testing && testResult && (
+              <Flex align="center" gap="6px" color={testResult.ok ? 'green.400' : 'red.400'}>
+                {testResult.ok ? <MdCheckCircle /> : <MdError />}
+                <Text fontSize="sm">
+                  {testResult.ok ? t('test_ok') : testResult.message || t('test_failed')}
+                </Text>
+              </Flex>
+            )}
+          </Flex>
+        </SimpleCard>
+      )}
 
-            <Text fontSize="sm" fontWeight="600" color={textColor}>{intl.formatMessage({ id: 'automation.mqtt.exports' })}</Text>
+      <SimpleSwitchSettingsItem
+        item={item('mqttOutput', t('output'), t('output_hint'), v.output?.enabled)}
+        textColor={textColor}
+        handleSwitch={(e) => setOutput({ enabled: e.target.checked })}
+      />
+
+      {v.output?.enabled && (
+        <>
+          <SimpleSwitchSettingsItem
+            item={item('mqttControl', t('output_control'), t('output_control_hint'), v.output?.control)}
+            textColor={textColor}
+            handleSwitch={(e) => setOutput({ control: e.target.checked })}
+          />
+
+          <SimpleCard title={t('exports')} textColor={textColor}>
             <Flex wrap="wrap" gap="16px">
               {domains.map((d) => (
                 <FormControl key={d} w="auto" display="flex" alignItems="center" gap="8px">
-                  <Switch
-                    isChecked={exports[d] ?? d !== 'mcu'}
-                    onChange={(e) => setExport(d, e.target.checked)}
-                    colorScheme="green"
-                    size="sm"
-                  />
-                  <FormLabel mb="0" fontSize="sm" color={subTextColor}>
-                    {intl.formatMessage({ id: `automation.mqtt.export_${d}` })}
-                  </FormLabel>
+                  <Switch isChecked={exports[d] ?? d !== 'mcu'} onChange={(e) => setExport(d, e.target.checked)} colorScheme="green" size="sm" />
+                  <FormLabel mb="0" fontSize="sm" color={subTextColor}>{t(`export_${d}`)}</FormLabel>
                 </FormControl>
               ))}
             </Flex>
-
             {deviceId && (
-              <Text fontSize="xs" color={subTextColor}>
+              <Text fontSize="xs" color={subTextColor} mt="10px">
                 {intl.formatMessage({ id: 'automation.mqtt.output_device' }, { id: <b>{deviceId}</b> })}
               </Text>
             )}
-          </Flex>
-        )}
-
-        <Flex align="center" gap="8px" minH="20px">
-          <Button size="sm" variant="light" onClick={runTest} isLoading={testing} isDisabled={!v.host}>
-            {intl.formatMessage({ id: 'automation.mqtt.test' })}
-          </Button>
-          {!testing && testResult && (
-            <Flex align="center" gap="6px" color={testResult.ok ? 'green.400' : 'red.400'}>
-              {testResult.ok ? <MdCheckCircle /> : <MdError />}
-              <Text fontSize="sm">
-                {testResult.ok
-                  ? intl.formatMessage({ id: 'automation.mqtt.test_ok' })
-                  : testResult.message || intl.formatMessage({ id: 'automation.mqtt.test_failed' })}
-              </Text>
-            </Flex>
-          )}
-        </Flex>
-      </Flex>
-    </Card>
+          </SimpleCard>
+        </>
+      )}
+    </PanelCard>
   );
 };
 
