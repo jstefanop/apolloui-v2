@@ -391,7 +391,8 @@
       "node": "Node",
       "system": "System",
       "logs": "Protokolle",
-      "extra": "Extra"
+      "extra": "Extra",
+      "mqtt": "MQTT"
     },
     "sections": {
       "miner": {
@@ -1082,7 +1083,10 @@
       "browse_failed": "Scan fehlgeschlagen",
       "browse_use": "Topic verwenden",
       "browse_ha": "Home Assistant",
-      "browse_no_value": "in diesem Scan nicht gesehen"
+      "browse_no_value": "in diesem Scan nicht gesehen",
+      "inputs_desc": "Broker-Topics auf Signale abbilden, auf die deine Regeln reagieren können.",
+      "broker_hint": "Richte zuerst den MQTT-Broker unter {link} ein.",
+      "broker_link": "Einstellungen → MQTT"
     },
     "tabs": {
       "rules": "Regeln",

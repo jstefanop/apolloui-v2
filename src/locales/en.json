@@ -391,7 +391,8 @@
       "node": "Node",
       "system": "System",
       "logs": "Logs",
-      "extra": "Extra"
+      "extra": "Extra",
+      "mqtt": "MQTT"
     },
     "sections": {
       "miner": {
@@ -1082,7 +1083,10 @@
       "browse_failed": "Scan failed",
       "browse_use": "Use topic",
       "browse_ha": "Home Assistant",
-      "browse_no_value": "not seen in this scan"
+      "browse_no_value": "not seen in this scan",
+      "inputs_desc": "Map broker topics to signals your rules can react to.",
+      "broker_hint": "Set up the MQTT broker first in {link}.",
+      "broker_link": "Settings → MQTT"
     },
     "tabs": {
       "rules": "Rules",

@@ -24,7 +24,7 @@ import { PoolIcon } from '../../components/UI/Icons/PoolIcon';
 import { MinerIcon } from '../../components/UI/Icons/MinerIcon';
 import { NodeIcon } from '../../components/UI/Icons/NodeIcon';
 import { SystemIcon } from '../../components/UI/Icons/SystemIcon';
-import { MdSettings, MdHistory } from 'react-icons/md';
+import { MdSettings, MdHistory, MdWifiTethering } from 'react-icons/md';
 import { GrUserWorker } from 'react-icons/gr';
 import { GET_SETTINGS_QUERY, SET_SETTINGS_QUERY } from '../../graphql/settings';
 import { GET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../../graphql/pools';
@@ -47,6 +47,7 @@ import MinerTab from '../../components/settings/tabs/MinerTab';
 import SoloTab from '../../components/settings/tabs/SoloTab';
 import NodeTab from '../../components/settings/tabs/NodeTab';
 import SystemTab from '../../components/settings/tabs/SystemTab';
+import MqttSettingsCard from '../../components/mqtt/MqttSettingsCard';
 import ExtraTab from '../../components/settings/tabs/ExtraTab';
 import LogsTab from '../../components/settings/tabs/LogsTab';
 import ModalRestore from '../../components/apollo/ModalRestore';
@@ -89,15 +90,17 @@ const SettingsTab = () => {
     'solo': 0,
     'node': 1,
     'system': 2,
-    'logs': 3,
-    'extra': 4
+    'mqtt': 3,
+    'logs': 4,
+    'extra': 5
   } : {
     'pools': 0,
     'miner': 1,
     'node': 2,
     'system': 3,
-    'logs': 4,
-    'extra': 5
+    'mqtt': 4,
+    'logs': 5,
+    'extra': 6
   };
 
   // Get current tab index from URL
@@ -211,9 +214,9 @@ const SettingsTab = () => {
 
   // Handle tab change
   const handleTabChange = (index) => {
-    const tabNames = deviceType === 'solo-node' 
-      ? ['solo', 'node', 'system', 'logs', 'extra']
-      : ['pools', 'miner', 'node', 'system', 'logs', 'extra'];
+    const tabNames = deviceType === 'solo-node'
+      ? ['solo', 'node', 'system', 'mqtt', 'logs', 'extra']
+      : ['pools', 'miner', 'node', 'system', 'mqtt', 'logs', 'extra'];
     const newTab = tabNames[index];
     router.push(`/settings/${newTab}`);
   };
@@ -855,6 +858,12 @@ const SettingsTab = () => {
                 </Tab>
                 <Tab>
                   <Flex align="center" gap="10px">
+                    <MdWifiTethering />
+                    <Text>{intl.formatMessage({ id: 'settings.tabs.mqtt' })}</Text>
+                  </Flex>
+                </Tab>
+                <Tab>
+                  <Flex align="center" gap="10px">
                     <MdHistory />
                     <Text>{intl.formatMessage({ id: 'settings.tabs.logs' })}</Text>
                   </Flex>
@@ -896,6 +905,9 @@ const SettingsTab = () => {
               </TabPanel>
               <TabPanel>
                 <SystemTab />
+              </TabPanel>
+              <TabPanel>
+                <MqttSettingsCard />
               </TabPanel>
               <TabPanel>
                 <LogsTab />

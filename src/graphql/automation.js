@@ -21,16 +21,6 @@ const CONFIG_FIELDS = `
     flatPrice
     periods { days from to price band }
   }
-  mqtt {
-    enabled
-    host
-    port
-    username
-    tls
-    status { connected error }
-    inputs { name topic jsonPath unit }
-    output { enabled control deviceId }
-  }
 `;
 
 const RULE_FIELDS = `
@@ -144,34 +134,6 @@ export const DELETE_AUTOMATION_RULE_QUERY = gql`
   query DELETE_AUTOMATION_RULE($id: Int!) {
     Automation {
       deleteRule(id: $id) {
-        error { ...ErrorFragment }
-      }
-    }
-  }
-`;
-
-export const TEST_AUTOMATION_MQTT_QUERY = gql`
-  ${ERROR_FRAGMENT}
-  query TEST_AUTOMATION_MQTT($input: MqttConfigInput!) {
-    Automation {
-      testMqtt(input: $input) {
-        result { ok message }
-        error { ...ErrorFragment }
-      }
-    }
-  }
-`;
-
-export const DISCOVER_AUTOMATION_MQTT_QUERY = gql`
-  ${ERROR_FRAGMENT}
-  query DISCOVER_AUTOMATION_MQTT($input: MqttConfigInput!, $prefix: String, $seconds: Int) {
-    Automation {
-      discoverMqtt(input: $input, prefix: $prefix, seconds: $seconds) {
-        result {
-          ok
-          error
-          topics { topic sample jsonPaths name unit jsonPath value }
-        }
         error { ...ErrorFragment }
       }
     }

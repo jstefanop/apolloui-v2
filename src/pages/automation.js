@@ -43,7 +43,7 @@ import RuleEditorModal from '../components/automation/RuleEditorModal';
 import RuleTemplatesModal from '../components/automation/RuleTemplatesModal';
 import GuardRailsCard from '../components/automation/GuardRailsCard';
 import TariffCard from '../components/automation/TariffCard';
-import MqttCard from '../components/automation/MqttCard';
+import MqttInputsCard from '../components/automation/MqttInputsCard';
 import EventsTimeline from '../components/automation/EventsTimeline';
 
 const Automation = () => {
@@ -364,7 +364,7 @@ const Automation = () => {
                 </Flex>
               </GridItem>
               <GridItem>
-                <MqttCard config={config} isSaving={isSaving} onSave={handleSaveConfig} />
+                <MqttInputsCard />
               </GridItem>
             </Grid>
           </TabPanel>
