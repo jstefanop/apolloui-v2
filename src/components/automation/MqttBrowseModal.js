@@ -40,7 +40,7 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
   const [error, setError] = useState(null);
   const [discover, { loading }] = useLazyQuery(DISCOVER_AUTOMATION_MQTT_QUERY, { fetchPolicy: 'no-cache' });
 
-  const scan = async (seconds = 5) => {
+  const scan = async (seconds = 60) => {
     setError(null);
     setTopics(null);
     const { data } = await discover({ variables: { input: brokerInput(), prefix: prefix || null, seconds } });
@@ -76,11 +76,8 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
               onChange={(e) => setPrefix(e.target.value)}
               placeholder={intl.formatMessage({ id: 'automation.mqtt.browse_prefix' })}
             />
-            <Button size="sm" variant="brand" onClick={() => scan(5)} isLoading={loading} minW="110px">
+            <Button size="sm" variant="brand" onClick={() => scan(60)} isLoading={loading} minW="120px">
               {intl.formatMessage({ id: 'automation.mqtt.browse_scan' })}
-            </Button>
-            <Button size="sm" variant="light" onClick={() => scan(45)} isLoading={loading} minW="130px">
-              {intl.formatMessage({ id: 'automation.mqtt.browse_scan_long' })}
             </Button>
           </Flex>
 
