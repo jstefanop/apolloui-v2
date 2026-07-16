@@ -68,7 +68,7 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
   return (
     <PanelCard title={t('title')} description={t('description')} icon={MdWifiTethering} textColor={textColor}>
       <SimpleSwitchSettingsItem
-        item={item('mqttEnabled', t('enable'), t('enable_hint'), v.enabled)}
+        item={item('mqttEnabled', t('enable'), undefined, v.enabled)}
         textColor={textColor}
         handleSwitch={(e) => set({ enabled: e.target.checked })}
       />

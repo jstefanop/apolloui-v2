@@ -99,14 +99,16 @@ const SimpleSwitchSettingsItem = ({
                     </Flex>
                   )}
                 </Flex>
-                <Text
-                  color="secondaryGray.600"
-                  fontSize={{ base: 'xs', lg: 'sm' }}
-                  fontWeight="400"
-                  me="14px"
-                >
-                  {item.description}
-                </Text>
+                {item.description && (
+                  <Text
+                    color="secondaryGray.600"
+                    fontSize={{ base: 'xs', lg: 'sm' }}
+                    fontWeight="400"
+                    me="14px"
+                  >
+                    {item.description}
+                  </Text>
+                )}
               </Flex>
             </Flex>
           </FormControl>

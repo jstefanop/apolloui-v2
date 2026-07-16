@@ -1093,7 +1093,6 @@
       "export_solo": "Solo",
       "export_mcu": "System",
       "enable": "MQTT aktivieren",
-      "enable_hint": "Mit deinem MQTT-Broker verbinden für Eingangssignale und die Home-Assistant-Ausgabe.",
       "broker": "Broker"
     },
     "tabs": {
