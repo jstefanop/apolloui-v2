@@ -1076,6 +1076,33 @@
     "conditions": {
       "title": "Condizioni attuali",
       "loading": "in caricamento…"
+    },
+    "templates": {
+      "browse": "Sfoglia template",
+      "title": "Template di regole",
+      "subtitle": "Scegli un punto di partenza, poi imposta le tue soglie. Ognuno si apre nell'editor prima di essere salvato.",
+      "multi": "Multi-condizione",
+      "requires_location": "Richiede posizione",
+      "thermal_protection": {
+        "name": "Protezione termica",
+        "desc": "Spegne il miner quando la board scotta. Riparte quando lo decidono le altre regole, dopo che si è raffreddato."
+      },
+      "quiet_hours": {
+        "name": "Ore di silenzio",
+        "desc": "Spegne il miner di notte (23:00–07:00)."
+      },
+      "workday_pause": {
+        "name": "Pausa lavorativa",
+        "desc": "Spegne durante l'orario di lavoro nei giorni feriali (Lun–Ven, 09:00–18:00)."
+      },
+      "daytime_turbo": {
+        "name": "Turbo di giorno",
+        "desc": "Gira in turbo mentre c'è il sole. Richiede la posizione."
+      },
+      "sunny_mild_turbo": {
+        "name": "Sole e temperatura mite → turbo",
+        "desc": "Gira in turbo quando è giorno e fuori non fa troppo caldo. Richiede la posizione."
+      }
     }
   }
 }

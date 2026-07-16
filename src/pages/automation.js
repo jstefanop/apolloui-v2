@@ -32,6 +32,7 @@ import AutomationStatusCard from '../components/automation/AutomationStatusCard'
 import CurrentConditionsCard from '../components/automation/CurrentConditionsCard';
 import RulesList from '../components/automation/RulesList';
 import RuleEditorModal from '../components/automation/RuleEditorModal';
+import RuleTemplatesModal from '../components/automation/RuleTemplatesModal';
 import GuardRailsCard from '../components/automation/GuardRailsCard';
 import TariffCard from '../components/automation/TariffCard';
 import MqttCard from '../components/automation/MqttCard';
@@ -46,6 +47,7 @@ const Automation = () => {
   const temperatureUnit = settingsData?.temperatureUnit || 'c';
 
   const [editorOpen, setEditorOpen] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
   const [liveState, setLiveState] = useState(null);
   const [liveEvents, setLiveEvents] = useState([]);
@@ -219,6 +221,16 @@ const Automation = () => {
         isSaving={isSaving}
       />
 
+      <RuleTemplatesModal
+        isOpen={templatesOpen}
+        onClose={() => setTemplatesOpen(false)}
+        locationSet={config?.latitude != null && config?.longitude != null}
+        onPick={(templateRule) => {
+          setEditingRule(templateRule);
+          setEditorOpen(true);
+        }}
+      />
+
       {showLocationAlert && (
         <Alert status="warning" borderRadius="12px" mb="20px">
           <AlertIcon />
@@ -270,6 +282,7 @@ const Automation = () => {
                 setEditingRule(null);
                 setEditorOpen(true);
               }}
+              onBrowseTemplates={() => setTemplatesOpen(true)}
               onEdit={(rule) => {
                 setEditingRule(rule);
                 setEditorOpen(true);

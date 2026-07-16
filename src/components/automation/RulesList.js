@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { Reorder, useDragControls } from 'framer-motion';
 import { useIntl } from 'react-intl';
-import { MdAdd, MdDelete, MdDragIndicator, MdEdit, MdShield } from 'react-icons/md';
+import { MdAdd, MdAutoAwesome, MdDelete, MdDragIndicator, MdEdit, MdShield } from 'react-icons/md';
 import Card from '../card/Card';
 import { celsiusToUnit, temperatureUnitLabel } from '../../lib/utils';
 
@@ -193,7 +193,7 @@ const SortableRule = ({ rule, descriptors, temperatureUnit, activeRuleId, onEdit
   );
 };
 
-const RulesList = ({ rules, descriptors, temperatureUnit, activeRuleId, onCreate, onEdit, onToggle, onDelete, onReorder, isSaving }) => {
+const RulesList = ({ rules, descriptors, temperatureUnit, activeRuleId, onCreate, onBrowseTemplates, onEdit, onToggle, onDelete, onReorder, isSaving }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
@@ -223,9 +223,16 @@ const RulesList = ({ rules, descriptors, temperatureUnit, activeRuleId, onCreate
             {intl.formatMessage({ id: 'automation.rules.description' })}
           </Text>
         </Flex>
-        <Button leftIcon={<MdAdd />} variant="brand" size="sm" onClick={onCreate}>
-          {intl.formatMessage({ id: 'automation.rules.add' })}
-        </Button>
+        <Flex gap="8px">
+          {onBrowseTemplates && (
+            <Button leftIcon={<MdAutoAwesome />} variant="light" size="sm" onClick={onBrowseTemplates}>
+              {intl.formatMessage({ id: 'automation.templates.browse' })}
+            </Button>
+          )}
+          <Button leftIcon={<MdAdd />} variant="brand" size="sm" onClick={onCreate}>
+            {intl.formatMessage({ id: 'automation.rules.add' })}
+          </Button>
+        </Flex>
       </Flex>
 
       {!order.length ? (

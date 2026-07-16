@@ -10,6 +10,7 @@ import AutomationStatusCard from './AutomationStatusCard';
 import RulesList from './RulesList';
 import RuleEditorModal from './RuleEditorModal';
 import EventsTimeline from './EventsTimeline';
+import RuleTemplatesModal from './RuleTemplatesModal';
 
 // These components are only ever exercised at render time — a build passes
 // happily over a component that throws the moment it mounts. (That is exactly
@@ -302,6 +303,30 @@ describe('RuleEditorModal', () => {
         action: { type: 'off' },
       }),
     });
+  });
+});
+
+describe('RuleTemplatesModal', () => {
+  it('lists templates, flagging composite and location-only ones', () => {
+    renderUI(<RuleTemplatesModal isOpen onClose={() => {}} onPick={() => {}} locationSet={false} />);
+
+    expect(screen.getByText('Thermal protection')).toBeInTheDocument();
+    expect(screen.getByText('Workday pause')).toBeInTheDocument();
+    // At least the two composite templates carry the multi-condition badge.
+    expect(screen.getAllByText('Multi-condition').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Needs location').length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('picks a template as a new rule (no id) with a localized name', async () => {
+    const onPick = jest.fn();
+    renderUI(<RuleTemplatesModal isOpen onClose={() => {}} onPick={onPick} locationSet />);
+
+    await userEvent.click(screen.getByText('Thermal protection'));
+
+    expect(onPick).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Thermal protection', isSafety: true, action: { type: 'off', mode: null } })
+    );
+    expect(onPick.mock.calls[0][0].id).toBeUndefined(); // a new rule, not an edit
   });
 });
 

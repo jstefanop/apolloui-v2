@@ -325,7 +325,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, bands = [
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {rule
+          {rule?.id
             ? intl.formatMessage({ id: 'automation.editor.edit_title' })
             : intl.formatMessage({ id: 'automation.editor.new_title' })}
         </ModalHeader>

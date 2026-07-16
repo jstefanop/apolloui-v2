@@ -1076,6 +1076,33 @@
     "conditions": {
       "title": "Condiciones actuales",
       "loading": "cargando…"
+    },
+    "templates": {
+      "browse": "Ver plantillas",
+      "title": "Plantillas de reglas",
+      "subtitle": "Elige un punto de partida y luego ajusta tus umbrales. Cada una se abre en el editor antes de guardarse.",
+      "multi": "Multi-condición",
+      "requires_location": "Requiere ubicación",
+      "thermal_protection": {
+        "name": "Protección térmica",
+        "desc": "Apaga el miner cuando la placa se calienta demasiado. Vuelve a arrancar cuando lo deciden tus otras reglas, tras enfriarse."
+      },
+      "quiet_hours": {
+        "name": "Horas de silencio",
+        "desc": "Apaga el miner por la noche (23:00–07:00)."
+      },
+      "workday_pause": {
+        "name": "Pausa laboral",
+        "desc": "Apaga durante el horario laboral entre semana (Lun–Vie, 09:00–18:00)."
+      },
+      "daytime_turbo": {
+        "name": "Turbo de día",
+        "desc": "Funciona en turbo mientras hay sol. Requiere ubicación."
+      },
+      "sunny_mild_turbo": {
+        "name": "Soleado y templado → turbo",
+        "desc": "Funciona en turbo cuando es de día y no hace demasiado calor fuera. Requiere ubicación."
+      }
     }
   }
 }

@@ -1076,6 +1076,33 @@
     "conditions": {
       "title": "Current conditions",
       "loading": "loading…"
+    },
+    "templates": {
+      "browse": "Browse templates",
+      "title": "Rule templates",
+      "subtitle": "Pick a starting point, then set your own thresholds. Each opens in the editor before it is saved.",
+      "multi": "Multi-condition",
+      "requires_location": "Needs location",
+      "thermal_protection": {
+        "name": "Thermal protection",
+        "desc": "Stop the miner when the board gets too hot. It runs again once your other rules do, after it has cooled."
+      },
+      "quiet_hours": {
+        "name": "Quiet hours",
+        "desc": "Turn the miner off overnight (23:00–07:00)."
+      },
+      "workday_pause": {
+        "name": "Workday pause",
+        "desc": "Turn off during working hours on weekdays (Mon–Fri, 09:00–18:00)."
+      },
+      "daytime_turbo": {
+        "name": "Daytime turbo",
+        "desc": "Run in turbo while the sun is up. Needs your location."
+      },
+      "sunny_mild_turbo": {
+        "name": "Sunny & mild → turbo",
+        "desc": "Run in turbo when it is daytime and not too hot outside. Needs your location."
+      }
     }
   }
 }

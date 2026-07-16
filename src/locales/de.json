@@ -1076,6 +1076,33 @@
     "conditions": {
       "title": "Aktuelle Bedingungen",
       "loading": "lädt…"
+    },
+    "templates": {
+      "browse": "Vorlagen durchsuchen",
+      "title": "Regelvorlagen",
+      "subtitle": "Wähle einen Ausgangspunkt und lege dann deine Schwellenwerte fest. Jede öffnet sich vor dem Speichern im Editor.",
+      "multi": "Mehrfachbedingung",
+      "requires_location": "Standort nötig",
+      "thermal_protection": {
+        "name": "Thermoschutz",
+        "desc": "Stoppt den Miner, wenn das Board zu heiß wird. Er läuft wieder, sobald deine anderen Regeln es tun, nachdem er abgekühlt ist."
+      },
+      "quiet_hours": {
+        "name": "Ruhezeiten",
+        "desc": "Schaltet den Miner nachts aus (23:00–07:00)."
+      },
+      "workday_pause": {
+        "name": "Arbeitszeit-Pause",
+        "desc": "Schaltet werktags während der Arbeitszeit aus (Mo–Fr, 09:00–18:00)."
+      },
+      "daytime_turbo": {
+        "name": "Turbo am Tag",
+        "desc": "Läuft im Turbo, solange die Sonne scheint. Standort nötig."
+      },
+      "sunny_mild_turbo": {
+        "name": "Sonnig & mild → Turbo",
+        "desc": "Läuft im Turbo, wenn es Tag ist und draußen nicht zu heiß. Standort nötig."
+      }
     }
   }
 }
