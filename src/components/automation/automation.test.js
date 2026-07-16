@@ -331,32 +331,54 @@ describe('RuleTemplatesModal', () => {
 });
 
 describe('EventsTimeline', () => {
+  const event = {
+    id: 1,
+    ruleName: 'Thermal protection',
+    decision: 'off',
+    changeType: 'stop',
+    applied: true,
+    dryRun: false,
+    blockedBy: null,
+    message: 'stop applied (safety)',
+    createdAt: new Date().toISOString(),
+    signals: [
+      { id: 'miner.temperature', value: '88', stale: false },
+      { id: 'energy.price', value: null, stale: true },
+    ],
+  };
+
   it('shows the values behind a decision, not just the verdict', () => {
-    renderUI(
-      <EventsTimeline
-        events={[
-          {
-            id: 1,
-            ruleName: 'Thermal protection',
-            decision: 'off',
-            changeType: 'stop',
-            applied: true,
-            dryRun: false,
-            blockedBy: null,
-            message: 'stop applied (safety)',
-            createdAt: new Date().toISOString(),
-            signals: [
-              { id: 'miner.temperature', value: '88', stale: false },
-              { id: 'energy.price', value: null, stale: true },
-            ],
-          },
-        ]}
-      />
-    );
+    renderUI(<EventsTimeline events={[event]} />);
 
     expect(screen.getByText('stop applied (safety)')).toBeInTheDocument();
     // The evidence is shown; the unreadable signal is not dressed up as a value.
     expect(screen.getByText('miner.temperature=88')).toBeInTheDocument();
     expect(screen.queryByText(/energy.price/)).not.toBeInTheDocument();
+  });
+
+  it('opens a detail modal with the full record when an event is clicked', async () => {
+    renderUI(<EventsTimeline events={[event]} />);
+
+    await userEvent.click(screen.getByText('stop applied (safety)'));
+
+    expect(screen.getByText('Event detail')).toBeInTheDocument();
+    // The detail shows every signal, including the stale one the row omitted.
+    expect(screen.getByText('energy.price')).toBeInTheDocument();
+    expect(screen.getByText('no data')).toBeInTheDocument();
+  });
+
+  it('offers Load more only when there is deeper history', () => {
+    const onLoadMore = jest.fn();
+    const { rerender } = renderUI(<EventsTimeline events={[event]} hasMore={false} onLoadMore={onLoadMore} />);
+    expect(screen.queryByRole('button', { name: 'Load more' })).not.toBeInTheDocument();
+
+    rerender(
+      <ChakraProvider>
+        <IntlProvider locale="en" messages={flattenMessages(en)}>
+          <EventsTimeline events={[event]} hasMore onLoadMore={onLoadMore} />
+        </IntlProvider>
+      </ChakraProvider>
+    );
+    expect(screen.getByRole('button', { name: 'Load more' })).toBeInTheDocument();
   });
 });

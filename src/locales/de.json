@@ -992,7 +992,19 @@
       "title": "Verlauf",
       "description": "Was die Engine getan hat — und die Werte dahinter.",
       "empty": "Noch nichts.",
-      "dry_run": "beobachtet"
+      "dry_run": "beobachtet",
+      "load_more": "Mehr laden",
+      "detail": {
+        "title": "Ereignisdetail",
+        "rule": "Regel",
+        "decision": "Entscheidung",
+        "change_type": "Änderung",
+        "applied": "Angewendet",
+        "dry_run": "Testlauf",
+        "blocked_by": "Blockiert durch",
+        "signals": "Signale in diesem Moment",
+        "stale": "keine Daten"
+      }
     },
     "actions": {
       "save": "Speichern"

@@ -992,7 +992,19 @@
       "title": "History",
       "description": "What the engine did, and the values behind it.",
       "empty": "Nothing yet.",
-      "dry_run": "observed"
+      "dry_run": "observed",
+      "load_more": "Load more",
+      "detail": {
+        "title": "Event detail",
+        "rule": "Rule",
+        "decision": "Decision",
+        "change_type": "Change",
+        "applied": "Applied",
+        "dry_run": "Dry-run",
+        "blocked_by": "Blocked by",
+        "signals": "Signals at that moment",
+        "stale": "no data"
+      }
     },
     "actions": {
       "save": "Save"

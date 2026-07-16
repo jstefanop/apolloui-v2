@@ -992,7 +992,19 @@
       "title": "Historial",
       "description": "Qué ha hecho el motor, y los valores detrás de la decisión.",
       "empty": "Nada todavía.",
-      "dry_run": "observado"
+      "dry_run": "observado",
+      "load_more": "Cargar más",
+      "detail": {
+        "title": "Detalle del evento",
+        "rule": "Regla",
+        "decision": "Decisión",
+        "change_type": "Cambio",
+        "applied": "Aplicado",
+        "dry_run": "Simulación",
+        "blocked_by": "Bloqueado por",
+        "signals": "Señales en ese momento",
+        "stale": "sin datos"
+      }
     },
     "actions": {
       "save": "Guardar"

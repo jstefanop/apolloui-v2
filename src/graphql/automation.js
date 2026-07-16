@@ -74,7 +74,7 @@ export const GET_AUTOMATION_CONFIG_QUERY = gql`
 // Everything the page needs, in one round trip.
 export const GET_AUTOMATION_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query GET_AUTOMATION {
+  query GET_AUTOMATION($eventsLimit: Int) {
     Automation {
       config {
         result { ${CONFIG_FIELDS} }
@@ -92,7 +92,7 @@ export const GET_AUTOMATION_QUERY = gql`
         result { ${STATE_FIELDS} }
         error { ...ErrorFragment }
       }
-      events(limit: 30) {
+      events(limit: $eventsLimit) {
         result {
           id ruleName decision changeType applied dryRun blockedBy message createdAt
           signals { id value stale }

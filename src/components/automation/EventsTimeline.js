@@ -1,7 +1,9 @@
-import { Badge, Box, Flex, Text, useColorModeValue } from '@chakra-ui/react';
+import { useState } from 'react';
+import { Badge, Box, Button, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 import moment from 'moment';
 import Card from '../card/Card';
+import EventDetailModal from './EventDetailModal';
 
 /**
  * What the engine did, and why.
@@ -11,11 +13,13 @@ import Card from '../card/Card';
  * "the rule is being throttled to protect the hardware" and "the rule is broken"
  * must not look the same.
  */
-const EventsTimeline = ({ events }) => {
+const EventsTimeline = ({ events, hasMore, loadingMore, onLoadMore }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
   const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const rowHover = useColorModeValue('secondaryGray.100', 'whiteAlpha.200');
+  const [selected, setSelected] = useState(null);
 
   const badgeFor = (event) => {
     if (event.blockedBy) return { colorScheme: 'orange', label: event.blockedBy };
@@ -50,7 +54,18 @@ const EventsTimeline = ({ events }) => {
             const readable = (event.signals || []).filter((s) => !s.stale);
 
             return (
-              <Flex key={event.id} bg={rowBg} borderRadius="10px" p="12px 14px" direction="column" gap="4px">
+              <Flex
+                key={event.id}
+                as="button"
+                textAlign="left"
+                bg={rowBg}
+                _hover={{ bg: rowHover }}
+                borderRadius="10px"
+                p="12px 14px"
+                direction="column"
+                gap="4px"
+                onClick={() => setSelected(event)}
+              >
                 <Flex align="center" gap="8px" wrap="wrap">
                   <Text fontSize="xs" color={subTextColor} minW="110px">
                     {moment(event.createdAt).format('DD/MM HH:mm:ss')}
@@ -81,7 +96,15 @@ const EventsTimeline = ({ events }) => {
             );
           })}
         </Flex>
+
+        {hasMore && (
+          <Button variant="light" size="sm" alignSelf="center" onClick={onLoadMore} isLoading={loadingMore}>
+            {intl.formatMessage({ id: 'automation.events.load_more' })}
+          </Button>
+        )}
       </Flex>
+
+      <EventDetailModal event={selected} onClose={() => setSelected(null)} />
     </Card>
   );
 };

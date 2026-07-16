@@ -51,9 +51,14 @@ const Automation = () => {
   const [editingRule, setEditingRule] = useState(null);
   const [liveState, setLiveState] = useState(null);
   const [liveEvents, setLiveEvents] = useState([]);
+  // How many history events to pull from the backend ring buffer (grows on "Load
+  // more"). The backend keeps up to 500.
+  const [eventsLimit, setEventsLimit] = useState(30);
+  const EVENTS_MAX = 500;
 
   const { data, loading, refetch } = useQuery(GET_AUTOMATION_QUERY, {
     fetchPolicy: 'network-only',
+    variables: { eventsLimit },
   });
 
   // Merge the DB history with what's on screen on every (re)fetch — a union by id,
@@ -65,7 +70,7 @@ const Automation = () => {
     setLiveEvents((prev) => {
       const byId = new Map();
       [...prev, ...queryEvents].forEach((e) => byId.set(e.id, e));
-      return [...byId.values()].sort((a, b) => b.id - a.id).slice(0, 30);
+      return [...byId.values()].sort((a, b) => b.id - a.id).slice(0, EVENTS_MAX);
     });
   }, [data]);
 
@@ -79,7 +84,7 @@ const Automation = () => {
       setLiveState(result);
       if (result.event) {
         setLiveEvents((prev) =>
-          prev.some((e) => e.id === result.event.id) ? prev : [result.event, ...prev].slice(0, 30)
+          prev.some((e) => e.id === result.event.id) ? prev : [result.event, ...prev].slice(0, EVENTS_MAX)
         );
       }
     },
@@ -307,7 +312,12 @@ const Automation = () => {
         <GridItem>
           <Flex direction="column" gap="20px">
             <GuardRailsCard config={config} minerModes={minerModes} isSaving={isSaving} onSave={handleSaveConfig} />
-            <EventsTimeline events={events} />
+            <EventsTimeline
+              events={events}
+              hasMore={(data?.Automation?.events?.result?.length || 0) >= eventsLimit && eventsLimit < EVENTS_MAX}
+              loadingMore={loading}
+              onLoadMore={() => setEventsLimit((n) => Math.min(n + 30, EVENTS_MAX))}
+            />
           </Flex>
         </GridItem>
       </Grid>
