@@ -1085,6 +1085,13 @@
       "browse_ha": "Home Assistant",
       "browse_no_value": "no visto en este escaneo"
     },
+    "tabs": {
+      "rules": "Reglas",
+      "setup": "Setup"
+    },
+    "setup": {
+      "hint": "Configura esto una vez — se aplica a todas tus reglas. Los tramos de tarifa que definas aquí quedan disponibles como condición energy.band."
+    },
     "conditions": {
       "title": "Condiciones actuales",
       "loading": "cargando…"

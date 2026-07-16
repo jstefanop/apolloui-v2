@@ -1085,6 +1085,13 @@
       "browse_ha": "Home Assistant",
       "browse_no_value": "non visto in questa scansione"
     },
+    "tabs": {
+      "rules": "Regole",
+      "setup": "Setup"
+    },
+    "setup": {
+      "hint": "Imposta questi una volta — valgono per tutte le regole. Le fasce della tariffa definite qui diventano usabili come condizione energy.band."
+    },
     "conditions": {
       "title": "Condizioni attuali",
       "loading": "in caricamento…"

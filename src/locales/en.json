@@ -1085,6 +1085,13 @@
       "browse_ha": "Home Assistant",
       "browse_no_value": "not seen in this scan"
     },
+    "tabs": {
+      "rules": "Rules",
+      "setup": "Setup"
+    },
+    "setup": {
+      "hint": "Set these once — they apply to all your rules. The tariff bands you define here become usable as an energy.band condition."
+    },
     "conditions": {
       "title": "Current conditions",
       "loading": "loading…"

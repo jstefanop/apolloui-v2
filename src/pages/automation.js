@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import {
   Box,
   Grid,
@@ -11,6 +12,13 @@ import {
   AlertIcon,
   AlertDescription,
   Link,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  Text,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { useQuery, useLazyQuery, useSubscription } from '@apollo/client';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -45,6 +53,20 @@ const Automation = () => {
   // Temperature is stored in °C; the UI shows/accepts it in the user's unit.
   const { data: settingsData } = useSelector(settingsSelector, shallowEqual);
   const temperatureUnit = settingsData?.temperatureUnit || 'c';
+
+  // Two views under one page: operational (rules & activity) and setup (the
+  // configure-once cards). The active tab lives in the URL so it survives a
+  // refresh and is linkable.
+  const router = useRouter();
+  const activeTab = router.query.tab === 'setup' ? 1 : 0;
+  const setActiveTab = (index) =>
+    router.replace(
+      { pathname: '/automation', query: index === 1 ? { tab: 'setup' } : {} },
+      undefined,
+      { shallow: true }
+    );
+  const hintColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
+  const tabSelected = { color: 'brand.400', borderColor: 'brand.400' };
 
   const [editorOpen, setEditorOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
@@ -254,73 +276,98 @@ const Automation = () => {
         </Alert>
       )}
 
-      <Grid templateColumns={{ base: '1fr', xl: '2fr 1fr' }} gap="20px">
-        <GridItem colSpan={{ base: 1, xl: 2 }}>
-          <AutomationStatusCard
-            config={config}
-            state={state}
-            isSaving={isSaving}
-            onToggleEnabled={(enabled) => handleSaveConfig({ enabled })}
-            onToggleDryRun={(dryRun) => handleSaveConfig({ dryRun })}
-            onClearOverride={handleClearOverride}
-          />
-        </GridItem>
+      {/* The master control stays put across both tabs. */}
+      <Box mb="20px">
+        <AutomationStatusCard
+          config={config}
+          state={state}
+          isSaving={isSaving}
+          onToggleEnabled={(enabled) => handleSaveConfig({ enabled })}
+          onToggleDryRun={(dryRun) => handleSaveConfig({ dryRun })}
+          onClearOverride={handleClearOverride}
+        />
+      </Box>
 
-        <GridItem colSpan={{ base: 1, xl: 2 }}>
-          <CurrentConditionsCard
-            signals={state?.signals}
-            descriptors={descriptors}
-            temperatureUnit={temperatureUnit}
-            currency={config?.tariff?.currency || 'EUR'}
-          />
-        </GridItem>
+      <Tabs index={activeTab} onChange={setActiveTab} variant="line" isLazy>
+        <TabList mb="20px">
+          <Tab _selected={tabSelected} fontWeight="600">
+            {intl.formatMessage({ id: 'automation.tabs.rules' })}
+          </Tab>
+          <Tab _selected={tabSelected} fontWeight="600">
+            {intl.formatMessage({ id: 'automation.tabs.setup' })}
+          </Tab>
+        </TabList>
 
-        <GridItem>
-          <Flex direction="column" gap="20px">
-            <RulesList
-              rules={rules}
-              descriptors={descriptors}
-              temperatureUnit={temperatureUnit}
-              activeRuleId={state?.decision?.ruleId}
-              isSaving={isSaving}
-              onCreate={() => {
-                setEditingRule(null);
-                setEditorOpen(true);
-              }}
-              onBrowseTemplates={() => setTemplatesOpen(true)}
-              onEdit={(rule) => {
-                setEditingRule(rule);
-                setEditorOpen(true);
-              }}
-              onToggle={(rule, enabled) => handleSaveRule({ id: rule.id, input: { enabled } })}
-              onDelete={handleDeleteRule}
-              onReorder={handleReorder}
-            />
+        <TabPanels>
+          {/* Operational: what it's doing, the rules, the history. */}
+          <TabPanel px="0" pt="0">
+            <Flex direction="column" gap="20px">
+              <CurrentConditionsCard
+                signals={state?.signals}
+                descriptors={descriptors}
+                temperatureUnit={temperatureUnit}
+                currency={config?.tariff?.currency || 'EUR'}
+              />
 
-            <TariffCard
-              config={config}
-              currentPrice={price}
-              currentBand={band}
-              isSaving={isSaving}
-              onSave={handleSaveConfig}
-            />
+              <Grid templateColumns={{ base: '1fr', xl: '2fr 1fr' }} gap="20px">
+                <GridItem>
+                  <RulesList
+                    rules={rules}
+                    descriptors={descriptors}
+                    temperatureUnit={temperatureUnit}
+                    activeRuleId={state?.decision?.ruleId}
+                    isSaving={isSaving}
+                    onCreate={() => {
+                      setEditingRule(null);
+                      setEditorOpen(true);
+                    }}
+                    onBrowseTemplates={() => setTemplatesOpen(true)}
+                    onEdit={(rule) => {
+                      setEditingRule(rule);
+                      setEditorOpen(true);
+                    }}
+                    onToggle={(rule, enabled) => handleSaveRule({ id: rule.id, input: { enabled } })}
+                    onDelete={handleDeleteRule}
+                    onReorder={handleReorder}
+                  />
+                </GridItem>
+                <GridItem>
+                  <EventsTimeline
+                    events={events}
+                    hasMore={(data?.Automation?.events?.result?.length || 0) >= eventsLimit && eventsLimit < EVENTS_MAX}
+                    loadingMore={loading}
+                    onLoadMore={() => setEventsLimit((n) => Math.min(n + 30, EVENTS_MAX))}
+                  />
+                </GridItem>
+              </Grid>
+            </Flex>
+          </TabPanel>
 
-            <MqttCard config={config} isSaving={isSaving} onSave={handleSaveConfig} />
-          </Flex>
-        </GridItem>
-
-        <GridItem>
-          <Flex direction="column" gap="20px">
-            <GuardRailsCard config={config} minerModes={minerModes} isSaving={isSaving} onSave={handleSaveConfig} />
-            <EventsTimeline
-              events={events}
-              hasMore={(data?.Automation?.events?.result?.length || 0) >= eventsLimit && eventsLimit < EVENTS_MAX}
-              loadingMore={loading}
-              onLoadMore={() => setEventsLimit((n) => Math.min(n + 30, EVENTS_MAX))}
-            />
-          </Flex>
-        </GridItem>
-      </Grid>
+          {/* Setup: configure once — applies to all rules. */}
+          <TabPanel px="0" pt="0">
+            <Text fontSize="sm" color={hintColor} mb="16px">
+              {intl.formatMessage({ id: 'automation.setup.hint' })}
+            </Text>
+            <Grid templateColumns={{ base: '1fr', xl: '1fr 1fr' }} gap="20px">
+              <GridItem>
+                <Flex direction="column" gap="20px">
+                  <GuardRailsCard config={config} minerModes={minerModes} isSaving={isSaving} onSave={handleSaveConfig} />
+                  <TariffCard
+                    config={config}
+                    currentPrice={price}
+                    currentBand={band}
+                    isSaving={isSaving}
+                    onSave={handleSaveConfig}
+                  />
+                </Flex>
+              </GridItem>
+              <GridItem>
+                <MqttCard config={config} isSaving={isSaving} onSave={handleSaveConfig} />
+              </GridItem>
+            </Grid>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 };

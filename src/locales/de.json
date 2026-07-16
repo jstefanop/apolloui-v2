@@ -1085,6 +1085,13 @@
       "browse_ha": "Home Assistant",
       "browse_no_value": "in diesem Scan nicht gesehen"
     },
+    "tabs": {
+      "rules": "Regeln",
+      "setup": "Setup"
+    },
+    "setup": {
+      "hint": "Einmal einstellen — gilt für alle Regeln. Die hier definierten Tarifbänder werden als energy.band-Bedingung nutzbar."
+    },
     "conditions": {
       "title": "Aktuelle Bedingungen",
       "loading": "lädt…"
