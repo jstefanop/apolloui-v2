@@ -55,7 +55,18 @@ describe('CurrentConditionsCard', () => {
 
   it('shows a dash for a stale signal', () => {
     renderUI(<CurrentConditionsCard signals={signals} descriptors={descriptors} />);
-    // minutesToSunrise is stale → dash.
+    // minutesToSunrise is stale (not pending) → dash.
+    expect(screen.getByText('—')).toBeInTheDocument();
+  });
+
+  it('shows a spinner, not a dash, while a value is still being fetched', () => {
+    const withPending = [
+      { id: 'weather.temperature', value: null, stale: true, pending: true },
+      { id: 'miner.temperature', value: null, stale: true, pending: false },
+    ];
+    renderUI(<CurrentConditionsCard signals={withPending} descriptors={descriptors} />);
+    // Pending weather → "loading…" text; unavailable miner temp → dash.
+    expect(screen.getByText('loading…')).toBeInTheDocument();
     expect(screen.getByText('—')).toBeInTheDocument();
   });
 

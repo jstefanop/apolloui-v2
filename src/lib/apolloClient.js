@@ -247,6 +247,12 @@ function createWsLink() {
 function createApolloClient() {
   const cache = new InMemoryCache({
     typePolicies: {
+      // A signal reading is a value object, not an entity. Its `id` field (e.g.
+      // "miner.temperature") would otherwise make Apollo normalize it, so the live
+      // conditions (state.signals, with `pending`) and the historical event
+      // snapshots (event.signals, without it) would share — and corrupt — the same
+      // cache object. Keep them inline so each list stays independent.
+      SignalValue: { keyFields: false },
       NodeStats: {
         fields: {
           stats: {
