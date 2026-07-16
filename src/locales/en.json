@@ -1086,7 +1086,12 @@
       "browse_no_value": "not seen in this scan",
       "inputs_desc": "Map broker topics to signals your rules can react to.",
       "broker_hint": "Set up the MQTT broker first in {link}.",
-      "broker_link": "Settings → MQTT"
+      "broker_link": "Settings → MQTT",
+      "exports": "What to export",
+      "export_miner": "Miner",
+      "export_node": "Node",
+      "export_solo": "Solo",
+      "export_mcu": "System"
     },
     "tabs": {
       "rules": "Rules",

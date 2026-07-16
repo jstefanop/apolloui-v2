@@ -8,7 +8,7 @@ const MQTT_FIELDS = `
   username
   tls
   status { connected error }
-  output { enabled control deviceId }
+  output { enabled control deviceId exports { miner node solo mcu } }
   inputs { name topic jsonPath unit }
 `;
 

@@ -1086,7 +1086,12 @@
       "browse_no_value": "non visto in questa scansione",
       "inputs_desc": "Mappa i topic del broker a segnali su cui le regole possono reagire.",
       "broker_hint": "Configura prima il broker MQTT in {link}.",
-      "broker_link": "Impostazioni → MQTT"
+      "broker_link": "Impostazioni → MQTT",
+      "exports": "Cosa esportare",
+      "export_miner": "Miner",
+      "export_node": "Nodo",
+      "export_solo": "Solo",
+      "export_mcu": "Sistema"
     },
     "tabs": {
       "rules": "Regole",

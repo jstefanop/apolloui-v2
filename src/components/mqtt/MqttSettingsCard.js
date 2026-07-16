@@ -16,6 +16,7 @@ import { useIntl } from 'react-intl';
 import { MdCheckCircle, MdError } from 'react-icons/md';
 import Card from '../card/Card';
 import { TEST_MQTT_QUERY } from '../../graphql/mqtt';
+import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
 /**
  * MQTT broker + output — a system-level setting (Settings → MQTT).
@@ -26,6 +27,8 @@ import { TEST_MQTT_QUERY } from '../../graphql/mqtt';
  */
 const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
   const intl = useIntl();
+  const deviceType = useDeviceType();
+  const hasMiner = deviceType !== 'solo-node';
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
   const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
@@ -33,9 +36,19 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
   const [testMqtt, { loading: testing }] = useLazyQuery(TEST_MQTT_QUERY, { fetchPolicy: 'no-cache' });
   const [testResult, setTestResult] = useState(null);
 
-  const v = value || { enabled: false, host: '', port: 1883, username: '', password: '', tls: false, output: { enabled: false, control: true } };
+  const v = value || { enabled: false, host: '', port: 1883, username: '', password: '', tls: false, output: { enabled: false, control: true, exports: {} } };
   const set = (patch) => onChange({ ...v, ...patch });
   const setOutput = (patch) => onChange({ ...v, output: { ...v.output, ...patch } });
+  const exports = v.output?.exports || {};
+  const setExport = (domain, val) => setOutput({ exports: { ...exports, [domain]: val } });
+
+  // Which domains this device can export (a solo-node has no miner).
+  const domains = [
+    ...(hasMiner ? ['miner'] : []),
+    'node',
+    'solo',
+    'mcu',
+  ];
 
   const brokerInput = () => ({
     enabled: v.enabled,
@@ -120,6 +133,26 @@ const MqttSettingsCard = ({ value, onChange, status, deviceId }) => {
               </Flex>
               <Switch isChecked={v.output?.control} onChange={(e) => setOutput({ control: e.target.checked })} colorScheme="green" />
             </FormControl>
+
+            <Divider />
+
+            <Text fontSize="sm" fontWeight="600" color={textColor}>{intl.formatMessage({ id: 'automation.mqtt.exports' })}</Text>
+            <Flex wrap="wrap" gap="16px">
+              {domains.map((d) => (
+                <FormControl key={d} w="auto" display="flex" alignItems="center" gap="8px">
+                  <Switch
+                    isChecked={exports[d] ?? d !== 'mcu'}
+                    onChange={(e) => setExport(d, e.target.checked)}
+                    colorScheme="green"
+                    size="sm"
+                  />
+                  <FormLabel mb="0" fontSize="sm" color={subTextColor}>
+                    {intl.formatMessage({ id: `automation.mqtt.export_${d}` })}
+                  </FormLabel>
+                </FormControl>
+              ))}
+            </Flex>
+
             {deviceId && (
               <Text fontSize="xs" color={subTextColor}>
                 {intl.formatMessage({ id: 'automation.mqtt.output_device' }, { id: <b>{deviceId}</b> })}

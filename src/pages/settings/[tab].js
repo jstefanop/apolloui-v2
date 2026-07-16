@@ -315,7 +315,11 @@ const SettingsTab = () => {
       username: mqttConfig.username || '',
       password: '', // never returned; blank means "unchanged"
       tls: !!mqttConfig.tls,
-      output: { enabled: !!mqttConfig.output?.enabled, control: mqttConfig.output?.control !== false },
+      output: {
+        enabled: !!mqttConfig.output?.enabled,
+        control: mqttConfig.output?.control !== false,
+        exports: mqttConfig.output?.exports || {},
+      },
     };
     const patch = (s) => ({ ...s, mqtt: m, _mqttSeeded: true });
     setSettings(patch);
@@ -648,7 +652,7 @@ const SettingsTab = () => {
               port: Number(m.port) || 1883,
               username: m.username || null,
               tls: m.tls,
-              output: { enabled: m.output?.enabled, control: m.output?.control },
+              output: { enabled: m.output?.enabled, control: m.output?.control, exports: m.output?.exports },
               ...(m.password ? { password: m.password } : {}),
             },
           },
