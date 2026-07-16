@@ -13,7 +13,7 @@ import EventDetailModal from './EventDetailModal';
  * "the rule is being throttled to protect the hardware" and "the rule is broken"
  * must not look the same.
  */
-const EventsTimeline = ({ events, hasMore, loadingMore, onLoadMore }) => {
+const EventsTimeline = ({ events, rules, hasMore, loadingMore, onLoadMore }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
@@ -119,7 +119,7 @@ const EventsTimeline = ({ events, hasMore, loadingMore, onLoadMore }) => {
         )}
       </Flex>
 
-      <EventDetailModal event={selected} onClose={() => setSelected(null)} />
+      <EventDetailModal event={selected} rules={rules} onClose={() => setSelected(null)} />
     </Card>
   );
 };

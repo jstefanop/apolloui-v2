@@ -1002,7 +1002,8 @@
         "dry_run": "Dry-run",
         "blocked_by": "Bloccato da",
         "signals": "Segnali in quel momento",
-        "stale": "nessun dato"
+        "stale": "nessun dato",
+        "trigger_legend": "verde = ha soddisfatto le condizioni della regola"
       }
     },
     "actions": {

@@ -52,7 +52,7 @@ const STATE_FIELDS = `
   miner { running mode lastChangeAt cyclesLastHour overrideUntil }
   signals { id value stale pending error }
   event {
-    id ruleName decision changeType applied dryRun blockedBy message createdAt
+    id ruleId ruleName decision changeType applied dryRun blockedBy message createdAt
     signals { id value stale }
   }
 `;
@@ -94,7 +94,7 @@ export const GET_AUTOMATION_QUERY = gql`
       }
       events(limit: $eventsLimit) {
         result {
-          id ruleName decision changeType applied dryRun blockedBy message createdAt
+          id ruleId ruleName decision changeType applied dryRun blockedBy message createdAt
           signals { id value stale }
         }
         error { ...ErrorFragment }

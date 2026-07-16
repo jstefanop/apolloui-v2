@@ -1002,7 +1002,8 @@
         "dry_run": "Simulación",
         "blocked_by": "Bloqueado por",
         "signals": "Señales en ese momento",
-        "stale": "sin datos"
+        "stale": "sin datos",
+        "trigger_legend": "verde = cumplió las condiciones de esta regla"
       }
     },
     "actions": {

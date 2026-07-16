@@ -1002,7 +1002,8 @@
         "dry_run": "Dry-run",
         "blocked_by": "Blocked by",
         "signals": "Signals at that moment",
-        "stale": "no data"
+        "stale": "no data",
+        "trigger_legend": "green = matched this rule's conditions"
       }
     },
     "actions": {

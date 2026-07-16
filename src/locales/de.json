@@ -1002,7 +1002,8 @@
         "dry_run": "Testlauf",
         "blocked_by": "Blockiert durch",
         "signals": "Signale in diesem Moment",
-        "stale": "keine Daten"
+        "stale": "keine Daten",
+        "trigger_legend": "grün = erfüllte die Bedingungen dieser Regel"
       }
     },
     "actions": {

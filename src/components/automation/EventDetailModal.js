@@ -20,13 +20,22 @@ import moment from 'moment';
  * The full record behind a history entry: what the engine decided, whether it
  * acted or was blocked, and every signal value at that moment (stale ones too).
  */
-const EventDetailModal = ({ event, onClose }) => {
+const EventDetailModal = ({ event, rules, onClose }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
   const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
+  const triggerBg = useColorModeValue('green.50', 'green.900');
+  const triggerBorder = useColorModeValue('green.300', 'green.500');
+  const triggerColor = useColorModeValue('green.700', 'green.200');
 
   if (!event) return null;
+
+  // The signals this event's rule watches — highlight them so it's clear what
+  // tipped the decision. Best-effort: matched by ruleId against the current rules,
+  // so a since-deleted rule simply highlights nothing.
+  const rule = (rules || []).find((r) => r.id === event.ruleId);
+  const triggerIds = new Set((rule?.conditions || []).map((c) => c.signal));
 
   const yesNo = (v) => intl.formatMessage({ id: v ? 'automation.editor.yes' : 'automation.editor.no' });
 
@@ -84,20 +93,44 @@ const EventDetailModal = ({ event, onClose }) => {
 
           {event.signals?.length > 0 && (
             <>
-              <Text fontSize="sm" fontWeight="700" color={textColor} mt="16px" mb="8px">
-                {intl.formatMessage({ id: 'automation.events.detail.signals' })}
-              </Text>
+              <Flex align="baseline" gap="8px" wrap="wrap" mt="16px" mb="8px">
+                <Text fontSize="sm" fontWeight="700" color={textColor}>
+                  {intl.formatMessage({ id: 'automation.events.detail.signals' })}
+                </Text>
+                {triggerIds.size > 0 && (
+                  <Text fontSize="xs" color={triggerColor} fontWeight="600">
+                    {intl.formatMessage({ id: 'automation.events.detail.trigger_legend' })}
+                  </Text>
+                )}
+              </Flex>
               <SimpleGrid columns={{ base: 1, sm: 2 }} spacing="6px">
-                {event.signals.map((s) => (
-                  <Flex key={s.id} justify="space-between" gap="8px" bg={rowBg} borderRadius="8px" p="6px 10px">
-                    <Text fontSize="xs" color={subTextColor} noOfLines={1}>
-                      {s.id}
-                    </Text>
-                    <Text fontSize="xs" color={s.stale ? subTextColor : textColor} fontWeight="600">
-                      {s.stale ? intl.formatMessage({ id: 'automation.events.detail.stale' }) : s.value}
-                    </Text>
-                  </Flex>
-                ))}
+                {event.signals.map((s) => {
+                  const isTrigger = triggerIds.has(s.id);
+                  return (
+                    <Flex
+                      key={s.id}
+                      justify="space-between"
+                      align="center"
+                      gap="8px"
+                      bg={isTrigger ? triggerBg : rowBg}
+                      border={isTrigger ? '1px solid' : undefined}
+                      borderColor={isTrigger ? triggerBorder : undefined}
+                      borderRadius="8px"
+                      p="6px 10px"
+                    >
+                      <Text fontSize="xs" color={isTrigger ? triggerColor : subTextColor} noOfLines={1} fontWeight={isTrigger ? '600' : '400'}>
+                        {s.id}
+                      </Text>
+                      <Text
+                        fontSize="xs"
+                        color={isTrigger ? triggerColor : s.stale ? subTextColor : textColor}
+                        fontWeight="600"
+                      >
+                        {s.stale ? intl.formatMessage({ id: 'automation.events.detail.stale' }) : s.value}
+                      </Text>
+                    </Flex>
+                  );
+                })}
               </SimpleGrid>
             </>
           )}

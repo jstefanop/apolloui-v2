@@ -335,6 +335,7 @@ const Automation = () => {
                 <GridItem>
                   <EventsTimeline
                     events={events}
+                    rules={rules}
                     hasMore={(data?.Automation?.events?.result?.length || 0) >= eventsLimit && eventsLimit < EVENTS_MAX}
                     loadingMore={loading}
                     onLoadMore={() => setEventsLimit((n) => Math.min(n + 30, EVENTS_MAX))}

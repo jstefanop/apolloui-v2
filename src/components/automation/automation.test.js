@@ -333,6 +333,7 @@ describe('RuleTemplatesModal', () => {
 describe('EventsTimeline', () => {
   const event = {
     id: 1,
+    ruleId: 1,
     ruleName: 'Thermal protection',
     decision: 'off',
     changeType: 'stop',
@@ -365,6 +366,16 @@ describe('EventsTimeline', () => {
     // The detail shows every signal, including the stale one the row omitted.
     expect(screen.getByText('energy.price')).toBeInTheDocument();
     expect(screen.getByText('no data')).toBeInTheDocument();
+  });
+
+  it('highlights the signals the firing rule watches', async () => {
+    const rules = [{ id: 1, conditions: [{ signal: 'miner.temperature' }] }];
+    renderUI(<EventsTimeline events={[event]} rules={rules} />);
+
+    await userEvent.click(screen.getByText('stop applied (safety)'));
+
+    // Legend appears because the rule's condition signal is present in the snapshot.
+    expect(screen.getByText(/matched this rule/)).toBeInTheDocument();
   });
 
   it('offers Load more only when there is deeper history', () => {
