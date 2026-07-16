@@ -170,7 +170,7 @@ export const DISCOVER_AUTOMATION_MQTT_QUERY = gql`
         result {
           ok
           error
-          topics { topic sample jsonPaths name unit jsonPath }
+          topics { topic sample jsonPaths name unit jsonPath value }
         }
         error { ...ErrorFragment }
       }

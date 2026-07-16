@@ -1068,7 +1068,8 @@
       "browse_none": "Keine Topics im Scan-Fenster. Erneut versuchen oder anderes Präfix.",
       "browse_failed": "Scan fehlgeschlagen",
       "browse_use": "Topic verwenden",
-      "browse_ha": "Home Assistant"
+      "browse_ha": "Home Assistant",
+      "browse_no_value": "noch kein Wert"
     },
     "conditions": {
       "title": "Aktuelle Bedingungen"

@@ -1068,7 +1068,8 @@
       "browse_none": "Ningún topic en la ventana de escaneo. Reintenta u otro prefijo.",
       "browse_failed": "Escaneo fallido",
       "browse_use": "Usar topic",
-      "browse_ha": "Home Assistant"
+      "browse_ha": "Home Assistant",
+      "browse_no_value": "sin valor aún"
     },
     "conditions": {
       "title": "Condiciones actuales"

@@ -111,13 +111,19 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
                         topic/field it maps to underneath. */}
                     {t.name ? (
                       <>
-                        <Flex align="center" gap="6px" wrap="wrap">
+                        <Flex align="center" gap="8px" wrap="wrap">
                           <Text fontSize="sm" fontWeight="600" wordBreak="break-word">
                             {t.name}
                           </Text>
-                          {t.unit && (
+                          {t.value != null ? (
+                            <Text fontSize="sm" fontWeight="700" color="green.400">
+                              {t.value}
+                              {t.unit ? ` ${t.unit}` : ''}
+                            </Text>
+                          ) : (
                             <Text fontSize="xs" color={subTextColor}>
-                              ({t.unit})
+                              {t.unit ? `(${t.unit}) ` : ''}
+                              {intl.formatMessage({ id: 'automation.mqtt.browse_no_value' })}
                             </Text>
                           )}
                           <Badge colorScheme="green" fontSize="0.6rem">
