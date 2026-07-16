@@ -1064,7 +1064,7 @@
       "browse_title": "Browse MQTT topics",
       "browse_prefix": "Prefix filter (optional, e.g. sun2000)",
       "browse_scan": "Scan",
-      "browse_value_hint": "The scan listens for up to a minute. Retained values (like the Apollo's own) show at once, but a topic that only publishes on an interval — e.g. a solar bridge every ~40s, not retained — needs the wait to be caught.",
+      "browse_value_hint": "The scan listens for up to a minute. Retained values show at once, but a topic that only publishes on an interval — e.g. a solar bridge every ~40s, not retained — needs the wait to be caught.",
       "browse_scanning": "Listening to the broker…",
       "browse_none": "No topics seen in the scan window. Try again or a different prefix.",
       "browse_failed": "Scan failed",

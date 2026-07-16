@@ -1064,7 +1064,7 @@
       "browse_title": "MQTT-Topics durchsuchen",
       "browse_prefix": "Präfixfilter (optional, z. B. sun2000)",
       "browse_scan": "Scannen",
-      "browse_value_hint": "Der Scan hört bis zu einer Minute zu. Retained-Werte (wie die des Apollo) erscheinen sofort, aber ein Topic, das nur in Intervallen sendet — z. B. eine Solar-Bridge alle ~40s, nicht retained — muss abgewartet werden.",
+      "browse_value_hint": "Der Scan hört bis zu einer Minute zu. Retained-Werte erscheinen sofort, aber ein Topic, das nur in Intervallen sendet — z. B. eine Solar-Bridge alle ~40s, nicht retained — muss abgewartet werden.",
       "browse_scanning": "Höre auf den Broker…",
       "browse_none": "Keine Topics im Scan-Fenster. Erneut versuchen oder anderes Präfix.",
       "browse_failed": "Scan fehlgeschlagen",

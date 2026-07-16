@@ -1064,7 +1064,7 @@
       "browse_title": "Sfoglia i topic MQTT",
       "browse_prefix": "Filtro prefisso (opzionale, es. sun2000)",
       "browse_scan": "Scansiona",
-      "browse_value_hint": "La scansione ascolta fino a un minuto. I valori retained (come quelli dell'Apollo) compaiono subito, ma un topic che pubblica solo a intervalli — es. un bridge solare ogni ~40s, non retained — va atteso per essere catturato.",
+      "browse_value_hint": "La scansione ascolta fino a un minuto. I valori retained compaiono subito, ma un topic che pubblica solo a intervalli — es. un bridge solare ogni ~40s, non retained — va atteso per essere catturato.",
       "browse_scanning": "In ascolto sul broker…",
       "browse_none": "Nessun topic nella finestra di scansione. Riprova o cambia prefisso.",
       "browse_failed": "Scansione fallita",
