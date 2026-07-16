@@ -34,6 +34,7 @@ import {
   GET_AUTOMATION_CONFIG_QUERY,
   SET_AUTOMATION_CONFIG_QUERY,
 } from '../../graphql/automation';
+import { GET_MQTT_QUERY, SET_MQTT_QUERY } from '../../graphql/mqtt';
 import { SOLO_RESTART_QUERY } from '../../graphql/solo';
 import {
   NODE_START_QUERY,
@@ -212,6 +213,11 @@ const SettingsTab = () => {
 
   const automationConfig = dataAutomation?.Automation?.config?.result;
 
+  // System-level MQTT (broker + output), edited here and riding the same save bar.
+  const { data: dataMqtt, refetch: refetchMqtt } = useQuery(GET_MQTT_QUERY, { fetchPolicy: 'no-cache' });
+  const [saveMqtt] = useLazyQuery(SET_MQTT_QUERY, { fetchPolicy: 'no-cache' });
+  const mqttConfig = dataMqtt?.Mqtt?.config?.result;
+
   // Handle tab change
   const handleTabChange = (index) => {
     const tabNames = deviceType === 'solo-node'
@@ -297,6 +303,24 @@ const SettingsTab = () => {
     setSettings(patch);
     setCurrentSettings(patch);
   }, [automationConfig, currentSettings]);
+
+  // Seed the MQTT config into both baselines once it arrives, so editing it lights
+  // up the save bar (nested object, matched by the deep isChanged compare).
+  useEffect(() => {
+    if (!mqttConfig || !currentSettings || currentSettings._mqttSeeded) return;
+    const m = {
+      enabled: !!mqttConfig.enabled,
+      host: mqttConfig.host || '',
+      port: mqttConfig.port || 1883,
+      username: mqttConfig.username || '',
+      password: '', // never returned; blank means "unchanged"
+      tls: !!mqttConfig.tls,
+      output: { enabled: !!mqttConfig.output?.enabled, control: mqttConfig.output?.control !== false },
+    };
+    const patch = (s) => ({ ...s, mqtt: m, _mqttSeeded: true });
+    setSettings(patch);
+    setCurrentSettings(patch);
+  }, [mqttConfig, currentSettings]);
 
   // Detect changes and restart needs
   useEffect(() => {
@@ -612,6 +636,33 @@ const SettingsTab = () => {
         await refetchAutomation();
       }
 
+      // MQTT broker + output: system-level, saved via the Mqtt namespace. Rides the
+      // same bar; the settings query doesn't carry it, so sync the baseline.
+      if (settings.mqtt && !_.isEqual(settings.mqtt, currentSettings?.mqtt)) {
+        const m = settings.mqtt;
+        const mqttResult = await saveMqtt({
+          variables: {
+            input: {
+              enabled: m.enabled,
+              host: m.host || null,
+              port: Number(m.port) || 1883,
+              username: m.username || null,
+              tls: m.tls,
+              output: { enabled: m.output?.enabled, control: m.output?.control },
+              ...(m.password ? { password: m.password } : {}),
+            },
+          },
+        });
+        if (mqttResult?.data?.Mqtt?.updateConfig?.error) {
+          setIsSaving(false);
+          return setErrorForm(mqttResult.data.Mqtt.updateConfig.error.message);
+        }
+        const synced = { ...m, password: '' };
+        setSettings((s) => ({ ...s, mqtt: synced }));
+        setCurrentSettings((c) => ({ ...c, mqtt: synced }));
+        await refetchMqtt();
+      }
+
       await refetchSettings();
       await refetchPools();
 
@@ -907,7 +958,12 @@ const SettingsTab = () => {
                 <SystemTab />
               </TabPanel>
               <TabPanel>
-                <MqttSettingsCard />
+                <MqttSettingsCard
+                  value={settings.mqtt}
+                  onChange={(mqtt) => setSettings((s) => ({ ...s, mqtt }))}
+                  status={mqttConfig?.status}
+                  deviceId={mqttConfig?.output?.deviceId}
+                />
               </TabPanel>
               <TabPanel>
                 <LogsTab />
