@@ -56,7 +56,7 @@ const CurrentConditionsCard = ({ signals, descriptors, temperatureUnit = 'c', cu
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const tileBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const tileBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 
   if (!signals || !signals.length) return null;
 

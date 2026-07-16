@@ -17,7 +17,7 @@ const EventsTimeline = ({ events, hasMore, loadingMore, onLoadMore }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
   const rowHover = useColorModeValue('secondaryGray.100', 'whiteAlpha.200');
   const scrollThumb = useColorModeValue('rgba(0,0,0,0.18)', 'rgba(255,255,255,0.18)');
   const scrollThumbHover = useColorModeValue('rgba(0,0,0,0.30)', 'rgba(255,255,255,0.30)');

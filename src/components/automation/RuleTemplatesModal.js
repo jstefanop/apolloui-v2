@@ -25,7 +25,7 @@ const RuleTemplatesModal = ({ isOpen, onClose, onPick, locationSet }) => {
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const cardBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const cardBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
   const cardHover = useColorModeValue('secondaryGray.100', 'whiteAlpha.200');
 
   const pick = (t) => {

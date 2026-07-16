@@ -83,7 +83,7 @@ const SortableRule = ({ rule, descriptors, temperatureUnit, activeRuleId, onEdit
   const controls = useDragControls();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
   const activeBg = useColorModeValue('green.50', 'green.900');
 
   return (
@@ -197,7 +197,7 @@ const RulesList = ({ rules, descriptors, temperatureUnit, activeRuleId, onCreate
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 
   // Local order drives the drag; it re-syncs whenever the saved rules change.
   const [order, setOrder] = useState(rules || []);

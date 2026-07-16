@@ -59,7 +59,7 @@ const TariffCard = ({ config, currentPrice, currentBand, onSave, isSaving }) => 
   const intl = useIntl();
   const textColor = useColorModeValue('secondaryGray.900', 'white');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 
   const [currency, setCurrency] = useState('EUR');
   const [flatPrice, setFlatPrice] = useState('');

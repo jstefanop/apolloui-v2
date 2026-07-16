@@ -79,7 +79,7 @@ const RuleEditorModal = ({ isOpen, onClose, onSave, rule, descriptors, bands = [
   const [draft, setDraft] = useState(emptyRule);
 
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
-  const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
 
   // Single source of truth: the modes come from the backend descriptor, so when
   // Apollo III adds one, this list follows without any UI change.

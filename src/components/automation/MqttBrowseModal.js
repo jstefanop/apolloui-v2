@@ -32,7 +32,7 @@ const sanitizeName = (s) => String(s || '').replace(/[^a-zA-Z0-9_]/g, '_').slice
  */
 const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
   const intl = useIntl();
-  const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
+  const rowBg = useColorModeValue('secondaryGray.300', 'whiteAlpha.100');
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
 
   const [prefix, setPrefix] = useState('');
