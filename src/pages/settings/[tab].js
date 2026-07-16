@@ -218,6 +218,13 @@ const SettingsTab = () => {
   const [saveMqtt] = useLazyQuery(SET_MQTT_QUERY, { fetchPolicy: 'no-cache' });
   const mqttConfig = dataMqtt?.Mqtt?.config?.result;
 
+  // MQTT rides the save bar but is kept in its OWN state, decoupled from the big
+  // `settings` object — the settings-load effect rebuilds `settings` on every
+  // refetch and would otherwise wipe a pending MQTT edit.
+  const [mqttDraft, setMqttDraft] = useState(null);
+  const [mqttBaseline, setMqttBaseline] = useState(null);
+  const mqttChanged = !!mqttDraft && !_.isEqual(mqttDraft, mqttBaseline);
+
   // Handle tab change
   const handleTabChange = (index) => {
     const tabNames = deviceType === 'solo-node'
@@ -304,10 +311,10 @@ const SettingsTab = () => {
     setCurrentSettings(patch);
   }, [automationConfig, currentSettings]);
 
-  // Seed the MQTT config into both baselines once it arrives, so editing it lights
-  // up the save bar (nested object, matched by the deep isChanged compare).
+  // Seed the MQTT draft + baseline once the config arrives (own state, not merged
+  // into `settings`).
   useEffect(() => {
-    if (!mqttConfig || !currentSettings || currentSettings._mqttSeeded) return;
+    if (!mqttConfig || mqttBaseline) return;
     const m = {
       enabled: !!mqttConfig.enabled,
       host: mqttConfig.host || '',
@@ -318,13 +325,13 @@ const SettingsTab = () => {
       output: {
         enabled: !!mqttConfig.output?.enabled,
         control: mqttConfig.output?.control !== false,
-        exports: mqttConfig.output?.exports || {},
+        // Drop Apollo's __typename — the backend's MqttExportsInput rejects it.
+        exports: (({ __typename, ...rest }) => rest)(mqttConfig.output?.exports || {}),
       },
     };
-    const patch = (s) => ({ ...s, mqtt: m, _mqttSeeded: true });
-    setSettings(patch);
-    setCurrentSettings(patch);
-  }, [mqttConfig, currentSettings]);
+    setMqttDraft(m);
+    setMqttBaseline(m);
+  }, [mqttConfig, mqttBaseline]);
 
   // Detect changes and restart needs
   useEffect(() => {
@@ -382,10 +389,10 @@ const SettingsTab = () => {
         ? 'node'
         : null;
     
-    if (!isEqual && !settings.initial) setIsChanged(true);
-    if (isEqual) setIsChanged(false);
+    if ((!isEqual || mqttChanged) && !settings.initial) setIsChanged(true);
+    if (isEqual && !mqttChanged) setIsChanged(false);
     setRestartNeeded(restartType);
-  }, [settings, currentSettings, deviceType]);
+  }, [settings, currentSettings, deviceType, mqttChanged]);
 
   // Handle backup download
   const handleBackup = async () => {
@@ -472,6 +479,7 @@ const SettingsTab = () => {
   // Handle discard changes
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
+    setMqttDraft(mqttBaseline);
     setErrorForm(null);
   };
 
@@ -482,29 +490,36 @@ const SettingsTab = () => {
     try {
       // MQTT (broker + output) is system-level and independent of the miner/pool
       // settings, so save it first — before the pool validations below can early
-      // return and skip it. Only runs when it actually changed.
-      if (settings.mqtt && !_.isEqual(settings.mqtt, currentSettings?.mqtt)) {
-        const m = settings.mqtt;
-        const mqttResult = await saveMqtt({
-          variables: {
-            input: {
-              enabled: m.enabled,
-              host: m.host || null,
-              port: Number(m.port) || 1883,
-              username: m.username || null,
-              tls: m.tls,
-              output: { enabled: m.output?.enabled, control: m.output?.control, exports: m.output?.exports },
-              ...(m.password ? { password: m.password } : {}),
-            },
-          },
-        });
+      // return and skip it. Own state, only when it actually changed.
+      if (mqttChanged) {
+        const m = mqttDraft;
+        const input = {
+          enabled: m.enabled,
+          host: m.host || null,
+          port: Number(m.port) || 1883,
+          username: m.username || null,
+          tls: m.tls,
+          output: { enabled: m.output?.enabled, control: m.output?.control, exports: m.output?.exports },
+          ...(m.password ? { password: m.password } : {}),
+        };
+        let mqttResult;
+        try {
+          mqttResult = await saveMqtt({ variables: { input } });
+        } catch (err) {
+          setIsSaving(false);
+          return setErrorForm('MQTT save failed: ' + err.message);
+        }
+        if (mqttResult?.error) {
+          setIsSaving(false);
+          return setErrorForm('MQTT save failed: ' + mqttResult.error.message);
+        }
         if (mqttResult?.data?.Mqtt?.updateConfig?.error) {
           setIsSaving(false);
           return setErrorForm(mqttResult.data.Mqtt.updateConfig.error.message);
         }
         const synced = { ...m, password: '' };
-        setSettings((s) => ({ ...s, mqtt: synced }));
-        setCurrentSettings((c) => ({ ...c, mqtt: synced }));
+        setMqttDraft(synced);
+        setMqttBaseline(synced);
         await refetchMqtt();
       }
 
@@ -964,8 +979,8 @@ const SettingsTab = () => {
               </TabPanel>
               <TabPanel>
                 <MqttSettingsCard
-                  value={settings.mqtt}
-                  onChange={(mqtt) => setSettings((s) => ({ ...s, mqtt }))}
+                  value={mqttDraft}
+                  onChange={setMqttDraft}
                   status={mqttConfig?.status}
                   deviceId={mqttConfig?.output?.deviceId}
                 />
