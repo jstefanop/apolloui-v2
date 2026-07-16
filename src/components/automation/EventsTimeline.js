@@ -19,7 +19,22 @@ const EventsTimeline = ({ events, hasMore, loadingMore, onLoadMore }) => {
   const subTextColor = useColorModeValue('secondaryGray.600', 'secondaryGray.400');
   const rowBg = useColorModeValue('secondaryGray.50', 'whiteAlpha.100');
   const rowHover = useColorModeValue('secondaryGray.100', 'whiteAlpha.200');
+  const scrollThumb = useColorModeValue('rgba(0,0,0,0.18)', 'rgba(255,255,255,0.18)');
+  const scrollThumbHover = useColorModeValue('rgba(0,0,0,0.30)', 'rgba(255,255,255,0.30)');
   const [selected, setSelected] = useState(null);
+
+  // Discreet, thin scrollbar (matches the pattern used elsewhere in the app).
+  const scrollStyle = {
+    scrollbarWidth: 'thin',
+    scrollbarColor: `${scrollThumb} transparent`,
+    '&::-webkit-scrollbar': { width: '6px' },
+    '&::-webkit-scrollbar-track': { background: 'transparent' },
+    '&::-webkit-scrollbar-thumb': {
+      background: scrollThumb,
+      borderRadius: '6px',
+      '&:hover': { background: scrollThumbHover },
+    },
+  };
 
   const badgeFor = (event) => {
     if (event.blockedBy) return { colorScheme: 'orange', label: event.blockedBy };
@@ -48,7 +63,7 @@ const EventsTimeline = ({ events, hasMore, loadingMore, onLoadMore }) => {
           </Box>
         )}
 
-        <Flex direction="column" gap="8px" maxH="420px" overflowY="auto">
+        <Flex direction="column" gap="8px" maxH="420px" overflowY="auto" pr="4px" sx={scrollStyle}>
           {(events || []).map((event) => {
             const badge = badgeFor(event);
             const readable = (event.signals || []).filter((s) => !s.stale);
