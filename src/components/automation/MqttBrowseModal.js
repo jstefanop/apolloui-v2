@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Badge,
   Box,
@@ -12,13 +12,18 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Spinner,
+  Progress,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useLazyQuery } from '@apollo/client';
 import { useIntl } from 'react-intl';
 import { DISCOVER_MQTT_QUERY } from '../../graphql/mqtt';
+
+// The broker scan runs a fixed wildcard subscription window (kept in sync with the
+// backend cap in services/mqtt/client.js discoverTopics). Long enough to catch an
+// interval publisher (e.g. a ~40s solar bridge) that isn't retained.
+const SCAN_SECONDS = 60;
 
 // A short segment name for a topic, sanitized for use as a signal name.
 const nameFromTopic = (topic) =>
@@ -40,7 +45,25 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
   const [error, setError] = useState(null);
   const [discover, { loading }] = useLazyQuery(DISCOVER_MQTT_QUERY, { fetchPolicy: 'no-cache' });
 
-  const scan = async (seconds = 60) => {
+  // The scan duration is fixed (SCAN_SECONDS), so show a real progress bar and a
+  // countdown instead of an indeterminate spinner — the user knows it takes ~60s
+  // and can watch it advance rather than wonder whether it hung.
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    if (!loading) {
+      setElapsed(0);
+      return undefined;
+    }
+    const started = Date.now();
+    const id = setInterval(() => setElapsed((Date.now() - started) / 1000), 250);
+    return () => clearInterval(id);
+  }, [loading]);
+
+  // Cap at 99% until the results actually arrive (a hair past SCAN_SECONDS).
+  const progress = Math.min((elapsed / SCAN_SECONDS) * 100, 99);
+  const remaining = Math.max(Math.ceil(SCAN_SECONDS - elapsed), 0);
+
+  const scan = async (seconds = SCAN_SECONDS) => {
     setError(null);
     setTopics(null);
     const { data } = await discover({ variables: { input: brokerInput(), prefix: prefix || null, seconds } });
@@ -76,7 +99,7 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
               onChange={(e) => setPrefix(e.target.value)}
               placeholder={intl.formatMessage({ id: 'automation.mqtt.browse_prefix' })}
             />
-            <Button size="sm" variant="brand" onClick={() => scan(60)} isLoading={loading} minW="120px">
+            <Button size="sm" variant="brand" onClick={() => scan(SCAN_SECONDS)} isLoading={loading} minW="140px">
               {intl.formatMessage({ id: 'automation.mqtt.browse_scan' })}
             </Button>
           </Flex>
@@ -86,12 +109,24 @@ const MqttBrowseModal = ({ isOpen, onClose, brokerInput, onPick }) => {
           </Text>
 
           {loading && (
-            <Flex align="center" gap="10px" py="20px" justify="center">
-              <Spinner size="sm" />
-              <Text fontSize="sm" color={subTextColor}>
-                {intl.formatMessage({ id: 'automation.mqtt.browse_scanning' })}
-              </Text>
-            </Flex>
+            <Box py="12px">
+              <Flex justify="space-between" align="baseline" mb="6px">
+                <Text fontSize="sm" color={subTextColor}>
+                  {intl.formatMessage({ id: 'automation.mqtt.browse_scanning' })}
+                </Text>
+                <Text fontSize="sm" fontWeight="600" color={subTextColor}>
+                  {remaining}s
+                </Text>
+              </Flex>
+              <Progress
+                value={progress}
+                size="sm"
+                borderRadius="full"
+                colorScheme="brand"
+                hasStripe
+                isAnimated
+              />
+            </Box>
           )}
 
           {error && (

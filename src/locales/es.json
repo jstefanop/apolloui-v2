@@ -1078,7 +1078,7 @@
       "browse": "Explorar topics",
       "browse_title": "Explorar topics MQTT",
       "browse_prefix": "Filtro de prefijo (opcional, p. ej. sun2000)",
-      "browse_scan": "Escanear",
+      "browse_scan": "Escanear (~60s)",
       "browse_value_hint": "El escaneo escucha hasta un minuto. Los valores retenidos aparecen al instante, pero un topic que solo publica por intervalos — p. ej. un bridge solar cada ~40s, no retenido — necesita la espera para capturarse.",
       "browse_scanning": "Escuchando el broker…",
       "browse_none": "Ningún topic en la ventana de escaneo. Reintenta u otro prefijo.",
