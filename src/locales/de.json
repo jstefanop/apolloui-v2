@@ -1139,7 +1139,8 @@
     "overview": {
       "rule_in_charge": "Aktive Regel",
       "none": "Keine",
-      "paused": "Pausiert — manuelle Steuerung"
+      "paused": "Pausiert — manuelle Steuerung",
+      "conditions": "Bedingungswerte"
     }
   },
   "backend_offline": {

@@ -1139,7 +1139,8 @@
     "overview": {
       "rule_in_charge": "Rule in charge",
       "none": "None",
-      "paused": "Paused — manual control"
+      "paused": "Paused — manual control",
+      "conditions": "Condition values"
     }
   },
   "backend_offline": {
