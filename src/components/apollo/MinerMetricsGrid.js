@@ -1,5 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { SimpleGrid } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import { useQuery } from '@apollo/client';
 import moment from '../../lib/moment';
 import { GET_ANALYTICS_QUERY } from '../../graphql/analytics';
@@ -27,6 +28,8 @@ const MinerMetricsGrid = React.memo(({
   currentTemp,
   currentPower,
 }) => {
+  const intl = useIntl();
+  const m = (id) => intl.formatMessage({ id: `apollo.metrics.${id}` });
   const config = INTERVAL_CONFIG[interval] || INTERVAL_CONFIG.hour;
 
   const { loading, data: queryData } = useQuery(GET_ANALYTICS_QUERY, {
@@ -92,7 +95,7 @@ const MinerMetricsGrid = React.memo(({
     <SimpleGrid columns={{ base: 1, md: 2 }} gap={4} width="100%">
       {/* Hashrate (miner + pool) — same unit, single y-axis */}
       <MiniMetricChart
-        title="Hashrate"
+        title={m('hashrate')}
         icon={MinerIcon}
         valueNum={hashrateParts.num}
         valueUnit={hashrateParts.unit}
@@ -104,7 +107,7 @@ const MinerMetricsGrid = React.memo(({
         interval={interval}
         loading={isLoading}
         secondary={{
-          title: 'Pool',
+          title: m('pool'),
           valueNum: poolParts.num,
           valueUnit: poolParts.unit,
           data: poolData,
@@ -117,7 +120,7 @@ const MinerMetricsGrid = React.memo(({
 
       {/* Temperature + Power — different units, dual y-axis */}
       <MiniMetricChart
-        title="Temperature"
+        title={m('temperature')}
         icon={MinerTempIcon}
         valueNum={tempParts.num}
         valueUnit={tempParts.unit}
@@ -129,7 +132,7 @@ const MinerMetricsGrid = React.memo(({
         interval={interval}
         loading={isLoading}
         secondary={{
-          title: 'Power',
+          title: m('power'),
           valueNum: powerParts.num,
           valueUnit: powerParts.unit,
           data: wattData,

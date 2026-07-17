@@ -72,6 +72,23 @@ describe('TariffCard', () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
+  it('blocks saving a band with no price, and says why', async () => {
+    const onSave = jest.fn();
+    renderUI(
+      <TariffCard
+        config={{ tariff: { currency: 'EUR', flatPrice: 0.25, periods: [{ days: [1], from: '23:00', to: '07:00', price: '', band: 'night' }] } }}
+        currentPrice={null}
+        onSave={onSave}
+      />
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    // An empty price would be Number('') === 0 — a silent free-energy band.
+    expect(screen.getByText(/needs a price/i)).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
   it('the All button re-selects every day, and then it saves', async () => {
     const onSave = jest.fn();
     renderUI(<TariffCard config={tariffConfig} currentPrice={null} onSave={onSave} />);

@@ -977,7 +977,9 @@
       "band_name": "Name der Zone",
       "remove_band": "Zone entfernen",
       "all_days": "Alle",
-      "no_days_error": "Jede Zeitzone braucht mindestens einen ausgewählten Tag."
+      "no_days_error": "Jede Zeitzone braucht mindestens einen ausgewählten Tag.",
+      "time_error": "Jedes Band braucht eine gültige Start- und Endzeit (HH:mm).",
+      "price_error": "Jedes Band braucht einen Preis."
     },
     "weekday": {
       "1": "Mo",
@@ -1133,6 +1135,28 @@
         "name": "Sonnig & mild → Turbo",
         "desc": "Läuft im Turbo, wenn es Tag ist und draußen nicht zu heiß. Standort nötig."
       }
+    }
+  },
+  "backend_offline": {
+    "title": "Backend offline",
+    "description": "Der Apollo-API-Dienst ist nicht erreichbar. Prüfe, ob das Backend läuft und dein Gerät im selben Netzwerk ist.",
+    "reconnecting": "Verbindung wird wiederhergestellt…",
+    "troubleshooting": "Fehlerbehebung",
+    "tip_service": "Prüfe, ob der Apollo-API-Dienst läuft",
+    "tip_network": "Prüfe, ob dein Gerät mit dem lokalen Netzwerk verbunden ist",
+    "tip_reboot": "Versuche, dein Gerät neu zu starten",
+    "retry": "Jetzt erneut versuchen",
+    "retrying": "Erneuter Versuch…"
+  },
+  "apollo": {
+    "metrics": {
+      "hashrate": "Hashrate",
+      "pool": "Pool",
+      "temperature": "Temperatur",
+      "power": "Leistung"
+    },
+    "chart": {
+      "now": "Jetzt"
     }
   }
 }

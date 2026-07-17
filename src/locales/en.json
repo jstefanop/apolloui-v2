@@ -977,7 +977,9 @@
       "band_name": "Band name",
       "remove_band": "Remove band",
       "all_days": "All",
-      "no_days_error": "Each time band needs at least one day selected."
+      "no_days_error": "Each time band needs at least one day selected.",
+      "time_error": "Each band needs a valid start and end time (HH:mm).",
+      "price_error": "Each band needs a price."
     },
     "weekday": {
       "1": "Mon",
@@ -1133,6 +1135,28 @@
         "name": "Sunny & mild → turbo",
         "desc": "Run in turbo when it is daytime and not too hot outside. Needs your location."
       }
+    }
+  },
+  "backend_offline": {
+    "title": "Backend offline",
+    "description": "Cannot reach the Apollo API service. Check that the backend is running and that your device is on the same network.",
+    "reconnecting": "Trying to reconnect…",
+    "troubleshooting": "Troubleshooting",
+    "tip_service": "Verify the Apollo API service is running",
+    "tip_network": "Check that your device is connected to the local network",
+    "tip_reboot": "Try rebooting your device",
+    "retry": "Retry now",
+    "retrying": "Retrying…"
+  },
+  "apollo": {
+    "metrics": {
+      "hashrate": "Hashrate",
+      "pool": "Pool",
+      "temperature": "Temperature",
+      "power": "Power"
+    },
+    "chart": {
+      "now": "Now"
     }
   }
 }

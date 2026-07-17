@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
+import { useIntl } from 'react-intl';
 import moment from '../../lib/moment';
 import { Box, Flex, Text, Icon, useColorModeValue, Skeleton } from '@chakra-ui/react';
 
@@ -42,6 +43,7 @@ const MiniMetricChart = React.memo(({
   // (independent scale + axis on the right for the secondary series).
   secondary = null,
 }) => {
+  const intl = useIntl();
   const cardBg     = useColorModeValue('white', 'navy.800');
   const gridColor  = useColorModeValue('#EDF2F7', '#2D3748');
   const unitColor  = useColorModeValue('#A0AEC0', '#718096');
@@ -249,7 +251,7 @@ const MiniMetricChart = React.memo(({
       {!loading && data.length > 0 && (
         <Flex px={5} justify="space-between" mt="-6px">
           <Text fontSize="xs" color={timeColor}>{startLabel}</Text>
-          <Text fontSize="xs" color={timeColor}>Now</Text>
+          <Text fontSize="xs" color={timeColor}>{intl.formatMessage({ id: 'apollo.chart.now' })}</Text>
         </Flex>
       )}
     </Box>

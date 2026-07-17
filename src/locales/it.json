@@ -977,7 +977,9 @@
       "band_name": "Nome fascia",
       "remove_band": "Rimuovi fascia",
       "all_days": "Tutti",
-      "no_days_error": "Ogni fascia deve avere almeno un giorno selezionato."
+      "no_days_error": "Ogni fascia deve avere almeno un giorno selezionato.",
+      "time_error": "Ogni fascia richiede un orario di inizio e fine validi (HH:mm).",
+      "price_error": "Ogni fascia richiede un prezzo."
     },
     "weekday": {
       "1": "Lun",
@@ -1133,6 +1135,28 @@
         "name": "Sole e temperatura mite → turbo",
         "desc": "Gira in turbo quando è giorno e fuori non fa troppo caldo. Richiede la posizione."
       }
+    }
+  },
+  "backend_offline": {
+    "title": "Backend offline",
+    "description": "Impossibile raggiungere il servizio Apollo API. Verifica che il backend sia in esecuzione e che il dispositivo sia sulla stessa rete.",
+    "reconnecting": "Tentativo di riconnessione…",
+    "troubleshooting": "Risoluzione dei problemi",
+    "tip_service": "Verifica che il servizio Apollo API sia in esecuzione",
+    "tip_network": "Controlla che il dispositivo sia connesso alla rete locale",
+    "tip_reboot": "Prova a riavviare il dispositivo",
+    "retry": "Riprova ora",
+    "retrying": "Nuovo tentativo…"
+  },
+  "apollo": {
+    "metrics": {
+      "hashrate": "Hashrate",
+      "pool": "Pool",
+      "temperature": "Temperatura",
+      "power": "Potenza"
+    },
+    "chart": {
+      "now": "Adesso"
     }
   }
 }

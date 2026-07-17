@@ -104,6 +104,18 @@ const TariffCard = ({ config, currentPrice, currentBand, onSave, isSaving }) => 
       setError(intl.formatMessage({ id: 'automation.tariff.no_days_error' }));
       return;
     }
+    // Free-text times: reject anything that is not HH:mm before it reaches the
+    // backend (which stores it unvalidated and would just never match).
+    const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
+    if (periods.some((p) => !HHMM.test(p.from) || !HHMM.test(p.to))) {
+      setError(intl.formatMessage({ id: 'automation.tariff.time_error' }));
+      return;
+    }
+    // An empty price is Number('') === 0 — a silent free-energy band. Require one.
+    if (periods.some((p) => p.price === '' || p.price == null || !Number.isFinite(Number(p.price)))) {
+      setError(intl.formatMessage({ id: 'automation.tariff.price_error' }));
+      return;
+    }
     setError(null);
     onSave({
       tariff: {

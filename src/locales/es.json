@@ -977,7 +977,9 @@
       "band_name": "Nombre de la franja",
       "remove_band": "Quitar franja",
       "all_days": "Todos",
-      "no_days_error": "Cada franja necesita al menos un día seleccionado."
+      "no_days_error": "Cada franja necesita al menos un día seleccionado.",
+      "time_error": "Cada franja necesita una hora de inicio y fin válida (HH:mm).",
+      "price_error": "Cada franja necesita un precio."
     },
     "weekday": {
       "1": "Lun",
@@ -1133,6 +1135,28 @@
         "name": "Soleado y templado → turbo",
         "desc": "Funciona en turbo cuando es de día y no hace demasiado calor fuera. Requiere ubicación."
       }
+    }
+  },
+  "backend_offline": {
+    "title": "Backend sin conexión",
+    "description": "No se puede acceder al servicio Apollo API. Comprueba que el backend esté en ejecución y que tu dispositivo esté en la misma red.",
+    "reconnecting": "Intentando reconectar…",
+    "troubleshooting": "Solución de problemas",
+    "tip_service": "Verifica que el servicio Apollo API esté en ejecución",
+    "tip_network": "Comprueba que tu dispositivo esté conectado a la red local",
+    "tip_reboot": "Intenta reiniciar tu dispositivo",
+    "retry": "Reintentar ahora",
+    "retrying": "Reintentando…"
+  },
+  "apollo": {
+    "metrics": {
+      "hashrate": "Hashrate",
+      "pool": "Pool",
+      "temperature": "Temperatura",
+      "power": "Potencia"
+    },
+    "chart": {
+      "now": "Ahora"
     }
   }
 }
