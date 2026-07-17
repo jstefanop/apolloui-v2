@@ -55,6 +55,7 @@ import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
 import { settingsSelector } from '../redux/reselect/settings';
 import HashrateChart, { INTERVAL_CONFIG } from '../components/apollo/HashrateChart';
 import MinerMetricsGrid from '../components/apollo/MinerMetricsGrid';
+import AutomationOverviewCard from '../components/automation/AutomationOverviewCard';
 import { MdOfflineBolt } from 'react-icons/md';
 import { GiDiamondTrophy } from 'react-icons/gi';
 import CountUp from 'react-countup';
@@ -294,6 +295,9 @@ const Overview = () => {
         </Alert>
       ) : (
         <>
+          {/* Automation summary — only renders when the feature is enabled. */}
+          <AutomationOverviewCard />
+
           {/* Solo Status Widgets - Top row */}
           {(deviceType === 'solo-node' || nodeEnableSoloMining === true) && (
             <>

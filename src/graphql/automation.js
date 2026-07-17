@@ -61,6 +61,21 @@ export const GET_AUTOMATION_CONFIG_QUERY = gql`
   }
 `;
 
+// Live state only — for the compact automation summary on the overview page,
+// which does not need the rules/events/signals the full page loads. Pairs with
+// AUTOMATION_SUBSCRIPTION (same STATE_FIELDS shape) for live updates.
+export const GET_AUTOMATION_STATE_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query GET_AUTOMATION_STATE {
+    Automation {
+      state {
+        result { ${STATE_FIELDS} }
+        error { ...ErrorFragment }
+      }
+    }
+  }
+`;
+
 // Everything the page needs, in one round trip.
 export const GET_AUTOMATION_QUERY = gql`
   ${ERROR_FRAGMENT}

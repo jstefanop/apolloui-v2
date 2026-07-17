@@ -1135,6 +1135,11 @@
         "name": "Sunny & mild → turbo",
         "desc": "Run in turbo when it is daytime and not too hot outside. Needs your location."
       }
+    },
+    "overview": {
+      "rule_in_charge": "Rule in charge",
+      "none": "None",
+      "paused": "Paused — manual control"
     }
   },
   "backend_offline": {

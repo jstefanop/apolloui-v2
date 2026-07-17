@@ -1135,6 +1135,11 @@
         "name": "Sole e temperatura mite → turbo",
         "desc": "Gira in turbo quando è giorno e fuori non fa troppo caldo. Richiede la posizione."
       }
+    },
+    "overview": {
+      "rule_in_charge": "Regola attiva",
+      "none": "Nessuna",
+      "paused": "In pausa — controllo manuale"
     }
   },
   "backend_offline": {

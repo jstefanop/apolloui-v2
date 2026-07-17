@@ -1135,6 +1135,11 @@
         "name": "Soleado y templado → turbo",
         "desc": "Funciona en turbo cuando es de día y no hace demasiado calor fuera. Requiere ubicación."
       }
+    },
+    "overview": {
+      "rule_in_charge": "Regla activa",
+      "none": "Ninguna",
+      "paused": "En pausa — control manual"
     }
   },
   "backend_offline": {
