@@ -26,17 +26,22 @@ describe('LocationSettings', () => {
     expect(screen.getByDisplayValue('12.5')).toBeInTheDocument();
   });
 
-  it('writes latitude into the shared settings, with no private save button', async () => {
+  it('lets you type a full coordinate and commits it on blur, with no private save button', async () => {
     const setSettings = jest.fn();
     renderUI({ latitude: null, longitude: null }, setSettings);
 
     // Textboxes are: [0] city search, [1] latitude, [2] longitude.
-    // setSettings is a mock, so the controlled input never accumulates across
-    // keystrokes — assert on a single character's onChange.
     const lat = screen.getAllByRole('textbox')[1];
-    await userEvent.type(lat, '4');
 
+    // A decimal (or a leading "-") must survive editing — the old code wrote
+    // Number() to settings on every keystroke, turning "41." into 41 and "-"
+    // into NaN. The local text buffer accumulates it verbatim.
+    await userEvent.type(lat, '41.9');
+    expect(lat).toHaveValue('41.9');
+
+    // …and is committed to the shared settings only on blur, as a number.
+    await userEvent.tab();
     expect(screen.queryByRole('button', { name: /^save$/i })).not.toBeInTheDocument();
-    expect(setSettings).toHaveBeenCalledWith(expect.objectContaining({ latitude: 4 }));
+    expect(setSettings).toHaveBeenCalledWith(expect.objectContaining({ latitude: 41.9 }));
   });
 });

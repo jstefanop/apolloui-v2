@@ -41,8 +41,27 @@ const LocationSettings = () => {
   const menuBg = useColorModeValue('white', 'navy.700');
   const menuHover = useColorModeValue('secondaryGray.100', 'whiteAlpha.100');
 
-  const latitude = settings?.latitude ?? '';
-  const longitude = settings?.longitude ?? '';
+  // The coordinate inputs keep their own text buffer so a partial value like "-"
+  // or "41." survives editing — writing Number() to settings on every keystroke
+  // turned "-" into NaN and swallowed the trailing decimal. Committed on blur.
+  const [latStr, setLatStr] = useState(settings?.latitude != null ? String(settings.latitude) : '');
+  const [lngStr, setLngStr] = useState(settings?.longitude != null ? String(settings.longitude) : '');
+
+  // Re-sync a buffer when the coordinate changes from outside (search / detect),
+  // but not mid-edit — the current text already parses to that number.
+  useEffect(() => {
+    const lat = settings?.latitude;
+    setLatStr((s) => (lat == null ? '' : Number(s) === lat ? s : String(lat)));
+  }, [settings?.latitude]);
+  useEffect(() => {
+    const lng = settings?.longitude;
+    setLngStr((s) => (lng == null ? '' : Number(s) === lng ? s : String(lng)));
+  }, [settings?.longitude]);
+
+  const commitCoord = (key, str) => {
+    const n = Number(str);
+    setSettings({ ...settings, [key]: str.trim() === '' || !Number.isFinite(n) ? null : n });
+  };
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
@@ -180,13 +199,10 @@ const LocationSettings = () => {
               <Input
                 variant="auth"
                 size="sm"
-                value={latitude}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    latitude: e.target.value === '' ? null : Number(e.target.value),
-                  })
-                }
+                inputMode="decimal"
+                value={latStr}
+                onChange={(e) => setLatStr(e.target.value)}
+                onBlur={() => commitCoord('latitude', latStr)}
               />
             </FormControl>
 
@@ -197,13 +213,10 @@ const LocationSettings = () => {
               <Input
                 variant="auth"
                 size="sm"
-                value={longitude}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    longitude: e.target.value === '' ? null : Number(e.target.value),
-                  })
-                }
+                inputMode="decimal"
+                value={lngStr}
+                onChange={(e) => setLngStr(e.target.value)}
+                onBlur={() => commitCoord('longitude', lngStr)}
               />
             </FormControl>
 

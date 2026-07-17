@@ -43,6 +43,21 @@ const GuardRailsCard = ({ config, minerModes = [], onSave, isSaving }) => {
     });
   }, [config]);
 
+  // Only send fields the user actually left set. An emptied number input is
+  // Number('') === 0, which would silently disable that guard rail; the backend
+  // patches (an omitted key stays unchanged), so skip blank/invalid fields and
+  // keep the stored value instead of clobbering it with 0.
+  const handleSave = () => {
+    const payload = { fallbackAction: draft.fallbackAction };
+    for (const { key } of FIELDS) {
+      const raw = draft[key];
+      if (raw === '' || raw === null || raw === undefined) continue;
+      const n = Number(raw);
+      if (Number.isFinite(n)) payload[key] = n;
+    }
+    onSave(payload);
+  };
+
   return (
     <Card p="20px">
       <Flex direction="column" gap="14px">
@@ -106,17 +121,7 @@ const GuardRailsCard = ({ config, minerModes = [], onSave, isSaving }) => {
             size="sm"
             variant="brand"
             isLoading={isSaving}
-            onClick={() =>
-              onSave({
-                minOnMinutes: Number(draft.minOnMinutes),
-                minOffMinutes: Number(draft.minOffMinutes),
-                minChangeMinutes: Number(draft.minChangeMinutes),
-                maxCyclesPerHour: Number(draft.maxCyclesPerHour),
-                defaultHysteresis: Number(draft.defaultHysteresis),
-                overrideMinutes: Number(draft.overrideMinutes),
-                fallbackAction: draft.fallbackAction,
-              })
-            }
+            onClick={handleSave}
           >
             {intl.formatMessage({ id: 'automation.actions.save' })}
           </Button>

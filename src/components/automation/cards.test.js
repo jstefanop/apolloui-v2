@@ -107,4 +107,20 @@ describe('GuardRailsCard', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
     expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ minOnMinutes: 30, maxCyclesPerHour: 2 }));
   });
+
+  it('skips an emptied field instead of saving it as 0', async () => {
+    const onSave = jest.fn();
+    renderUI(<GuardRailsCard config={config} onSave={onSave} />);
+
+    // Clearing "Min on" must not disable the guard rail: Number('') is 0, so the
+    // key is omitted (the backend patches, leaving the stored value untouched).
+    const inputs = document.querySelectorAll('input[type="number"]');
+    await userEvent.clear(inputs[0]); // minOnMinutes
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    const arg = onSave.mock.calls[0][0];
+    expect(arg).not.toHaveProperty('minOnMinutes');
+    expect(arg.minOffMinutes).toBe(30); // the rest is still sent
+  });
 });
