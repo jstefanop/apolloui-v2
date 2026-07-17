@@ -61,20 +61,15 @@ export const GET_AUTOMATION_CONFIG_QUERY = gql`
   }
 `;
 
-// State + the rules' conditions — for the compact automation summary on the
-// overview page. State (decision + live signals) pairs with AUTOMATION_SUBSCRIPTION
-// for live updates; the rules (rarely changing) come from this one query and let
-// the card show the live value of each condition behind the rule in charge.
-export const GET_AUTOMATION_OVERVIEW_QUERY = gql`
+// Live state only — for the compact automation summary on the overview page,
+// which does not need the rules/events the full page loads. Pairs with
+// AUTOMATION_SUBSCRIPTION (same STATE_FIELDS shape) for live updates.
+export const GET_AUTOMATION_STATE_QUERY = gql`
   ${ERROR_FRAGMENT}
-  query GET_AUTOMATION_OVERVIEW {
+  query GET_AUTOMATION_STATE {
     Automation {
       state {
         result { ${STATE_FIELDS} }
-        error { ...ErrorFragment }
-      }
-      rules {
-        result { id name conditions { signal op value values } }
         error { ...ErrorFragment }
       }
     }

@@ -1139,8 +1139,7 @@
     "overview": {
       "rule_in_charge": "Regla activa",
       "none": "Ninguna",
-      "paused": "En pausa — control manual",
-      "conditions": "Valores de condiciones"
+      "paused": "En pausa — control manual"
     }
   },
   "backend_offline": {

@@ -295,9 +295,6 @@ const Overview = () => {
         </Alert>
       ) : (
         <>
-          {/* Automation summary — only renders when the feature is enabled. */}
-          <AutomationOverviewCard />
-
           {/* Solo Status Widgets - Top row */}
           {(deviceType === 'solo-node' || nodeEnableSoloMining === true) && (
             <>
@@ -651,6 +648,8 @@ const Overview = () => {
 
             {deviceType !== 'solo-node' && (
               <GridItem gridArea="chart" width="100%" maxWidth="100%" overflow="hidden">
+                {/* Automation summary — sits directly above Miner Metrics, when enabled. */}
+                <AutomationOverviewCard />
                 {/* Interval selector row */}
                 <Flex mb={3} justify="space-between" align="center" px={1}>
                   <Text fontSize="lg" fontWeight="800">
