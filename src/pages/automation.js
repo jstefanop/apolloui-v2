@@ -78,10 +78,15 @@ const Automation = () => {
   const [eventsLimit, setEventsLimit] = useState(30);
   const EVENTS_MAX = 500;
 
-  const { data, loading, refetch } = useQuery(GET_AUTOMATION_QUERY, {
+  const { data: liveData, previousData, loading, refetch } = useQuery(GET_AUTOMATION_QUERY, {
     fetchPolicy: 'network-only',
     variables: { eventsLimit },
   });
+  // "Load more" bumps eventsLimit, which re-runs this network-only query and
+  // clears `data` while it loads — falling back to previousData keeps the page
+  // mounted (and scroll position) instead of swapping in the full-page spinner
+  // for an incremental append.
+  const data = liveData ?? previousData;
 
   // Merge the DB history with what's on screen on every (re)fetch — a union by id,
   // newest first. Replacing would race the subscription: a refetch triggered by a
