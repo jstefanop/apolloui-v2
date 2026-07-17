@@ -33,6 +33,12 @@ const initialState = {
   data: null,
   loading: false,
   error: null,
+  // Reconstructed "last share" times, keyed by board uuid: { [uuid]: { sent, at } }.
+  // The stat file only reports a cumulative share counter, never a timestamp, so
+  // the real "last share" is the wall-clock moment sharesSent last changed. Kept
+  // here (not in a fragile Apollo/localStorage type policy) and read by the miner
+  // selector. Display-only; resets on reload (not persisted).
+  lastShare: {},
 };
 
 const minerSlice = createSlice({
@@ -41,9 +47,25 @@ const minerSlice = createSlice({
   reducers: {
     updateMinerStats: (state, action) => {
       // Serialize any Moment objects before updating state
-      state.data = serializeMomentObjects(action.payload.data);
+      const data = serializeMomentObjects(action.payload.data);
+      state.data = data;
       state.loading = action.payload.loading;
       state.error = serializeError(action.payload.error);
+
+      // Stamp each board's last-share time when its cumulative share count moves.
+      const boards = data?.Miner?.stats?.result?.stats;
+      if (Array.isArray(boards)) {
+        const now = Date.now();
+        for (const board of boards) {
+          const uuid = board?.uuid;
+          const sent = board?.pool?.intervals?.int_0?.sharesSent;
+          if (uuid == null || sent == null) continue;
+          const prev = state.lastShare[uuid];
+          if (!prev || prev.sent !== sent) {
+            state.lastShare[uuid] = { sent, at: now };
+          }
+        }
+      }
     },
   },
 });

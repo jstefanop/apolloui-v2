@@ -7,12 +7,14 @@ import moment from '../../lib/moment';
 const minerDataSelector = (state) => state.miner.data;
 const minerErrorSelector = (state) => state.miner.error;
 const minerLoadingSelector = (state) => state.miner.loading;
+const minerLastShareSelector = (state) => state.miner.lastShare;
 
 export const minerSelector = createSelector(
   minerDataSelector,
   minerErrorSelector,
   minerLoadingSelector,
-  (minerData, minerError, minerLoading) => {
+  minerLastShareSelector,
+  (minerData, minerError, minerLoading, lastShareMap) => {
     const {
       Miner: {
         online: { error: errorOnline, result = {} },
@@ -74,12 +76,17 @@ export const minerSelector = createSelector(
           },
         } = board;
 
-        // Compute board liveness from the stat file timestamp
+        // Board liveness = stat-file freshness (a board is alive if its stat file
+        // is being updated, regardless of whether the pool is accepting shares).
         const shareTime = moment(date);
         const ageMinutes = moment.duration(moment().diff(shareTime)).asMinutes();
         const status = ageMinutes <= maxStatusInterval;
         const poolStatus = status;
-        const lastsharetime = shareTime;
+        // "Last share" is the real thing: the moment this board's cumulative share
+        // count last moved, tracked in the miner slice. Falls back to the stat-file
+        // time until the first change is observed (e.g. right after a reload).
+        const lastShareAt = lastShareMap?.[board.uuid]?.at;
+        const lastsharetime = lastShareAt ? moment(lastShareAt) : shareTime;
 
         const poolHashrateInGh = avgPoolHashrateInGh;
 
