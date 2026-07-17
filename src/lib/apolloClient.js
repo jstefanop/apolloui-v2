@@ -185,6 +185,27 @@ export function subscribeWsStatus(callback) {
 // Creates a WebSocket link that authenticates via connectionParams.
 // Called lazily (browser-only) so it never runs during SSR.
 function createWsLink() {
+  // Shared by both `closed` and `error`: leave 'online' for 'connecting' and arm
+  // the one-shot grace timer (unless one is already ticking) before declaring the
+  // backend offline. graphql-ws relays a socket `error` on every failed reconnect
+  // attempt and before abnormal closes (1006), so treating `error` as instant
+  // offline flashed the full offline screen on any transient drop — including the
+  // apollo-api restart the settings save itself triggers.
+  const enterConnecting = () => {
+    if (_wsStatus === 'online') {
+      _setWsStatus('connecting');
+    }
+    if (!_offlineTimer) {
+      const delay = _everConnected
+        ? WS_RECONNECT_TIMEOUT_MS
+        : WS_FIRST_CONNECT_TIMEOUT_MS;
+      _offlineTimer = setTimeout(() => {
+        _offlineTimer = null;
+        _setWsStatus('offline');
+      }, delay);
+    }
+  };
+
   return new GraphQLWsLink(
     createClient({
       url: () => getBackendUrl('/api/graphql', { ws: true }),
@@ -210,34 +231,18 @@ function createWsLink() {
           _setWsStatus('online');
         },
         closed: () => {
-          // Move from 'online' → 'connecting' so the UI knows data may be stale,
-          // but don't show the full offline screen yet — wait for an 'error' event
-          // or for the grace-period timer to fire.
-          if (_wsStatus === 'online') {
-            _setWsStatus('connecting');
-          }
-
-          // Start the offline timer ONLY IF one isn't already running.
-          // Subsequent 'closed' events during retries must NOT reset the timer —
-          // otherwise the countdown never finishes while retries keep happening.
-          if (!_offlineTimer) {
-            const delay = _everConnected
-              ? WS_RECONNECT_TIMEOUT_MS
-              : WS_FIRST_CONNECT_TIMEOUT_MS;
-            _offlineTimer = setTimeout(() => {
-              _offlineTimer = null;
-              _setWsStatus('offline');
-            }, delay);
-          }
+          // Move 'online' → 'connecting' (data may be stale) and let the grace
+          // timer decide when to show the offline screen. Subsequent 'closed'
+          // events during retries must not reset a running timer.
+          enterConnecting();
         },
         error: () => {
-          // The browser fires this immediately when the TCP connection is refused
-          // (e.g. backend is completely down). No need to wait for a timer — show
-          // the offline screen right away. If the next retry succeeds, 'connected'
-          // will fire and the screen will disappear automatically.
-          clearTimeout(_offlineTimer);
-          _offlineTimer = null;
-          _setWsStatus('offline');
+          // A socket error is just another transient drop from the UI's point of
+          // view (a refused reconnect, an abnormal close): demote to 'connecting'
+          // and lean on the grace timer, exactly like 'closed'. Going offline here
+          // instantly made the 8/15s timers dead code and flashed the offline
+          // screen on every reconnect blip.
+          enterConnecting();
         },
       },
     })
