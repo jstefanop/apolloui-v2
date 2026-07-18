@@ -22,7 +22,6 @@ export const GET_SETTINGS_QUERY = gql`
             rightSidebarVisibility
             temperatureUnit
             powerLedOff
-            nodeRpcPassword
             nodeEnableTor
             nodeUserConf
             nodeEnableSoloMining
@@ -63,7 +62,6 @@ export const SET_SETTINGS_QUERY = gql`
             rightSidebarVisibility
             temperatureUnit
             powerLedOff
-            nodeRpcPassword
             nodeEnableTor
             nodeUserConf
             nodeEnableSoloMining
@@ -102,7 +100,6 @@ export const initialState = {
           rightSidebarVisibility: null,
           temperatureUnit: null,
           powerLedOff: null,
-          nodeRpcPassword: null,
           nodeEnableTor: null,
           nodeUserConf: null,
           nodeEnableSoloMining: null,
