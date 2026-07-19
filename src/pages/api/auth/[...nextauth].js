@@ -1,7 +1,7 @@
 import axios from 'axios';
-import os from 'os';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { getInternalGraphqlUrl } from '../../../lib/internalApi';
 
 export const authOptions = {
   // Configure one or more authentication providers
@@ -18,13 +18,10 @@ export const authOptions = {
       },
       async authorize(credentials, req) {
         try {
-          let hostnameApi = process.env.NEXT_PUBLIC_GRAPHQL_HOST || os.hostname();
-          const portApi = process.env.NEXT_PUBLIC_GRAPHQL_PORT || 5000;
-
           console.log('Attempting authentication...');
 
           const authData = await axios({
-            url: `http://${hostnameApi}:${portApi}/api/graphql`,
+            url: getInternalGraphqlUrl(),
             method: 'post',
             data: {
               query: `

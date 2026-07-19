@@ -1,20 +1,19 @@
 // components/setup/StepComplete.js
 import { Box, Button, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
-import { useRouter } from 'next/router';
 
-const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloRestart, loadingNodeStart, isSoloNode }) => {
+const StepComplete = ({
+  handleStartMining,
+  loadingMinerRestart,
+  loadingNodeStart,
+  isSoloNode,
+  error,
+}) => {
   const intl = useIntl();
-  const router = useRouter();
   const textColor = useColorModeValue('white', 'white');
   const buttonColor = useColorModeValue('gray.400', 'brand.300');
-
-  const handleGoToLogin = () => {
-    router.push('/signin');
-  };
-
-  // For solo-node, check if either node or solo service is loading
-  const isLoading = isSoloNode ? (loadingSoloRestart || loadingNodeStart) : loadingMinerRestart;
+  const isLoading =
+    loadingNodeStart || (!isSoloNode && loadingMinerRestart);
 
   return (
     <Box mx="auto" py="150px">
@@ -35,7 +34,7 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloResta
           w="300px"
           h="50"
           mb="24px"
-          onClick={isSoloNode ? handleStartMining : handleStartMining}
+          onClick={handleStartMining}
           isDisabled={isLoading}
           isLoading={isLoading}
         >
@@ -43,6 +42,7 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloResta
             ? intl.formatMessage({ id: 'setup.complete.button_solo' }) 
             : intl.formatMessage({ id: 'setup.complete.button' })}
         </Button>
+        {error && <Text color="red.300">{error}</Text>}
       </Flex>
     </Box>
   );

@@ -6,10 +6,9 @@ import { useColorModeValue, useDisclosure } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 
 import { MINER_RESTART_QUERY } from '../graphql/miner';
-import { SOLO_RESTART_QUERY } from '../graphql/solo';
 import { NODE_START_QUERY } from '../graphql/node';
 import { AUTH_LOGIN_QUERY, SAVE_SETUP_QUERY } from '../graphql/auth';
-import { SET_POOLS_QUERY } from '../graphql/pools';
+import { UPDATE_POOLS_QUERY } from '../graphql/pools';
 import { SET_SETTINGS_QUERY } from '../graphql/settings';
 import { isValidBitcoinAddress, presetPools } from '../lib/utils';
 import { useDeviceConfig } from '../contexts/DeviceConfigContext';
@@ -40,18 +39,12 @@ const Setup = () => {
   const [poolError, setPoolError] = useState();
   const [password, setPassword] = useState('');
   const [verifyPassword, setVerifyPassword] = useState('');
-  const [token, setToken] = useState();
-  const [isComplete, setIsComplete] = useState(false);
+  const [setupAuthenticated, setSetupAuthenticated] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [restartMiner, { loading: loadingMinerRestart }] = useLazyQuery(
     MINER_RESTART_QUERY,
-    { fetchPolicy: 'no-cache' }
-  );
-
-  const [restartSolo, { loading: loadingSoloRestart }] = useLazyQuery(
-    SOLO_RESTART_QUERY,
     { fetchPolicy: 'no-cache' }
   );
 
@@ -68,7 +61,7 @@ const Setup = () => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const [createPool] = useLazyQuery(SET_POOLS_QUERY, {
+  const [savePools] = useLazyQuery(UPDATE_POOLS_QUERY, {
     fetchPolicy: 'no-cache',
   });
 
@@ -81,41 +74,6 @@ const Setup = () => {
       setError(dataSaveSetup.Auth.setup.error.message);
     if (errorSaveSetup) setError(errorSaveSetup.message);
   }, [dataSaveSetup, errorSaveSetup]);
-
-  useEffect(() => {
-    // Only proceed if setup is complete AND token is available
-    if (!isComplete || !token) return;
-
-    // Token is already saved in localStorage in handlePassword
-    // Now we can safely make authenticated requests
-
-    if (soloMining) {
-      saveSettings({
-        variables: { input: { nodeEnableSoloMining: true } },
-      });
-    }
-
-    createPool({
-      variables: {
-        input: {
-          enabled: true,
-          url: poolUrl,
-          username: poolUsername,
-          password: poolPassword,
-          index: 1,
-        },
-      },
-    });
-  }, [
-    isComplete,
-    token,
-    soloMining,
-    poolUrl,
-    poolUsername,
-    poolPassword,
-    createPool,
-    saveSettings,
-  ]);
 
   useEffect(() => {
     setPoolError(null);
@@ -210,49 +168,91 @@ const Setup = () => {
     setError(null); // Clear previous errors
 
     try {
-      // Save setup with password
-      const saveSetupResult = await saveSetup({ variables: { input: { password } } });
-      
-      // Check for errors in saveSetup
-      if (saveSetupResult?.data?.Auth?.setup?.error) {
-        setError(saveSetupResult.data.Auth.setup.error.message);
-        return;
-      }
+      if (!setupAuthenticated) {
+        const saveSetupResult = await saveSetup({
+          variables: { input: { password } },
+        });
+        const setupError = saveSetupResult?.data?.Auth?.setup?.error;
+        // A prior partial attempt may already have committed the account.
+        // In that case, authenticate and resume the unfinished writes.
+        if (setupError && setupError.message !== 'Setup already done') {
+          setError(setupError.message);
+          return;
+        }
 
-      // Now sign in to get token
-      const signinResult = await signin({ variables: { input: { password } } });
-      
-      // Check for errors in signin
-      if (signinResult?.data?.Auth?.login?.error) {
-        setError(signinResult.data.Auth.login.error.message);
-        return;
-      }
+        const signinResult = await signin({
+          variables: { input: { password } },
+        });
+        const signinError = signinResult?.data?.Auth?.login?.error;
+        if (signinError) {
+          setError(signinError.message);
+          return;
+        }
 
-      // Get token from signin result
-      const accessToken = signinResult?.data?.Auth?.login?.result?.accessToken;
-      if (accessToken) {
+        const accessToken = signinResult?.data?.Auth?.login?.result?.accessToken;
+        if (!accessToken) {
+          setError('Login did not return an access token');
+          return;
+        }
         localStorage.setItem('token', accessToken);
-        setToken(accessToken);
+        setSetupAuthenticated(true);
       }
 
-      // Mark setup as complete and move to final step
-      setIsComplete(true);
+      const poolResult = await savePools({
+        variables: {
+          input: {
+            pools: [
+              {
+                enabled: true,
+                url: poolUrl,
+                username: poolUsername,
+                password: poolPassword,
+                index: 1,
+              },
+            ],
+          },
+        },
+      });
+      const poolError = poolResult?.data?.Pool?.updateAll?.error;
+      if (poolError) {
+        setError(poolError.message);
+        return;
+      }
+
+      // Finish authenticated configuration before offering to start the node.
+      if (soloMining) {
+        const settingsResult = await saveSettings({
+          variables: { input: { nodeEnableSoloMining: true } },
+        });
+        const settingsError = settingsResult?.data?.Settings?.update?.error;
+        if (settingsError) {
+          setError(settingsError.message);
+          return;
+        }
+      }
+
       setStep('complete');
     } catch (err) {
       setError(err.message || 'An error occurred during setup');
     }
   };
 
-  const handleStartMining = () => {
-    if (isSoloNode) {
-      startNode();
-      restartSolo();
-    } else {
-      startNode();
-      restartMiner();
-      restartSolo();
+  const handleStartMining = async () => {
+    try {
+      setError(null);
+      const nodeResult = await startNode();
+      const nodeError = nodeResult?.data?.Node?.start?.error;
+      if (nodeError) throw new Error(nodeError.message);
+
+      if (!isSoloNode) {
+        const minerResult = await restartMiner();
+        const minerError = minerResult?.data?.Miner?.restart?.error;
+        if (minerError) throw new Error(minerError.message);
+      }
+      router.reload();
+    } catch (startError) {
+      setError(startError.message || 'Could not start mining services');
     }
-    router.reload();
   };
 
   return (
@@ -327,9 +327,9 @@ const Setup = () => {
         <StepComplete
           handleStartMining={handleStartMining}
           loadingMinerRestart={loadingMinerRestart}
-          loadingSoloRestart={loadingSoloRestart}
           loadingNodeStart={loadingNodeStart}
           isSoloNode={isSoloNode}
+          error={error}
         />
       )}
     </>

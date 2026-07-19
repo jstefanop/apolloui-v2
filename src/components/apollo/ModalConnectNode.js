@@ -11,8 +11,25 @@ import {
   Text,
   VStack,
   Code,
+  Alert,
+  AlertIcon,
+  Spinner,
 } from '@chakra-ui/react';
-const ModalConnectNode = ({ isOpen, onClose, pass, address }) => {
+import { useQuery } from '@apollo/client';
+import { NODE_CONNECTION_INFO_QUERY } from '../../graphql/node';
+
+const ModalConnectNode = ({ isOpen, onClose, address }) => {
+  const { data, loading, error: queryError } = useQuery(
+    NODE_CONNECTION_INFO_QUERY,
+    {
+      skip: !isOpen,
+      fetchPolicy: 'no-cache',
+    }
+  );
+  const response = data?.Node?.connectionInfo;
+  const credentials = response?.result;
+  const error = queryError?.message || response?.error?.message;
+
   return (
     <Modal size="3xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -20,16 +37,23 @@ const ModalConnectNode = ({ isOpen, onClose, pass, address }) => {
         <ModalHeader>Connect to your Bitcoin Node</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text mb={'5'}>
-            Use following data to connect to your Bitcoin node:
-          </Text>
-          <Flex>
-            <VStack spacing={2} align="stretch">
-              <Code>Address: {address}</Code>
-              <Code>Username: futurebit</Code>
-              <Code>Password: {pass}</Code>
-            </VStack>
-          </Flex>
+          <Text mb={'5'}>Use the following data to connect to your Bitcoin node:</Text>
+          {loading && <Spinner />}
+          {error && (
+            <Alert status="error">
+              <AlertIcon />
+              {error}
+            </Alert>
+          )}
+          {credentials && (
+            <Flex>
+              <VStack spacing={2} align="stretch">
+                <Code>Address: {address}</Code>
+                <Code>Username: {credentials.username}</Code>
+                <Code>Password: {credentials.password}</Code>
+              </VStack>
+            </Flex>
+          )}
         </ModalBody>
 
         <ModalFooter>

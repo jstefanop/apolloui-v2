@@ -37,7 +37,6 @@ import {
 import { GET_MQTT_QUERY, SET_MQTT_QUERY } from '../../graphql/mqtt';
 import { SOLO_RESTART_QUERY } from '../../graphql/solo';
 import {
-  NODE_START_QUERY,
   NODE_STOP_QUERY,
   NODE_FORMAT_QUERY,
 } from '../../graphql/node';
@@ -57,14 +56,38 @@ import ModalConnectNode from '../../components/apollo/ModalConnectNode';
 import _ from 'lodash';
 import moment from 'moment';
 import {
-  getNodeErrorMessage,
   isValidBitcoinAddress,
   isCompatibleBitcoinAddress,
 } from '../../lib/utils';
-import { nodeSelector } from '../../redux/reselect/node';
 import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
+
+const RESTORABLE_SETTINGS_FIELDS = [
+  'agree',
+  'minerMode',
+  'voltage',
+  'frequency',
+  'fan_low',
+  'fan_high',
+  'apiAllow',
+  'customApproval',
+  'connectedWifi',
+  'leftSidebarVisibility',
+  'leftSidebarExtended',
+  'rightSidebarVisibility',
+  'temperatureUnit',
+  'powerLedOff',
+  'nodeEnableTor',
+  'nodeUserConf',
+  'nodeEnableSoloMining',
+  'nodeMaxConnections',
+  'nodeAllowLan',
+  'btcsig',
+  'startdiff',
+  'mindiff',
+  'nodeSoftware',
+];
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -73,7 +96,6 @@ const SettingsTab = () => {
   const dispatch = useDispatch();
   const [settings, setSettings] = useState({ initial: true });
   const [currentSettings, setCurrentSettings] = useState();
-  const [backupData, setBackupData] = useState();
   const [restoreData, setRestoreData] = useState();
   const [isChanged, setIsChanged] = useState(false);
   const [restartNeeded, setRestartNeeded] = useState(null);
@@ -82,6 +104,11 @@ const SettingsTab = () => {
   const [isModalFormatOpen, setIsModalFormatOpen] = useState(false);
   const [isModalConnectOpen, setIsModalConnectOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [browserHostname, setBrowserHostname] = useState(null);
+
+  useEffect(() => {
+    setBrowserHostname(window.location.hostname);
+  }, []);
 
   // Get the current tab from the URL
   const { tab } = router.query;
@@ -107,15 +134,6 @@ const SettingsTab = () => {
   // Get current tab index from URL
   const currentTabIndex = tabMapping[tab] || 0;
 
-  // Node data from Redux
-  const {
-    data: dataNode,
-    error: errorNode,
-    loading: loadingNode,
-  } = useSelector(nodeSelector, shallowEqual);
-  const { localaddresses } = dataNode || {};
-  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl);
-
   // Mcu data from Redux
   const { data: dataMcu } = useSelector(mcuSelector, shallowEqual);
   const { network } = dataMcu || {};
@@ -124,11 +142,12 @@ const SettingsTab = () => {
   const eth0 = network ? _.find(network, { name: 'eth0' }) : null;
   const wlan0 = network ? _.find(network, { name: 'wlan0' }) : null;
   const localAddress = wlan0?.address || eth0?.address;
-
-  const nodeAddress =
-    localaddresses?.length && settings?.nodeEnableTor
-      ? `${localaddresses[0].address}:${localaddresses[0].port}`
-      : `${localAddress}:8332`;
+  const rpcHost = browserHostname || localAddress;
+  const formattedRpcHost =
+    rpcHost?.includes(':') && !rpcHost.startsWith('[') ? `[${rpcHost}]` : rpcHost;
+  const nodeAddress = formattedRpcHost
+    ? `${formattedRpcHost}:8332`
+    : 'Unavailable';
 
   // Queries
   const {
@@ -160,18 +179,8 @@ const SettingsTab = () => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const [restartSolo, { loading: loadingSoloRestart }] = useLazyQuery(
-    SOLO_RESTART_QUERY,
-    { fetchPolicy: 'no-cache' }
-  );
-
   const [stopNode, { loading: loadingNodeStop }] = useLazyQuery(
     NODE_STOP_QUERY,
-    { fetchPolicy: 'no-cache' }
-  );
-
-  const [startNode, { loading: loadingNodeStart }] = useLazyQuery(
-    NODE_START_QUERY,
     { fetchPolicy: 'no-cache' }
   );
 
@@ -276,7 +285,6 @@ const SettingsTab = () => {
     const finalSettings = { ...settingsData, pool: poolToUse };
     setSettings(finalSettings);
     setCurrentSettings(finalSettings);
-    setBackupData({ settings: settingsData, pools: poolsData });
   }, [
     loadingSettings,
     loadingPools,
@@ -345,16 +353,13 @@ const SettingsTab = () => {
       'powerLedOff',
       'nodeEnableSoloMining',
     ];
-    const restartSoloFields = [
-      'pool',
-      'nodeEnableSoloMining',
-    ];
     const restartNodeFields = [
       'nodeEnableTor',
       'nodeUserConf',
       'nodeMaxConnections',
       'nodeAllowLan',
       'nodeSoftware',
+      'nodeEnableSoloMining',
     ];
     const isEqual = _.isEqual(settings, currentSettings);
     
@@ -366,25 +371,16 @@ const SettingsTab = () => {
           _.pick(currentSettings, restartMinerFields)
         );
     
-    const restartSoloNeeded = deviceType === 'solo-node'
-      ? !_.isEqual(
-          _.pick(settings, restartSoloFields),
-          _.pick(currentSettings, restartSoloFields)
-        )
-      : false;
-    
     const restartNodeNeeded = !_.isEqual(
       _.pick(settings, restartNodeFields),
       _.pick(currentSettings, restartNodeFields)
     );
     
     const restartType =
-      (restartMinerNeeded || restartSoloNeeded) && restartNodeNeeded
+      restartMinerNeeded && restartNodeNeeded
         ? 'both'
         : restartMinerNeeded
         ? 'miner'
-        : restartSoloNeeded
-        ? 'solo'
         : restartNodeNeeded
         ? 'node'
         : null;
@@ -397,10 +393,23 @@ const SettingsTab = () => {
   // Handle backup download
   const handleBackup = async () => {
     try {
-      await refetchSettings();
-      await refetchPools();
+      const [settingsResponse, poolsResponse] = await Promise.all([
+        refetchSettings(),
+        refetchPools(),
+      ]);
+      const settingsRead = settingsResponse.data?.Settings?.read;
+      const poolsList = poolsResponse.data?.Pool?.list;
+      if (settingsRead?.error) throw new Error(settingsRead.error.message);
+      if (poolsList?.error) throw new Error(poolsList.error.message);
+      if (!settingsRead?.result?.settings || !poolsList?.result?.pools) {
+        throw new Error('Backup data is incomplete');
+      }
+      const freshBackup = {
+        settings: settingsRead.result.settings,
+        pools: poolsList.result.pools,
+      };
 
-      const blob = new Blob([JSON.stringify(backupData)], {
+      const blob = new Blob([JSON.stringify(freshBackup)], {
         type: 'application/json',
       });
       const url = URL.createObjectURL(blob);
@@ -429,21 +438,38 @@ const SettingsTab = () => {
     try {
       setIsSaving(true);
 
+      if (
+        !restoreData ||
+        typeof restoreData.settings !== 'object' ||
+        restoreData.settings === null ||
+        !Array.isArray(restoreData.pools)
+      ) {
+        throw new Error('Invalid Apollo backup file');
+      }
       const { pools, settings } = restoreData;
-      delete settings.__typename;
-      pools.forEach((element) => {
-        delete element.__typename;
-      });
+      // Credentials are appliance-owned runtime state and are never restored
+      // from either current or legacy backup files.
+      const safeSettings = _.pick(settings, RESTORABLE_SETTINGS_FIELDS);
+      const safePools = pools.map((pool) => _.omit(pool, ['__typename']));
 
-      await saveSettings({ variables: { input: settings } });
-      await savePools({ variables: { input: { pools } } });
+      const settingsResult = await saveSettings({
+        variables: { input: safeSettings },
+      });
+      const settingsError = settingsResult?.data?.Settings?.update?.error;
+      if (settingsError) throw new Error(settingsError.message);
+
+      const poolsResult = await savePools({
+        variables: { input: { pools: safePools } },
+      });
+      const poolsError = poolsResult?.data?.Pool?.updateAll?.error;
+      if (poolsError) throw new Error(poolsError.message);
       await refetchSettings();
       await refetchPools();
       setIsModalRestoreOpen(false);
       dispatch(
         sendFeedback({
           message:
-            'Restore done! Please remember to restart your miner and node.',
+            'Restore complete. Node services were updated automatically; restart your miner if its pool changed.',
           type: 'success',
         })
       );
@@ -460,8 +486,13 @@ const SettingsTab = () => {
     try {
       setIsSaving(true);
 
-      await stopNode();
-      await formatDisk();
+      const stopResult = await stopNode();
+      const stopError = stopResult?.data?.Node?.stop?.error;
+      if (stopError) throw new Error(stopError.message);
+
+      const formatResult = await formatDisk();
+      const formatError = formatResult?.data?.Node?.format?.error;
+      if (formatError) throw new Error(formatError.message);
       dispatch(
         sendFeedback({
           message: 'Formatting disk started...',
@@ -534,7 +565,6 @@ const SettingsTab = () => {
         apiAllow,
         customApproval,
         temperatureUnit,
-        nodeRpcPassword,
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
@@ -585,7 +615,7 @@ const SettingsTab = () => {
       }
 
       // Prepare inputs
-      const input = {
+      const fullInput = {
         agree,
         minerMode,
         voltage,
@@ -595,7 +625,6 @@ const SettingsTab = () => {
         apiAllow,
         customApproval,
         temperatureUnit,
-        nodeRpcPassword,
         nodeEnableTor,
         nodeUserConf,
         nodeEnableSoloMining,
@@ -607,6 +636,10 @@ const SettingsTab = () => {
         startdiff,
         mindiff,
       };
+      const input = _.pickBy(
+        fullInput,
+        (value, key) => !_.isEqual(value, currentSettings?.[key])
+      );
 
       const poolInput = {
         enabled: enabled !== undefined ? enabled : true, // Default to true if not set
@@ -616,21 +649,32 @@ const SettingsTab = () => {
         index: index !== undefined ? index : 1, // Default to 1 if not set
       };
 
-      // Save settings and pools
-      const settingsResult = await saveSettings({ variables: { input } });
-      
-      // Check for errors in settings update response
-      if (settingsResult?.data?.Settings?.update?.error) {
-        setIsSaving(false);
-        return setErrorForm(settingsResult.data.Settings.update.error.message);
+      // Submit only fields changed in this editor so a stale tab cannot
+      // overwrite unrelated settings saved elsewhere.
+      if (Object.keys(input).length > 0) {
+        const settingsResult = await saveSettings({ variables: { input } });
+        if (settingsResult?.data?.Settings?.update?.error) {
+          setIsSaving(false);
+          return setErrorForm(settingsResult.data.Settings.update.error.message);
+        }
       }
-      
-      const poolsResult = await savePools({ variables: { input: { pools: [poolInput] } } });
-      
-      // Check for errors in pools update response
-      if (poolsResult?.data?.Pool?.update?.error) {
-        setIsSaving(false);
-        return setErrorForm(poolsResult.data.Pool.update.error.message);
+
+      const currentPool = _.pick(currentSettings?.pool || {}, [
+        'enabled',
+        'url',
+        'username',
+        'password',
+        'index',
+      ]);
+      if (!_.isEqual(poolInput, currentPool)) {
+        const poolsResult = await savePools({
+          variables: { input: { pools: [poolInput] } },
+        });
+        const poolsError = poolsResult?.data?.Pool?.updateAll?.error;
+        if (poolsError) {
+          setIsSaving(false);
+          return setErrorForm(poolsError.message);
+        }
       }
 
       // Handle password change if needed
@@ -640,9 +684,12 @@ const SettingsTab = () => {
         settings.lockPassword === settings.verifyLockpassword
       ) {
         console.log('Changing password');
-        await changeLockPassword({
+        const passwordResult = await changeLockPassword({
           variables: { input: { password: settings.lockPassword } },
         });
+        const passwordError =
+          passwordResult?.data?.Auth?.changePassword?.error;
+        if (passwordError) throw new Error(passwordError.message);
         setIsChanged(false);
       }
 
@@ -688,46 +735,29 @@ const SettingsTab = () => {
 
       // Handle restarts based on type
       if (type === 'miner') {
-        await restartMiner();
+        const restartResult = await restartMiner();
+        const restartError = restartResult?.data?.Miner?.restart?.error;
+        if (restartError) throw new Error(restartError.message);
         dispatch(
           sendFeedback({ message: 'Restarting miner...', type: 'info' })
         );
-      } else if (type === 'solo') {
-        await restartSolo();
-        dispatch(
-          sendFeedback({ message: 'Restarting solo service...', type: 'info' })
-        );
       } else if (type === 'node') {
-        await stopNode();
         dispatch(
           sendFeedback({
-            message: 'Restarting Bitcoin node...',
-            type: 'info',
+            message: 'Node configuration applied.',
+            type: 'success',
           })
         );
-        await startNode();
       } else if (type === 'both') {
-        // For solo-node, restart solo service + node
-        if (deviceType === 'solo-node') {
-          await restartSolo();
-          dispatch(
-            sendFeedback({ message: 'Restarting solo service...', type: 'info' })
-          );
-        } else {
-          // For miner, restart miner
-          await restartMiner();
-          dispatch(
-            sendFeedback({ message: 'Restarting miner...', type: 'info' })
-          );
-        }
-        await stopNode();
+        const restartResult = await restartMiner();
+        const restartError = restartResult?.data?.Miner?.restart?.error;
+        if (restartError) throw new Error(restartError.message);
         dispatch(
           sendFeedback({
-            message: 'Restarting Bitcoin node...',
+            message: 'Node configuration applied; restarting miner...',
             type: 'info',
           })
         );
-        await startNode();
       } else {
         dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
@@ -745,8 +775,6 @@ const SettingsTab = () => {
     loadingSave ||
     loadingSavePools ||
     loadingMinerRestart ||
-    loadingSoloRestart ||
-    loadingNodeStart ||
     loadingNodeStop ||
     loadingSetTimezone ||
     loadingSaveLocation ||
@@ -790,12 +818,13 @@ const SettingsTab = () => {
         isLoading={isSaving}
       />
 
-      <ModalConnectNode
-        isOpen={isModalConnectOpen}
-        onClose={() => setIsModalConnectOpen(false)}
-        pass={settings?.nodeRpcPassword}
-        address={nodeAddress}
-      />
+      {isModalConnectOpen && (
+        <ModalConnectNode
+          isOpen={isModalConnectOpen}
+          onClose={() => setIsModalConnectOpen(false)}
+          address={nodeAddress}
+        />
+      )}
 
       {/* Save/Discard Changes Bar */}
       {isChanged && (

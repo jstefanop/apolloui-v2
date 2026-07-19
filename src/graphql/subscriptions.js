@@ -152,7 +152,6 @@ export const SETTINGS_SUBSCRIPTION = gql`
           rightSidebarVisibility
           temperatureUnit
           powerLedOff
-          nodeRpcPassword
           nodeEnableTor
           nodeUserConf
           nodeEnableSoloMining
