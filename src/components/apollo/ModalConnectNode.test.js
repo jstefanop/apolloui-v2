@@ -45,4 +45,29 @@ describe('ModalConnectNode', () => {
       })
     );
   });
+
+  it('skips the credential fetch and renders nothing while closed', () => {
+    useQuery.mockReturnValue({
+      data: undefined,
+      loading: false,
+      error: null,
+    });
+
+    renderWithProviders(
+      <ModalConnectNode
+        isOpen={false}
+        onClose={jest.fn()}
+        address="192.168.50.10:8332"
+      />
+    );
+
+    expect(useQuery).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        skip: true,
+        fetchPolicy: 'no-cache',
+      })
+    );
+    expect(screen.queryByText(/Password:/)).not.toBeInTheDocument();
+  });
 });

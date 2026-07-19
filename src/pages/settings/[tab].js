@@ -645,7 +645,7 @@ const SettingsTab = () => {
         enabled: enabled !== undefined ? enabled : true, // Default to true if not set
         url,
         username,
-        password,
+        password: password ?? null,
         index: index !== undefined ? index : 1, // Default to 1 if not set
       };
 
@@ -666,6 +666,7 @@ const SettingsTab = () => {
         'password',
         'index',
       ]);
+      currentPool.password = currentPool.password ?? null;
       if (!_.isEqual(poolInput, currentPool)) {
         const poolsResult = await savePools({
           variables: { input: { pools: [poolInput] } },
