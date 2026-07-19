@@ -92,6 +92,23 @@ export const NODE_CONF_QUERY = gql`
   }
 `;
 
+export const NODE_CONNECTION_INFO_QUERY = gql`
+  ${ERROR_FRAGMENT}
+  query NODE_CONNECTION_INFO {
+    Node {
+      connectionInfo {
+        result {
+          username
+          password
+        }
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
 export const NODE_FORMAT_QUERY = gql`
   ${ERROR_FRAGMENT}
   query NODE_FORMAT {

@@ -70,6 +70,11 @@ const Node = () => {
   const [remainingSpace, setRemainingSpace] = useState(0);
   const [dataTable, setDataTable] = useState([]);
   const [hadValidData, setHadValidData] = useState(false);
+  const [browserHostname, setBrowserHostname] = useState(null);
+
+  useEffect(() => {
+    setBrowserHostname(window.location.hostname);
+  }, []);
 
   // Node data
   const {
@@ -159,11 +164,14 @@ const Node = () => {
   const wlan0 = _.find(network, { name: 'wlan0' });
 
   const localAddress = wlan0?.address || eth0?.address;
+  const rpcHost = browserHostname || localAddress;
+  const formattedRpcHost =
+    rpcHost?.includes(':') && !rpcHost.startsWith('[') ? `[${rpcHost}]` : rpcHost;
 
   // Settings data
   const { data: settings } = useSelector(settingsSelector, shallowEqual);
 
-  const { nodeRpcPassword, nodeEnableTor, nodeMaxConnections } = settings || {};
+  const { nodeEnableTor, nodeMaxConnections } = settings || {};
 
   // Services data reselected
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
@@ -172,7 +180,12 @@ const Node = () => {
   const nodeAddress =
     localaddresses?.length && nodeEnableTor
       ? `${localaddresses[0].address}:${localaddresses[0].port}`
-      : `${localAddress}:8332`;
+      : localAddress
+      ? `${localAddress}:8332`
+      : null;
+  const rpcAddress = formattedRpcHost
+    ? `${formattedRpcHost}:8332`
+    : 'Unavailable';
 
   useEffect(() => {
     if (timestamp && !blockTime) return;
@@ -314,12 +327,13 @@ const Node = () => {
           )}
         </title>
       </Head>
-      <ModalConnectNode
-        isOpen={isOpen}
-        onClose={onClose}
-        pass={nodeRpcPassword}
-        address={nodeAddress}
-      />
+      {isOpen && (
+        <ModalConnectNode
+          isOpen={isOpen}
+          onClose={onClose}
+          address={rpcAddress}
+        />
+      )}
 
       {servicesStatus?.node?.status !== 'online' ? (
         <Flex height="60vh" align="center" justify="center">

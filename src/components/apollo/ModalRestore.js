@@ -61,6 +61,14 @@ const ModalRestore = ({ isOpen, onClose, onUpload, onRestore }) => {
         const decodedString = decoder.decode(binaryStr);
         try {
           const data = JSON.parse(decodedString);
+          if (
+            !data ||
+            typeof data.settings !== 'object' ||
+            data.settings === null ||
+            !Array.isArray(data.pools)
+          ) {
+            throw new Error('Invalid Apollo backup file');
+          }
           setRestoreReady(true);
           onUpload(data);
         } catch (err) {
