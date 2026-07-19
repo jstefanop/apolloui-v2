@@ -593,7 +593,7 @@
         "mining_mode": "SOLO-Mining-Modus",
         "mining_mode_description": "Aktivieren Sie den SOLO-Mining-Modus, um direkt zu Ihrer eigenen Bitcoin-Node zu minen. Hinweis: Ihre Node wird neu gestartet, um dies anzuwenden.",
         "wallet_address": "Wallet-Adresse",
-        "wallet_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        "wallet_placeholder": "BITCOIN-WALLET-AUSZAHLUNGSADRESSE HIER EINGEBEN",
         "wallet_info": "Geben Sie Ihre Wallet-Adresse für die Solo-Mining-Auszahlung ein. Dies ist die Adresse, an die die gesamte Blockbelohnung geht, wenn Sie einen Block finden. Verwenden Sie KEINE Exchange-Adresse und verwenden Sie nur eine Bitcoin-Adresse, die Sie vollständig kontrollieren. Wenn Ihr Gerät mit einer FutureBit Satscard geliefert wurde, können Sie die Karte auf einem NFC-fähigen Telefon antippen, um die Auszahlungsadresse anzuzeigen und sie unten zu kopieren und einzufügen.",
         "tor_warning": "Sie haben Tor aktiviert. Es wird empfohlen, Tor für Solo-Mining auszuschalten. Bitcoin-Nodes im Tor-Netzwerk verbreiten Blöcke langsamer, und es besteht eine höhere Chance, einen Block zu verwaisen.",
         "cannot_enable": "SOLO-Mining kann nicht aktiviert werden",
@@ -738,7 +738,7 @@
       "title": "Wallet-Adresse festlegen",
       "description": "Geben Sie Ihre Wallet-Adresse für die Solo-Mining-Auszahlung ein. Dies ist die Adresse, an die die gesamte Blockbelohnung geht, wenn Sie einen Block finden. Verwenden Sie KEINE Exchange-Adresse und verwenden Sie nur eine Bitcoin-Adresse, die Sie vollständig kontrollieren. Wenn Ihr Gerät mit einer FutureBit Satscard geliefert wurde, können Sie die Karte auf einem NFC-fähigen Telefon antippen, um die Auszahlungsadresse anzuzeigen und sie unten zu kopieren und einzufügen. Bitte beachten Sie, dass Sie erst mit dem Solo-Mining beginnen, wenn Ihre Node vollständig synchronisiert ist, was mehrere Tage dauern kann.",
       "address_label": "Wallet-Adresse",
-      "address_placeholder": "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+      "address_placeholder": "BITCOIN-WALLET-AUSZAHLUNGSADRESSE HIER EINGEBEN",
       "error": {
         "invalid_address": "Bitte fügen Sie eine gültige Bitcoin-Adresse hinzu",
         "incompatible_address": "P2WSH- und P2TR-Bitcoin-Adressen sind für Solo-Mining nicht gültig"
