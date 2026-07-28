@@ -18,6 +18,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { useIntl } from 'react-intl';
 
 import IconBox from '../components/icons/IconBox';
+import { useDeviceConfig } from '../contexts/DeviceConfigContext';
 import Card from '../components/card/Card';
 import { minerSelector } from '../redux/reselect/miner';
 import { servicesSelector } from '../redux/reselect/services';
@@ -50,8 +51,14 @@ import Head from 'next/head';
 import MinerStatus from '../components/UI/MinerStatus';
 import { formatTemperature } from '../lib/utils';
 
+// Full scale for the chip-speed gauge, in GH/s per chip: the family's maximum
+// hashrate divided by the chips on a board. Apollo III reaches 22 TH/s across 21
+// chips, so an Apollo II's 240 left it pegged at over 200%.
+const CHIP_SPEED_FULL_SCALE = { 'apollo-iii': 1050, legacy: 240 };
+
 const Miner = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { minerFamily } = useDeviceConfig();
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white', 'white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
@@ -576,7 +583,10 @@ const Miner = () => {
                       name={intl.formatMessage({ id: 'miner.stats.chip_speed' })}
                       value={avgChipSpeed ? avgChipSpeed.toFixed(2) : 'N/A'}
                       rawValue={avgChipSpeed}
-                      total={240}
+                      total={
+                        CHIP_SPEED_FULL_SCALE[minerFamily] ||
+                        CHIP_SPEED_FULL_SCALE.legacy
+                      }
                       gauge={true}
                       loading={loadingMiner}
                     />
