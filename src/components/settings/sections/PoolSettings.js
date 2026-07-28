@@ -24,10 +24,42 @@ const PoolSettings = () => {
   const { settings, setSettings, setErrorForm } = useSettings();
   // Backup pool is an Apollo III-only feature: hidden without an internal III,
   // badged "Apollo III only" in hybrid (mixed III + USB), plain on pure III.
-  const { hasInternalMiner, isHybrid } = useDeviceConfig();
+  const { minerFamily, isHybrid } = useDeviceConfig();
+  // The backup pool is an Apollo III capability.
+  const isApolloIii = minerFamily === 'apollo-iii';
   const [pool, setPool] = useState();
+  const [backupPreset, setBackupPreset] = useState();
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
+
+  // Kept in settings, not in local state, so the save path and the
+  // unsaved-changes detection see it like any other field.
+  const backupPool = settings.backupPool || { enabled: false };
+
+  const updateBackupPool = (changes) => {
+    setSettings({
+      ...settings,
+      backupPool: { ...backupPool, ...changes },
+    });
+  };
+
+  const handleBackupPoolToggle = (e) => {
+    setErrorForm(null);
+    updateBackupPool({ enabled: e.target.checked });
+  };
+
+  const handleBackupPoolPreset = (e) => {
+    const preset = presetPools[e.target.value];
+    if (preset && preset.id !== 'custom') {
+      updateBackupPool({ url: preset.url });
+    }
+    setBackupPreset(preset);
+  };
+
+  const handleBackupPoolChange = (e) => {
+    setErrorForm(null);
+    updateBackupPool({ [e.target.name]: e.target.value });
+  };
 
   const handlePoolPreset = (e) => {
     const preset = presetPools[e.target.value];
@@ -161,7 +193,7 @@ const PoolSettings = () => {
         </GridItem>
       </Grid>
 
-      {hasInternalMiner && (
+      {isApolloIii && (
         <>
       <SimpleCard title={''} textColor={textColor}>
         <Flex justifyContent="space-between" alignItems="center">

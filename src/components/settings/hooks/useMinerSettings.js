@@ -11,12 +11,13 @@ import { MdHdrAuto } from 'react-icons/md';
 export const useMinerSettings = () => {
   const intl = useIntl();
   const { settings, setSettings, setErrorForm } = useSettings();
-  const { hasInternalMiner, isHybrid } = useDeviceConfig();
+  const { minerFamily, isHybrid } = useDeviceConfig();
+  const isApolloIii = minerFamily === 'apollo-iii';
 
   // Initial configurations for miner modes
   const { current: minerInitialModes } = useRef([
     {
-      id: 'super-eco',
+      id: 'super_eco',
       icon: IoLeaf,
       color: 'green',
       isIiiOnly: true,
@@ -137,7 +138,7 @@ export const useMinerSettings = () => {
   };
 
   const [minerModes, setMinerModes] = useState(() =>
-    minerInitialModes.filter((mode) => !mode.isIiiOnly || hasInternalMiner)
+    minerInitialModes.filter((mode) => !mode.isIiiOnly || isApolloIii)
   );
   const [fanMode, setFanMode] = useState(fanInitialMode);
   const [currentMode, setCurrentMode] = useState({ id: 'loading' });
@@ -159,7 +160,7 @@ export const useMinerSettings = () => {
     setMinerModes(
       _.chain(minerInitialModes)
         // Apollo III-only presets are hidden on devices without an internal III.
-        .filter((mode) => !mode.isIiiOnly || hasInternalMiner)
+        .filter((mode) => !mode.isIiiOnly || isApolloIii)
         .map((mode) => {
           mode.selected = mode.id === settings.minerMode;
 
@@ -193,7 +194,7 @@ export const useMinerSettings = () => {
         selected: !settings.powerLedOff,
       };
     });
-  }, [settings, minerInitialModes, hasInternalMiner, isHybrid, intl]);
+  }, [settings, minerInitialModes, isApolloIii, isHybrid, intl]);
 
   // Handle miner mode change
   const handleSwitchMinerMode = (e) => {

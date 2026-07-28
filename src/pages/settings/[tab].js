@@ -222,7 +222,14 @@ const SettingsTab = () => {
           index: 1,
         };
 
-    const finalSettings = { ...settingsData, pool: poolToUse };
+    // A second pool is the backup one: the miner takes them in index order, so
+    // whatever sits after the primary is what it falls back to.
+    const backupPoolToUse =
+      poolsData && poolsData.length > 1
+        ? poolsData[1]
+        : { enabled: false, url: '', username: '', password: 'x', index: 2 };
+
+    const finalSettings = { ...settingsData, pool: poolToUse, backupPool: backupPoolToUse };
     setSettings(finalSettings);
     setCurrentSettings(finalSettings);
     setBackupData({ settings: settingsData, pools: poolsData });
@@ -243,6 +250,7 @@ const SettingsTab = () => {
       'frequency',
       'voltage',
       'pool',
+      'backupPool',
       'fan_low',
       'fan_high',
       'powerLedOff',
@@ -410,6 +418,7 @@ const SettingsTab = () => {
         nodeSoftware,
         powerLedOff,
         pool,
+        backupPool,
         btcsig,
         startdiff,
         mindiff,
@@ -492,7 +501,20 @@ const SettingsTab = () => {
         return setErrorForm(settingsResult.data.Settings.update.error.message);
       }
       
-      const poolsResult = await savePools({ variables: { input: { pools: [poolInput] } } });
+      // updateAll replaces the whole table, so the array IS the intent: leaving the
+      // backup out of it is how switching it off removes it.
+      const poolsInput = [poolInput];
+      if (backupPool?.enabled && backupPool.url) {
+        poolsInput.push({
+          enabled: true,
+          url: backupPool.url,
+          username: backupPool.username,
+          password: backupPool.password,
+          index: 2,
+        });
+      }
+
+      const poolsResult = await savePools({ variables: { input: { pools: poolsInput } } });
       
       // Check for errors in pools update response
       if (poolsResult?.data?.Pool?.update?.error) {
