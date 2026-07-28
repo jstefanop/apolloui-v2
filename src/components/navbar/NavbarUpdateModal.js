@@ -9,10 +9,13 @@ import {
   Text,
   Button,
   ModalBody,
+  Progress,
+  Flex,
 } from '@chakra-ui/react';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import { MCU_UPDATE_PROGRESS_QUERY, MCU_UPDATE_QUERY } from '../../graphql/mcu';
 import { useEffect, useState } from 'react';
+import { useTaskProgress } from '../../hooks/useTaskProgress';
 
 const NavbarUpdateModal = ({
   isOpen,
@@ -20,53 +23,44 @@ const NavbarUpdateModal = ({
   localVersion,
   remoteVersion,
 }) => {
-  const [updateInProgress, setUpdateInProgress] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [done, setDone] = useState(false);
   const [updateError, setUpdateError] = useState(null);
-  const [handleUpdate, { error: errorUpdate, data: dataUpdate }] = useLazyQuery(
-    MCU_UPDATE_QUERY,
-    { fetchPolicy: 'no-cache' }
+  const [handleUpdate, { error: errorUpdate }] = useLazyQuery(MCU_UPDATE_QUERY, {
+    fetchPolicy: 'no-cache',
+  });
+
+  // An update outlives the page that started it — it runs on the device and ends
+  // in a reboot. Read whether one is under way from there, so reopening this
+  // dialog (or landing on it after a refresh) shows the update still going
+  // instead of offering to start a second one.
+  const {
+    progress,
+    isRunning: updateInProgress,
+    justFinished,
+    acknowledgeFinish,
+  } = useTaskProgress(
+    MCU_UPDATE_PROGRESS_QUERY,
+    (data) => data?.Mcu?.updateProgress?.result?.value
   );
 
-  const {
-    data: dataProgress,
-    startPolling: startPollingProgress,
-    stopPolling: stopPollingProgress,
-  } = useQuery(MCU_UPDATE_PROGRESS_QUERY);
-
   const startUpdate = () => {
+    setUpdateError(null);
     handleUpdate();
-    setUpdateInProgress(true);
-    startPollingProgress(3000);
   };
-
-  const { value: remoteProgress } =
-    dataProgress?.Mcu?.updateProgress?.result || {};
 
   useEffect(() => {
     if (errorUpdate) {
-      setUpdateError(errorUpdate.message || 'An error occurred during the update process');
-      setUpdateInProgress(false);
-      stopPollingProgress();
-      setProgress(0);
+      setUpdateError(
+        errorUpdate.message || 'An error occurred during the update process'
+      );
     }
-  }, [errorUpdate, stopPollingProgress]);
+  }, [errorUpdate]);
 
   useEffect(() => {
-    if (updateInProgress) {
-      setProgress(remoteProgress);
-    }
-
-    if (remoteProgress >= 90) {
-      stopPollingProgress();
-      setUpdateInProgress(false);
-      setProgress(0);
-      setTimeout(() => {
-        setDone(true);
-      }, 5000);
-    }
-  }, [updateInProgress, remoteProgress, stopPollingProgress]);
+    if (!justFinished) return;
+    acknowledgeFinish();
+    setDone(true);
+  }, [justFinished, acknowledgeFinish]);
 
   const handleReloadApp = () => {
     return () => {
@@ -105,7 +99,21 @@ const NavbarUpdateModal = ({
               ? 'You are using the latest version of the app.'
               : 'Please update to the latest version of the app to get the latest features and bug fixes. Update can take 15-30 min. Note: your system will restart after update is complete. Do NOT power off the system until it has restarted. Close this page or refresh it after your system has restarted'}
           </Text>
-          {updateInProgress && <Text>Updating... {progress}%</Text>}
+          {updateInProgress && (
+            <Flex direction="column" gap={2} mt={4}>
+              <Progress
+                value={progress}
+                size="md"
+                borderRadius="md"
+                colorScheme="blue"
+                hasStripe
+                isAnimated
+              />
+              <Text fontSize="sm" color="gray.500" alignSelf="flex-end">
+                Updating… {progress}%
+              </Text>
+            </Flex>
+          )}
           {done && !updateInProgress && <Text>Done!</Text>}
           {updateError && (
             <Text color="red.500" mt={2}>

@@ -34,7 +34,9 @@ import {
   NODE_START_QUERY,
   NODE_STOP_QUERY,
   NODE_FORMAT_QUERY,
+  NODE_FORMAT_PROGRESS_QUERY,
 } from '../../graphql/node';
+import { useTaskProgress } from '../../hooks/useTaskProgress';
 import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { SettingsProvider } from '../../components/settings/context/SettingsContext';
 import PoolsTab from '../../components/settings/tabs/PoolsTab';
@@ -73,6 +75,18 @@ const SettingsTab = () => {
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
   const [isModalFormatOpen, setIsModalFormatOpen] = useState(false);
+
+  // A format survives a page reload — it runs on the device, not in the browser.
+  // Ask the device whether one is under way and put the dialog back if so, rather
+  // than leaving a disk being wiped with nothing on screen to say so.
+  const { isRunning: isFormatRunning } = useTaskProgress(
+    NODE_FORMAT_PROGRESS_QUERY,
+    (data) => data?.Node?.formatProgress?.result?.value
+  );
+
+  useEffect(() => {
+    if (isFormatRunning) setIsModalFormatOpen(true);
+  }, [isFormatRunning]);
   const [isModalConnectOpen, setIsModalConnectOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
