@@ -176,7 +176,8 @@
       "pools": {
         "active": "Pools activos",
         "total": "Pools totales"
-      }
+      },
+      "target_hashrate": "Hashrate objetivo"
     },
     "units": {
       "rpm": "rpm",

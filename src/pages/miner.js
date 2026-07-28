@@ -49,7 +49,7 @@ import MinerDrawer from '../components/apollo/MinerDrawer';
 import PanelGrid from '../components/UI/PanelGrid';
 import Head from 'next/head';
 import MinerStatus from '../components/UI/MinerStatus';
-import { formatTemperature } from '../lib/utils';
+import { formatTemperature, formatMinerMode } from '../lib/utils';
 
 // Full scale for the chip-speed gauge, in GH/s per chip: the family's maximum
 // hashrate divided by the chips on a board. Apollo III reaches 22 TH/s across 21
@@ -125,7 +125,22 @@ const Miner = () => {
     soloMining
   } = dataMiner || {};
 
-  const { minerMode, fanHigh, fanLow, frequency, voltage, temperatureUnit } = dataSettings || {};
+  const {
+      minerMode,
+      fanHigh,
+      fanLow,
+      frequency,
+      voltage,
+      temperatureUnit,
+      minerHashrate,
+      fanTemp,
+      fanPwm,
+    } = dataSettings || {};
+
+    // Apollo III tunes its own board voltage, so power and oscillator are not
+    // settings there and showing them as "AUTO" claims a control that does not
+    // exist. What it does have is a target hashrate.
+    const isApolloIii = minerFamily === 'apollo-iii';
 
   const dataTableBoards = [
     {
@@ -407,49 +422,90 @@ const Miner = () => {
                         />
                       }
                       name={intl.formatMessage({ id: 'miner.stats.mode' })}
-                      value={minerMode?.toUpperCase()}
+                      value={formatMinerMode(minerMode)}
                       reversed={true}
                     />
-                    <NoCardStatistics
-                      startContent={
-                        <IconBox
-                          w="56px"
-                          h="56px"
-                          bg={'transparent'}
-                          icon={
-                            <Icon
-                              w="32px"
-                              h="32px"
-                              as={PowerManagementIcon}
-                              color={iconColorReversed}
+                    {isApolloIii ? (
+                      <NoCardStatistics
+                        startContent={
+                          <IconBox
+                            w="56px"
+                            h="56px"
+                            bg={'transparent'}
+                            icon={
+                              <Icon
+                                w="32px"
+                                h="32px"
+                                as={FrequencyIcon}
+                                color={iconColorReversed}
+                              />
+                            }
+                          />
+                        }
+                        name={intl.formatMessage({
+                          id: 'miner.stats.target_hashrate',
+                        })}
+                        value={
+                          minerMode === 'custom' && minerHashrate
+                            ? `${minerHashrate} TH/s`
+                            : intl.formatMessage({ id: 'miner.auto' })
+                        }
+                        reversed={true}
+                      />
+                    ) : (
+                      <>
+                        <NoCardStatistics
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <Icon
+                                  w="32px"
+                                  h="32px"
+                                  as={PowerManagementIcon}
+                                  color={iconColorReversed}
+                                />
+                              }
                             />
                           }
+                          name={intl.formatMessage({ id: 'miner.stats.power' })}
+                          value={
+                            minerMode === 'custom'
+                              ? `${voltage}%`
+                              : intl.formatMessage({ id: 'miner.auto' })
+                          }
+                          reversed={true}
                         />
-                      }
-                      name={intl.formatMessage({ id: 'miner.stats.power' })}
-                      value={minerMode === 'custom' ? `${voltage}%` : intl.formatMessage({ id: 'miner.auto' })}
-                      reversed={true}
-                    />
-                    <NoCardStatistics
-                      startContent={
-                        <IconBox
-                          w="56px"
-                          h="56px"
-                          bg={'transparent'}
-                          icon={
-                            <Icon
-                              w="32px"
-                              h="32px"
-                              as={FrequencyIcon}
-                              color={iconColorReversed}
+                        <NoCardStatistics
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <Icon
+                                  w="32px"
+                                  h="32px"
+                                  as={FrequencyIcon}
+                                  color={iconColorReversed}
+                                />
+                              }
                             />
                           }
+                          name={intl.formatMessage({
+                            id: 'miner.stats.frequency',
+                          })}
+                          value={
+                            minerMode === 'custom'
+                              ? `${frequency}MHz`
+                              : intl.formatMessage({ id: 'miner.auto' })
+                          }
+                          reversed={true}
                         />
-                      }
-                      name={intl.formatMessage({ id: 'miner.stats.frequency' })}
-                      value={minerMode === 'custom' ? `${frequency}MHz` : intl.formatMessage({ id: 'miner.auto' })}
-                      reversed={true}
-                    />
+                      </>
+                    )}
                     <NoCardStatistics
                       startContent={
                         <IconBox
@@ -467,11 +523,19 @@ const Miner = () => {
                         />
                       }
                       name={intl.formatMessage({ id: 'miner.stats.fan_speed' })}
-                      value={
-                        fanLow !== 40 && fanHigh !== 60
+                      value={(() => {
+                        // Apollo III: one PID target temperature, or a fixed duty
+                        // cycle that replaces it. Apollo I/II: a low/high range.
+                        if (isApolloIii) {
+                          if (fanPwm != null) return `${fanPwm}%`;
+                          if (fanTemp != null)
+                            return formatTemperature(fanTemp, temperatureUnit);
+                          return intl.formatMessage({ id: 'miner.auto' });
+                        }
+                        return fanLow !== 40 && fanHigh !== 60
                           ? `${formatTemperature(fanLow, temperatureUnit)} / ${formatTemperature(fanHigh, temperatureUnit)}`
-                          : intl.formatMessage({ id: 'miner.auto' })
-                      }
+                          : intl.formatMessage({ id: 'miner.auto' });
+                      })()}
                       reversed={true}
                     />
                   </Flex>

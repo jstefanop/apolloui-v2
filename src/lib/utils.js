@@ -386,6 +386,12 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
   return `${tempCelsius.toFixed(precision)}°C`;
 };
 
+// Miner modes are identifiers — super_eco, eco — because a GraphQL enum cannot
+// contain a hyphen. Underscores are an artefact of that, not something to show
+// someone: display them as words.
+export const formatMinerMode = (mode) =>
+  typeof mode === 'string' ? mode.replace(/_/g, ' ').toUpperCase() : '';
+
 export const calculateWattsPerTh = (powerWatts, hashrateTh) => {
   // Coerced and range-checked rather than trusted: callers pass values straight
   // from the miner, and a restarting board reports watts before it reports any

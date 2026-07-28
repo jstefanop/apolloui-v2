@@ -5,6 +5,7 @@ import { MinerIcon } from '../../UI/Icons/MinerIcon';
 import PanelCard from '../../UI/PanelCard';
 import SimpleSwitchSettingsItem from '../../UI/SimpleSwitchSettingsItem';
 import { useMinerSettings } from '../hooks/useMinerSettings';
+import { formatMinerMode } from '../../../lib/utils';
 
 const MinerModeSettings = () => {
   const intl = useIntl();
@@ -25,7 +26,7 @@ const MinerModeSettings = () => {
       description={intl.formatMessage({ id: 'settings.sections.miner.modes.description' })}
       textColor={textColor}
       badgeColor={currentMode.color}
-      badgeText={currentMode.id.toUpperCase()}
+      badgeText={formatMinerMode(currentMode.id)}
       icon={MinerIcon}
       mb={'20px'}
     >
