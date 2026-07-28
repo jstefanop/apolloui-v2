@@ -245,6 +245,10 @@ const SettingsTab = () => {
 
   // Detect changes and restart needs
   useEffect(() => {
+    // Everything that ends up on the miner's command line: the binary reads its
+    // configuration once, at startup, so a field changed here without a restart
+    // is written to miner_config and then ignored by the running process.
+    // Apollo III has its own tuning fields alongside the Apollo I/II ones.
     const restartMinerFields = [
       'minerMode',
       'frequency',
@@ -253,6 +257,9 @@ const SettingsTab = () => {
       'backupPool',
       'fan_low',
       'fan_high',
+      'minerHashrate',
+      'fanTemp',
+      'fanPwm',
       'powerLedOff',
       'nodeEnableSoloMining',
     ];
