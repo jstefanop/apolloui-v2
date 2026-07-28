@@ -36,8 +36,9 @@ const NavbarUpdateModal = ({
   const {
     progress,
     isRunning: updateInProgress,
-    justFinished,
-    acknowledgeFinish,
+    outcome,
+    acknowledgeOutcome,
+    markSubmitted,
   } = useTaskProgress(
     MCU_UPDATE_PROGRESS_QUERY,
     (data) => data?.Mcu?.updateProgress?.result?.value
@@ -45,6 +46,9 @@ const NavbarUpdateModal = ({
 
   const startUpdate = () => {
     setUpdateError(null);
+    // Latch before the next poll can answer: this starts a system update, and
+    // two of them running at once would fight over the same build directory.
+    markSubmitted();
     handleUpdate();
   };
 
@@ -57,10 +61,18 @@ const NavbarUpdateModal = ({
   }, [errorUpdate]);
 
   useEffect(() => {
-    if (!justFinished) return;
-    acknowledgeFinish();
-    setDone(true);
-  }, [justFinished, acknowledgeFinish]);
+    if (!outcome) return;
+    acknowledgeOutcome();
+    if (outcome === 'success') {
+      setDone(true);
+      return;
+    }
+    // The update stopped without reaching the end: say so rather than offering
+    // the reload button as if it had worked.
+    setUpdateError(
+      'The update stopped before it finished. The device was not updated — check the logs.'
+    );
+  }, [outcome, acknowledgeOutcome]);
 
   const handleReloadApp = () => {
     return () => {
@@ -71,16 +83,12 @@ const NavbarUpdateModal = ({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={() => {
-        if (updateInProgress) {
-          // Show warning that update is in progress
-          return;
-        }
-        onClose();
-      }}
+      // Always closable. The update runs on the device and this dialog only
+      // watches it, so refusing to close achieves nothing except trapping the
+      // whole UI behind the overlay if a progress file is ever left behind.
+      onClose={onClose}
       size={{ base: 'sm', md: '4xl' }}
       closeOnOverlayClick={false}
-      closeOnEsc={false}
       onCloseComplete={() => {
         setDone(false);
         setUpdateError(null);
@@ -121,7 +129,7 @@ const NavbarUpdateModal = ({
             </Text>
           )}
         </ModalBody>
-        {!done && !updateInProgress && <ModalCloseButton />}
+        {!done && <ModalCloseButton />}
         <ModalFooter>
           {localVersion !== remoteVersion && !done && !updateError && (
             <Button
@@ -134,9 +142,13 @@ const NavbarUpdateModal = ({
               Update
             </Button>
           )}
-          {!done && !updateInProgress && (
+          {!done && (
             <Button variant="ghost" onClick={onClose}>
-              {localVersion === remoteVersion ? 'Close' : 'Cancel'}
+              {updateInProgress
+                ? 'Hide'
+                : localVersion === remoteVersion
+                ? 'Close'
+                : 'Cancel'}
             </Button>
           )}
           {done && (

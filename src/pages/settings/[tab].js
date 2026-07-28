@@ -14,7 +14,7 @@ import {
   Button,
   Spinner,
 } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
@@ -84,8 +84,12 @@ const SettingsTab = () => {
     (data) => data?.Node?.formatProgress?.result?.value
   );
 
+  // Only on the transition into "running", so the dialog can still be dismissed
+  // while a format continues in the background.
+  const formatWasRunning = useRef(false);
   useEffect(() => {
-    if (isFormatRunning) setIsModalFormatOpen(true);
+    if (isFormatRunning && !formatWasRunning.current) setIsModalFormatOpen(true);
+    formatWasRunning.current = isFormatRunning;
   }, [isFormatRunning]);
   const [isModalConnectOpen, setIsModalConnectOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -467,6 +471,25 @@ const SettingsTab = () => {
       if (!url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/)) {
         setIsSaving(false);
         return setErrorForm('Invalid pool URL');
+      }
+
+      // The backup pool goes onto the same command line as the primary, so it
+      // gets the same checks. Without them an empty worker produced a bare
+      // `-user2` and a URL without a port was silently dropped, so failover the
+      // user had configured never reached the miner.
+      if (backupPool?.enabled) {
+        if (!backupPool.url) {
+          setIsSaving(false);
+          return setErrorForm('Backup pool URL is required');
+        }
+        if (!backupPool.url.match(/^(stratum\+tcp:\/\/)?[a-zA-Z0-9.-]+:[0-9]+$/)) {
+          setIsSaving(false);
+          return setErrorForm('Invalid backup pool URL');
+        }
+        if (!backupPool.username) {
+          setIsSaving(false);
+          return setErrorForm('Backup pool username/wallet address is required');
+        }
       }
 
       // Additional validation for solo mining

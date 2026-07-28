@@ -22,29 +22,50 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
   // Whether a format is running comes from the device, not from having clicked
   // the button: reload the page mid-format and this still reports it, where the
   // local flag used to show an idle dialog over a disk being wiped.
-  const { progress, isRunning, justFinished, acknowledgeFinish } = useTaskProgress(
-    NODE_FORMAT_PROGRESS_QUERY,
-    (data) => data?.Node?.formatProgress?.result?.value
-  );
+  const { progress, isRunning, outcome, acknowledgeOutcome, markSubmitted } =
+    useTaskProgress(
+      NODE_FORMAT_PROGRESS_QUERY,
+      (data) => data?.Node?.formatProgress?.result?.value
+    );
+
+  const startFormat = () => {
+    // Latch immediately: the next poll is seconds away, and this button wipes a
+    // disk — long enough to press twice and run two of them at once.
+    markSubmitted();
+    onFormat();
+  };
 
   useEffect(() => {
-    if (!justFinished) return;
-    acknowledgeFinish();
-    onClose();
+    if (!outcome) return;
+    acknowledgeOutcome();
+    if (outcome === 'success') {
+      onClose();
+      dispatch(
+        sendFeedback({
+          message: 'Format done! Your system is ready.',
+          type: 'success',
+        })
+      );
+      return;
+    }
+    // A format that gave up leaves the dialog open: the disk is not ready, and
+    // saying "done" over it is how someone ends up with an unusable node.
     dispatch(
       sendFeedback({
-        message: 'Format done! Your system is ready.',
-        type: 'success',
+        message:
+          'Format failed. The disk was not changed — check the logs before retrying.',
+        type: 'error',
       })
     );
-  }, [justFinished, acknowledgeFinish, onClose, dispatch]);
+  }, [outcome, acknowledgeOutcome, onClose, dispatch]);
 
   return (
     <Modal
       closeOnOverlayClick={false}
-      // Dismissing mid-format would leave the disk being wiped with nothing on
-      // screen to say so.
-      closeOnEsc={!isRunning}
+      // Always dismissible. The format runs on the device, so this dialog is a
+      // view of it, not the thing itself — and it reopens by itself while one is
+      // under way. A dialog that cannot be closed traps the whole UI if the
+      // progress file is ever left behind.
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -81,12 +102,14 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" mr={3} onClick={onClose} isDisabled={isRunning}>
-            Close
+          {/* Never disabled: closing hides the dialog, it does not stop the
+              format, and being unable to dismiss it traps the whole UI. */}
+          <Button variant="ghost" mr={3} onClick={onClose}>
+            {isRunning ? 'Hide' : 'Close'}
           </Button>
           <Button
             colorScheme="red"
-            onClick={onFormat}
+            onClick={startFormat}
             isDisabled={isRunning}
             isLoading={isRunning}
             loadingText="Formatting"

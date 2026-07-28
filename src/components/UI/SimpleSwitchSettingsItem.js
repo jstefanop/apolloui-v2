@@ -185,6 +185,10 @@ const SimpleSwitchSettingsItem = ({
                   <SliderTooltip
                     my="5"
                     width={'99%'}
+                    // Without this a disabled card still had draggable sliders,
+                    // so the user could set a value the hardware would ignore
+                    // and the UI would then report back to them.
+                    isDisabled={isDisabled}
                     value={item[slider.id] || slider.min}
                     minValue={slider.min}
                     maxValue={slider.max}
