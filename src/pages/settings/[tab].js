@@ -536,12 +536,17 @@ const SettingsTab = () => {
         mindiff,
       };
 
+      // Indices are the priority order the miner reads — generate() sorts by them
+      // and takes the first as primary. Keeping whatever index the primary
+      // happened to be stored with was a real hazard: the seeded pool carries
+      // index 99, so adding a backup at 2 made the backup sort first and take all
+      // the hashrate, paying out to the wrong address.
       const poolInput = {
         enabled: enabled !== undefined ? enabled : true, // Default to true if not set
         url,
         username,
         password,
-        index: index !== undefined ? index : 1, // Default to 1 if not set
+        index: 1,
       };
 
       // Save settings and pools

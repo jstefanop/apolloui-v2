@@ -63,7 +63,7 @@ const NavbarUpdateModal = ({
   useEffect(() => {
     if (!outcome) return;
     acknowledgeOutcome();
-    if (outcome === 'success') {
+    if (outcome.status === 'success') {
       setDone(true);
       return;
     }

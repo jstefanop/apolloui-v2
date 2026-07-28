@@ -38,7 +38,7 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
   useEffect(() => {
     if (!outcome) return;
     acknowledgeOutcome();
-    if (outcome === 'success') {
+    if (outcome.status === 'success') {
       onClose();
       dispatch(
         sendFeedback({
@@ -49,11 +49,15 @@ const ModalFormat = ({ isOpen, onClose, onFormat }) => {
       return;
     }
     // A format that gave up leaves the dialog open: the disk is not ready, and
-    // saying "done" over it is how someone ends up with an unusable node.
+    // saying "done" over it is how someone ends up with an unusable node. Which
+    // message matters — telling someone their disk is intact when it has already
+    // been wiped is how they decide no recovery is needed.
     dispatch(
       sendFeedback({
         message:
-          'Format failed. The disk was not changed — check the logs before retrying.',
+          outcome.code === -2
+            ? 'Format failed after the disk was erased. The node cannot start until a format completes — check the logs and retry.'
+            : 'Format failed. The disk was not changed — check the logs before retrying.',
         type: 'error',
       })
     );

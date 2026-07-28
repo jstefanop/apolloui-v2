@@ -65,13 +65,17 @@ export const useTaskProgress = (
     if (value < 0) {
       seenRunning.current = false;
       reachedEnd.current = false;
-      setOutcome('failed');
+      // The scripts use the magnitude to say how far they got, which decides
+      // whether a retry is safe or the device needs attention.
+      setOutcome({ status: 'failed', code: value });
       return;
     }
 
     if (seenRunning.current) {
       seenRunning.current = false;
-      setOutcome(reachedEnd.current ? 'success' : 'failed');
+      setOutcome(
+        reachedEnd.current ? { status: 'success' } : { status: 'failed', code: null }
+      );
       reachedEnd.current = false;
     }
   }, [hasReading, value]);
