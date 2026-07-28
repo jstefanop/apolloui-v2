@@ -144,6 +144,9 @@ export const SETTINGS_SUBSCRIPTION = gql`
           frequency
           fan_low
           fan_high
+          minerHashrate
+          fanTemp
+          fanPwm
           apiAllow
           customApproval
           connectedWifi

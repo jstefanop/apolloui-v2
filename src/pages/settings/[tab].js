@@ -406,6 +406,9 @@ const SettingsTab = () => {
         frequency,
         fan_low,
         fan_high,
+        minerHashrate,
+        fanTemp,
+        fanPwm,
         apiAllow,
         customApproval,
         temperatureUnit,
@@ -468,6 +471,11 @@ const SettingsTab = () => {
         frequency,
         fan_low,
         fan_high,
+        // Apollo III tuning. Null is meaningful: it tells the generator to
+        // leave the flag off and let the binary use its own default.
+        minerHashrate,
+        fanTemp,
+        fanPwm,
         apiAllow,
         customApproval,
         temperatureUnit,

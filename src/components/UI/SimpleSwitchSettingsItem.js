@@ -146,8 +146,15 @@ const SimpleSwitchSettingsItem = ({
                         fontWeight="200"
                       >
                         {item[slider.id] || slider.min}
-                        {slider.id === 'voltage' && '%'}
-                        {slider.id.match(/fan/) && '°'}
+                        {/* Sliders may state their own unit; the id-based cases
+                            below are the original two and stay as they were. */}
+                        {slider.unit
+                          ? slider.unit
+                          : slider.id === 'voltage'
+                          ? '%'
+                          : slider.id.match(/fan/)
+                          ? '°'
+                          : ''}
                       </Text>
                     </Flex>
                     <Button

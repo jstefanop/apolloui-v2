@@ -434,6 +434,12 @@
               "description": "Puedes establecer una frecuencia personalizada o restablecer a los valores por defecto.",
               "min": "Mín",
               "max": "Máx"
+            },
+            "hashrate": {
+              "title": "Hashrate objetivo",
+              "description": "La placa ajusta su propio voltaje para mantener este hashrate. Más alto significa más calor y ruido.",
+              "min": "5 TH/s",
+              "max": "22 TH/s"
             }
           }
         },
@@ -451,6 +457,22 @@
             "description": "Temperatura necesaria para que el ventilador funcione a velocidad máxima.",
             "min": "Mín",
             "max": "Máx"
+          },
+          "target": {
+            "title": "Temperatura objetivo",
+            "description": "El ventilador acelera automáticamente para mantener las placas a esta temperatura.",
+            "min": "40°c",
+            "max": "60°c"
+          },
+          "override": {
+            "title": "Control manual del ventilador",
+            "description": "Hace girar el ventilador a velocidad fija en lugar de dejar que se ajuste automáticamente.",
+            "speed": {
+              "title": "Velocidad del ventilador",
+              "description": "Velocidad fija. Un valor demasiado bajo puede sobrecalentar las placas.",
+              "min": "10%",
+              "max": "100%"
+            }
           }
         },
         "power_led": {

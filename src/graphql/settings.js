@@ -14,6 +14,9 @@ export const GET_SETTINGS_QUERY = gql`
             frequency
             fan_low
             fan_high
+            minerHashrate
+            fanTemp
+            fanPwm
             apiAllow
             customApproval
             connectedWifi
@@ -55,6 +58,9 @@ export const SET_SETTINGS_QUERY = gql`
             frequency
             fan_low
             fan_high
+            minerHashrate
+            fanTemp
+            fanPwm
             apiAllow
             customApproval
             connectedWifi
@@ -94,6 +100,9 @@ export const initialState = {
           frequency: null,
           fan_low: null,
           fan_high: null,
+          minerHashrate: null,
+          fanTemp: null,
+          fanPwm: null,
           apiAllow: null,
           customApproval: null,
           connectedWifi: null,

@@ -434,6 +434,12 @@
               "description": "Sie können die benutzerdefinierte Frequenz Ihres Miners einstellen oder auf den Standardwert zurücksetzen.",
               "min": "Min",
               "max": "Max"
+            },
+            "hashrate": {
+              "title": "Ziel-Hashrate",
+              "description": "Die Platine regelt ihre Spannung selbst, um diese Hashrate zu halten. Höher bedeutet mehr Wärme und Lautstärke.",
+              "min": "5 TH/s",
+              "max": "22 TH/s"
             }
           }
         },
@@ -451,6 +457,22 @@
             "description": "Dies ist die Temperatur, bei der der Lüfter auf maximale Geschwindigkeit eingestellt wird.",
             "min": "Min",
             "max": "Max"
+          },
+          "target": {
+            "title": "Zieltemperatur",
+            "description": "Der Lüfter dreht automatisch schneller, um die Platinen auf dieser Temperatur zu halten.",
+            "min": "40°c",
+            "max": "60°c"
+          },
+          "override": {
+            "title": "Lüfter manuell steuern",
+            "description": "Lässt den Lüfter mit fester Drehzahl laufen, statt ihn automatisch regeln zu lassen.",
+            "speed": {
+              "title": "Lüfterdrehzahl",
+              "description": "Feste Drehzahl. Ist sie zu niedrig, können die Platinen überhitzen.",
+              "min": "10%",
+              "max": "100%"
+            }
           }
         },
         "power_led": {

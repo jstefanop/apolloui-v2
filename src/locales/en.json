@@ -434,6 +434,12 @@
               "description": "You can set your miner custom frequency or reset to default value.",
               "min": "Min",
               "max": "Max"
+            },
+            "hashrate": {
+              "title": "Target hashrate",
+              "description": "The board tunes its own voltage to hold this hashrate. Higher means more heat and noise.",
+              "min": "5 TH/s",
+              "max": "22 TH/s"
             }
           }
         },
@@ -451,6 +457,22 @@
             "description": "This is the temperature needed to set the fan at maximum speed.",
             "min": "Min",
             "max": "Max"
+          },
+          "target": {
+            "title": "Target temperature",
+            "description": "The fan speeds up automatically to hold the boards at this temperature.",
+            "min": "40°c",
+            "max": "60°c"
+          },
+          "override": {
+            "title": "Fan override",
+            "description": "Run the fan at a fixed speed instead of letting it adjust automatically.",
+            "speed": {
+              "title": "Fan speed",
+              "description": "A fixed duty cycle. Too low a speed can let the boards overheat.",
+              "min": "10%",
+              "max": "100%"
+            }
           }
         },
         "power_led": {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useColorModeValue } from '@chakra-ui/react';
+import { Divider, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 import { FanIcon } from '../../UI/Icons/FanIcon';
 import PanelCard from '../../UI/PanelCard';
@@ -13,9 +13,14 @@ const FanSettings = () => {
 
   const {
     fanMode,
+    fanOverrideMode,
+    isApolloIii,
     handleSwitchFanMode,
     handleCustomFanModeChange,
     handleCustomFanModeReset,
+    handleSwitchFanOverride,
+    handleFanOverrideChange,
+    handleFanOverrideReset,
   } = useMinerSettings();
 
   return (
@@ -34,7 +39,24 @@ const FanSettings = () => {
         handleSwitch={handleSwitchFanMode}
         handleCustomModeChange={handleCustomFanModeChange}
         handleCustomModeReset={handleCustomFanModeReset}
+        // A fixed speed replaces the automatic loop, so the target temperature
+        // has nothing to act on while the override is on.
+        isDisabled={isApolloIii && fanOverrideMode.selected}
       />
+
+      {isApolloIii && (
+        <>
+          <Divider mb="10px" />
+          <SimpleSwitchSettingsItem
+            item={fanOverrideMode}
+            textColor={textColor}
+            sliderTextColor={sliderTextColor}
+            handleSwitch={handleSwitchFanOverride}
+            handleCustomModeChange={handleFanOverrideChange}
+            handleCustomModeReset={handleFanOverrideReset}
+          />
+        </>
+      )}
     </PanelCard>
   );
 };

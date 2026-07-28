@@ -434,6 +434,12 @@
               "description": "Puoi impostare una frequenza personalizzata per il miner o ripristinare il valore predefinito.",
               "min": "Min",
               "max": "Max"
+            },
+            "hashrate": {
+              "title": "Hashrate desiderato",
+              "description": "La scheda regola da sé il voltaggio per mantenere questo hashrate. Più alto significa più calore e rumore.",
+              "min": "5 TH/s",
+              "max": "22 TH/s"
             }
           }
         },
@@ -451,6 +457,22 @@
             "description": "Questa è la temperatura necessaria per impostare la ventola alla velocità massima.",
             "min": "Min",
             "max": "Max"
+          },
+          "target": {
+            "title": "Temperatura desiderata",
+            "description": "La ventola accelera automaticamente per mantenere le schede a questa temperatura.",
+            "min": "40°c",
+            "max": "60°c"
+          },
+          "override": {
+            "title": "Controllo manuale ventola",
+            "description": "Fa girare la ventola a velocità fissa invece di lasciarla regolare automaticamente.",
+            "speed": {
+              "title": "Velocità ventola",
+              "description": "Velocità fissa. Un valore troppo basso può far surriscaldare le schede.",
+              "min": "10%",
+              "max": "100%"
+            }
           }
         },
         "power_led": {
