@@ -463,7 +463,7 @@
             "title": "Zieltemperatur",
             "description": "Der Lüfter dreht automatisch schneller, um die Platinen auf dieser Temperatur zu halten.",
             "min": "40°c",
-            "max": "60°c"
+            "max": "80°c"
           },
           "override": {
             "title": "Lüfter manuell steuern",

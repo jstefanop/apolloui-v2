@@ -463,7 +463,7 @@
             "title": "Target temperature",
             "description": "The fan speeds up automatically to hold the boards at this temperature.",
             "min": "40°c",
-            "max": "60°c"
+            "max": "80°c"
           },
           "override": {
             "title": "Fan override",

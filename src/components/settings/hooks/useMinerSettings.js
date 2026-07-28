@@ -150,13 +150,18 @@ export const useMinerSettings = () => {
               unit: '°',
               title: intl.formatMessage({ id: 'settings.sections.miner.fan.target.title' }),
               description: intl.formatMessage({ id: 'settings.sections.miner.fan.target.description' }),
+              // 40-80 is what apollo-miner-v3 documents, what the API validator
+              // accepts and what the generator clamps to. Capping lower here made
+              // a third of the supported range reachable only by hand-writing a
+              // mutation.
               min: 40,
-              max: 60,
+              max: 80,
               step: 1,
               data: {
                 40: intl.formatMessage({ id: 'settings.sections.miner.fan.target.min' }),
-                50: '50°c',
-                60: intl.formatMessage({ id: 'settings.sections.miner.fan.target.max' }),
+                55: '55°c',
+                70: '70°c',
+                80: intl.formatMessage({ id: 'settings.sections.miner.fan.target.max' }),
               },
             },
           ]

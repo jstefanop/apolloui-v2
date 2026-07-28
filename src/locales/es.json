@@ -463,7 +463,7 @@
             "title": "Temperatura objetivo",
             "description": "El ventilador acelera automáticamente para mantener las placas a esta temperatura.",
             "min": "40°c",
-            "max": "60°c"
+            "max": "80°c"
           },
           "override": {
             "title": "Control manual del ventilador",

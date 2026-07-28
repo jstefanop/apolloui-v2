@@ -20,11 +20,16 @@ import { useQuery } from '@apollo/client';
  *  - **a failed poll is not a finished task.** The API answers 0 for any read
  *    error, and the network drops during exactly the operations this watches, so
  *    only a reading that actually arrived counts as evidence.
+ *
+ * The idle rate is the one that matters for cost: these hooks sit mounted on
+ * every page — the update dialog lives in the navbar — so it is what the device
+ * pays all day. It only has to be quick enough to notice a task somebody started
+ * in another tab.
  */
 export const useTaskProgress = (
   query,
   selectProgress,
-  { activeMs = 2000, idleMs = 10000, submittedGraceMs = 20000 } = {}
+  { activeMs = 2000, idleMs = 60000, submittedGraceMs = 20000 } = {}
 ) => {
   const { data, error, startPolling, stopPolling } = useQuery(query, {
     fetchPolicy: 'no-cache',

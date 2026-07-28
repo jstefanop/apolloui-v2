@@ -463,7 +463,7 @@
             "title": "Temperatura desiderata",
             "description": "La ventola accelera automaticamente per mantenere le schede a questa temperatura.",
             "min": "40°c",
-            "max": "60°c"
+            "max": "80°c"
           },
           "override": {
             "title": "Controllo manuale ventola",
