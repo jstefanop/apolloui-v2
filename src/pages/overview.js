@@ -252,13 +252,16 @@ const Overview = () => {
     prevDataNode.current || {};
 
   // Calculate watts per TH/s
+  // ?? not ||: globalHashrate is a { value, unit } object, so a value of 0 —
+  // which is exactly what a miner reports right after it restarts — is falsy and
+  // used to fall through to the object itself, dividing watts by an object.
   const wattsPerTh = calculateWattsPerTh(
-    minerPower?.value || minerPower || 0,
-    globalHashrate?.value || globalHashrate || 0
+    minerPower?.value ?? minerPower ?? 0,
+    globalHashrate?.value ?? globalHashrate ?? 0
   );
   const prevWattsPerTh = calculateWattsPerTh(
-    prevMinerPower?.value || prevMinerPower || 0,
-    prevGlobalHashrate?.value || prevGlobalHashrate || 0
+    prevMinerPower?.value ?? prevMinerPower ?? 0,
+    prevGlobalHashrate?.value ?? prevGlobalHashrate ?? 0
   );
 
 

@@ -387,10 +387,15 @@ export const formatTemperature = (tempCelsius, unit = 'c', precision = 1) => {
 };
 
 export const calculateWattsPerTh = (powerWatts, hashrateTh) => {
-  if (!powerWatts || !hashrateTh || hashrateTh === 0) return 0;
-  
-  const wattsPerTh = powerWatts / hashrateTh;
-  return Math.round(wattsPerTh * 100) / 100; // Round to 2 decimal places
+  // Coerced and range-checked rather than trusted: callers pass values straight
+  // from the miner, and a restarting board reports watts before it reports any
+  // hashrate. Returning NaN or Infinity here surfaces as "NaN" in the UI.
+  const watts = Number(powerWatts);
+  const hashrate = Number(hashrateTh);
+  if (!isFinite(watts) || !isFinite(hashrate) || hashrate === 0) return 0;
+
+  const wattsPerTh = watts / hashrate;
+  return isFinite(wattsPerTh) ? Math.round(wattsPerTh * 100) / 100 : 0;
 };
 
 export const calculatePerBlockChance = (

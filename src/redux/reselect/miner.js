@@ -206,6 +206,11 @@ export const minerSelector = createSelector(
 
       // Board sum/avg
       let avgBoardEfficiency = (minerPower / globalAvgHashrateInGh) * 1000;
+      // A miner that has just restarted already draws watts while its averaging
+      // window is still empty, so this divides by zero for the first interval:
+      // Infinity, which CountUp then renders as NaN. The per-board efficiency
+      // above guards the same expression; the aggregate did not.
+      if (!isFinite(avgBoardEfficiency)) avgBoardEfficiency = 0;
 
       let avgBoardTemp = _.meanBy(boards, (hb) => {
         if (hb.status) return hb.temperature;
