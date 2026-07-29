@@ -150,7 +150,7 @@
       "efficiency": "Efficienza",
       "temperature": "Temperatura",
       "fan_speed": "Velocità ventola",
-      "voltage": "Tensione",
+      "voltage": "Corrente",
       "errors": "Errori",
       "pool_hashrate": "Hashrate pool",
       "difficulty": "Difficoltà",
@@ -409,7 +409,7 @@
           },
           "eco": {
             "title": "ECO",
-            "description": "In modalità ECO il miner sarà il più efficiente possibile, ma l'hashrate sarà leggermente ridotto. Questa modalità è raccomandata e produce il minimo rumore e calore."
+            "description": "La modalità ECO è la nostra modalità a basso consumo predefinita per un'ottima efficienza e poco rumore nel mining desktop quotidiano."
           },
           "balanced": {
             "title": "BILANCIATO",
@@ -438,15 +438,19 @@
             },
             "hashrate": {
               "title": "Hashrate desiderato",
-              "description": "La scheda regola da sé il voltaggio per mantenere questo hashrate. Più alto significa più calore e rumore.",
+              "description": "Imposta un obiettivo di hashrate personalizzato. Più alto significa più calore e rumore.",
+              "slider_description": "L'Apollo III usa algoritmi avanzati per regolare il voltaggio e ottenere la migliore efficienza.",
               "min": "5 TH/s",
-              "max": "22 TH/s"
+              "max": "20 TH/s"
             }
           }
         },
         "fan": {
           "title": "Impostazioni ventola del miner",
           "description": "Regola la velocità della ventola o impostala su automatica",
+          "auto": {
+            "description": "Disattiva Auto per regolare le impostazioni predefinite"
+          },
           "low": {
             "title": "Temperatura per avviare la ventola",
             "description": "Questa è la temperatura necessaria per avviare la ventola.",
@@ -461,7 +465,7 @@
           },
           "target": {
             "title": "Temperatura desiderata",
-            "description": "La ventola accelera automaticamente per mantenere le schede a questa temperatura.",
+            "description": "La ventola accelera automaticamente per mantenere le schede a questa temperatura. Temperature più basse = migliore efficienza ma più rumore; temperature più alte = peggiore efficienza ma meno rumore.",
             "min": "40°c",
             "max": "80°c"
           },
@@ -470,7 +474,7 @@
             "description": "Fa girare la ventola a velocità fissa invece di lasciarla regolare automaticamente.",
             "speed": {
               "title": "Velocità ventola",
-              "description": "Velocità fissa. Un valore troppo basso può far surriscaldare le schede.",
+              "description": "Velocità fissa. ATTENZIONE: Questo disattiva il controllo automatico della temperatura; una velocità troppo bassa può far surriscaldare le schede. SOLO per utenti avanzati.",
               "min": "10%",
               "max": "100%"
             }

@@ -68,7 +68,7 @@ export const useMinerSettings = () => {
           ? undefined
           : intl.formatMessage({ id: 'settings.sections.miner.modes.custom.warning' }),
         selected: false,
-        description: isApolloIii
+          description: isApolloIii
           ? intl.formatMessage({ id: 'settings.sections.miner.modes.custom.hashrate.description' })
           : intl.formatMessage({ id: 'settings.sections.miner.modes.custom.warning_description' }),
         sliders: isApolloIii
@@ -79,16 +79,16 @@ export const useMinerSettings = () => {
                 id: 'minerHashrate',
                 unit: ' TH/s',
                 title: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.hashrate.title' }),
-                description: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.hashrate.description' }),
+                description: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.hashrate.slider_description' }),
                 min: 5,
-                max: 22,
+                max: 20,
                 step: 1,
                 data: {
                   5: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.hashrate.min' }),
                   10: '10',
                   14: '14',
                   18: '18',
-                  22: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.hashrate.max' }),
+                  20: intl.formatMessage({ id: 'settings.sections.miner.modes.custom.hashrate.max' }),
                 },
               },
             ]
@@ -142,7 +142,7 @@ export const useMinerSettings = () => {
       icon: MdHdrAuto,
       title: 'AUTO',
       selected: false,
-      description: intl.formatMessage({ id: 'settings.sections.miner.fan.description' }),
+      description: intl.formatMessage({ id: 'settings.sections.miner.fan.auto.description' }),
       sliders: isApolloIii
         ? [
             {

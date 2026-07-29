@@ -150,7 +150,7 @@
       "efficiency": "Eficiencia",
       "temperature": "Temperatura",
       "fan_speed": "Velocidad del ventilador",
-      "voltage": "Voltaje",
+      "voltage": "Corriente",
       "errors": "Errores",
       "pool_hashrate": "Hashrate del pool",
       "difficulty": "Dificultad",
@@ -409,7 +409,7 @@
           },
           "eco": {
             "title": "ECO",
-            "description": "En modo ECO tu minero será más eficiente, pero tendrá un hashrate ligeramente menor. Este modo es recomendado, y genera menos ruido y calor."
+            "description": "El modo ECO es nuestro modo de bajo consumo predeterminado para una muy buena eficiencia y bajo ruido en la minería de escritorio diaria."
           },
           "balanced": {
             "title": "EQUILIBRADO",
@@ -438,15 +438,19 @@
             },
             "hashrate": {
               "title": "Hashrate objetivo",
-              "description": "La placa ajusta su propio voltaje para mantener este hashrate. Más alto significa más calor y ruido.",
+              "description": "Establece un hashrate objetivo personalizado. Más alto significa más calor y ruido.",
+              "slider_description": "El Apollo III usa algoritmos avanzados para ajustar el voltaje y obtener la mejor eficiencia.",
               "min": "5 TH/s",
-              "max": "22 TH/s"
+              "max": "20 TH/s"
             }
           }
         },
         "fan": {
           "title": "Configuración del ventilador",
           "description": "Ajusta la velocidad del ventilador o configúralo como automático",
+          "auto": {
+            "description": "Desactiva Auto para ajustar la configuración predeterminada"
+          },
           "low": {
             "title": "Temperatura para iniciar el ventilador",
             "description": "Temperatura necesaria para iniciar el ventilador.",
@@ -461,7 +465,7 @@
           },
           "target": {
             "title": "Temperatura objetivo",
-            "description": "El ventilador acelera automáticamente para mantener las placas a esta temperatura.",
+            "description": "El ventilador acelera automáticamente para mantener las placas a esta temperatura. Temperaturas más bajas = mejor eficiencia pero más ruido; temperaturas más altas = peor eficiencia pero menos ruido.",
             "min": "40°c",
             "max": "80°c"
           },
@@ -470,7 +474,7 @@
             "description": "Hace girar el ventilador a velocidad fija en lugar de dejar que se ajuste automáticamente.",
             "speed": {
               "title": "Velocidad del ventilador",
-              "description": "Velocidad fija. Un valor demasiado bajo puede sobrecalentar las placas.",
+              "description": "Velocidad fija. ADVERTENCIA: Esto desactiva el control automático de temperatura; una velocidad demasiado baja puede sobrecalentar las placas. SOLO para usuarios avanzados.",
               "min": "10%",
               "max": "100%"
             }

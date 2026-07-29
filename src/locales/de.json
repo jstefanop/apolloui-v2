@@ -150,7 +150,7 @@
       "efficiency": "Effizienz",
       "temperature": "Temperatur",
       "fan_speed": "Lüftergeschwindigkeit",
-      "voltage": "Spannung",
+      "voltage": "Strom",
       "errors": "Fehler",
       "pool_hashrate": "Pool-Hashrate",
       "difficulty": "Schwierigkeit",
@@ -409,7 +409,7 @@
           },
           "eco": {
             "title": "ECO",
-            "description": "Im ECO-Modus arbeitet Ihr Miner am effizientesten, hat aber eine etwas geringere Hashrate. Dieser Modus wird empfohlen und erzeugt die geringste Geräusch- und Wärmeentwicklung."
+            "description": "Der ECO-Modus ist unser Standard-Sparmodus für sehr gute Effizienz und geringe Geräuschentwicklung beim alltäglichen Desktop-Mining."
           },
           "balanced": {
             "title": "BALANCED",
@@ -438,15 +438,19 @@
             },
             "hashrate": {
               "title": "Ziel-Hashrate",
-              "description": "Die Platine regelt ihre Spannung selbst, um diese Hashrate zu halten. Höher bedeutet mehr Wärme und Lautstärke.",
+              "description": "Legen Sie ein individuelles Hashrate-Ziel fest. Höher bedeutet mehr Wärme und Lautstärke.",
+              "slider_description": "Der Apollo III verwendet fortschrittliche Algorithmen, um die Spannung für beste Effizienz anzupassen.",
               "min": "5 TH/s",
-              "max": "22 TH/s"
+              "max": "20 TH/s"
             }
           }
         },
         "fan": {
           "title": "Miner-Lüftereinstellungen",
           "description": "Passen Sie die Lüftergeschwindigkeit an oder stellen Sie sie auf automatisch",
+          "auto": {
+            "description": "Schalten Sie Auto aus, um die Standardeinstellungen anzupassen"
+          },
           "low": {
             "title": "Temperatur zum Starten des Lüfters",
             "description": "Dies ist die Temperatur, bei der der Lüfter startet.",
@@ -461,7 +465,7 @@
           },
           "target": {
             "title": "Zieltemperatur",
-            "description": "Der Lüfter dreht automatisch schneller, um die Platinen auf dieser Temperatur zu halten.",
+            "description": "Der Lüfter dreht automatisch schneller, um die Platinen auf dieser Temperatur zu halten. Niedrigere Temperaturen = bessere Effizienz, aber mehr Lärm; höhere Temperaturen = schlechtere Effizienz, aber weniger Lärm.",
             "min": "40°c",
             "max": "80°c"
           },
@@ -470,7 +474,7 @@
             "description": "Lässt den Lüfter mit fester Drehzahl laufen, statt ihn automatisch regeln zu lassen.",
             "speed": {
               "title": "Lüfterdrehzahl",
-              "description": "Feste Drehzahl. Ist sie zu niedrig, können die Platinen überhitzen.",
+              "description": "Feste Drehzahl. WARNUNG: Dadurch wird die automatische Temperaturregelung deaktiviert; eine zu niedrige Drehzahl kann die Platinen überhitzen. NUR für fortgeschrittene Benutzer.",
               "min": "10%",
               "max": "100%"
             }

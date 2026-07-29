@@ -78,7 +78,7 @@ const MinerDrawer = ({ isOpen, onClose, placement, data }) => {
             icon = PowerIcon;
             break;
           case 'voltage':
-            name = 'Voltage';
+            name = 'Current';
             icon = VoltageIcon;
             break;
           case 'errorRate':

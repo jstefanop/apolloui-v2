@@ -150,7 +150,7 @@
       "efficiency": "Efficiency",
       "temperature": "Temperature",
       "fan_speed": "Fan speed",
-      "voltage": "Voltage",
+      "voltage": "Current",
       "errors": "Errors",
       "pool_hashrate": "Pool hashrate",
       "difficulty": "Difficulty",
@@ -409,7 +409,7 @@
           },
           "eco": {
             "title": "ECO",
-            "description": "In ECO mode your miner will be at its most efficient, but its hashrate will be slightly slower. This mode is recommended, and will produce the least amount of noise and heat."
+            "description": "ECO mode is our default low power mode for very good efficiency and low noise for every day desktop mining."
           },
           "balanced": {
             "title": "BALANCED",
@@ -438,15 +438,19 @@
             },
             "hashrate": {
               "title": "Target hashrate",
-              "description": "The board tunes its own voltage to hold this hashrate. Higher means more heat and noise.",
+              "description": "Set a custom hashrate target. Higher means more heat and noise.",
+              "slider_description": "The Apollo III uses advanced algorithms to adjust voltage for best efficiency.",
               "min": "5 TH/s",
-              "max": "22 TH/s"
+              "max": "20 TH/s"
             }
           }
         },
         "fan": {
           "title": "Miner fan settings",
           "description": "Adjust the fan speed or set it to automatic",
+          "auto": {
+            "description": "Turn off Auto to adjust default settings"
+          },
           "low": {
             "title": "Temperature to start fan",
             "description": "This is the temperature needed to start the fan.",
@@ -461,7 +465,7 @@
           },
           "target": {
             "title": "Target temperature",
-            "description": "The fan speeds up automatically to hold the boards at this temperature.",
+            "description": "The fan speeds up automatically to hold the boards at this temperature. Lower temps = better efficiency but more noise, higher temps = worse efficiency but lower noise.",
             "min": "40°c",
             "max": "80°c"
           },
@@ -470,7 +474,7 @@
             "description": "Run the fan at a fixed speed instead of letting it adjust automatically.",
             "speed": {
               "title": "Fan speed",
-              "description": "A fixed duty cycle. Too low a speed can let the boards overheat.",
+              "description": "A fixed duty cycle. WARNING: This disables automatic temperature control, too low a speed can let the boards overheat. For advanced users ONLY.",
               "min": "10%",
               "max": "100%"
             }
