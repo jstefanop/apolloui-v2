@@ -30,6 +30,7 @@ const PanelGrid = ({
   const versionsMap = {
     v1: { color: 'blue', name: 'Apollo BTC' },
     v2: { color: 'teal', name: 'Apollo II' },
+    v3: { color: 'purple', name: 'Apollo III' },
   };
 
   return (
