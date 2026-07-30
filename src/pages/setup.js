@@ -243,14 +243,17 @@ const Setup = () => {
     }
   };
 
-  const handleStartMining = () => {
+  const handleStartMining = async () => {
+    // Await each call before reloading: these are lazy queries, and router.reload()
+    // tears the page down — firing them unawaited let the reload abort the restart
+    // in flight, so the miner never picked up the pool just saved.
     if (isSoloNode) {
-      startNode();
-      restartSolo();
+      await startNode();
+      await restartSolo();
     } else {
-      startNode();
-      restartMiner();
-      restartSolo();
+      await startNode();
+      await restartMiner();
+      await restartSolo();
     }
     router.reload();
   };
