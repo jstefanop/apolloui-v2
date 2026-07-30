@@ -16,13 +16,17 @@ import { useLazyQuery } from '@apollo/client';
 import { MCU_UPDATE_PROGRESS_QUERY, MCU_UPDATE_QUERY } from '../../graphql/mcu';
 import { useEffect, useState } from 'react';
 import { useTaskProgress } from '../../hooks/useTaskProgress';
+import { useIntl } from 'react-intl';
 
 const NavbarUpdateModal = ({
   isOpen,
   onClose,
   localVersion,
   remoteVersion,
+  versionCheckSucceeded,
+  updateAvailable,
 }) => {
+  const intl = useIntl();
   const [done, setDone] = useState(false);
   const [updateError, setUpdateError] = useState(null);
   const [handleUpdate, { error: errorUpdate }] = useLazyQuery(MCU_UPDATE_QUERY, {
@@ -55,10 +59,11 @@ const NavbarUpdateModal = ({
   useEffect(() => {
     if (errorUpdate) {
       setUpdateError(
-        errorUpdate.message || 'An error occurred during the update process'
+        errorUpdate.message ||
+          intl.formatMessage({ id: 'update.error.start_failed' })
       );
     }
-  }, [errorUpdate]);
+  }, [errorUpdate, intl]);
 
   useEffect(() => {
     if (!outcome) return;
@@ -69,10 +74,8 @@ const NavbarUpdateModal = ({
     }
     // The update stopped without reaching the end: say so rather than offering
     // the reload button as if it had worked.
-    setUpdateError(
-      'The update stopped before it finished. The device was not updated — check the logs.'
-    );
-  }, [outcome, acknowledgeOutcome]);
+    setUpdateError(intl.formatMessage({ id: 'update.error.stopped' }));
+  }, [outcome, acknowledgeOutcome, intl]);
 
   const handleReloadApp = () => {
     return () => {
@@ -97,15 +100,25 @@ const NavbarUpdateModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {localVersion === remoteVersion
-            ? `Your app is updated to the latest version v${localVersion}`
-            : `New version v${remoteVersion} is available!`}
+          {!versionCheckSucceeded
+            ? intl.formatMessage({ id: 'update.title.check_failed' })
+            : updateAvailable
+            ? intl.formatMessage(
+                { id: 'update.title.available' },
+                { version: remoteVersion }
+              )
+            : intl.formatMessage(
+                { id: 'update.title.current' },
+                { version: localVersion }
+              )}
         </ModalHeader>
         <ModalBody>
           <Text>
-            {localVersion === remoteVersion
-              ? 'You are using the latest version of the app.'
-              : 'Please update to the latest version of the app to get the latest features and bug fixes. Update can take 15-30 min. Note: your system will restart after update is complete. Do NOT power off the system until it has restarted. Close this page or refresh it after your system has restarted'}
+            {!versionCheckSucceeded
+              ? intl.formatMessage({ id: 'update.description.check_failed' })
+              : updateAvailable
+              ? intl.formatMessage({ id: 'update.description.available' })
+              : intl.formatMessage({ id: 'update.description.current' })}
           </Text>
           {updateInProgress && (
             <Flex direction="column" gap={2} mt={4}>
@@ -118,20 +131,28 @@ const NavbarUpdateModal = ({
                 isAnimated
               />
               <Text fontSize="sm" color="gray.500" alignSelf="flex-end">
-                Updating… {progress}%
+                {intl.formatMessage(
+                  { id: 'update.status.updating' },
+                  { progress }
+                )}
               </Text>
             </Flex>
           )}
-          {done && !updateInProgress && <Text>Done!</Text>}
+          {done && !updateInProgress && (
+            <Text>{intl.formatMessage({ id: 'update.status.done' })}</Text>
+          )}
           {updateError && (
             <Text color="red.500" mt={2}>
-              Error: {updateError}
+              {intl.formatMessage(
+                { id: 'update.status.error' },
+                { error: updateError }
+              )}
             </Text>
           )}
         </ModalBody>
         {!done && <ModalCloseButton />}
         <ModalFooter>
-          {localVersion !== remoteVersion && !done && !updateError && (
+          {updateAvailable && !done && !updateError && (
             <Button
               colorScheme="blue"
               mr={3}
@@ -139,26 +160,26 @@ const NavbarUpdateModal = ({
               isDisabled={updateInProgress}
               isLoading={updateInProgress}
             >
-              Update
+              {intl.formatMessage({ id: 'update.button.update' })}
             </Button>
           )}
           {!done && (
             <Button variant="ghost" onClick={onClose}>
               {updateInProgress
-                ? 'Hide'
-                : localVersion === remoteVersion
-                ? 'Close'
-                : 'Cancel'}
+                ? intl.formatMessage({ id: 'update.button.hide' })
+                : updateAvailable
+                ? intl.formatMessage({ id: 'update.button.cancel' })
+                : intl.formatMessage({ id: 'update.button.close' })}
             </Button>
           )}
           {done && (
             <Button colorScheme="orange" onClick={handleReloadApp()}>
-              Reload App
+              {intl.formatMessage({ id: 'update.button.reload' })}
             </Button>
           )}
           {updateError && (
             <Button colorScheme="red" onClick={() => setUpdateError(null)}>
-              Try Again
+              {intl.formatMessage({ id: 'update.button.retry' })}
             </Button>
           )}
         </ModalFooter>

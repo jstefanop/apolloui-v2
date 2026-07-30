@@ -856,5 +856,34 @@
       "complete_description": "Das System wurde heruntergefahren. Sie können die Stromversorgung sicher trennen.",
       "button": "Herunterfahren"
     }
+  },
+  "update": {
+    "title": {
+      "check_failed": "Updates konnten nicht geprüft werden",
+      "available": "Die neue Version v{version} ist verfügbar!",
+      "current": "Für v{version} ist kein Update verfügbar"
+    },
+    "description": {
+      "check_failed": "Die neueste Version konnte nicht ermittelt werden. Bitte schließen Sie dieses Dialogfeld und versuchen Sie es erneut.",
+      "available": "Bitte aktualisieren Sie auf die neueste Version der App, um die neuesten Funktionen und Fehlerbehebungen zu erhalten. Das Update kann 15–30 Minuten dauern. Hinweis: Ihr System wird nach Abschluss des Updates neu gestartet. Schalten Sie das System NICHT aus, bevor es neu gestartet wurde. Schließen oder aktualisieren Sie diese Seite, nachdem Ihr System neu gestartet wurde.",
+      "current": "Auf diesem System wird bereits dieselbe oder eine neuere Version als die aktuelle Release-Version ausgeführt."
+    },
+    "status": {
+      "updating": "Update läuft… {progress}%",
+      "done": "Fertig!",
+      "error": "Fehler: {error}"
+    },
+    "error": {
+      "start_failed": "Während des Update-Vorgangs ist ein Fehler aufgetreten",
+      "stopped": "Das Update wurde vorzeitig beendet. Das Gerät wurde nicht aktualisiert — prüfen Sie die Protokolle."
+    },
+    "button": {
+      "update": "Aktualisieren",
+      "hide": "Ausblenden",
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "reload": "App neu laden",
+      "retry": "Erneut versuchen"
+    }
   }
 }

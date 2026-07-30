@@ -856,5 +856,34 @@
       "complete_description": "The system has been shut down. You can safely disconnect the power.",
       "button": "Shutdown"
     }
+  },
+  "update": {
+    "title": {
+      "check_failed": "Unable to check for updates",
+      "available": "New version v{version} is available!",
+      "current": "No update is available for v{version}"
+    },
+    "description": {
+      "check_failed": "The latest version could not be determined. Please close this dialog and try again.",
+      "available": "Please update to the latest version of the app to get the latest features and bug fixes. The update can take 15–30 minutes. Note: your system will restart after the update is complete. Do NOT power off the system until it has restarted. Close or refresh this page after your system has restarted.",
+      "current": "This system is already running the same or a newer version than the current release."
+    },
+    "status": {
+      "updating": "Updating… {progress}%",
+      "done": "Done!",
+      "error": "Error: {error}"
+    },
+    "error": {
+      "start_failed": "An error occurred during the update process",
+      "stopped": "The update stopped before it finished. The device was not updated — check the logs."
+    },
+    "button": {
+      "update": "Update",
+      "hide": "Hide",
+      "cancel": "Cancel",
+      "close": "Close",
+      "reload": "Reload App",
+      "retry": "Try Again"
+    }
   }
 }

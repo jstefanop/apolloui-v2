@@ -856,5 +856,34 @@
       "complete_description": "Il sistema è stato spento. Puoi scollegare l'alimentazione in sicurezza.",
       "button": "Spegni"
     }
+  },
+  "update": {
+    "title": {
+      "check_failed": "Impossibile verificare la disponibilità di aggiornamenti",
+      "available": "È disponibile la nuova versione v{version}!",
+      "current": "Nessun aggiornamento disponibile per v{version}"
+    },
+    "description": {
+      "check_failed": "Impossibile determinare la versione più recente. Chiudi questa finestra e riprova.",
+      "available": "Aggiorna all'ultima versione dell'app per ottenere le funzionalità e le correzioni più recenti. L'aggiornamento può richiedere 15–30 minuti. Nota: il sistema si riavvierà al termine dell'aggiornamento. NON spegnere il sistema prima che si sia riavviato. Chiudi o aggiorna questa pagina dopo il riavvio del sistema.",
+      "current": "Il sistema utilizza già una versione uguale o più recente rispetto alla versione attualmente disponibile."
+    },
+    "status": {
+      "updating": "Aggiornamento in corso… {progress}%",
+      "done": "Completato!",
+      "error": "Errore: {error}"
+    },
+    "error": {
+      "start_failed": "Si è verificato un errore durante il processo di aggiornamento",
+      "stopped": "L'aggiornamento si è interrotto prima del completamento. Il dispositivo non è stato aggiornato — controlla i registri."
+    },
+    "button": {
+      "update": "Aggiorna",
+      "hide": "Nascondi",
+      "cancel": "Annulla",
+      "close": "Chiudi",
+      "reload": "Ricarica app",
+      "retry": "Riprova"
+    }
   }
 }

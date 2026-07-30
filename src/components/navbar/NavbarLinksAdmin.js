@@ -52,6 +52,65 @@ import { soloSelector } from '../../redux/reselect/solo';
 import moment from '../../lib/moment';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
+const parseReleaseVersion = (version) => {
+  if (typeof version !== 'string') return null;
+
+  const match = version
+    .trim()
+    .match(
+      /^v?(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/
+    );
+
+  if (!match) return null;
+
+  return {
+    core: match.slice(1, 4).map(Number),
+    prerelease: match[4] ? match[4].split('.') : [],
+  };
+};
+
+const compareReleaseVersions = (remoteVersion, localVersion) => {
+  const remote = parseReleaseVersion(remoteVersion);
+  const local = parseReleaseVersion(localVersion);
+
+  if (!remote || !local) return null;
+
+  for (let index = 0; index < remote.core.length; index += 1) {
+    if (remote.core[index] > local.core[index]) return 1;
+    if (remote.core[index] < local.core[index]) return -1;
+  }
+
+  if (!remote.prerelease.length || !local.prerelease.length) {
+    if (!remote.prerelease.length && !local.prerelease.length) return 0;
+    return remote.prerelease.length ? -1 : 1;
+  }
+
+  const identifierCount = Math.max(
+    remote.prerelease.length,
+    local.prerelease.length
+  );
+
+  for (let index = 0; index < identifierCount; index += 1) {
+    const remoteIdentifier = remote.prerelease[index];
+    const localIdentifier = local.prerelease[index];
+
+    if (remoteIdentifier === undefined) return -1;
+    if (localIdentifier === undefined) return 1;
+    if (remoteIdentifier === localIdentifier) continue;
+
+    const remoteIsNumeric = /^\d+$/.test(remoteIdentifier);
+    const localIsNumeric = /^\d+$/.test(localIdentifier);
+
+    if (remoteIsNumeric && localIsNumeric) {
+      return Number(remoteIdentifier) > Number(localIdentifier) ? 1 : -1;
+    }
+    if (remoteIsNumeric !== localIsNumeric) return remoteIsNumeric ? -1 : 1;
+    return remoteIdentifier > localIdentifier ? 1 : -1;
+  }
+
+  return 0;
+};
+
 export default function HeaderLinks({
   secondary,
   routes,
@@ -101,6 +160,8 @@ export default function HeaderLinks({
     useQuery(MCU_VERSION_QUERY);
 
   const { result: remoteVersion } = dataVersion?.Mcu?.version || {};
+  const versionComparison = compareReleaseVersions(remoteVersion, localVersion);
+  const updateAvailable = versionComparison === 1;
 
   const onOpenModalVersion = async () => {
     await refetchVersion();
@@ -164,6 +225,8 @@ export default function HeaderLinks({
         onClose={onClose}
         localVersion={localVersion}
         remoteVersion={remoteVersion}
+        versionCheckSucceeded={versionComparison !== null}
+        updateAvailable={updateAvailable}
       />
 
       <NavbarLogsModal isOpen={isLogsModalOpen} onClose={onLogsModalClose} />
@@ -434,12 +497,12 @@ export default function HeaderLinks({
               icon={
                 <PowerOffIcon
                   className={
-                    localVersion !== remoteVersion &&
+                    updateAvailable &&
                     'animate__animated animate__tada animate__infinite'
                   }
                 />
               }
-              bg={localVersion !== remoteVersion && 'orange.500'}
+              bg={updateAvailable && 'orange.500'}
             />
             <MenuList>
               {deviceType !== 'solo-node' && (
@@ -544,7 +607,7 @@ export default function HeaderLinks({
               <MenuGroup title="Version">
                 <MenuItem
                   icon={
-                    localVersion !== remoteVersion ? (
+                    updateAvailable ? (
                       <TbAlertHexagonFilled color="red" />
                     ) : (
                       <GoVersions />
