@@ -35,9 +35,10 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloResta
           w="300px"
           h="50"
           mb="24px"
-          onClick={isSoloNode ? handleStartMining : handleStartMining}
+          onClick={handleStartMining}
           isDisabled={isLoading}
           isLoading={isLoading}
+          loadingText={intl.formatMessage({ id: 'setup.complete.warming_up' })}
         >
           {isSoloNode 
             ? intl.formatMessage({ id: 'setup.complete.button_solo' }) 

@@ -244,9 +244,9 @@ const Setup = () => {
   };
 
   const handleStartMining = async () => {
-    // Await each call before reloading: these are lazy queries, and router.reload()
-    // tears the page down — firing them unawaited let the reload abort the restart
-    // in flight, so the miner never picked up the pool just saved.
+    // Await each call before leaving: these are lazy queries, and navigating away
+    // tears the page down — firing them unawaited let it abort the restart in
+    // flight, so the miner never picked up the pool just saved.
     if (isSoloNode) {
       await startNode();
       await restartSolo();
@@ -255,7 +255,10 @@ const Setup = () => {
       await restartMiner();
       await restartSolo();
     }
-    router.reload();
+    // Go straight to signin — where the guard sends a completed setup anyway.
+    // router.reload() instead remounted /setup and flashed step 1 of the wizard
+    // while ProtectedRoutes waited for the async auth-status query to redirect.
+    router.replace('/signin');
   };
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { Card, Flex, Icon, Text } from '@chakra-ui/react';
+import { Card, Flex, Icon, Text, Skeleton } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import CustomAlert from './CustomAlert';
 import config from '../../config';
@@ -33,6 +33,13 @@ const MinerStatus = ({ serviceStatus }) => {
       }
     };
   }, [miner?.status, miner?.requestedStatus, miner?.requestedAt]);
+
+  // No status object yet means the first WebSocket push has not arrived — that is
+  // loading, not an error. Show a skeleton; the red "unavailable" alert is only
+  // right once we have status and the miner is genuinely absent from it.
+  if (!serviceStatus || Object.keys(serviceStatus).length === 0) {
+    return <Skeleton height="120px" width="100%" borderRadius="12px" />;
+  }
 
   if (!miner) {
     return (

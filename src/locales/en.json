@@ -765,7 +765,8 @@
       "title": "Your Setup is complete!",
       "subtitle": "Let's start mining some Bitcoin!",
       "button": "Start mining",
-      "button_solo": "Start Solo Node"
+      "button_solo": "Start Solo Node",
+      "warming_up": "Warming up…"
     },
     "common": {
       "previous": "Previous",

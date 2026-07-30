@@ -765,7 +765,8 @@
       "title": "Ihr Setup ist abgeschlossen!",
       "subtitle": "Lassen Sie uns Bitcoin minen!",
       "button": "Mining starten",
-      "button_solo": "Solo Node Starten"
+      "button_solo": "Solo Node Starten",
+      "warming_up": "Wird aufgewärmt…"
     },
     "common": {
       "previous": "Zurück",

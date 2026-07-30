@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { Card, Flex, Icon, Text } from '@chakra-ui/react';
+import { Card, Flex, Icon, Text, Skeleton } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import CustomAlert from './CustomAlert';
 import config from '../../config';
@@ -32,6 +32,13 @@ const NodeStatus = ({ serviceStatus }) => {
       }
     };
   }, [node?.status, node?.requestedStatus, node?.requestedAt]);
+
+  // No status object yet means the first WebSocket push has not arrived — loading,
+  // not an error. The red "unavailable" alert is only right once we have status
+  // and the node is genuinely absent from it.
+  if (!serviceStatus || Object.keys(serviceStatus).length === 0) {
+    return <Skeleton height="72px" width="100%" borderRadius="12px" />;
+  }
 
   if (!node) {
     return (
