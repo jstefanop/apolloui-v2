@@ -15,7 +15,6 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import React, { useState, useEffect, useRef } from 'react';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useQuery, useLazyQuery } from '@apollo/client';
@@ -678,9 +677,6 @@ const SettingsTab = () => {
 
   return (
     <Box>
-      <Head>
-        <title>{intl.formatMessage({ id: 'settings.title' })}</title>
-      </Head>
 
       <ModalRestore
         isOpen={isModalRestoreOpen}

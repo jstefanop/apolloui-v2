@@ -42,7 +42,6 @@ import { FaUserCog, FaUserFriends } from 'react-icons/fa';
 import { GiDiamondTrophy } from 'react-icons/gi';
 import ActiveBadge from '../components/apollo/ActiveBadge';
 import PanelGrid from '../components/UI/PanelGrid';
-import Head from 'next/head';
 import moment from '../lib/moment';
 import _ from 'lodash';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
@@ -335,24 +334,6 @@ const SoloMining = () => {
 
   return (
     <Box>
-      <Head>
-        <title>
-          {ckPoolGlobalHashrate
-            ? intl.formatMessage(
-                {
-                  id: 'solo_mining.title',
-                  defaultMessage: 'Apollo Solo Pool {hashrate}',
-                },
-                {
-                  hashrate: `${ckPoolGlobalHashrate.value} ${ckPoolGlobalHashrate.unit}`,
-                }
-              )
-            : intl.formatMessage({
-                id: 'solo_mining.title',
-                defaultMessage: 'Apollo Solo Pool',
-              })}
-        </title>
-      </Head>
 
       {/* Show node not synced alert */}
       {!isNodeSynced && (

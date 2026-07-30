@@ -886,5 +886,20 @@
       "reload": "Reload App",
       "retry": "Try Again"
     }
+  },
+  "page_title": {
+    "overview": "Overview",
+    "miner": "Miner",
+    "node": "Node",
+    "system": "System",
+    "settings": "Settings",
+    "solo_mining": "Solo Mining",
+    "apps": "Apps",
+    "signout": "Signing out",
+    "signin": "Sign in",
+    "setup": "Setup",
+    "not_found": "Not found",
+    "default": "Apollo",
+    "node_syncing": "Syncing"
   }
 }

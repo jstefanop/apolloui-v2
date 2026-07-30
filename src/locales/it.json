@@ -886,5 +886,20 @@
       "reload": "Ricarica app",
       "retry": "Riprova"
     }
+  },
+  "page_title": {
+    "overview": "Panoramica",
+    "miner": "Miner",
+    "node": "Nodo",
+    "system": "Sistema",
+    "settings": "Impostazioni",
+    "solo_mining": "Solo Mining",
+    "apps": "App",
+    "signout": "Disconnessione",
+    "signin": "Accedi",
+    "setup": "Configurazione",
+    "not_found": "Non trovato",
+    "default": "Apollo",
+    "node_syncing": "Sincronizzazione"
   }
 }

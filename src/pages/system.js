@@ -22,7 +22,6 @@ import { mcuSelector } from '../redux/reselect/mcu';
 import { CpuIcon } from '../components/UI/Icons/CpuIcon';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 import { MemoryIcon } from '../components/UI/Icons/MemoryIcon';
-import Head from 'next/head';
 import { ArchIcon } from '../components/UI/Icons/ArchIcon';
 import { HostnameIcon } from '../components/UI/Icons/HostnameIcon';
 import { LinuxIcon } from '../components/UI/Icons/LinuxIcon';
@@ -102,9 +101,6 @@ const System = () => {
 
   return (
     <Box>
-      <Head>
-        <title>{intl.formatMessage({ id: 'system.title' })}</title>
-      </Head>
       
       <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing="20px" mb="20px">
         <Card py="15px" bgColor={cardColor}>

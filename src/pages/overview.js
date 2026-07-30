@@ -15,7 +15,6 @@ import {
   Select,
 } from '@chakra-ui/react';
 import _ from 'lodash';
-import Head from 'next/head';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -271,14 +270,6 @@ const Overview = () => {
       maxWidth="100%"
       overflowX="hidden"
     >
-      <Head>
-        <title>
-          <FormattedMessage
-            id="overview.title"
-            defaultMessage="Apollo Overview"
-          />
-        </title>
-      </Head>
       {errorNode && errorMcu && !errorMiner ? (
         <Alert borderRadius={'10px'} status="warning">
           <AlertIcon />
