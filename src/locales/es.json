@@ -901,5 +901,20 @@
       "failedUntouched": "El formateo falló. El disco no se modificó — revise los registros antes de reintentar.",
       "incomplete": "El formateo no se completó — revise los registros antes de reintentar."
     }
+  },
+  "page_title": {
+    "overview": "Resumen",
+    "miner": "Miner",
+    "node": "Nodo",
+    "system": "Sistema",
+    "settings": "Ajustes",
+    "solo_mining": "Solo Mining",
+    "apps": "Apps",
+    "signout": "Cerrando sesión",
+    "signin": "Iniciar sesión",
+    "setup": "Configuración",
+    "not_found": "No encontrado",
+    "default": "Apollo",
+    "node_syncing": "Sincronizando"
   }
 }

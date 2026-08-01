@@ -47,7 +47,6 @@ import { ChipSpeedIcon } from '../components/UI/Icons/ChipSpeedIcon';
 import { GrUserWorker } from 'react-icons/gr';
 import MinerDrawer from '../components/apollo/MinerDrawer';
 import PanelGrid from '../components/UI/PanelGrid';
-import Head from 'next/head';
 import MinerStatus from '../components/UI/MinerStatus';
 import { formatTemperature, formatMinerMode } from '../lib/utils';
 
@@ -198,18 +197,6 @@ const Miner = () => {
 
   return (
     <Box>
-      <Head>
-        <title>
-          {globalHashrate
-            ? intl.formatMessage(
-                { id: 'miner.title', defaultMessage: 'Apollo Miner {hashrate}' },
-                { hashrate: `${globalHashrate.value} ${globalHashrate.unit}` }
-              )
-            : intl.formatMessage(
-                { id: 'miner.title', defaultMessage: 'Apollo Miner' }
-              )}
-        </title>
-      </Head>
       <MinerDrawer
         isOpen={isOpen}
         onClose={onClose}

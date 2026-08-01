@@ -901,5 +901,20 @@
       "failedUntouched": "Format failed. The disk was not changed — check the logs before retrying.",
       "incomplete": "Format did not complete — check the logs before retrying."
     }
+  },
+  "page_title": {
+    "overview": "Overview",
+    "miner": "Miner",
+    "node": "Node",
+    "system": "System",
+    "settings": "Settings",
+    "solo_mining": "Solo Mining",
+    "apps": "Apps",
+    "signout": "Signing out",
+    "signin": "Sign in",
+    "setup": "Setup",
+    "not_found": "Not found",
+    "default": "Apollo",
+    "node_syncing": "Syncing"
   }
 }

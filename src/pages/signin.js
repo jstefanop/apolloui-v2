@@ -74,9 +74,6 @@ const SignIn = () => {
       px={{ base: '20px', md: '0px' }}
       flexDirection='column'
     >
-      <Head>
-        <title>{intl.formatMessage({ id: 'signin.title' })}</title>
-      </Head>
       <Box me='auto'>
         <Heading color={textColor} fontSize='36px' mb='10px'>
           {intl.formatMessage({ id: 'signin.heading' })}

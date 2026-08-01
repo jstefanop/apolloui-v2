@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { useColorModeValue, useDisclosure } from '@chakra-ui/react';
@@ -265,9 +264,6 @@ const Setup = () => {
 
   return (
     <>
-      <Head>
-        <title>Setup your Apollo miner</title>
-      </Head>
 
       {step === 1 && <StepWelcome setStep={setStep} isSoloNode={isSoloNode} />}
 

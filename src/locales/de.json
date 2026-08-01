@@ -901,5 +901,20 @@
       "failedUntouched": "Formatierung fehlgeschlagen. Der Datenträger wurde nicht verändert — prüfen Sie die Logs, bevor Sie es erneut versuchen.",
       "incomplete": "Die Formatierung wurde nicht abgeschlossen — prüfen Sie die Logs, bevor Sie es erneut versuchen."
     }
+  },
+  "page_title": {
+    "overview": "Übersicht",
+    "miner": "Miner",
+    "node": "Node",
+    "system": "System",
+    "settings": "Einstellungen",
+    "solo_mining": "Solo Mining",
+    "apps": "Apps",
+    "signout": "Abmeldung",
+    "signin": "Anmelden",
+    "setup": "Einrichtung",
+    "not_found": "Nicht gefunden",
+    "default": "Apollo",
+    "node_syncing": "Synchronisierung"
   }
 }

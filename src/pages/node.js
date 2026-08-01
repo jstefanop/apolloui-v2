@@ -16,7 +16,6 @@ import {
 } from '@chakra-ui/react';
 import moment from 'moment';
 import CountUp from 'react-countup';
-import Head from 'next/head';
 import _ from 'lodash';
 import { useIntl } from 'react-intl';
 import { List } from 'react-content-loader';
@@ -300,20 +299,6 @@ const Node = () => {
 
   return (
     <Box mx="5">
-      <Head>
-        <title>
-          {blockHeader === blocksCount && lastBlockTime ? (
-            <FormattedMessage
-              id="node.title.last_block"
-              values={{ time: lastBlockTime }}
-            />
-          ) : blockHeader > blocksCount ? (
-            <FormattedMessage id="node.title.syncing" />
-          ) : (
-            '...'
-          )}
-        </title>
-      </Head>
       <ModalConnectNode
         isOpen={isOpen}
         onClose={onClose}
