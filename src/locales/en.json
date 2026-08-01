@@ -695,7 +695,7 @@
     "settings": "Settings"
   },
   "signin": {
-    "title": "Welcome to Apollo Web OS 2",
+    "title": "Welcome to Apollo OS 2",
     "heading": "Sign In",
     "description": "Enter your password to sign in!",
     "password_label": "Password",
@@ -777,7 +777,7 @@
     "support": "Support",
     "shop": "Shop",
     "website": "Website",
-    "made_with_love": "Apollo Web OS v{version} Made with love by",
+    "made_with_love": "Apollo OS v{version} Made with love by",
     "futurebit": "FutureBit"
   },
   "utils": {

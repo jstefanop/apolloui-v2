@@ -2,17 +2,21 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { mcuSelector } from '../../redux/reselect/mcu';
 import { minerSelector } from '../../redux/reselect/miner';
 import { nodeSelector } from '../../redux/reselect/node';
 
 // One place for every page's browser-tab title, rendered from _app so no page
-// has to remember its own. pathname -> i18n key; the hostname is prefixed, and a
-// few pages carry a live suffix (miner/overview hashrate, node block height).
+// has to remember its own. pathname -> i18n key, prefixed with the product name,
+// and a few pages carry a live suffix (miner/overview hashrate, node block
+// height).
 //
-// Hostname distinguishes device TYPES, not individual units (it is baked per
-// image: every Solo Node reads "FutureBit-Solo-Node"). A user-settable device
-// name is the follow-up for real per-unit uniqueness — pending John's sign-off.
+// The prefix is the product, not the device: the hostname is baked per image, so
+// it names the device TYPE and two units of the same model share it — it would
+// promise a per-tab uniqueness it cannot deliver. A user-settable device name is
+// the follow-up that earns that prefix; until then a fixed name is the honest
+// one. Not translated: it is a product name.
+const PRODUCT = 'Apollo OS';
+
 const PAGE_KEY = {
   '/overview': 'page_title.overview',
   '/miner': 'page_title.miner',
@@ -32,7 +36,6 @@ const DocumentTitle = () => {
   const intl = useIntl();
   const router = useRouter();
   // Hooks must run unconditionally; the per-route logic below picks what to use.
-  const hostname = useSelector((s) => mcuSelector(s).data?.hostname);
   const hashrate = useSelector((s) => minerSelector(s).data?.stats?.globalHashrate);
   const node = useSelector((s) => nodeSelector(s).data);
 
@@ -65,10 +68,10 @@ const DocumentTitle = () => {
     }
   }
 
-  // Hostname first: tabs truncate on the right, and it is the distinguishing
-  // part. No hostname yet (before the mcu push, or on signin/setup/404 where
-  // there is no device data) falls back to the page name alone.
-  const title = hostname ? `${hostname} · ${page}` : page;
+  // Product first, then the page: tabs truncate on the right, so the part that
+  // changes stays visible longest. Available at first paint — unlike the device
+  // data, which only arrives with the first WebSocket push.
+  const title = `${PRODUCT} · ${page}`;
 
   return (
     <Head>
