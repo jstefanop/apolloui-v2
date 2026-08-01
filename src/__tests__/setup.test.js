@@ -9,6 +9,7 @@ jest.mock('../contexts/DeviceConfigContext', () => ({
 jest.mock('@apollo/client', () => ({
   ...jest.requireActual('@apollo/client'),
   useLazyQuery: jest.fn(() => [jest.fn(), {}]),
+  useMutation: jest.fn(() => [jest.fn(), {}]),
 }));
 
 const VALID_ADDR = 'bc1q' + 'a'.repeat(38); // passes isValidBitcoinAddress

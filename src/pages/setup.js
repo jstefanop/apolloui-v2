@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { useColorModeValue, useDisclosure } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 
 import { MINER_RESTART_QUERY } from '../graphql/miner';
 import { SOLO_RESTART_QUERY } from '../graphql/solo';
-import { NODE_START_QUERY } from '../graphql/node';
+import { NODE_START_MUTATION } from '../graphql/node';
 import { AUTH_LOGIN_QUERY, SAVE_SETUP_QUERY } from '../graphql/auth';
 import { SET_POOLS_QUERY } from '../graphql/pools';
 import { SET_SETTINGS_QUERY } from '../graphql/settings';
@@ -55,9 +55,11 @@ const Setup = () => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const [startNode, { loading: loadingNodeStart }] = useLazyQuery(
-    NODE_START_QUERY,
-    { fetchPolicy: 'no-cache' }
+  // Mutation — onError noop so the fire-and-forget call cannot reject
+  // unhandled; errors surface via the hook's error state like the lazy query.
+  const [startNode, { loading: loadingNodeStart }] = useMutation(
+    NODE_START_MUTATION,
+    { onError: () => {} }
   );
 
   const [saveSetup, { data: dataSaveSetup, error: errorSaveSetup, loading: loadingSaveSetup }] =

@@ -103,9 +103,12 @@ export const MCU_WIFI_DISCONNECT_QUERY = gql`
   }
 `;
 
-export const MCU_SHUTDOWN_QUERY = gql`
+// Mutations, not queries: Apollo re-executes queries on a re-render, and a
+// phantom re-fire reboots the device, powers it off, or launches a second
+// concurrent update (same hazard the node format move fixed).
+export const MCU_SHUTDOWN_MUTATION = gql`
   ${ERROR_FRAGMENT}
-  query MCU_SHUTDOWN {
+  mutation MCU_SHUTDOWN {
     Mcu {
       shutdown {
         error {
@@ -116,9 +119,9 @@ export const MCU_SHUTDOWN_QUERY = gql`
   }
 `;
 
-export const MCU_REBOOT_QUERY = gql`
+export const MCU_REBOOT_MUTATION = gql`
   ${ERROR_FRAGMENT}
-  query MCU_REBOOT {
+  mutation MCU_REBOOT {
     Mcu {
       reboot {
         error {
@@ -129,9 +132,9 @@ export const MCU_REBOOT_QUERY = gql`
   }
 `;
 
-export const MCU_UPDATE_QUERY = gql`
+export const MCU_UPDATE_MUTATION = gql`
   ${ERROR_FRAGMENT}
-  query MCU_UPDATE {
+  mutation MCU_UPDATE {
     Mcu {
       update {
         error {

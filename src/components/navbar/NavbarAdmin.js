@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useIntl } from 'react-intl';
 
@@ -23,12 +23,12 @@ import {
   MINER_START_QUERY,
   MINER_STOP_QUERY,
 } from '../../graphql/miner';
-import { NODE_START_QUERY, NODE_STOP_QUERY } from '../../graphql/node';
+import { NODE_START_MUTATION, NODE_STOP_MUTATION } from '../../graphql/node';
 import { SOLO_START_QUERY, SOLO_STOP_QUERY, SOLO_RESTART_QUERY } from '../../graphql/solo';
 import { updateMinerAction } from '../../redux/slices/minerActionSlice';
 import { minerSelector } from '../../redux/reselect/miner';
 import { settingsSelector } from '../../redux/reselect/settings';
-import { MCU_REBOOT_QUERY, MCU_SHUTDOWN_QUERY } from '../../graphql/mcu';
+import { MCU_REBOOT_MUTATION, MCU_SHUTDOWN_MUTATION } from '../../graphql/mcu';
 import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import { servicesSelector } from '../../redux/reselect/services';
@@ -65,12 +65,14 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     { loading: loadingMinerRestart, error: errorMinerRestart },
   ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
-  // Node actions
+  // Node actions. Mutations now — onError noop so the fire-and-forget calls
+  // below cannot reject unhandled; errors still surface via the hook's error
+  // state, exactly as the lazy queries did.
   const [startNode, { loading: loadingNodeStart, error: errorNodeStart }] =
-    useLazyQuery(NODE_START_QUERY, { fetchPolicy: 'no-cache' });
+    useMutation(NODE_START_MUTATION, { onError: () => {} });
 
   const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
-    useLazyQuery(NODE_STOP_QUERY, { fetchPolicy: 'no-cache' });
+    useMutation(NODE_STOP_MUTATION, { onError: () => {} });
 
   // Solo actions
   const [startSolo, { loading: loadingSoloStart, error: errorSoloStart }] =
@@ -86,12 +88,12 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
 
   // MCU actions
   const [rebootMcu, { loading: loadingRebootMcu, error: errorRebootMcu }] =
-    useLazyQuery(MCU_REBOOT_QUERY, { fetchPolicy: 'no-cache' });
+    useMutation(MCU_REBOOT_MUTATION, { onError: () => {} });
 
   const [
     shutdownMcu,
     { loading: loadingShutdownMcu, error: errorShutdownMcu },
-  ] = useLazyQuery(MCU_SHUTDOWN_QUERY, { fetchPolicy: 'no-cache' });
+  ] = useMutation(MCU_SHUTDOWN_MUTATION, { onError: () => {} });
 
   useEffect(() => {
     window.addEventListener('scroll', changeNavbar);

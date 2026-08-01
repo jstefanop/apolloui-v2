@@ -12,8 +12,8 @@ import {
   Progress,
   Flex,
 } from '@chakra-ui/react';
-import { useLazyQuery } from '@apollo/client';
-import { MCU_UPDATE_PROGRESS_QUERY, MCU_UPDATE_QUERY } from '../../graphql/mcu';
+import { useMutation } from '@apollo/client';
+import { MCU_UPDATE_PROGRESS_QUERY, MCU_UPDATE_MUTATION } from '../../graphql/mcu';
 import { useEffect, useState } from 'react';
 import { useTaskProgress } from '../../hooks/useTaskProgress';
 import { useIntl } from 'react-intl';
@@ -29,8 +29,10 @@ const NavbarUpdateModal = ({
   const intl = useIntl();
   const [done, setDone] = useState(false);
   const [updateError, setUpdateError] = useState(null);
-  const [handleUpdate, { error: errorUpdate }] = useLazyQuery(MCU_UPDATE_QUERY, {
-    fetchPolicy: 'no-cache',
+  // Mutation — onError noop so the fire-and-forget call cannot reject
+  // unhandled; the effect below reads the error from the hook state instead.
+  const [handleUpdate, { error: errorUpdate }] = useMutation(MCU_UPDATE_MUTATION, {
+    onError: () => {},
   });
 
   // An update outlives the page that started it — it runs on the device and ends

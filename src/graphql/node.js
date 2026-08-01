@@ -50,9 +50,12 @@ export const NODE_STATS_QUERY = gql`
   }
 `;
 
-export const NODE_STOP_QUERY = gql`
+// Mutations, not queries: Apollo re-executes queries on a re-render, and a
+// phantom re-fire stops or starts bitcoind with no click (same hazard the
+// format move below fixed).
+export const NODE_STOP_MUTATION = gql`
   ${ERROR_FRAGMENT}
-  query NODE_STOP {
+  mutation NODE_STOP {
     Node {
       stop {
         error {
@@ -63,9 +66,9 @@ export const NODE_STOP_QUERY = gql`
   }
 `;
 
-export const NODE_START_QUERY = gql`
+export const NODE_START_MUTATION = gql`
   ${ERROR_FRAGMENT}
-  query NODE_START {
+  mutation NODE_START {
     Node {
       start {
         error {
@@ -92,9 +95,11 @@ export const NODE_CONF_QUERY = gql`
   }
 `;
 
-export const NODE_FORMAT_QUERY = gql`
+// A mutation, not a query: Apollo re-executes queries, which fired the disk-wipe
+// twice on a re-render. Mutations are not re-executed.
+export const NODE_FORMAT_MUTATION = gql`
   ${ERROR_FRAGMENT}
-  query NODE_FORMAT {
+  mutation NODE_FORMAT {
     Node {
       format {
         error {
