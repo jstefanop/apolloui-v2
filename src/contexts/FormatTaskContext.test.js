@@ -124,3 +124,69 @@ describe('FormatTaskContext value identity', () => {
     expect(result.current).toBe(first);
   });
 });
+
+describe('FormatTaskContext failure memory', () => {
+  beforeEach(() => {
+    mockTask.outcome = null;
+    mockTask.isRunning = false;
+    mutateImpl = jest
+      .fn()
+      .mockResolvedValue({ data: { Node: { format: { error: null } } } });
+  });
+
+  it('holds the failure after the toast that announced it is gone', () => {
+    const { result, rerender } = renderCtx();
+    expect(result.current.lastFailure).toBeNull();
+
+    act(() => {
+      mockTask.outcome = { status: 'failed', code: -2 };
+      rerender();
+    });
+    expect(result.current.lastFailure).toBe('format.toast.failedErased');
+
+    // The hook acknowledges the outcome, so it is a one-shot — but the message
+    // must survive it: this is what the reopened dialog shows.
+    act(() => {
+      mockTask.outcome = null;
+      rerender();
+    });
+    expect(result.current.lastFailure).toBe('format.toast.failedErased');
+  });
+
+  it('distinguishes an erased disk from an untouched one', () => {
+    const { result, rerender } = renderCtx();
+    act(() => {
+      mockTask.outcome = { status: 'failed', code: -1 };
+      rerender();
+    });
+    expect(result.current.lastFailure).toBe('format.toast.failedUntouched');
+  });
+
+  it('clears it when a new format starts', async () => {
+    const { result, rerender } = renderCtx();
+    act(() => {
+      mockTask.outcome = { status: 'failed', code: -2 };
+      rerender();
+    });
+    expect(result.current.lastFailure).toBe('format.toast.failedErased');
+
+    mockTask.outcome = null;
+    await act(async () => {
+      await result.current.startFormat();
+    });
+    expect(result.current.lastFailure).toBeNull();
+  });
+
+  it('clears it when a run succeeds', () => {
+    const { result, rerender } = renderCtx();
+    act(() => {
+      mockTask.outcome = { status: 'failed', code: -2 };
+      rerender();
+    });
+    act(() => {
+      mockTask.outcome = { status: 'success' };
+      rerender();
+    });
+    expect(result.current.lastFailure).toBeNull();
+  });
+});

@@ -17,7 +17,7 @@ import { useFormatTask } from '../../contexts/FormatTaskContext';
 // tracking live in the context, this only renders the current state and forwards
 // the two actions.
 const ModalFormat = () => {
-  const { progress, isRunning, isModalOpen, closeModal, startFormat } =
+  const { progress, isRunning, lastFailure, isModalOpen, closeModal, startFormat } =
     useFormatTask();
 
   return (
@@ -53,11 +53,18 @@ const ModalFormat = () => {
               </Text>
             </Flex>
           ) : (
-            <Flex>
+            <Flex direction="column" gap={3}>
               <Text>
                 Are you sure you want format your SSD disk? You will lose all your
                 data.
               </Text>
+              {/* Why the last attempt failed, kept here because the toast that
+                  announced it is long gone by the time anyone reopens this. */}
+              {lastFailure && (
+                <Text color="red.400" fontSize="sm">
+                  {lastFailure}
+                </Text>
+              )}
             </Flex>
           )}
         </ModalBody>

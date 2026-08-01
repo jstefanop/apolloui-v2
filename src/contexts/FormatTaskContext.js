@@ -46,6 +46,14 @@ export const FormatTaskProvider = ({ children }) => {
   const [result, setResult] = useState(null); // 'success' | 'failed' | null
   const resultTimer = useRef(null);
 
+  // The last failure, held until a new format starts. A toast is the only place
+  // this was ever said, and it is gone in seconds — on another page, or with the
+  // dialog hidden, nobody sees it. Reopening the dialog then shows the plain
+  // confirmation, as if nothing had happened. That is worst for code -2, where
+  // the disk is already erased and the node will not start until a format
+  // succeeds: without the message there is nothing to explain why it is down.
+  const [lastFailure, setLastFailure] = useState(null);
+
   const openModal = useCallback(() => setIsModalOpen(true), []);
   const closeModal = useCallback(() => setIsModalOpen(false), []);
 
@@ -56,6 +64,7 @@ export const FormatTaskProvider = ({ children }) => {
   // dialog returns to the confirmation view instead of a stuck "Formatting…".
   const startFormat = useCallback(async () => {
     markSubmitted();
+    setLastFailure(null); // this run's outcome replaces the previous one
     try {
       const { data, errors } = await formatDisk();
       const formatError = data?.Node?.format?.error;
@@ -93,6 +102,7 @@ export const FormatTaskProvider = ({ children }) => {
 
     if (outcome.status === 'success') {
       setIsModalOpen(false);
+      setLastFailure(null);
       dispatch(
         sendFeedback({
           message: intl.formatMessage({ id: 'format.toast.success' }),
@@ -108,9 +118,9 @@ export const FormatTaskProvider = ({ children }) => {
           : outcome.code === -1
             ? 'format.toast.failedUntouched'
             : 'format.toast.incomplete';
-      dispatch(
-        sendFeedback({ message: intl.formatMessage({ id: messageId }), type: 'error' })
-      );
+      const message = intl.formatMessage({ id: messageId });
+      setLastFailure(message);
+      dispatch(sendFeedback({ message, type: 'error' }));
     }
 
     setResult(outcome.status);
@@ -141,12 +151,13 @@ export const FormatTaskProvider = ({ children }) => {
       progress,
       isRunning,
       status,
+      lastFailure,
       isModalOpen,
       openModal,
       closeModal,
       startFormat,
     }),
-    [progress, isRunning, status, isModalOpen, openModal, closeModal, startFormat]
+    [progress, isRunning, status, lastFailure, isModalOpen, openModal, closeModal, startFormat]
   );
 
   return (
