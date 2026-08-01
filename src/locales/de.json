@@ -886,5 +886,20 @@
       "reload": "App neu laden",
       "retry": "Erneut versuchen"
     }
+  },
+  "format": {
+    "navbar": {
+      "running": "Formatierung… {progress}%",
+      "success": "Formatierung abgeschlossen",
+      "failed": "Formatierung fehlgeschlagen"
+    },
+    "toast": {
+      "started": "Datenträger-Formatierung gestartet...",
+      "startFailed": "Formatierung konnte nicht gestartet werden",
+      "success": "Formatierung abgeschlossen! Ihr System ist bereit.",
+      "failedErased": "Formatierung fehlgeschlagen, nachdem der Datenträger gelöscht wurde. Der Node kann erst starten, wenn eine Formatierung abgeschlossen ist — prüfen Sie die Logs und versuchen Sie es erneut.",
+      "failedUntouched": "Formatierung fehlgeschlagen. Der Datenträger wurde nicht verändert — prüfen Sie die Logs, bevor Sie es erneut versuchen.",
+      "incomplete": "Die Formatierung wurde nicht abgeschlossen — prüfen Sie die Logs, bevor Sie es erneut versuchen."
+    }
   }
 }

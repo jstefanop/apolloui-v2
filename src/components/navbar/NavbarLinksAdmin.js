@@ -47,6 +47,7 @@ import {
 import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
 import NavbarUpdateModal from './NavbarUpdateModal';
+import NavbarFormatProgress from './NavbarFormatProgress';
 import { useSelector, shallowEqual } from 'react-redux';
 import { soloSelector } from '../../redux/reselect/solo';
 import moment from '../../lib/moment';
@@ -488,6 +489,8 @@ export default function HeaderLinks({
         <Box display={{ base: 'none', md: 'block' }}>
           <SidebarResponsive routes={routes} />
         </Box>
+
+        <NavbarFormatProgress />
 
         <Flex p="0px" mx="4px" justify="flex-end">
           <Menu isLazy>

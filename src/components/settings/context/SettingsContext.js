@@ -10,11 +10,9 @@ const defaultContextValue = {
   setIsChanged: () => { },
   handleBackup: () => { },
   handleRestoreBackup: () => { },
-  handleFormatDisk: () => { },
   handleDiscardChanges: () => { },
   handleSaveSettings: () => { },
   setIsModalRestoreOpen: () => { },
-  setIsModalFormatOpen: () => { },
   setIsModalConnectOpen: () => { },
 };
 

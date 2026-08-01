@@ -8,6 +8,8 @@ import Footer from '../footer/FooterAdmin';
 import Navbar from '../navbar/NavbarAdmin';
 import BlockFoundCelebration from '../UI/BlockFoundCelebration';
 import BackendOfflineScreen from '../UI/BackendOfflineScreen';
+import ModalFormat from '../apollo/ModalFormat';
+import { FormatTaskProvider } from '../../contexts/FormatTaskContext';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useSubscription, useQuery } from '@apollo/client';
 import { updateNodeStats } from '../../redux/slices/nodeSlice';
@@ -277,6 +279,7 @@ const Layout = ({ children }) => {
   }
 
   return (
+    <FormatTaskProvider>
     <motion.div
       initial={{ x: 300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
@@ -341,6 +344,8 @@ const Layout = ({ children }) => {
         </Box>
       </Box>
     </motion.div>
+    <ModalFormat />
+    </FormatTaskProvider>
   );
 };
 

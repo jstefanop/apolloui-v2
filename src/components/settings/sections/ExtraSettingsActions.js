@@ -10,6 +10,7 @@ import {
 import { useIntl } from 'react-intl';
 import Card from '../../card/Card';
 import { useSettings } from '../context/SettingsContext';
+import { useFormatTask } from '../../../contexts/FormatTaskContext';
 import { DownloadIcon } from '../../UI/Icons/DownloadIcon';
 import { RestoreIcon } from '../../UI/Icons/RestoreIcon';
 import { FormatIcon } from '../../UI/Icons/FormatIcon';
@@ -19,8 +20,8 @@ const ExtraSettingsActions = () => {
   const {
     handleBackup,
     setIsModalRestoreOpen,
-    setIsModalFormatOpen
   } = useSettings();
+  const { openModal: openFormatModal } = useFormatTask();
 
   const textColor = useColorModeValue('brands.900', 'white');
 
@@ -61,7 +62,7 @@ const ExtraSettingsActions = () => {
     } else if (actionId === 'restore') {
       setIsModalRestoreOpen(true);
     } else if (actionId === 'format') {
-      setIsModalFormatOpen(true);
+      openFormatModal();
     }
   };
 

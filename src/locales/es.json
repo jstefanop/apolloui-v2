@@ -886,5 +886,20 @@
       "reload": "Recargar aplicación",
       "retry": "Intentar de nuevo"
     }
+  },
+  "format": {
+    "navbar": {
+      "running": "Formateando… {progress}%",
+      "success": "Formateo completado",
+      "failed": "Formateo fallido"
+    },
+    "toast": {
+      "started": "Formateo del disco iniciado...",
+      "startFailed": "No se pudo iniciar el formateo",
+      "success": "¡Formateo completado! Su sistema está listo.",
+      "failedErased": "El formateo falló después de borrar el disco. El nodo no puede iniciarse hasta que se complete un formateo — revise los registros y reintente.",
+      "failedUntouched": "El formateo falló. El disco no se modificó — revise los registros antes de reintentar.",
+      "incomplete": "El formateo no se completó — revise los registros antes de reintentar."
+    }
   }
 }

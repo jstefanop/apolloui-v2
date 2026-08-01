@@ -886,5 +886,20 @@
       "reload": "Ricarica app",
       "retry": "Riprova"
     }
+  },
+  "format": {
+    "navbar": {
+      "running": "Formattazione… {progress}%",
+      "success": "Formattazione completata",
+      "failed": "Formattazione fallita"
+    },
+    "toast": {
+      "started": "Formattazione del disco avviata...",
+      "startFailed": "Impossibile avviare la formattazione",
+      "success": "Formattazione completata! Il sistema è pronto.",
+      "failedErased": "Formattazione non riuscita dopo la cancellazione del disco. Il nodo non può ripartire finché una formattazione non viene completata — controlla i log e riprova.",
+      "failedUntouched": "Formattazione non riuscita. Il disco non è stato modificato — controlla i log prima di riprovare.",
+      "incomplete": "La formattazione non è stata completata — controlla i log prima di riprovare."
+    }
   }
 }

@@ -18,7 +18,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
-import { useQuery, useLazyQuery } from '@apollo/client';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import { useIntl } from 'react-intl';
 import { PoolIcon } from '../../components/UI/Icons/PoolIcon';
 import { MinerIcon } from '../../components/UI/Icons/MinerIcon';
@@ -31,12 +31,9 @@ import { GET_POOLS_QUERY, UPDATE_POOLS_QUERY } from '../../graphql/pools';
 import { MINER_RESTART_QUERY } from '../../graphql/miner';
 import { SOLO_RESTART_QUERY } from '../../graphql/solo';
 import {
-  NODE_START_QUERY,
-  NODE_STOP_QUERY,
-  NODE_FORMAT_QUERY,
-  NODE_FORMAT_PROGRESS_QUERY,
+  NODE_START_MUTATION,
+  NODE_STOP_MUTATION,
 } from '../../graphql/node';
-import { useTaskProgress } from '../../hooks/useTaskProgress';
 import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { SettingsProvider } from '../../components/settings/context/SettingsContext';
 import PoolsTab from '../../components/settings/tabs/PoolsTab';
@@ -47,7 +44,6 @@ import SystemTab from '../../components/settings/tabs/SystemTab';
 import ExtraTab from '../../components/settings/tabs/ExtraTab';
 import LogsTab from '../../components/settings/tabs/LogsTab';
 import ModalRestore from '../../components/apollo/ModalRestore';
-import ModalFormat from '../../components/apollo/ModalFormat';
 import ModalConnectNode from '../../components/apollo/ModalConnectNode';
 import _ from 'lodash';
 import moment from 'moment';
@@ -74,23 +70,9 @@ const SettingsTab = () => {
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
-  const [isModalFormatOpen, setIsModalFormatOpen] = useState(false);
-
-  // A format survives a page reload — it runs on the device, not in the browser.
-  // Ask the device whether one is under way and put the dialog back if so, rather
-  // than leaving a disk being wiped with nothing on screen to say so.
-  const { isRunning: isFormatRunning } = useTaskProgress(
-    NODE_FORMAT_PROGRESS_QUERY,
-    (data) => data?.Node?.formatProgress?.result?.value
-  );
-
-  // Only on the transition into "running", so the dialog can still be dismissed
-  // while a format continues in the background.
-  const formatWasRunning = useRef(false);
-  useEffect(() => {
-    if (isFormatRunning && !formatWasRunning.current) setIsModalFormatOpen(true);
-    formatWasRunning.current = isFormatRunning;
-  }, [isFormatRunning]);
+  // The format dialog and its progress now live at layout level (FormatTaskContext),
+  // so a running format is watched — and its outcome reported — from any page, not
+  // just here. The Extra tab's Format button opens it via that context.
   const [isModalConnectOpen, setIsModalConnectOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -174,19 +156,16 @@ const SettingsTab = () => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const [stopNode, { loading: loadingNodeStop }] = useLazyQuery(
-    NODE_STOP_QUERY,
-    { fetchPolicy: 'no-cache' }
+  // Mutations — onError noop so the awaited restart flow below cannot reject
+  // unhandled; errors surface via the hook's error state like the lazy queries.
+  const [stopNode, { loading: loadingNodeStop }] = useMutation(
+    NODE_STOP_MUTATION,
+    { onError: () => {} }
   );
 
-  const [startNode, { loading: loadingNodeStart }] = useLazyQuery(
-    NODE_START_QUERY,
-    { fetchPolicy: 'no-cache' }
-  );
-
-  const [formatDisk, { loading: loadingFormat }] = useLazyQuery(
-    NODE_FORMAT_QUERY,
-    { fetchPolicy: 'no-cache' }
+  const [startNode, { loading: loadingNodeStart }] = useMutation(
+    NODE_START_MUTATION,
+    { onError: () => {} }
   );
 
   const [changeLockPassword, { loading: changeLockPasswordLoading }] =
@@ -381,27 +360,6 @@ const SettingsTab = () => {
           message:
             'Restore done! Please remember to restart your miner and node.',
           type: 'success',
-        })
-      );
-
-      setIsSaving(false);
-    } catch (error) {
-      setIsSaving(false);
-      dispatch(sendFeedback({ message: error.toString(), type: 'error' }));
-    }
-  };
-
-  // Handle format disk
-  const handleFormatDisk = async () => {
-    try {
-      setIsSaving(true);
-
-      await stopNode();
-      await formatDisk();
-      dispatch(
-        sendFeedback({
-          message: 'Formatting disk started...',
-          type: 'info',
         })
       );
 
@@ -690,13 +648,6 @@ const SettingsTab = () => {
         isLoading={isSaving}
       />
 
-      <ModalFormat
-        isOpen={isModalFormatOpen}
-        onClose={() => setIsModalFormatOpen(false)}
-        onFormat={handleFormatDisk}
-        isLoading={isSaving}
-      />
-
       <ModalConnectNode
         isOpen={isModalConnectOpen}
         onClose={() => setIsModalConnectOpen(false)}
@@ -774,11 +725,9 @@ const SettingsTab = () => {
           setIsChanged,
           handleBackup,
           handleRestoreBackup,
-          handleFormatDisk,
           handleDiscardChanges,
           handleSaveSettings,
           setIsModalRestoreOpen,
-          setIsModalFormatOpen,
           setIsModalConnectOpen,
         }}
       >

@@ -886,5 +886,20 @@
       "reload": "Reload App",
       "retry": "Try Again"
     }
+  },
+  "format": {
+    "navbar": {
+      "running": "Formatting… {progress}%",
+      "success": "Format complete",
+      "failed": "Format failed"
+    },
+    "toast": {
+      "started": "Formatting disk started...",
+      "startFailed": "Could not start the format",
+      "success": "Format done! Your system is ready.",
+      "failedErased": "Format failed after the disk was erased. The node cannot start until a format completes — check the logs and retry.",
+      "failedUntouched": "Format failed. The disk was not changed — check the logs before retrying.",
+      "incomplete": "Format did not complete — check the logs before retrying."
+    }
   }
 }
