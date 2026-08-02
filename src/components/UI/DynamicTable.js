@@ -17,6 +17,7 @@ import {
   Thead,
   Tr,
   useColorModeValue,
+  Skeleton,
 } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import { usePagination, useTable } from 'react-table';
@@ -120,79 +121,96 @@ const ColumnsTable = ({
           ))}
         </Thead>
         <Tbody {...getTableBodyProps()}>
-          {page.map((row, index) => {
-            prepareRow(row);
-            return (
-              <Tr {...row.getRowProps()} key={index}>
-                {row.cells.map((cell, index) => {
-                  let data = '';
-                  if (cell.column.type === 'name') {
-                    data = (
-                      <Text color={textColor} fontSize="sm" fontWeight="700">
-                        {cell.value}
-                      </Text>
-                    );
-                  } else if (cell.column.type === 'status') {
-                    data = (
-                      <Flex align="center">
-                        <Icon
-                          w="24px"
-                          h="24px"
-                          me="5px"
-                          color={
-                            cell.value === 'Active'
-                              ? 'green.500'
-                              : cell.value === 'Disable'
-                              ? 'red.500'
-                              : cell.value === 'Error'
-                              ? 'orange.500'
-                              : null
-                          }
-                          as={
-                            cell.value === 'Active'
-                              ? MdCheckCircle
-                              : cell.value === 'Disable'
-                              ? MdCancel
-                              : cell.value === 'Error'
-                              ? MdOutlineError
-                              : null
-                          }
-                        />
+          {/* Keep the header and the row rhythm while the data is in flight, so the
+              table occupies its final space instead of appearing from nothing. */}
+          {loading &&
+            Array.from({ length: 5 }, (_, r) => (
+              <Tr key={`skeleton-${r}`}>
+                {columnsData.map((_col, c) => (
+                  <Td key={c} borderColor="transparent">
+                    <Skeleton height="14px" borderRadius="6px" />
+                  </Td>
+                ))}
+              </Tr>
+            ))}
+          {!loading &&
+            page.map((row, index) => {
+              prepareRow(row);
+              return (
+                <Tr {...row.getRowProps()} key={index}>
+                  {row.cells.map((cell, index) => {
+                    let data = '';
+                    if (cell.column.type === 'name') {
+                      data = (
                         <Text color={textColor} fontSize="sm" fontWeight="700">
                           {cell.value}
                         </Text>
-                      </Flex>
+                      );
+                    } else if (cell.column.type === 'status') {
+                      data = (
+                        <Flex align="center">
+                          <Icon
+                            w="24px"
+                            h="24px"
+                            me="5px"
+                            color={
+                              cell.value === 'Active'
+                                ? 'green.500'
+                                : cell.value === 'Disable'
+                                ? 'red.500'
+                                : cell.value === 'Error'
+                                ? 'orange.500'
+                                : null
+                            }
+                            as={
+                              cell.value === 'Active'
+                                ? MdCheckCircle
+                                : cell.value === 'Disable'
+                                ? MdCancel
+                                : cell.value === 'Error'
+                                ? MdOutlineError
+                                : null
+                            }
+                          />
+                          <Text
+                            color={textColor}
+                            fontSize="sm"
+                            fontWeight="700"
+                          >
+                            {cell.value}
+                          </Text>
+                        </Flex>
+                      );
+                    } else if (cell.column.type === 'progress') {
+                      data = (
+                        <Flex align="center">
+                          <Progress
+                            variant="table"
+                            colorScheme="green"
+                            h="8px"
+                            w="108px"
+                            value={cell.value}
+                          />
+                        </Flex>
+                      );
+                    }
+                    return (
+                      <Td
+                        {...cell.getCellProps()}
+                        key={index}
+                        fontSize={{ sm: '14px' }}
+                        maxH="30px !important"
+                        py="8px"
+                        minW={{ sm: '150px', md: '200px', lg: 'auto' }}
+                        borderColor="transparent"
+                      >
+                        {data}
+                      </Td>
                     );
-                  } else if (cell.column.type === 'progress') {
-                    data = (
-                      <Flex align="center">
-                        <Progress
-                          variant="table"
-                          colorScheme="green"
-                          h="8px"
-                          w="108px"
-                          value={cell.value}
-                        />
-                      </Flex>
-                    );
-                  }
-                  return (
-                    <Td
-                      {...cell.getCellProps()}
-                      key={index}
-                      fontSize={{ sm: '14px' }}
-                      maxH="30px !important"
-                      py="8px"
-                      minW={{ sm: '150px', md: '200px', lg: 'auto' }}
-                      borderColor="transparent"
-                    >
-                      {data}
-                    </Td>
-                  );
-                })}
-              </Tr>
-            );
-          })}
+                  })}
+                </Tr>
+              );
+            })}
         </Tbody>
       </Table>
       <Flex
@@ -202,18 +220,29 @@ const ColumnsTable = ({
         w="100%"
         px={{ md: '22px' }}
       >
-        <Text
-          fontSize="sm"
-          color="gray.500"
-          fontWeight="normal"
-          mb={{ sm: '24px', md: '0px' }}
-        >
-          Showing {pageSize * pageIndex + 1} to{' '}
-          {pageSize * (pageIndex + 1) <= tableData.length
-            ? pageSize * (pageIndex + 1)
-            : tableData.length}{' '}
-          of {tableData.length} entries
-        </Text>
+        {/* The count comes from the data, which is still empty while loading —
+            it would read "Showing 1 to 0 of 0 entries" under the skeleton rows. */}
+        {loading ? (
+          <Skeleton
+            height="14px"
+            width="150px"
+            borderRadius="6px"
+            mb={{ sm: '24px', md: '0px' }}
+          />
+        ) : (
+          <Text
+            fontSize="sm"
+            color="gray.500"
+            fontWeight="normal"
+            mb={{ sm: '24px', md: '0px' }}
+          >
+            Showing {pageSize * pageIndex + 1} to{' '}
+            {pageSize * (pageIndex + 1) <= tableData.length
+              ? pageSize * (pageIndex + 1)
+              : tableData.length}{' '}
+            of {tableData.length} entries
+          </Text>
+        )}
         {tableData.length > pageSize && (
           <Stack direction="row" alignSelf="flex-end" spacing="4px" ms="auto">
             <Button

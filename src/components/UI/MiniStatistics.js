@@ -10,6 +10,7 @@ import {
   Progress,
   Tooltip,
   Button,
+  Skeleton,
 } from '@chakra-ui/react';
 // Custom components
 import Card from '../card/Card';
@@ -34,6 +35,11 @@ const MiniStatistics = ({
   button,
   buttonHandler,
   buttonIcon,
+  // Draw the card, skeleton only the value. The label and icon are known before
+  // any data arrives, so showing them says WHAT is loading — and a single-line
+  // value keeps its size, so nothing shifts when the number lands. A caller
+  // passing a multi-line element as `value` still grows by the extra lines.
+  loading,
   ...props
 }) => {
   const textColor = useColorModeValue('brand.800', 'white');
@@ -46,6 +52,17 @@ const MiniStatistics = ({
 
   // Check if value is a React element (not just a string/number)
   const isComplexValue = React.isValidElement(value);
+
+  // The skeleton renders inside StatNumber, so a non-breaking space sizes it to
+  // exactly one line of the value it stands in for — at whatever fontSize the
+  // caller passed. A fixed pixel height cannot be right for both `md` and `2xl`.
+  const shownValue = loading ? (
+    <Skeleton width="70%" borderRadius="6px">
+      &nbsp;
+    </Skeleton>
+  ) : (
+    value
+  );
 
   useEffect(() => {
     if (progressValue && progressTotal) {
@@ -77,7 +94,7 @@ const MiniStatistics = ({
                 textOverflow={isComplexValue ? undefined : "ellipsis"}
                 whiteSpace={isComplexValue ? "normal" : "nowrap"}
               >
-                {value}
+                {shownValue}
               </StatNumber>
             )}
             <StatLabel
@@ -106,12 +123,18 @@ const MiniStatistics = ({
                 textOverflow={isComplexValue ? undefined : "ellipsis"}
                 whiteSpace={isComplexValue ? "normal" : "nowrap"}
               >
-                {value}
+                {shownValue}
               </StatNumber>
             )}
             {secondaryText ? (
               <StatNumber fontWeight={600} fontSize="md" mt="3">
-                {secondaryText}
+                {loading ? (
+                  <Skeleton width="50%" borderRadius="6px">
+                    &nbsp;
+                  </Skeleton>
+                ) : (
+                  secondaryText
+                )}
               </StatNumber>
             ) : null}
             {secondaryDescription ? (

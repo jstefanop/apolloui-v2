@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment';
-import { Card, Flex, Icon, Text, Skeleton } from '@chakra-ui/react';
+import { Card, Flex, Icon, Text } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 import CustomAlert from './CustomAlert';
 import config from '../../config';
 import { useIntl } from 'react-intl';
 
-const NodeStatus = ({ serviceStatus }) => {
+const NodeStatus = ({ serviceStatus, loading }) => {
   const intl = useIntl();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const node = serviceStatus?.node;
@@ -33,11 +33,22 @@ const NodeStatus = ({ serviceStatus }) => {
     };
   }, [node?.status, node?.requestedStatus, node?.requestedAt]);
 
-  // No status object yet means the first WebSocket push has not arrived — loading,
-  // not an error. The red "unavailable" alert is only right once we have status
-  // and the node is genuinely absent from it.
+  // An absent status object means two different things. While the first
+  // WebSocket push is in flight it means loading: the page renders its real
+  // layout with per-card skeletons, so a status bar here would just be a grey
+  // slab floating above them. Once the subscription has answered without one,
+  // the service is genuinely unreachable — and this is all the page has to show.
   if (!serviceStatus || Object.keys(serviceStatus).length === 0) {
-    return <Skeleton height="72px" width="100%" borderRadius="12px" />;
+    if (loading) return null;
+
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'node.status.unavailable.title' })}
+        description={intl.formatMessage({ id: 'node.status.unavailable.description' })}
+        status="error"
+        variant="horizontal"
+      />
+    );
   }
 
   if (!node) {

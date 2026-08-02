@@ -82,7 +82,10 @@ const Miner = () => {
   } = useSelector(minerSelector, shallowEqual);
 
   // Services data reselected
-  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
+  const { data: servicesStatus, loading: loadingServices } = useSelector(
+    servicesSelector,
+    shallowEqual
+  );
 
   // Track previous values for flash animations (no cleanup — avoids stale-ref issues)
   const prevDataRef = useRef(null);
@@ -204,7 +207,12 @@ const Miner = () => {
         data={boards}
       />
       
-      {servicesStatus?.miner?.status === 'online' ? (
+      {/* Render the real page while the services push is still in flight: every
+          card already knows how to draw its own loading state, so the layout
+          lands once and fills in, instead of a stand-in grid that approximates
+          it and then shifts. The offline placeholder is only for a miner the
+          device has actually reported as not running. */}
+      {loadingServices || servicesStatus?.miner?.status === 'online' ? (
         <>
           <Grid
             templateAreas={{
@@ -254,6 +262,7 @@ const Miner = () => {
                 gap="20px"
               >
                 <MiniStatistics
+                  loading={loadingMiner}
                   startContent={
                     <IconBox
                       w="56px"
@@ -285,6 +294,7 @@ const Miner = () => {
                 />
 
                 <MiniStatistics
+                  loading={loadingMiner}
                   startContent={
                     <IconBox
                       w="56px"
@@ -316,6 +326,7 @@ const Miner = () => {
                 />
 
                 <MiniStatistics
+                  loading={loadingMiner}
                   startContent={
                     <IconBox
                       w="56px"
@@ -338,6 +349,7 @@ const Miner = () => {
                 />
 
                 <MiniStatistics
+                  loading={loadingMiner}
                   startContent={
                     <IconBox
                       w="56px"
@@ -675,7 +687,7 @@ const Miner = () => {
         </>
       ) : (
         <Flex height="60vh" align="center" justify="center">
-          <MinerStatus serviceStatus={servicesStatus} />
+          <MinerStatus serviceStatus={servicesStatus} loading={loadingServices} />
         </Flex>
       )}
     </Box>

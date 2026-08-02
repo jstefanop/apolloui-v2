@@ -91,7 +91,10 @@ const SoloMining = () => {
   const isBannerDisabled = typeof window !== 'undefined' ? localStorage.getItem('solo-mining-banner-disabled') : null;
   const [showBanner, setShowBanner] = useState(!isBannerDisabled);
 
-  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
+  const { data: servicesStatus, loading: loadingServices } = useSelector(
+    servicesSelector,
+    shallowEqual
+  );
 
   // Solo service actions
   const [startSolo, { loading: loadingSoloStart }] = useLazyQuery(
@@ -332,6 +335,13 @@ const SoloMining = () => {
     localStorage.removeItem('solo-mining-banner-disabled');
   };
 
+  // The placeholder is only for a solo service the device has actually reported
+  // as not running. While the services push is still in flight the real content
+  // renders instead, and each card draws its own loading state.
+  const soloIsOnline = servicesStatus?.solo?.status === 'online';
+  const showSoloContent = isNodeSynced && (loadingServices || soloIsOnline);
+  const showSoloPlaceholder = isNodeSynced && !loadingServices && !soloIsOnline;
+
   return (
     <Box>
 
@@ -371,10 +381,11 @@ const SoloMining = () => {
       )}
 
       {/* Show SoloMiningStatus when solo service is not online */}
-      {isNodeSynced && servicesStatus?.solo?.status !== 'online' && (
+      {showSoloPlaceholder && (
         <Flex height="60vh" align="center" justify="center">
           <SoloMiningStatus
             serviceStatus={servicesStatus}
+            loading={loadingServices}
             ckPoolLastUpdate={ckPoolLastUpdate}
             ckDisconnected={ckDisconnected}
             blocksCount={blocksCount}
@@ -385,7 +396,7 @@ const SoloMining = () => {
       )}
       
       {/* Show content only when solo service is online AND node is synced */}
-      {isNodeSynced && servicesStatus?.solo?.status === 'online' && (
+      {showSoloContent && (
         <>
           {showBanner || isVisibleBanner ? (
             <Alert mb="5" borderRadius={'10px'} status={'info'}>

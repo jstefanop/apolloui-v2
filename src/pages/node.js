@@ -13,12 +13,12 @@ import {
   Center,
   Icon,
   Badge,
+  Skeleton,
 } from '@chakra-ui/react';
 import moment from 'moment';
 import CountUp from 'react-countup';
 import _ from 'lodash';
 import { useIntl } from 'react-intl';
-import { List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
@@ -165,7 +165,10 @@ const Node = () => {
   const { nodeRpcPassword, nodeEnableTor, nodeMaxConnections } = settings || {};
 
   // Services data reselected
-  const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
+  const { data: servicesStatus, loading: loadingServices } = useSelector(
+    servicesSelector,
+    shallowEqual
+  );
   const nodeServiceStatus = servicesStatus?.node;
 
   const nodeAddress =
@@ -306,13 +309,16 @@ const Node = () => {
         address={nodeAddress}
       />
 
-      {servicesStatus?.node?.status !== 'online' ? (
+      {/* Only once the device has actually reported the node as not running:
+          while the services push is still in flight the real page renders and
+          each card draws its own loading state. */}
+      {!loadingServices && servicesStatus?.node?.status !== 'online' ? (
         <Flex height="60vh" align="center" justify="center">
-          <NodeStatus serviceStatus={servicesStatus} />
+          <NodeStatus serviceStatus={servicesStatus} loading={loadingServices} />
         </Flex>
       ) : (
         <>
-          <NodeStatus serviceStatus={servicesStatus} />
+          <NodeStatus serviceStatus={servicesStatus} loading={loadingServices} />
 
           {/* Render error alert if service status is in error state or backend is down */}
           {isServiceError && (
@@ -364,8 +370,11 @@ const Node = () => {
             </Alert>
           )}
 
-          {/* Show stats if service is online or if we had valid data before */}
-          {shouldShowStats && (
+          {/* Show stats if service is online or if we had valid data before.
+              Also while the first push is in flight: there is no meaningful data
+              yet by definition, but the layout has to render for the cards below
+              to draw their own skeletons. */}
+          {(shouldShowStats || loadingNode) && (
             <Flex direction="column">
               <LatestBlocks mb="5" />
               <Card
@@ -384,7 +393,9 @@ const Node = () => {
                 >
                   <Flex direction="column" align="right">
                     <Text fontSize="2xl" fontWeight="bold" color="white">
-                      {isInitializing ? (
+                      {loadingNode ? (
+                        <Skeleton height="22px" width="200px" borderRadius="6px" />
+                      ) : isInitializing ? (
                         <FormattedMessage id="node.title.pre_sync" />
                       ) : isSyncing ? (
                         <FormattedMessage id="node.stats.verification_progress" />
@@ -402,7 +413,9 @@ const Node = () => {
                       mt="0"
                       align={'right'}
                     >
-                      {isInitializing ? (
+                      {loadingNode ? (
+                        <Skeleton height="12px" width="110px" borderRadius="6px" mt="1" />
+                      ) : isInitializing ? (
                         <FormattedMessage id="node.stats.initializing" />
                       ) : isSyncing ? (
                         `${syncProgress.toFixed(2)}%`
@@ -442,7 +455,9 @@ const Node = () => {
                       }
                       as="span"
                     >
-                      {isSynced ? (
+                      {loadingNode ? (
+                        <Skeleton height="36px" width="180px" borderRadius="8px" />
+                      ) : isSynced ? (
                         <Flex direction="row" alignItems="baseline">
                           <CountUp
                             end={blocksCount || 0}
@@ -497,9 +512,9 @@ const Node = () => {
                       </Badge>
                     )}
                   </Flex>
-                  {loadingNode ? (
-                    <List />
-                  ) : errorNodeSentence ? (
+                  {/* No block-level loader: the cards below render their own
+                      skeletons, so the layout lands once and fills in. */}
+                  {errorNodeSentence ? (
                     <Alert
                       borderRadius={'10px'}
                       status={errorNodeType || 'info'}
@@ -518,6 +533,7 @@ const Node = () => {
                       >
                         <MiniStatistics
                           bgColor={statisticColor}
+                          loading={loadingNode}
                           startContent={
                             <IconBox
                               w="56px"
@@ -559,6 +575,7 @@ const Node = () => {
                         />
                         <MiniStatistics
                           bgColor={statisticColor}
+                          loading={loadingNode}
                           startContent={
                             <IconBox
                               w="56px"
@@ -585,6 +602,7 @@ const Node = () => {
                       <SimpleGrid columns={{ base: 1, md: 3 }} spacing="20px">
                         <MiniStatistics
                           bgColor={statisticColor}
+                          loading={loadingNode}
                           startContent={
                             <IconBox
                               w="56px"
@@ -611,6 +629,7 @@ const Node = () => {
                         />
                         <MiniStatistics
                           bgColor={statisticColor}
+                          loading={loadingNode}
                           startContent={
                             <IconBox
                               w="56px"
@@ -660,6 +679,7 @@ const Node = () => {
                         />
                         <MiniStatistics
                           bgColor={statisticColor}
+                          loading={loadingNode}
                           startContent={
                             <IconBox
                               w="56px"
@@ -686,6 +706,7 @@ const Node = () => {
                       <SimpleGrid columns={{ base: 1 }} spacing="20px" mt="5">
                         <MiniStatistics
                           bgColor={statisticColor}
+                          loading={loadingNode}
                           startContent={
                             <IconBox
                               w="56px"
@@ -712,6 +733,7 @@ const Node = () => {
                         />
                         <MiniStatistics
                           bgColor={statisticColor}
+                          loading={loadingNode}
                           startContent={
                             <IconBox
                               w="56px"
@@ -749,8 +771,9 @@ const Node = () => {
                   )}
                 </Card>
               </Flex>
-              {shouldShowStats && !loadingNode && !errorNode?.length && (
+              {!errorNode?.length && (
                 <DynamicTable
+                  loading={loadingNode}
                   columnsData={columnsData}
                   tableData={dataTable}
                   tableTitle={<FormattedMessage id="node.table.title" />}
