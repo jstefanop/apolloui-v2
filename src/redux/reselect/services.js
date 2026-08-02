@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect';
+import { loadingUntilAnswered } from '../utils/answered';
 import { initialState } from '../../graphql/services';
 
 const servicesDataSelector = (state) => state.services.data;
 const servicesErrorSelector = (state) => state.services.error;
-const servicesLoadingSelector = (state) => state.services.loading;
+const servicesLoadingSelector = (state) => loadingUntilAnswered(state.services);
 
 export const servicesSelector = createSelector(
   servicesDataSelector,

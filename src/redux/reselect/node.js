@@ -1,8 +1,9 @@
 import { createSelector } from 'reselect';
+import { loadingUntilAnswered } from '../utils/answered';
 
 const nodeDataSelector = (state) => state.node.data;
 const nodeErrorSelector = (state) => state.node.error;
-const nodeLoadingSelector = (state) => state.node.loading;
+const nodeLoadingSelector = (state) => loadingUntilAnswered(state.node);
 const nodeLastKnownDataSelector = (state) => state.node.lastKnownData;
 
 // Returns true for transient errors that should not clear the UI (timeouts, RPC warmup)

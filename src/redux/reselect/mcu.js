@@ -1,9 +1,10 @@
 import { createSelector } from 'reselect';
+import { loadingUntilAnswered } from '../utils/answered';
 import { initialState } from '../../graphql/mcu';
 
 const mcuDataSelector = (state) => state.mcu.data;
 const mcuErrorSelector = (state) => state.mcu.error;
-const mcuLoadingSelector = (state) => state.mcu.loading;
+const mcuLoadingSelector = (state) => loadingUntilAnswered(state.mcu);
 
 export const mcuSelector = createSelector(
   mcuDataSelector,

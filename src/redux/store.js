@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import { createWrapper } from 'next-redux-wrapper';
+import { resetReceivedOnRehydrate } from './utils/answered';
 
 // Import reducers/slices
 import minerReducer from './slices/minerSlice';
@@ -65,6 +66,10 @@ const persistConfig = {
   storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ['auth', 'minerAction', 'solo'],
+  // `solo` is persisted for its stats, but "the device has answered" is a fact
+  // about this session only: rehydrating it as true would skip the skeleton and
+  // present the previous session's numbers as current.
+  transforms: [resetReceivedOnRehydrate],
   timeout: null,
 };
 
@@ -129,5 +134,5 @@ const makeStore = () => {
   return store;
 };
 
-export { store, persistor };
+export { store, persistor, persistConfig };
 export default createWrapper(makeStore, { debug: false });

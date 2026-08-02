@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { loadingUntilAnswered } from '../utils/answered';
 import _ from 'lodash';
 import { initialState } from '../../graphql/solo';
 import { displayHashrate, convertHashrateStringToValue } from '../../lib/utils';
@@ -6,7 +7,7 @@ import moment from '../../lib/moment';
 
 const soloDataSelector = (state) => state.solo.data;
 const soloErrorSelector = (state) => state.solo.error;
-const soloLoadingSelector = (state) => state.solo.loading;
+const soloLoadingSelector = (state) => loadingUntilAnswered(state.solo);
 
 export const soloSelector = createSelector(
   soloDataSelector,

@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { loadingUntilAnswered } from '../utils/answered';
 import _ from 'lodash';
 import { initialState } from '../../graphql/miner';
 import { displayHashrate, convertHashrateStringToValue } from '../../lib/utils';
@@ -6,7 +7,7 @@ import moment from '../../lib/moment';
 
 const minerDataSelector = (state) => state.miner.data;
 const minerErrorSelector = (state) => state.miner.error;
-const minerLoadingSelector = (state) => state.miner.loading;
+const minerLoadingSelector = (state) => loadingUntilAnswered(state.miner);
 
 export const minerSelector = createSelector(
   minerDataSelector,
