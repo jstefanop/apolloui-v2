@@ -960,7 +960,8 @@
       "ssidLabel": "Nome della rete",
       "ssidPlaceholder": "Nome esatto della rete nascosta",
       "isHidden": "Questa rete non trasmette il proprio nome",
-      "replacing": "Questa rete è salvata. La password inserita qui sostituisce quella memorizzata."
+      "replacing": "Questa rete è salvata. La password inserita qui sostituisce quella memorizzata.",
+      "required": "Inserisci la password della rete"
     },
     "confirm": {
       "disconnect": {
@@ -985,7 +986,8 @@
       "not-confirmed": "La rete non è salita",
       "no-ip-address": "Connesso, ma nessun indirizzo assegnato",
       "not-authorized": "Non è consentito modificare la rete",
-      "no-wifi-interface": "Nessuna scheda Wi-Fi disponibile"
+      "no-wifi-interface": "Nessuna scheda Wi-Fi disponibile",
+      "unreachable": "Nessuna risposta: il dispositivo potrebbe essere passato all'altra rete. Ricarica questa pagina dal suo nuovo indirizzo."
     },
     "scan": {
       "hint": "La scansione attiva la radio e richiede qualche secondo"

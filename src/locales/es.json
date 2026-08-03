@@ -960,7 +960,8 @@
       "ssidLabel": "Nombre de la red",
       "ssidPlaceholder": "Nombre exacto de la red oculta",
       "isHidden": "Esta red no difunde su nombre",
-      "replacing": "Esta red está guardada. La contraseña que introduzcas aquí reemplaza la almacenada."
+      "replacing": "Esta red está guardada. La contraseña que introduzcas aquí reemplaza la almacenada.",
+      "required": "Introduce la contraseña de la red"
     },
     "confirm": {
       "disconnect": {
@@ -985,7 +986,8 @@
       "not-confirmed": "La red no llegó a levantarse",
       "no-ip-address": "Conectado, pero sin dirección asignada",
       "not-authorized": "No se permite cambiar la red",
-      "no-wifi-interface": "No hay adaptador Wi-Fi disponible"
+      "no-wifi-interface": "No hay adaptador Wi-Fi disponible",
+      "unreachable": "Sin respuesta: puede que el dispositivo haya pasado a la otra red. Vuelve a cargar esta página desde su nueva dirección."
     },
     "scan": {
       "hint": "La búsqueda activa la radio y tarda unos segundos"

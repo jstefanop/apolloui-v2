@@ -84,7 +84,11 @@ export const WIFI_SAVED_QUERY = gql`
       wifiSaved {
         result {
           networks {
+            # The name is the PROFILE's id, not the network: netplan — what Solo
+            # Node and Apollo III ship — calls the profile for the network Home
+            # "netplan-wlan0-Home". Match and display on ssid.
             name
+            ssid
             uuid
             device
             active

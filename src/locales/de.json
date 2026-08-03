@@ -960,7 +960,8 @@
       "ssidLabel": "Netzwerkname",
       "ssidPlaceholder": "Genauer Name des versteckten Netzwerks",
       "isHidden": "Dieses Netzwerk sendet seinen Namen nicht",
-      "replacing": "Dieses Netzwerk ist gespeichert. Ein hier eingegebenes Passwort ersetzt das gespeicherte."
+      "replacing": "Dieses Netzwerk ist gespeichert. Ein hier eingegebenes Passwort ersetzt das gespeicherte.",
+      "required": "Gib das Netzwerkpasswort ein"
     },
     "confirm": {
       "disconnect": {
@@ -985,7 +986,8 @@
       "not-confirmed": "Das Netzwerk kam nicht zustande",
       "no-ip-address": "Verbunden, aber keine Adresse zugewiesen",
       "not-authorized": "Ändern des Netzwerks nicht erlaubt",
-      "no-wifi-interface": "Kein WLAN-Adapter verfügbar"
+      "no-wifi-interface": "Kein WLAN-Adapter verfügbar",
+      "unreachable": "Keine Antwort — das Gerät ist möglicherweise ins andere Netzwerk gewechselt. Lade diese Seite über die neue Adresse neu."
     },
     "scan": {
       "hint": "Der Suchlauf weckt das Funkmodul und dauert einige Sekunden"

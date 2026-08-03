@@ -960,7 +960,8 @@
       "ssidLabel": "Network name",
       "ssidPlaceholder": "Exact name of the hidden network",
       "isHidden": "This network does not broadcast its name",
-      "replacing": "This network is saved. A password entered here replaces the stored one."
+      "replacing": "This network is saved. A password entered here replaces the stored one.",
+      "required": "Enter the network password"
     },
     "confirm": {
       "disconnect": {
@@ -985,7 +986,8 @@
       "not-confirmed": "The network did not come up",
       "no-ip-address": "Joined, but no address was assigned",
       "not-authorized": "Not allowed to change the network",
-      "no-wifi-interface": "No Wi-Fi adapter available"
+      "no-wifi-interface": "No Wi-Fi adapter available",
+      "unreachable": "No answer — the device may have moved to the other network. Reload this page from its new address."
     },
     "scan": {
       "hint": "Scanning wakes the radio and takes a few seconds"

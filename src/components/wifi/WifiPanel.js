@@ -103,9 +103,14 @@ const WifiPanel = () => {
     setScanned(false);
   }, [selected]);
 
-  // A network is "saved" when a stored profile carries the same name. The list
-  // shows it so Connect can skip asking for a passphrase we already hold.
-  const savedNames = useMemo(() => new Set(saved.map((s) => s.name)), [saved]);
+  // A network is "saved" when a stored profile joins the same SSID — never when
+  // it carries the same NAME. The profile for `Home` is `netplan-wlan0-Home` on
+  // every netplan device, so matching on the name found nothing there: the badge
+  // never showed and every reconnect asked for a password we already hold.
+  const savedSsids = useMemo(
+    () => new Set(saved.map((s) => s.ssid || s.name)),
+    [saved]
+  );
 
   const reasonText = (code) =>
     intl.formatMessage({
@@ -113,28 +118,65 @@ const WifiPanel = () => {
       defaultMessage: intl.formatMessage({ id: 'wifi.error.failed' }),
     });
 
+  // A mutation that never comes back is the NORMAL outcome on this page: joining
+  // or leaving a network kills the request that asked for it, and Apollo's
+  // errorPolicy 'all' only folds GRAPHQL errors into `errors` — a dead socket
+  // still rejects. Unguarded, that left `pending` set for ever: spinner running,
+  // every other Connect disabled, the dialog stuck open, recoverable only by a
+  // page reload.
+  const runMutation = async (fn) => {
+    try {
+      return await fn();
+    } catch {
+      return { unreachable: true };
+    }
+  };
+
   const afterChange = async () => {
-    await Promise.all([refetchStatus(), refetchSaved(), refetchInterfaces()]);
+    // These ride the connection that may have just moved, for the same reason.
+    await Promise.all([refetchStatus(), refetchSaved(), refetchInterfaces()]).catch(() => {});
     if (scanned) refresh();
   };
 
   const doConnect = async (network, { passphrase = null, hidden = false } = {}) => {
-    const band = bandChoice[network.ssid] || null;
+    // `??`, not `||`: an untouched picker says nothing about the band and must
+    // leave a pin made earlier alone, while "" is the user picking Auto and
+    // asking for it to be cleared.
+    const band = bandChoice[network.ssid] ?? null;
     setPending(network.ssid);
     setModalError(null);
-    const { data, errors } = await connect({
-      variables: {
-        input: { ssid: network.ssid, passphrase, ifname: selected, hidden, band },
-      },
-    });
+    const { data, errors, unreachable } = await runMutation(() =>
+      connect({
+        variables: {
+          input: { ssid: network.ssid, passphrase, ifname: selected, hidden, band },
+        },
+      })
+    );
     const err = errors?.[0]?.message || data?.Mcu?.wifiConnect?.error?.message;
     setPending(null);
+    if (unreachable) {
+      setModal(null);
+      dispatch(
+        sendFeedback({
+          message: intl.formatMessage({ id: 'wifi.error.unreachable' }),
+          type: 'warning',
+        })
+      );
+      return;
+    }
     if (err) {
       const text = reasonText(err);
       // Keep the dialog open on a bad key so the passphrase can be retyped
       // without hunting for the network again.
       if (modal) setModalError(text);
-      else dispatch(sendFeedback({ message: text, type: 'error' }));
+      else if (savedSsids.has(network.ssid)) {
+        // A saved network that will not activate is usually a router whose
+        // password changed. The stored key is the one being refused, so offer
+        // the dialog — otherwise Connect repeats the same failure for ever and
+        // the only way out is Forget.
+        setModal({ ...network, saved: true });
+        setModalError(text);
+      } else dispatch(sendFeedback({ message: text, type: 'error' }));
       return;
     }
     setModal(null);
@@ -151,8 +193,10 @@ const WifiPanel = () => {
   // not exist is what made them unreachable before.
   const onConnectClick = (network) => {
     if (network.open) return doConnect(network);
-    if (savedNames.has(network.ssid)) return doConnect(network);
-    setModal({ ...network, saved: savedNames.has(network.ssid) });
+    // A saved network is joined with the key the device already holds; the
+    // dialog opens by itself if that key turns out to be the stale one.
+    if (savedSsids.has(network.ssid)) return doConnect(network);
+    setModal({ ...network, saved: false });
   };
 
   const onDisconnect = () => {
@@ -164,9 +208,18 @@ const WifiPanel = () => {
       // page takes the device off the network you are administering it from.
       selfLockout: !!iface?.carriesDefaultRoute,
       run: async () => {
-        const { data, errors } = await disconnect({ variables: { ifname: selected } });
+        const { data, errors, unreachable } = await runMutation(() =>
+          disconnect({ variables: { ifname: selected } })
+        );
         const err = errors?.[0]?.message || data?.Mcu?.wifiDisconnect?.error?.message;
-        if (err) dispatch(sendFeedback({ message: reasonText(err), type: 'error' }));
+        if (unreachable)
+          dispatch(
+            sendFeedback({
+              message: intl.formatMessage({ id: 'wifi.error.unreachable' }),
+              type: 'warning',
+            })
+          );
+        else if (err) dispatch(sendFeedback({ message: reasonText(err), type: 'error' }));
         await afterChange();
       },
     });
@@ -175,12 +228,23 @@ const WifiPanel = () => {
   const onForget = (profile) => {
     setConfirm({
       kind: 'forget',
-      ssid: profile.name,
+      // The network, not the generated profile id: "Forget netplan-wlan0-Home?"
+      // names something the user has never seen.
+      ssid: profile.ssid || profile.name,
       selfLockout: profile.active && interfaces.find((i) => i.device === selected)?.carriesDefaultRoute,
       run: async () => {
-        const { data, errors } = await forget({ variables: { uuid: profile.uuid } });
+        const { data, errors, unreachable } = await runMutation(() =>
+          forget({ variables: { uuid: profile.uuid } })
+        );
         const err = errors?.[0]?.message || data?.Mcu?.wifiForget?.error?.message;
-        if (err) dispatch(sendFeedback({ message: reasonText(err), type: 'error' }));
+        if (unreachable)
+          dispatch(
+            sendFeedback({
+              message: intl.formatMessage({ id: 'wifi.error.unreachable' }),
+              type: 'warning',
+            })
+          );
+        else if (err) dispatch(sendFeedback({ message: reasonText(err), type: 'error' }));
         await afterChange();
       },
     });
@@ -370,7 +434,7 @@ const WifiPanel = () => {
                         {intl.formatMessage({ id: 'wifi.security.open' })}
                       </Badge>
                     )}
-                    {savedNames.has(n.ssid) && (
+                    {savedSsids.has(n.ssid) && (
                       <Badge ml="2" fontSize="0.65em" colorScheme="green">
                         {intl.formatMessage({ id: 'wifi.network.saved' })}
                       </Badge>
@@ -447,7 +511,7 @@ const WifiPanel = () => {
             {saved.map((s) => (
               <Flex key={s.uuid} align="center" gap={3} px="12px" py="8px" bg={rowBg} borderRadius="10px">
                 <Text flex="1" fontSize="sm" noOfLines={1}>
-                  {s.name}
+                  {s.ssid || s.name}
                   {s.active && (
                     <Badge ml="2" fontSize="0.65em" colorScheme="whatsapp">
                       {intl.formatMessage({ id: 'wifi.network.active' })}

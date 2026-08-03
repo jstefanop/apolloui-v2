@@ -37,6 +37,9 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
   const [show, setShow] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [manualSsid, setManualSsid] = useState('');
+  // Told apart from the `error` prop, which carries what the backend said: this
+  // one is about the form, and must clear as soon as the dialog is reused.
+  const [formError, setFormError] = useState(null);
 
   // A fresh dialog per network: a passphrase left over from a previous attempt
   // must never be submitted to a different one.
@@ -46,6 +49,7 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
       setShow(false);
       setHidden(!!network?.hidden);
       setManualSsid('');
+      setFormError(null);
     }
   }, [isOpen, network]);
 
@@ -53,10 +57,20 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
 
   const isHiddenEntry = network.manual;
   const ssid = isHiddenEntry ? manualSsid : network.ssid;
+  // A network the list reported as secured needs one. The hidden-network entry
+  // is typed blind — it may well be open — so there it stays optional.
+  const requiresPassphrase = !isHiddenEntry && !network.open;
 
   const submit = (e) => {
     e?.preventDefault?.();
     if (isHiddenEntry && !manualSsid.trim()) return;
+    // An empty field used to be sent as no passphrase at all, and nmcli's
+    // "Secrets were required, but not provided" came back to the user as "Wrong
+    // password" — for a password they never typed.
+    if (requiresPassphrase && !passphrase) {
+      setFormError(intl.formatMessage({ id: 'wifi.password.required' }));
+      return;
+    }
     onSubmit({ ssid: ssid.trim(), passphrase: passphrase || null, hidden });
   };
 
@@ -99,7 +113,7 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
                 {intl.formatMessage({ id: 'wifi.password.replacing' })}
               </Text>
             )}
-            <FormControl>
+            <FormControl isInvalid={!!formError}>
               <FormLabel fontSize="sm">
                 {intl.formatMessage({ id: 'wifi.password.label' })}
               </FormLabel>
@@ -108,7 +122,10 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
                   autoFocus={!isHiddenEntry}
                   type={show ? 'text' : 'password'}
                   value={passphrase}
-                  onChange={(e) => setPassphrase(e.target.value)}
+                  onChange={(e) => {
+                    setPassphrase(e.target.value);
+                    setFormError(null);
+                  }}
                   placeholder={intl.formatMessage({ id: 'wifi.password.placeholder' })}
                   bg={inputBg}
                   color={inputColor}
@@ -134,9 +151,9 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
               </Checkbox>
             )}
 
-            {error && (
+            {(formError || error) && (
               <Text color="red.400" fontSize="sm">
-                {error}
+                {formError || error}
               </Text>
             )}
           </Flex>
