@@ -12,7 +12,6 @@ import mcuReducer from './slices/mcuSlice';
 import analyticsReducer from './slices/analyticsSlice';
 import soloAnalyticsReducer from './slices/soloAnalyticsSlice';
 import settingsReducer from './slices/settingsSlice';
-import wifiReducer from './slices/wifiSlice';
 import feedbackReducer, {
   sendFeedback,
   resetFeedback,
@@ -81,7 +80,6 @@ const rootReducer = {
   analytics: analyticsReducer,
   soloAnalytics: soloAnalyticsReducer,
   settings: settingsReducer,
-  wifi: wifiReducer,
   feedback: feedbackReducer,
   minerAction: minerActionReducer,
   services: servicesReducer,
