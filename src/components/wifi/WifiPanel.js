@@ -38,9 +38,12 @@ const WifiPanel = () => {
   const dispatch = useDispatch();
   const rowBg = useColorModeValue('gray.50', 'whiteAlpha.100');
   const subtle = useColorModeValue('gray.600', 'gray.400');
-  const trackBg = useColorModeValue('gray.100', 'whiteAlpha.100');
-  const thumbBg = useColorModeValue('gray.300', 'whiteAlpha.300');
-  const thumbHoverBg = useColorModeValue('gray.400', 'whiteAlpha.400');
+  // Real CSS colours, not Chakra tokens: the `css` prop hands its object straight
+  // to emotion without resolving the theme, so `background: gray.300` paints
+  // nothing at all — which is why the bar was invisible even while scrolling.
+  const trackBg = useColorModeValue('rgba(0,0,0,0.06)', 'rgba(255,255,255,0.08)');
+  const thumbBg = useColorModeValue('rgba(0,0,0,0.28)', 'rgba(255,255,255,0.32)');
+  const thumbHoverBg = useColorModeValue('rgba(0,0,0,0.42)', 'rgba(255,255,255,0.48)');
 
   const [ifname, setIfname] = useState(null);
   const [pending, setPending] = useState(null); // ssid being joined
@@ -309,11 +312,21 @@ const WifiPanel = () => {
           css={
             networks.length > 5
               ? {
-                  '&::-webkit-scrollbar': { width: '8px' },
+                  // Firefox uses the standard properties and ignores the webkit
+                  // ones entirely; WebKit hides overlay scrollbars unless the
+                  // appearance is reset. Without both, the bar is invisible even
+                  // while scrolling — which is what happened on the device.
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: `${thumbBg} ${trackBg}`,
+                  '&::-webkit-scrollbar': {
+                    WebkitAppearance: 'none',
+                    width: '8px',
+                  },
                   '&::-webkit-scrollbar-track': { background: trackBg, borderRadius: '4px' },
                   '&::-webkit-scrollbar-thumb': {
                     background: thumbBg,
                     borderRadius: '4px',
+                    border: `2px solid ${trackBg}`,
                     '&:hover': { background: thumbHoverBg },
                   },
                 }

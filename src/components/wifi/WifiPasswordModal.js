@@ -16,6 +16,7 @@ import {
   Checkbox,
   Flex,
 } from '@chakra-ui/react';
+import { useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 
 // The passphrase is asked for HERE, not inline in the list row.
@@ -27,6 +28,11 @@ import { useIntl } from 'react-intl';
 // the network it was opened for, and nothing that arrives later can move it.
 const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, error }) => {
   const intl = useIntl();
+  // Explicit, not inherited: with the theme's defaults the typed characters came
+  // out invisible in dark mode — a password field you cannot read as you type.
+  const inputBg = useColorModeValue('white', 'whiteAlpha.100');
+  const inputColor = useColorModeValue('gray.900', 'white');
+  const inputBorder = useColorModeValue('gray.200', 'whiteAlpha.300');
   const [passphrase, setPassphrase] = useState('');
   const [show, setShow] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -82,6 +88,9 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
                   value={manualSsid}
                   onChange={(e) => setManualSsid(e.target.value)}
                   placeholder={intl.formatMessage({ id: 'wifi.password.ssidPlaceholder' })}
+                  bg={inputBg}
+                  color={inputColor}
+                  borderColor={inputBorder}
                 />
               </FormControl>
             )}
@@ -101,6 +110,9 @@ const WifiPasswordModal = ({ isOpen, network, onClose, onSubmit, isConnecting, e
                   value={passphrase}
                   onChange={(e) => setPassphrase(e.target.value)}
                   placeholder={intl.formatMessage({ id: 'wifi.password.placeholder' })}
+                  bg={inputBg}
+                  color={inputColor}
+                  borderColor={inputBorder}
                 />
                 <InputRightElement width="4.5rem">
                   <Button h="1.75rem" size="sm" onClick={() => setShow(!show)}>
