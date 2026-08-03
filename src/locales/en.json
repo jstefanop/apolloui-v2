@@ -916,5 +916,81 @@
     "not_found": "Not found",
     "default": "Apollo",
     "node_syncing": "Syncing"
+  },
+  "wifi": {
+    "connectedTo": "Connected to “{ssid}”",
+    "notConnected": "Not connected",
+    "notConnected.hint": "Pick a network below to join one",
+    "available": "Available networks",
+    "saved": "Saved networks",
+    "noNetworks": "No networks found",
+    "noAdapter": "This device has no Wi-Fi adapter",
+    "adapter": {
+      "label": "Adapter",
+      "builtin": "built-in",
+      "usb": "USB"
+    },
+    "network": {
+      "hidden": "Hidden network",
+      "saved": "saved",
+      "active": "Connected",
+      "hiddenHint": "name required"
+    },
+    "security": {
+      "open": "open"
+    },
+    "status": {
+      "connecting": "Connecting…"
+    },
+    "action": {
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "forget": "Forget",
+      "refresh": "Refresh",
+      "cancel": "Cancel",
+      "addHidden": "+ Join a hidden network…",
+      "scan": "Scan for networks"
+    },
+    "password": {
+      "title": "Join “{ssid}”",
+      "label": "Password",
+      "placeholder": "Network password",
+      "show": "Show",
+      "hide": "Hide",
+      "ssidLabel": "Network name",
+      "ssidPlaceholder": "Exact name of the hidden network",
+      "isHidden": "This network does not broadcast its name",
+      "replacing": "This network is saved. A password entered here replaces the stored one."
+    },
+    "confirm": {
+      "disconnect": {
+        "title": "Leave “{ssid}”?",
+        "body": "The device disconnects from this network. The password stays saved, so you can rejoin without typing it again."
+      },
+      "forget": {
+        "title": "Forget “{ssid}”?",
+        "body": "The saved password is deleted. Rejoining this network will require typing it again."
+      },
+      "selfLockout": "This is the connection serving this page. Continuing will cut the device off, and you may need physical access to get it back."
+    },
+    "toast": {
+      "connected": "Connected to “{ssid}”"
+    },
+    "error": {
+      "failed": "Could not join the network",
+      "ssid-not-found": "That network is not in range",
+      "activation-failed": "Could not join. Check the password and try again.",
+      "bad-passphrase": "Wrong password",
+      "timeout": "The network took too long to answer",
+      "not-confirmed": "The network did not come up",
+      "no-ip-address": "Joined, but no address was assigned",
+      "not-authorized": "Not allowed to change the network",
+      "no-wifi-interface": "No Wi-Fi adapter available"
+    },
+    "scan": {
+      "hint": "Scanning wakes the radio and takes a few seconds"
+    },
+    "band": "{band} GHz",
+    "band.auto": "Auto"
   }
 }

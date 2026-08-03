@@ -916,5 +916,81 @@
     "not_found": "No encontrado",
     "default": "Apollo",
     "node_syncing": "Sincronizando"
+  },
+  "wifi": {
+    "connectedTo": "Conectado a «{ssid}»",
+    "notConnected": "Sin conexión",
+    "notConnected.hint": "Elige una red abajo para conectarte",
+    "available": "Redes disponibles",
+    "saved": "Redes guardadas",
+    "noNetworks": "No se encontraron redes",
+    "noAdapter": "Este dispositivo no tiene adaptador Wi-Fi",
+    "adapter": {
+      "label": "Adaptador",
+      "builtin": "integrado",
+      "usb": "USB"
+    },
+    "network": {
+      "hidden": "Red oculta",
+      "saved": "guardada",
+      "active": "Conectada",
+      "hiddenHint": "requiere el nombre"
+    },
+    "security": {
+      "open": "abierta"
+    },
+    "status": {
+      "connecting": "Conectando…"
+    },
+    "action": {
+      "connect": "Conectar",
+      "disconnect": "Desconectar",
+      "forget": "Olvidar",
+      "refresh": "Actualizar",
+      "cancel": "Cancelar",
+      "addHidden": "+ Conectar a una red oculta…",
+      "scan": "Buscar redes"
+    },
+    "password": {
+      "title": "Conectar a «{ssid}»",
+      "label": "Contraseña",
+      "placeholder": "Contraseña de la red",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "ssidLabel": "Nombre de la red",
+      "ssidPlaceholder": "Nombre exacto de la red oculta",
+      "isHidden": "Esta red no difunde su nombre",
+      "replacing": "Esta red está guardada. La contraseña que introduzcas aquí reemplaza la almacenada."
+    },
+    "confirm": {
+      "disconnect": {
+        "title": "¿Salir de «{ssid}»?",
+        "body": "El dispositivo se desconectará de esta red. La contraseña sigue guardada, así que podrás volver a conectarte sin escribirla."
+      },
+      "forget": {
+        "title": "¿Olvidar «{ssid}»?",
+        "body": "Se elimina la contraseña guardada. Para volver a conectarte tendrás que escribirla otra vez."
+      },
+      "selfLockout": "Es la conexión que sirve esta página. Si continúas, el dispositivo quedará aislado y puede que necesites acceso físico."
+    },
+    "toast": {
+      "connected": "Conectado a «{ssid}»"
+    },
+    "error": {
+      "failed": "No se pudo conectar a la red",
+      "ssid-not-found": "Esa red no está al alcance",
+      "activation-failed": "No se pudo conectar. Revisa la contraseña e inténtalo de nuevo.",
+      "bad-passphrase": "Contraseña incorrecta",
+      "timeout": "La red tardó demasiado en responder",
+      "not-confirmed": "La red no llegó a levantarse",
+      "no-ip-address": "Conectado, pero sin dirección asignada",
+      "not-authorized": "No se permite cambiar la red",
+      "no-wifi-interface": "No hay adaptador Wi-Fi disponible"
+    },
+    "scan": {
+      "hint": "La búsqueda activa la radio y tarda unos segundos"
+    },
+    "band": "{band} GHz",
+    "band.auto": "Auto"
   }
 }
