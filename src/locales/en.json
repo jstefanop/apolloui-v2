@@ -987,6 +987,8 @@
       "no-ip-address": "Joined, but no address was assigned",
       "not-authorized": "Not allowed to change the network",
       "no-wifi-interface": "No Wi-Fi adapter available",
+      "not-a-wifi-interface": "That adapter is not Wi-Fi",
+      "not-a-wifi-profile": "That saved network is not Wi-Fi",
       "unreachable": "No answer — the device may have moved to the other network. Reload this page from its new address."
     },
     "scan": {

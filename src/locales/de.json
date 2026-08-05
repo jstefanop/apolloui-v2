@@ -987,6 +987,8 @@
       "no-ip-address": "Verbunden, aber keine Adresse zugewiesen",
       "not-authorized": "Ändern des Netzwerks nicht erlaubt",
       "no-wifi-interface": "Kein WLAN-Adapter verfügbar",
+      "not-a-wifi-interface": "Dieser Adapter ist kein WLAN-Adapter",
+      "not-a-wifi-profile": "Dieses gespeicherte Netzwerk ist kein WLAN",
       "unreachable": "Keine Antwort — das Gerät ist möglicherweise ins andere Netzwerk gewechselt. Lade diese Seite über die neue Adresse neu."
     },
     "scan": {

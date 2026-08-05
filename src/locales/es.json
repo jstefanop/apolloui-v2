@@ -987,6 +987,8 @@
       "no-ip-address": "Conectado, pero sin dirección asignada",
       "not-authorized": "No se permite cambiar la red",
       "no-wifi-interface": "No hay adaptador Wi-Fi disponible",
+      "not-a-wifi-interface": "Ese adaptador no es Wi-Fi",
+      "not-a-wifi-profile": "Esa red guardada no es Wi-Fi",
       "unreachable": "Sin respuesta: puede que el dispositivo haya pasado a la otra red. Vuelve a cargar esta página desde su nueva dirección."
     },
     "scan": {

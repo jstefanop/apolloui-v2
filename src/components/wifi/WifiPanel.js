@@ -177,6 +177,12 @@ const WifiPanel = () => {
         setModal({ ...network, saved: true });
         setModalError(text);
       } else dispatch(sendFeedback({ message: text, type: 'error' }));
+      // `no-ip-address` is not a join that failed: the radio IS on the network
+      // the user asked for and the backend kept the profile — only the lease is
+      // late. Skipping the refetch left the panel describing the previous
+      // network, with no saved badge on the new one, so Connect asked again for
+      // a passphrase the device already holds.
+      if (err === 'no-ip-address') await afterChange();
       return;
     }
     setModal(null);
@@ -231,7 +237,14 @@ const WifiPanel = () => {
       // The network, not the generated profile id: "Forget netplan-wlan0-Home?"
       // names something the user has never seen.
       ssid: profile.ssid || profile.name,
-      selfLockout: profile.active && interfaces.find((i) => i.device === selected)?.carriesDefaultRoute,
+      // The adapter the PROFILE is on, not the one the picker happens to show:
+      // switching the picker to the other radio to scan it does not change which
+      // link is serving this page. Read from the picker, the warning went missing
+      // on exactly the profile that would cut it off, and appeared on ones that
+      // would not.
+      selfLockout:
+        profile.active &&
+        !!interfaces.find((i) => i.device === profile.device)?.carriesDefaultRoute,
       run: async () => {
         const { data, errors, unreachable } = await runMutation(() =>
           forget({ variables: { uuid: profile.uuid } })

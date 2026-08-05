@@ -987,6 +987,8 @@
       "no-ip-address": "Connesso, ma nessun indirizzo assegnato",
       "not-authorized": "Non è consentito modificare la rete",
       "no-wifi-interface": "Nessuna scheda Wi-Fi disponibile",
+      "not-a-wifi-interface": "Quella scheda non è Wi-Fi",
+      "not-a-wifi-profile": "Quella rete salvata non è Wi-Fi",
       "unreachable": "Nessuna risposta: il dispositivo potrebbe essere passato all'altra rete. Ricarica questa pagina dal suo nuovo indirizzo."
     },
     "scan": {
