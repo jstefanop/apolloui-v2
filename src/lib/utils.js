@@ -287,11 +287,16 @@ export const getNodeErrorMessage = (error, intl, storage = null) => {
   let sentence = null;
   let type = 'warning';
 
+  // Nothing to report while the node is answering. The storage probe is not
+  // infallible — a drive mounted from a path it does not recognise reads as
+  // unusable — and it must not put an error over a node that is plainly working.
+  if (!error?.length) return { sentence, type };
+
   // A device with nowhere to put a blockchain has not failed — it is missing a
-  // part. Said first, and instead of the RPC error, because the refused
-  // connection is a CONSEQUENCE: reporting it hands the user a symptom and
-  // hides the cause. `no-drive` is stated as "not detected", never "not
-  // installed": a disk seated badly or dead looks exactly the same from here.
+  // part. Said instead of the RPC error, because the refused connection is a
+  // CONSEQUENCE: reporting it hands the user a symptom and hides the cause.
+  // `no-drive` is stated as "not detected", never "not installed": a disk seated
+  // badly or dead looks exactly the same from here.
   if (storage && storage.state && storage.state !== 'ready' && storage.state !== 'unknown') {
     const id = `node.storage.${storage.state}`;
     return {
@@ -302,8 +307,6 @@ export const getNodeErrorMessage = (error, intl, storage = null) => {
       storageState: storage.state,
     };
   }
-
-  if (!error?.length) return { sentence, type };
 
   // Default message if intl is not provided
   const getMessage = (id, values = {}) => {

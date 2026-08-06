@@ -53,10 +53,14 @@ const NodeStatus = ({ serviceStatus, loading }) => {
     );
   }
 
-  // Ahead of every service state, because none of them is the reason. The plain
-  // offline message tells you to start the node from the top menu — a menu where
-  // that entry is now disabled, which is a dead end dressed up as advice.
-  if (noStorage) {
+  // Ahead of the other service states, because none of them is the reason: the
+  // plain offline message tells you to start the node from the top menu, where
+  // that entry is disabled — a dead end dressed up as advice. Not ahead of a
+  // node that is actually RUNNING, though. The probe can be wrong (a drive
+  // mounted from a path it does not recognise reads as foreign), and announcing
+  // "your node is offline" over a page showing live blocks is the one thing this
+  // banner must never do.
+  if (noStorage && serviceStatus?.node?.status !== 'online') {
     return (
       <CustomAlert
         title={intl.formatMessage({ id: 'node.status.offline.title' })}

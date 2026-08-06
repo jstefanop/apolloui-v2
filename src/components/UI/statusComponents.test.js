@@ -112,4 +112,20 @@ describe('NodeStatus with no usable drive', () => {
 
     expect(screen.getByText(/start it from the top menu/i)).toBeInTheDocument();
   });
+
+  // The probe is not infallible: a drive mounted from a path it does not
+  // recognise reads as unusable. Saying "your node is offline" on a page that is
+  // showing live blocks is worse than saying nothing at all.
+  it('never contradicts a node that is running', () => {
+    withStorage({ unavailable: true, state: 'foreign' });
+    const { container } = renderWithProviders(
+      <NodeStatus
+        serviceStatus={{ node: { status: 'online', requestedStatus: 'online' } }}
+        loading={false}
+      />
+    );
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/offline/i);
+  });
 });

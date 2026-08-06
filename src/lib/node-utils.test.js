@@ -31,4 +31,20 @@ describe('getNodeErrorMessage (error → message/type)', () => {
     expect(r.sentence).toBe('node.error.waiting_response');
     expect(r.type).toBe('info');
   });
+
+  // The refused connection is the CONSEQUENCE of having nowhere to run, so the
+  // drive is what the user is told about — but only when the node is actually
+  // failing. The probe can misread a working setup, and an alert over a node
+  // that is answering is a bug report waiting to happen.
+  it('explains the drive instead of the RPC error it caused', () => {
+    const r = getNodeErrorMessage([{ code: 'ECONNREFUSED' }], null, { state: 'no-drive' });
+    expect(r.sentence).toBe('node.storage.no-drive');
+    expect(r.type).toBe('info');
+  });
+  it('stays quiet about the drive while the node is answering', () => {
+    expect(getNodeErrorMessage([], null, { state: 'foreign' })).toEqual({
+      sentence: null,
+      type: 'warning',
+    });
+  });
 });
