@@ -916,5 +916,87 @@
     "not_found": "Nicht gefunden",
     "default": "Apollo",
     "node_syncing": "Synchronisierung"
+  },
+  "wifi": {
+    "connectedTo": "Verbunden mit „{ssid}“",
+    "notConnected": "Nicht verbunden",
+    "notConnected.hint": "Wähle unten ein Netzwerk aus",
+    "available": "Verfügbare Netzwerke",
+    "saved": "Gespeicherte Netzwerke",
+    "noNetworks": "Keine Netzwerke gefunden",
+    "noAdapter": "Dieses Gerät hat keinen WLAN-Adapter",
+    "adapter": {
+      "label": "Adapter",
+      "builtin": "integriert",
+      "usb": "USB"
+    },
+    "network": {
+      "hidden": "Verstecktes Netzwerk",
+      "saved": "gespeichert",
+      "active": "Verbunden",
+      "hiddenHint": "Name nötig"
+    },
+    "security": {
+      "open": "offen"
+    },
+    "status": {
+      "connecting": "Verbinde…"
+    },
+    "action": {
+      "connect": "Verbinden",
+      "disconnect": "Trennen",
+      "forget": "Entfernen",
+      "refresh": "Aktualisieren",
+      "cancel": "Abbrechen",
+      "addHidden": "+ Mit verstecktem Netzwerk verbinden…",
+      "scan": "Netzwerke suchen"
+    },
+    "password": {
+      "title": "Mit „{ssid}“ verbinden",
+      "label": "Passwort",
+      "placeholder": "Netzwerkpasswort",
+      "show": "Zeigen",
+      "hide": "Verbergen",
+      "ssidLabel": "Netzwerkname",
+      "ssidPlaceholder": "Genauer Name des versteckten Netzwerks",
+      "isHidden": "Dieses Netzwerk sendet seinen Namen nicht",
+      "replacing": "Dieses Netzwerk ist gespeichert. Ein hier eingegebenes Passwort ersetzt das gespeicherte.",
+      "required": "Gib das Netzwerkpasswort ein"
+    },
+    "confirm": {
+      "disconnect": {
+        "title": "„{ssid}“ verlassen?",
+        "body": "Das Gerät trennt die Verbindung zu diesem Netzwerk. Das Passwort bleibt gespeichert, du kannst dich ohne erneute Eingabe wieder verbinden."
+      },
+      "forget": {
+        "title": "„{ssid}“ entfernen?",
+        "body": "Das gespeicherte Passwort wird gelöscht. Für eine erneute Verbindung musst du es wieder eingeben."
+      },
+      "selfLockout": "Über diese Verbindung läuft diese Seite. Wenn du fortfährst, wird das Gerät abgeschnitten und du brauchst möglicherweise physischen Zugang."
+    },
+    "toast": {
+      "connected": "Verbunden mit „{ssid}“"
+    },
+    "error": {
+      "failed": "Verbindung zum Netzwerk fehlgeschlagen",
+      "ssid-not-found": "Dieses Netzwerk ist nicht in Reichweite",
+      "activation-failed": "Verbindung fehlgeschlagen. Prüfe das Passwort und versuche es erneut.",
+      "bad-passphrase": "Falsches Passwort",
+      "timeout": "Das Netzwerk hat zu lange gebraucht",
+      "not-confirmed": "Das Netzwerk kam nicht zustande",
+      "no-ip-address": "Verbunden, aber keine Adresse zugewiesen",
+      "not-authorized": "Ändern des Netzwerks nicht erlaubt",
+      "no-wifi-interface": "Kein WLAN-Adapter verfügbar",
+      "not-a-wifi-interface": "Dieser Adapter ist kein WLAN-Adapter",
+      "not-a-wifi-profile": "Dieses gespeicherte Netzwerk ist kein WLAN",
+      "disconnect-failed": "Die Verbindung konnte nicht getrennt werden",
+      "forget-failed": "Das gespeicherte Netzwerk konnte nicht gelöscht werden",
+      "unreachable": "Keine Antwort — das Gerät ist möglicherweise ins andere Netzwerk gewechselt. Lade diese Seite über die neue Adresse neu."
+    },
+    "scan": {
+      "hint": "Der Suchlauf weckt das Funkmodul und dauert einige Sekunden"
+    },
+    "band": "{band} GHz",
+    "band.auto": "Auto"
   }
 }

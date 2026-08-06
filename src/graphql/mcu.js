@@ -50,59 +50,6 @@ export const MCU_STATS_QUERY = gql`
   }
 `;
 
-export const MCU_WIFI_SCAN_QUERY = gql`
-  ${ERROR_FRAGMENT}
-  query MCU_WIFI_SCAN {
-    Mcu {
-      wifiScan {
-        result {
-          wifiScan {
-            ssid
-            mode
-            channel
-            rate
-            signal
-            security
-            inuse
-          }
-        }
-        error {
-          ...ErrorFragment
-        }
-      }
-    }
-  }
-`;
-
-export const MCU_WIFI_CONNECT_QUERY = gql`
-  ${ERROR_FRAGMENT}
-  query MCU_CONNECT($input: McuWifiConnectInput!) {
-    Mcu {
-      wifiConnect(input: $input) {
-        result {
-          address
-        }
-        error {
-          ...ErrorFragment
-        }
-      }
-    }
-  }
-`;
-
-export const MCU_WIFI_DISCONNECT_QUERY = gql`
-  ${ERROR_FRAGMENT}
-  query MCU_DISCONNECT {
-    Mcu {
-      wifiDisconnect {
-        error {
-          ...ErrorFragment
-        }
-      }
-    }
-  }
-`;
-
 // Mutations, not queries: Apollo re-executes queries on a re-render, and a
 // phantom re-fire reboots the device, powers it off, or launches a second
 // concurrent update (same hazard the node format move fixed).
@@ -204,16 +151,6 @@ export const initialState = {
           },
           disks: [],
         },
-      },
-    },
-  },
-};
-
-export const initialStateWifi = {
-  Mcu: {
-    wifiConnect: {
-      result: {
-        address: null,
       },
     },
   },

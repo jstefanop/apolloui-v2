@@ -916,5 +916,87 @@
     "not_found": "Non trovato",
     "default": "Apollo",
     "node_syncing": "Sincronizzazione"
+  },
+  "wifi": {
+    "connectedTo": "Connesso a “{ssid}”",
+    "notConnected": "Non connesso",
+    "notConnected.hint": "Scegli una rete qui sotto per connetterti",
+    "available": "Reti disponibili",
+    "saved": "Reti salvate",
+    "noNetworks": "Nessuna rete trovata",
+    "noAdapter": "Questo dispositivo non ha una scheda Wi-Fi",
+    "adapter": {
+      "label": "Scheda",
+      "builtin": "integrata",
+      "usb": "USB"
+    },
+    "network": {
+      "hidden": "Rete nascosta",
+      "saved": "salvata",
+      "active": "Connessa",
+      "hiddenHint": "serve il nome"
+    },
+    "security": {
+      "open": "aperta"
+    },
+    "status": {
+      "connecting": "Connessione…"
+    },
+    "action": {
+      "connect": "Connetti",
+      "disconnect": "Disconnetti",
+      "forget": "Dimentica",
+      "refresh": "Aggiorna",
+      "cancel": "Annulla",
+      "addHidden": "+ Connetti a una rete nascosta…",
+      "scan": "Cerca reti"
+    },
+    "password": {
+      "title": "Connetti a “{ssid}”",
+      "label": "Password",
+      "placeholder": "Password della rete",
+      "show": "Mostra",
+      "hide": "Nascondi",
+      "ssidLabel": "Nome della rete",
+      "ssidPlaceholder": "Nome esatto della rete nascosta",
+      "isHidden": "Questa rete non trasmette il proprio nome",
+      "replacing": "Questa rete è salvata. La password inserita qui sostituisce quella memorizzata.",
+      "required": "Inserisci la password della rete"
+    },
+    "confirm": {
+      "disconnect": {
+        "title": "Lasciare “{ssid}”?",
+        "body": "Il dispositivo si disconnette da questa rete. La password resta salvata, quindi potrai riconnetterti senza ridigitarla."
+      },
+      "forget": {
+        "title": "Dimenticare “{ssid}”?",
+        "body": "La password salvata viene eliminata. Per riconnetterti dovrai digitarla di nuovo."
+      },
+      "selfLockout": "È la connessione che sta servendo questa pagina. Proseguendo il dispositivo verrà tagliato fuori, e potrebbe servire accesso fisico per recuperarlo."
+    },
+    "toast": {
+      "connected": "Connesso a “{ssid}”"
+    },
+    "error": {
+      "failed": "Impossibile connettersi alla rete",
+      "ssid-not-found": "Quella rete non è a portata",
+      "activation-failed": "Connessione non riuscita. Controlla la password e riprova.",
+      "bad-passphrase": "Password errata",
+      "timeout": "La rete ha impiegato troppo a rispondere",
+      "not-confirmed": "La rete non è salita",
+      "no-ip-address": "Connesso, ma nessun indirizzo assegnato",
+      "not-authorized": "Non è consentito modificare la rete",
+      "no-wifi-interface": "Nessuna scheda Wi-Fi disponibile",
+      "not-a-wifi-interface": "Quella scheda non è Wi-Fi",
+      "not-a-wifi-profile": "Quella rete salvata non è Wi-Fi",
+      "disconnect-failed": "Impossibile disconnettersi dalla rete",
+      "forget-failed": "Impossibile eliminare la rete salvata",
+      "unreachable": "Nessuna risposta: il dispositivo potrebbe essere passato all'altra rete. Ricarica questa pagina dal suo nuovo indirizzo."
+    },
+    "scan": {
+      "hint": "La scansione attiva la radio e richiede qualche secondo"
+    },
+    "band": "{band} GHz",
+    "band.auto": "Auto"
   }
 }
