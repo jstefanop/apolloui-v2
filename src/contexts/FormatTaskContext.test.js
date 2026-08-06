@@ -29,12 +29,16 @@ jest.mock('../hooks/useTaskProgress', () => ({
   useTaskProgress: () => mockTask,
 }));
 
-// The mutate function is identity-stable across renders, as Apollo's is.
+// The mutate function is identity-stable across renders, as Apollo's is. So is
+// the client: the provider refetches the storage query when a format ends, and
+// a new object each render would re-run that effect.
 let mutateImpl;
 const mockMutate = (...args) => mutateImpl(...args);
+const mockClient = { refetchQueries: jest.fn() };
 jest.mock('@apollo/client', () => ({
   ...jest.requireActual('@apollo/client'),
   useMutation: () => [mockMutate],
+  useApolloClient: () => mockClient,
 }));
 
 const wrapper = ({ children }) => (
