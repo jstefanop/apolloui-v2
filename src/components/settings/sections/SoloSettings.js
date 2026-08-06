@@ -166,10 +166,27 @@ const SoloSettings = () => {
       textColor={textColor}
       icon={GrUserWorker}
     >
-      {/* For solo-node, always show the wallet field. For miner, check if node is synced or solo mining is enabled */}
-      {!storageBlocked &&
-      (isSoloNode || (blockHeader && blockHeader === blocksCount) || soloMiningMode.selected) ? (
+      {/* For solo-node, always show the wallet field. For miner, check if node is synced or solo mining is enabled.
+          A blocked drive only takes away the path that TURNS SOLO ON — it must
+          not take the panel away from someone who already has it on, since the
+          switch here is the only way to turn it back off and the field the only
+          way to read or correct the address it is still set to pay. */}
+      {isSoloNode ||
+      soloMiningMode.selected ||
+      (!storageBlocked && blockHeader && blockHeader === blocksCount) ? (
         <>
+          {storageBlocked && (
+            <SimpleCard
+              bg="orange.300"
+              title={intl.formatMessage({ id: 'settings.sections.solo.cannot_enable' })}
+              textColor={'orange.600'}
+              mb="20px"
+            >
+              <Text fontSize="sm" color="gray.800">
+                {blockerMessage}
+              </Text>
+            </SimpleCard>
+          )}
           {/* Show switch only for non-solo-node devices */}
           {!isSoloNode && (
             <SimpleSwitchSettingsItem
