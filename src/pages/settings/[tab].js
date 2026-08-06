@@ -67,7 +67,7 @@ const SettingsTab = () => {
   const [backupData, setBackupData] = useState();
   const [restoreData, setRestoreData] = useState();
   const [isChanged, setIsChanged] = useState(false);
-  const { storage, unavailable: noNodeStorage } = useNodeStorage();
+  const { storage } = useNodeStorage();
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -291,15 +291,18 @@ const SettingsTab = () => {
         )
       : false;
     
-    // Node settings still save — they are what the node will use once it has
-    // somewhere to run — but with no drive there is nothing to restart, and
-    // offering "Save & Restart" promises a restart that quietly cannot happen.
-    const restartNodeNeeded =
-      !noNodeStorage &&
-      !_.isEqual(
-        _.pick(settings, restartNodeFields),
-        _.pick(currentSettings, restartNodeFields)
-      );
+    // Whether the node needs restarting is decided by the fields alone. It used
+    // to be suppressed when storage looked unusable, on the reasoning that there
+    // is nothing to restart — but this flag is not just the button label, it is
+    // what performs the stop/start after saving. A probe that says "unusable"
+    // while bitcoind is in fact running therefore left the node on its old
+    // config, silently: the save reported success and nothing applied it.
+    // Restarting a node that is not running is a no-op; not restarting one that
+    // is, is a config that never takes effect.
+    const restartNodeNeeded = !_.isEqual(
+      _.pick(settings, restartNodeFields),
+      _.pick(currentSettings, restartNodeFields)
+    );
 
     const restartType =
       (restartMinerNeeded || restartSoloNeeded) && restartNodeNeeded
@@ -315,7 +318,7 @@ const SettingsTab = () => {
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
-  }, [settings, currentSettings, deviceType, noNodeStorage]);
+  }, [settings, currentSettings, deviceType]);
 
   // Handle backup download
   const handleBackup = async () => {
