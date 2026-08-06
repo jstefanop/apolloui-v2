@@ -3,6 +3,7 @@ import {
   findPoolOption,
   matchPoolOption,
   isPoolAlreadySaved,
+  poolFieldsChanged,
   suggestPoolName,
   savedKey,
   CUSTOM_KEY,
@@ -118,5 +119,33 @@ describe('suggestPoolName', () => {
     [undefined, ''],
   ])('%s -> %s', (url, expected) => {
     expect(suggestPoolName(url)).toBe(expected);
+  });
+});
+
+describe('poolFieldsChanged', () => {
+  const pool = { url: 'stratum+tcp://a:1', username: 'w', password: 'p' };
+
+  it('is false when the pool is untouched', () => {
+    expect(poolFieldsChanged(pool, { ...pool })).toBe(false);
+  });
+
+  it.each(['url', 'username', 'password'])('notices a change to %s', (field) => {
+    expect(poolFieldsChanged(pool, { ...pool, [field]: 'different' })).toBe(true);
+  });
+
+  // The bug: editing the primary made the backup section offer to keep a pool
+  // the user had not touched, because both read one page-wide changed flag.
+  it('ignores what happened to some other pool', () => {
+    const backup = { url: 'stratum+tcp://b:2', username: 'x' };
+    expect(poolFieldsChanged(backup, backup)).toBe(false);
+  });
+
+  it('treats missing and empty as the same', () => {
+    expect(poolFieldsChanged({ url: 'u' }, { url: 'u', username: '' })).toBe(false);
+    expect(poolFieldsChanged(undefined, undefined)).toBe(false);
+  });
+
+  it('notices a pool appearing where there was none', () => {
+    expect(poolFieldsChanged(undefined, pool)).toBe(true);
   });
 });

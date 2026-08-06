@@ -59,7 +59,7 @@ import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 import usePoolProfiles from '../../hooks/usePoolProfiles';
-import { suggestPoolName } from '../../lib/poolOptions';
+import { poolFieldsChanged, suggestPoolName } from '../../lib/poolOptions';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -84,7 +84,12 @@ const SettingsTab = () => {
     primary: emptySave,
     backup: emptySave,
   });
-  const poolSaveOffered = isChanged;
+  // Per pool, not per page: one global "something changed" made editing the
+  // primary offer to keep the backup pool as well.
+  const poolSaveOffered = {
+    primary: poolFieldsChanged(currentSettings?.pool, settings?.pool),
+    backup: poolFieldsChanged(currentSettings?.backupPool, settings?.backupPool),
+  };
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);

@@ -78,3 +78,11 @@ export const suggestPoolName = (url) => {
   const withoutScheme = String(url).replace(/^[a-z+]+:\/\//i, '');
   return withoutScheme.split('/')[0].split(':')[0];
 };
+
+// Has THIS pool been edited? The offer to keep a pool used to ride on the page's
+// global "something changed" flag, so typing in the primary made the backup
+// section offer to save a pool nobody had touched.
+const POOL_FIELDS = ['url', 'username', 'password'];
+
+export const poolFieldsChanged = (before, after) =>
+  POOL_FIELDS.some((field) => (before?.[field] ?? '') !== (after?.[field] ?? ''));

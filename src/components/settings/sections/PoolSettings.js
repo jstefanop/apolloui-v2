@@ -242,7 +242,7 @@ const PoolSettings = () => {
         profiles={poolProfiles}
         value={poolToSave?.primary}
         onChange={(v) => setPoolToSave({ ...poolToSave, primary: v })}
-        visible={poolSaveOffered}
+        visible={poolSaveOffered?.primary}
         textColor={textColor}
         inputTextColor={inputTextColor}
         idSuffix="primary"
@@ -377,7 +377,7 @@ const PoolSettings = () => {
           profiles={poolProfiles}
           value={poolToSave?.backup}
           onChange={(v) => setPoolToSave({ ...poolToSave, backup: v })}
-          visible={poolSaveOffered}
+          visible={poolSaveOffered?.backup}
           textColor={textColor}
           inputTextColor={inputTextColor}
           idSuffix="backup"
