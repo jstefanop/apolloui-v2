@@ -28,7 +28,7 @@ const SavePoolControl = ({
 
   return (
     <SimpleCard title={''} textColor={textColor}>
-      <Flex align="center" justify="space-between" wrap="wrap" gap="3">
+      <Flex align="center" wrap="wrap" gap="3">
         <Flex align="center" gap="3">
           <Switch
             id={id}
@@ -55,7 +55,7 @@ const SavePoolControl = ({
         {value?.enabled && (
           <Input
             color={inputTextColor}
-            maxW={{ base: '100%', md: '320px' }}
+            maxW={{ base: '100%', md: '280px' }}
             value={value.name}
             onChange={(e) => onChange({ ...value, name: e.target.value })}
             placeholder={intl.formatMessage({ id: 'settings.actions.save_pool_name' })}
