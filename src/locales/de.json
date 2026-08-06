@@ -502,11 +502,11 @@
         },
         "tor_mode": {
           "title": "TOR-Modus",
-          "description": "Verbinden Sie Ihre Bitcoin-Node über das Tor-Netzwerk, um die Sicherheit und Anonymität zu erhöhen. Hinweis: Ihre Node wird neu gestartet, um dies anzuwenden."
+          "description": "Verbinden Sie Ihre Bitcoin-Node über das Tor-Netzwerk, um die Sicherheit und Anonymität zu erhöhen."
         },
         "allow_lan": {
           "title": "LAN-Verbindungen erlauben",
-          "description": "Erlauben Sie LAN-Verbindungen zu Ihrer Bitcoin-Node, um externe Wallets und Dienste zu verbinden. Hinweis: Ihre Node wird neu gestartet, um dies anzuwenden."
+          "description": "Erlauben Sie LAN-Verbindungen zu Ihrer Bitcoin-Node, um externe Wallets und Dienste zu verbinden."
         },
         "max_connections": "Maximale Verbindungen",
         "extra_options": "Zusätzliche Optionen",
@@ -515,7 +515,8 @@
           "description": "Fügen Sie zusätzliche Konfigurationszeilen zur bitcoin.conf-Datei hinzu. (Hinweis: Dieser Abschnitt ist für fortgeschrittene Benutzer und es wird keine Validierung durchgeführt. Bitte überprüfen Sie die Bitcoin Core-Dokumentation für gültige Optionen.)"
         },
         "solo_mining_warning": "Sie haben Solo-Mining aktiviert. Es wird empfohlen, Tor für Solo-Mining auszuschalten. Bitcoin-Nodes im Tor-Netzwerk verbreiten Blöcke langsamer, und es besteht eine höhere Chance, einen Block zu verwaisen.",
-        "storage_note": "Die Einstellungen auf dieser Registerkarte werden trotzdem gespeichert und angewendet, sobald ein Laufwerk verfügbar ist."
+        "storage_note": "Die Einstellungen auf dieser Registerkarte werden trotzdem gespeichert und angewendet, sobald ein Laufwerk verfügbar ist.",
+        "restart_note": "Hinweis: Ihre Node wird neu gestartet, um dies anzuwenden."
       },
       "system": {
         "title": "Systemeinstellungen",

@@ -502,11 +502,11 @@
         },
         "tor_mode": {
           "title": "Modo TOR",
-          "description": "Conecta tu nodo Bitcoin mediante la red Tor para aumentar seguridad y anonimato. Nota: el nodo se reiniciará para aplicar los cambios."
+          "description": "Conecta tu nodo Bitcoin mediante la red Tor para aumentar seguridad y anonimato."
         },
         "allow_lan": {
           "title": "Permitir conexiones LAN",
-          "description": "Permitir que tu nodo Bitcoin acepte conexiones LAN desde billeteras y servicios externos. Nota: el nodo se reiniciará para aplicar los cambios."
+          "description": "Permitir que tu nodo Bitcoin acepte conexiones LAN desde billeteras y servicios externos."
         },
         "max_connections": "Conexiones máximas",
         "extra_options": "Opciones extra",
@@ -515,7 +515,8 @@
           "description": "Agrega líneas adicionales al archivo bitcoin.conf. (Nota: esta sección es para usuarios avanzados, no se realiza validación. Consulta la documentación de Bitcoin Core para ver las opciones válidas.)"
         },
         "solo_mining_warning": "Tienes activada la minería solo. Se recomienda desactivar Tor para este modo. Los nodos Bitcoin en Tor propagan los blocos más lentamente, lo que aumenta el riesgo de bloques huérfanos.",
-        "storage_note": "Los ajustes de esta pestaña se guardan igualmente y se aplicarán cuando haya una unidad disponible."
+        "storage_note": "Los ajustes de esta pestaña se guardan igualmente y se aplicarán cuando haya una unidad disponible.",
+        "restart_note": "Nota: el nodo se reiniciará para aplicar los cambios."
       },
       "system": {
         "title": "Configuración del sistema",

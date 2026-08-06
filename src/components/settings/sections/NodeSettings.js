@@ -73,6 +73,19 @@ const NodeSettings = () => {
   // the save button drops its "& Restart" accordingly.
   const { unavailable: noStorage, state: storageState } = useNodeStorage();
 
+  // The toggles promise a restart to apply. That is true only when there is a
+  // node to restart, so the note is appended here rather than baked into the
+  // translated description.
+  const withRestartNote = (item) =>
+    noStorage
+      ? item
+      : {
+          ...item,
+          description: `${item.description} ${intl.formatMessage({
+            id: 'settings.sections.node.restart_note',
+          })}`,
+        };
+
   return (
     <>
       {/* Main Node Settings Panel */}
@@ -91,7 +104,7 @@ const NodeSettings = () => {
         mb={'20px'}
       >
         {noStorage && (
-          <Alert status="info" borderRadius="10px" mb="20px">
+          <Alert status="info" borderRadius="10px" mx="24px" mt="16px" w="auto">
             <AlertIcon />
             <AlertDescription fontSize="sm">
               {intl.formatMessage({ id: `node.storage.${storageState}` })}{' '}
@@ -167,7 +180,7 @@ const NodeSettings = () => {
         <Divider mb="10px" mt="10px" />
 
         <SimpleSwitchSettingsItem
-          item={nodeTorMode}
+          item={withRestartNote(nodeTorMode)}
           textColor={textColor}
           sliderTextColor={sliderTextColor}
           handleSwitch={handleSwitchNodeTorMode}
@@ -184,7 +197,7 @@ const NodeSettings = () => {
         <Divider mb="10px" />
 
         <SimpleSwitchSettingsItem
-          item={nodeAllowLan}
+          item={withRestartNote(nodeAllowLan)}
           textColor={textColor}
           sliderTextColor={sliderTextColor}
           handleSwitch={handleNodeAllowLan}
