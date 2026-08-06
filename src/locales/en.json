@@ -140,6 +140,12 @@
       "txs": "Transactions",
       "fees": "Fees",
       "miner": "Miner"
+    },
+    "storage": {
+      "no-drive": "No SSD drive detected. The Bitcoin node needs one to store the blockchain — fit a drive to enable it.",
+      "unformatted": "An SSD drive was found but is not formatted yet. Format it from Settings → Extra to enable the node.",
+      "not-mounted": "The SSD drive is not mounted, so the node cannot start. Try a reboot, or format the drive from Settings → Extra.",
+      "foreign": "The node folder is not on the SSD drive. The node will not start until this is corrected — formatting the drive resets it."
     }
   },
   "miner": {

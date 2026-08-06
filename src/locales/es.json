@@ -140,6 +140,12 @@
       "txs": "Transacciones",
       "fees": "Comisiones",
       "miner": "Minero"
+    },
+    "storage": {
+      "no-drive": "No se detectó ningún disco SSD. El nodo Bitcoin necesita uno para la cadena de bloques: instala uno para habilitarlo.",
+      "unformatted": "Se encontró un disco SSD pero aún no está formateado. Formatéalo en Ajustes → Extra para habilitar el nodo.",
+      "not-mounted": "El disco SSD no está montado, así que el nodo no puede arrancar. Prueba a reiniciar o formatea el disco en Ajustes → Extra.",
+      "foreign": "La carpeta del nodo no está en el disco SSD. El nodo no arrancará hasta corregirlo; formatear el disco lo restablece."
     }
   },
   "miner": {

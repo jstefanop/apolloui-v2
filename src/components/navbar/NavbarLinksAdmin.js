@@ -48,6 +48,7 @@ import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
 import NavbarUpdateModal from './NavbarUpdateModal';
 import NavbarFormatProgress from './NavbarFormatProgress';
+import useNodeStorage from '../../hooks/useNodeStorage';
 import { useSelector, shallowEqual } from 'react-redux';
 import { soloSelector } from '../../redux/reselect/solo';
 import moment from '../../lib/moment';
@@ -136,6 +137,9 @@ export default function HeaderLinks({
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'
   );
 
+  // Without somewhere to put a blockchain the node cannot start, so the controls
+  // that would try are turned off rather than left to fail.
+  const { unavailable: noNodeStorage } = useNodeStorage();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isLogsModalOpen,
@@ -544,7 +548,7 @@ export default function HeaderLinks({
                 <MenuItem
                   icon={<StartIcon />}
                   isDisabled={
-                    nodeOnline === 'online' || nodeOnline === 'pending'
+                    noNodeStorage || nodeOnline === 'online' || nodeOnline === 'pending'
                   }
                   onClick={() => handleSystemAction('startNode')}
                 >
@@ -552,9 +556,7 @@ export default function HeaderLinks({
                 </MenuItem>
                 <MenuItem
                   icon={<StopIcon />}
-                  isDisabled={
-                    nodeOnline === 'offline'
-                  }
+                  isDisabled={noNodeStorage || nodeOnline === 'offline'}
                   onClick={() => handleSystemAction('stopNode')}
                 >
                   Stop

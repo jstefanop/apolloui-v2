@@ -170,8 +170,9 @@ const Overview = () => {
   const { used: memoryUsed, total: memoryTotal } = memory || {};
 
 
+  const { storage } = useNodeStorage();
   const { sentence: errorNodeSentence, type: errorNodeType } =
-    getNodeErrorMessage(errorNode, intl);
+    getNodeErrorMessage(errorNode, intl, storage);
 
   // Settings data
   const { data: settings } = useSelector(settingsSelector, shallowEqual);

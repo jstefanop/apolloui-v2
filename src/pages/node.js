@@ -40,6 +40,7 @@ import DynamicTable from '../components/UI/DynamicTable';
 import BannerNode from '../assets/img/node_banner.png';
 import { settingsSelector } from '../redux/reselect/settings';
 import ModalConnectNode from '../components/apollo/ModalConnectNode';
+import useNodeStorage from '../hooks/useNodeStorage';
 import { getNodeErrorMessage } from '../lib/utils';
 import { getNodeSoftwareLabel } from '../lib/nodeSoftware';
 import {
@@ -114,8 +115,9 @@ const Node = () => {
 
   const isStaleData = !!dataNode?.stale;
 
+  const { storage } = useNodeStorage();
   const { sentence: errorNodeSentence, type: errorNodeType } =
-    getNodeErrorMessage(errorNode, intl);
+    getNodeErrorMessage(errorNode, intl, storage);
 
   // Set Previous state for CountUp component
   const prevData = useRef(dataNode);

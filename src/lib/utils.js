@@ -282,10 +282,27 @@ export const getVersionFromPackageJson = () => {
   }
 };
 
-export const getNodeErrorMessage = (error, intl) => {
+export const getNodeErrorMessage = (error, intl, storage = null) => {
   let parsedError;
   let sentence = null;
   let type = 'warning';
+
+  // A device with nowhere to put a blockchain has not failed — it is missing a
+  // part. Said first, and instead of the RPC error, because the refused
+  // connection is a CONSEQUENCE: reporting it hands the user a symptom and
+  // hides the cause. `no-drive` is stated as "not detected", never "not
+  // installed": a disk seated badly or dead looks exactly the same from here.
+  if (storage && storage.state && storage.state !== 'ready' && storage.state !== 'unknown') {
+    const id = `node.storage.${storage.state}`;
+    return {
+      sentence: intl ? intl.formatMessage({ id }) : id,
+      // Nothing is broken when a drive was never fitted; the other states are
+      // something the user can act on.
+      type: storage.state === 'no-drive' ? 'info' : 'warning',
+      storageState: storage.state,
+    };
+  }
+
   if (!error?.length) return { sentence, type };
 
   // Default message if intl is not provided
