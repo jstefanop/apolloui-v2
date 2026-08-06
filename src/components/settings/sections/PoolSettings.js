@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Badge,
+  Box,
   FormLabel,
   Select,
   Input,
@@ -249,7 +250,8 @@ const PoolSettings = () => {
 
       {isApolloIii && (
         <>
-      <Card bg={panelBg} mx="22px" px="0" py="14px" mt="20px" mb="20px" borderRadius="12px">
+      <Box px="22px" mt="20px" mb="20px">
+      <Card bg={panelBg} px="0" py="14px" borderRadius="12px">
         <Flex justifyContent="space-between" alignItems="center" px="24px">
           <Flex align="center">
             <FormLabel
@@ -382,6 +384,7 @@ const PoolSettings = () => {
         />
       )}
       </Card>
+      </Box>
         </>
       )}
     </PanelCard>
