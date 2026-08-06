@@ -13,6 +13,9 @@ import {
   Flex,
   Button,
   Spinner,
+  Switch,
+  FormLabel,
+  Input,
 } from '@chakra-ui/react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
@@ -55,6 +58,12 @@ import { nodeSelector } from '../../redux/reselect/node';
 import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
+import usePoolProfiles from '../../hooks/usePoolProfiles';
+import {
+  buildPoolOptions,
+  matchPoolOption,
+  suggestPoolName,
+} from '../../lib/poolOptions';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -66,6 +75,14 @@ const SettingsTab = () => {
   const [backupData, setBackupData] = useState();
   const [restoreData, setRestoreData] = useState();
   const [isChanged, setIsChanged] = useState(false);
+  // Saved pools, and the pending "keep this one" the action bar offers. A pool
+  // is worth offering to keep only when it is not already in the list — picking
+  // a preset or a saved profile has nothing new to remember.
+  const { profiles: poolProfiles, save: savePoolProfile } = usePoolProfiles();
+  const [poolToSave, setPoolToSave] = useState({ enabled: false, name: '' });
+  const poolIsUnsaved =
+    !!settings?.pool?.url &&
+    !matchPoolOption(buildPoolOptions(poolProfiles), settings.pool);
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -552,6 +569,34 @@ const SettingsTab = () => {
       await refetchSettings();
       await refetchPools();
 
+      // Keeping the pool is a side errand of saving, so it reports separately
+      // and never fails the save: the settings are already applied by here, and
+      // turning that into an error would say the opposite.
+      if (poolToSave.enabled && settings?.pool?.url) {
+        const kept = await savePoolProfile({
+          name: poolToSave.name?.trim() || suggestPoolName(settings.pool.url),
+          url: settings.pool.url,
+          username: settings.pool.username || null,
+          password: settings.pool.password || null,
+        });
+
+        dispatch(
+          sendFeedback(
+            kept.ok
+              ? {
+                  message: intl.formatMessage(
+                    { id: 'settings.actions.save_pool_done' },
+                    { name: kept.profile?.name }
+                  ),
+                  type: 'success',
+                }
+              : { message: kept.message, type: 'error' }
+          )
+        );
+
+        setPoolToSave({ enabled: false, name: '' });
+      }
+
       // Handle restarts based on type
       if (type === 'miner') {
         await restartMiner();
@@ -678,6 +723,44 @@ const SettingsTab = () => {
             >
               {intl.formatMessage({ id: 'settings.actions.discard' })}
             </Button>
+            {/* John's ask, literally: a toggle next to Save. It only appears on
+                the pools tab, and only for a pool the list does not already
+                have — otherwise it would offer to save what is already saved. */}
+            {tab === 'pools' && poolIsUnsaved && (
+              <Flex align="center" gap="3" mx="4" flex="1" justify="center">
+                <Switch
+                  id="savePoolProfile"
+                  isChecked={poolToSave.enabled}
+                  onChange={(e) =>
+                    setPoolToSave({
+                      enabled: e.target.checked,
+                      // Seeded from the host so the common case is one click,
+                      // and never overwritten once the user has typed.
+                      name: poolToSave.name || suggestPoolName(settings?.pool?.url),
+                    })
+                  }
+                />
+                <FormLabel htmlFor="savePoolProfile" color="white" mb="0" fontSize="sm" whiteSpace="nowrap">
+                  {intl.formatMessage({ id: 'settings.actions.save_pool' })}
+                </FormLabel>
+                {poolToSave.enabled && (
+                  <Input
+                    size="sm"
+                    bg="white"
+                    color="gray.900"
+                    borderRadius="6px"
+                    maxW="220px"
+                    value={poolToSave.name}
+                    onChange={(e) =>
+                      setPoolToSave({ ...poolToSave, name: e.target.value })
+                    }
+                    placeholder={intl.formatMessage({
+                      id: 'settings.actions.save_pool_name',
+                    })}
+                  />
+                )}
+              </Flex>
+            )}
             <Flex direction="row">
               {restartNeeded && (
                 <Button
@@ -725,6 +808,7 @@ const SettingsTab = () => {
           handleSaveSettings,
           setIsModalRestoreOpen,
           setIsModalConnectOpen,
+          poolProfiles,
         }}
       >
         <Box minH="calc(100vh - 80px)" pb={isChanged ? "80px" : "0"}>

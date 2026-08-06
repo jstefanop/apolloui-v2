@@ -383,7 +383,10 @@
       "discard": "Änderungen verwerfen",
       "save": "Speichern",
       "save_restart": "Speichern & Neustarten",
-      "saving": "Speichern..."
+      "saving": "Speichern...",
+      "save_pool": "Pool zur Liste hinzufügen",
+      "save_pool_name": "Name für diesen Pool",
+      "save_pool_done": "Pool „{name}“ zur Liste hinzugefügt"
     },
     "tabs": {
       "pools": "Pools",

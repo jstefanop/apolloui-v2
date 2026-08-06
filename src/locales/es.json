@@ -383,7 +383,10 @@
       "discard": "Descartar cambios",
       "save": "Guardar",
       "save_restart": "Guardar y reiniciar",
-      "saving": "Guardando..."
+      "saving": "Guardando...",
+      "save_pool": "Añadir el pool a la lista",
+      "save_pool_name": "Nombre para este pool",
+      "save_pool_done": "Pool «{name}» añadido a tu lista"
     },
     "tabs": {
       "pools": "Pools",

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Badge,
   FormLabel,
@@ -17,11 +17,15 @@ import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
 import { useSettings } from '../context/SettingsContext';
 import { useDeviceConfig } from '../../../contexts/DeviceConfigContext';
-import { presetPools } from '../../../lib/utils';
+import {
+  buildPoolOptions,
+  findPoolOption,
+  matchPoolOption,
+} from '../../../lib/poolOptions';
 
 const PoolSettings = () => {
   const intl = useIntl();
-  const { settings, setSettings, setErrorForm } = useSettings();
+  const { settings, setSettings, setErrorForm, poolProfiles = [] } = useSettings();
   // Backup pool is an Apollo III-only feature: hidden without an internal III,
   // badged "Apollo III only" in hybrid (mixed III + USB), plain on pure III.
   const { minerFamily, isHybrid } = useDeviceConfig();
@@ -29,6 +33,23 @@ const PoolSettings = () => {
   const isApolloIii = minerFamily === 'apollo-iii';
   const [pool, setPool] = useState();
   const [backupPreset, setBackupPreset] = useState();
+
+  // Presets plus whatever the user kept, addressed by key rather than by
+  // position: saved pools sort in by name, so an index means a different pool
+  // as soon as one is added.
+  const poolOptions = useMemo(() => buildPoolOptions(poolProfiles), [poolProfiles]);
+
+  // Reopening the page used to show an empty select over a configured pool,
+  // because the selection lived only in local state. Match on what is actually
+  // saved instead — including a pool the user kept, which is why this waits for
+  // the profiles to arrive.
+  useEffect(() => {
+    setPool((current) => current ?? matchPoolOption(poolOptions, settings?.pool));
+  }, [poolOptions, settings?.pool]);
+
+  useEffect(() => {
+    setBackupPreset((current) => current ?? matchPoolOption(poolOptions, settings?.backupPool));
+  }, [poolOptions, settings?.backupPool]);
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
 
@@ -49,11 +70,19 @@ const PoolSettings = () => {
   };
 
   const handleBackupPoolPreset = (e) => {
-    const preset = presetPools[e.target.value];
-    if (preset && preset.id !== 'custom') {
-      updateBackupPool({ url: preset.url });
+    const option = findPoolOption(poolOptions, e.target.value);
+    if (option && !option.isCustom) {
+      updateBackupPool(
+        option.saved
+          ? {
+              url: option.url,
+              username: option.username ?? '',
+              password: option.password ?? '',
+            }
+          : { url: option.url }
+      );
     }
-    setBackupPreset(preset);
+    setBackupPreset(option);
   };
 
   const handleBackupPoolChange = (e) => {
@@ -62,13 +91,17 @@ const PoolSettings = () => {
   };
 
   const handlePoolPreset = (e) => {
-    const preset = presetPools[e.target.value];
-    if (preset && preset.id !== 'custom') {
-      const poolChanged = {
-        ...settings.pool,
-      };
+    const option = findPoolOption(poolOptions, e.target.value);
 
-      poolChanged.url = preset.url;
+    if (option && !option.isCustom) {
+      const poolChanged = { ...settings.pool, url: option.url };
+
+      // A saved pool is a whole pool, not just an endpoint — that is what makes
+      // it worth keeping. Presets carry no worker, so theirs is left alone.
+      if (option.saved) {
+        poolChanged.username = option.username ?? '';
+        poolChanged.password = option.password ?? '';
+      }
 
       setSettings({
         ...settings,
@@ -77,7 +110,7 @@ const PoolSettings = () => {
       });
     }
 
-    setPool(preset);
+    setPool(option);
   };
 
   const handlePoolChange = (e) => {
@@ -119,15 +152,12 @@ const PoolSettings = () => {
           fontSize="sm"
           label="Select a pool *"
           onChange={handlePoolPreset}
+          value={pool?.key ?? ''}
           disabled={settings.nodeEnableSoloMining}
         >
-          <option></option>
-          {presetPools.map((item, index) => (
-            <option
-              value={index}
-              key={index}
-              selected={pool && item.name === pool.name}
-            >
+          <option value=""></option>
+          {poolOptions.map((item) => (
+            <option value={item.key} key={item.key}>
               {item.name}
             </option>
           ))}
@@ -160,7 +190,7 @@ const PoolSettings = () => {
               value={settings.pool.url}
               onChange={handlePoolChange}
               disabled={
-                settings.nodeEnableSoloMining || (pool && pool.id !== 'custom')
+                settings.nodeEnableSoloMining || (pool && !pool.isCustom)
               }
             />
           </SimpleCard>
@@ -242,15 +272,12 @@ const PoolSettings = () => {
             fontSize="sm"
             label="Select a backup pool *"
             onChange={handleBackupPoolPreset}
+            value={backupPreset?.key ?? ''}
             disabled={settings.nodeEnableSoloMining}
           >
-            <option></option>
-            {presetPools.map((item, index) => (
-              <option
-                value={index}
-                key={index}
-                selected={backupPreset && item.name === backupPreset.name}
-              >
+            <option value=""></option>
+            {poolOptions.map((item) => (
+              <option value={item.key} key={item.key}>
                 {item.name}
               </option>
             ))}
@@ -285,7 +312,7 @@ const PoolSettings = () => {
                 value={backupPool.url || ''}
                 onChange={handleBackupPoolChange}
                 disabled={
-                  settings.nodeEnableSoloMining || (backupPreset && backupPreset.id !== 'custom')
+                  settings.nodeEnableSoloMining || (backupPreset && !backupPreset.isCustom)
                 }
               />
             </SimpleCard>
