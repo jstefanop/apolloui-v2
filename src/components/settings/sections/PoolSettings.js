@@ -42,8 +42,10 @@ const PoolSettings = () => {
   const { minerFamily, isHybrid } = useDeviceConfig();
   // The backup pool is an Apollo III capability.
   const isApolloIii = minerFamily === 'apollo-iii';
-  const [pool, setPool] = useState();
-  const [backupPreset, setBackupPreset] = useState();
+  // What the user picked from the dropdown, when they picked something. Only a
+  // deliberate pick locks the URL field — everything else is derived below.
+  const [pickedPool, setPickedPool] = useState(null);
+  const [pickedBackup, setPickedBackup] = useState(null);
 
   // Presets plus whatever the user kept, addressed by key rather than by
   // position: saved pools sort in by name, so an index means a different pool
@@ -51,16 +53,27 @@ const PoolSettings = () => {
   const poolOptions = useMemo(() => buildPoolOptions(poolProfiles), [poolProfiles]);
 
   // Reopening the page used to show an empty select over a configured pool,
-  // because the selection lived only in local state. Match on what is actually
-  // saved instead — including a pool the user kept, which is why this waits for
-  // the profiles to arrive.
+  // because the selection lived only in local state. What the select shows is
+  // derived instead: the pick if there is one, else the entry matching what is
+  // configured — so a Discard that reverts the settings reverts the select with
+  // them, which stored state did not.
+  const pool = pickedPool ?? matchPoolOption(poolOptions, settings?.pool);
+  const backupPreset = pickedBackup ?? matchPoolOption(poolOptions, settings?.backupPool);
+
+  // A pick stops speaking for the selection once the URL has moved out from
+  // under it (Discard, a refetch): it would otherwise keep naming a pool the
+  // fields no longer hold, with the URL field locked to match.
   useEffect(() => {
-    setPool((current) => current ?? matchPoolOption(poolOptions, settings?.pool));
-  }, [poolOptions, settings?.pool]);
+    setPickedPool((picked) =>
+      !picked || picked.isCustom || picked.url === settings?.pool?.url ? picked : null
+    );
+  }, [settings?.pool?.url]);
 
   useEffect(() => {
-    setBackupPreset((current) => current ?? matchPoolOption(poolOptions, settings?.backupPool));
-  }, [poolOptions, settings?.backupPool]);
+    setPickedBackup((picked) =>
+      !picked || picked.isCustom || picked.url === settings?.backupPool?.url ? picked : null
+    );
+  }, [settings?.backupPool?.url]);
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
   // Same recipe as the wifi panel's "connected to" card: a tinted block so the
@@ -96,7 +109,7 @@ const PoolSettings = () => {
           : { url: option.url }
       );
     }
-    setBackupPreset(option);
+    setPickedBackup(option);
   };
 
   const handleBackupPoolChange = (e) => {
@@ -124,7 +137,7 @@ const PoolSettings = () => {
       });
     }
 
-    setPool(option);
+    setPickedPool(option);
   };
 
   const handlePoolChange = (e) => {
@@ -203,8 +216,11 @@ const PoolSettings = () => {
               placeholder={intl.formatMessage({ id: 'settings.sections.pool.url.placeholder' })}
               value={settings.pool.url}
               onChange={handlePoolChange}
+              // The pick, not the derived selection: a configured pool that
+              // happens to match an entry is still the user's to edit, and a URL
+              // being typed must not lock itself the moment it reads as a preset.
               disabled={
-                settings.nodeEnableSoloMining || (pool && !pool.isCustom)
+                settings.nodeEnableSoloMining || (pickedPool && !pickedPool.isCustom)
               }
             />
           </SimpleCard>
@@ -242,7 +258,10 @@ const PoolSettings = () => {
         profiles={poolProfiles}
         value={poolToSave?.primary}
         onChange={(v) => setPoolToSave({ ...poolToSave, primary: v })}
-        visible={poolSaveOffered?.primary}
+        // Guarded like every other control here: solo mining rewrites the pool
+        // to the local ckpool, and offering to keep that would put 127.0.0.1 in
+        // the list for a later save to point a normal miner at.
+        visible={poolSaveOffered?.primary && !settings.nodeEnableSoloMining}
         textColor={textColor}
         inputTextColor={inputTextColor}
         idSuffix="primary"
@@ -337,7 +356,7 @@ const PoolSettings = () => {
                 value={backupPool.url || ''}
                 onChange={handleBackupPoolChange}
                 disabled={
-                  settings.nodeEnableSoloMining || (backupPreset && !backupPreset.isCustom)
+                  settings.nodeEnableSoloMining || (pickedBackup && !pickedBackup.isCustom)
                 }
               />
             </SimpleCard>
@@ -377,7 +396,7 @@ const PoolSettings = () => {
           profiles={poolProfiles}
           value={poolToSave?.backup}
           onChange={(v) => setPoolToSave({ ...poolToSave, backup: v })}
-          visible={poolSaveOffered?.backup}
+          visible={poolSaveOffered?.backup && !settings.nodeEnableSoloMining}
           textColor={textColor}
           inputTextColor={inputTextColor}
           idSuffix="backup"

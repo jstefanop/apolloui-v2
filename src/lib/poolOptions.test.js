@@ -120,6 +120,33 @@ describe('suggestPoolName', () => {
   ])('%s -> %s', (url, expected) => {
     expect(suggestPoolName(url)).toBe(expected);
   });
+
+  // Saving under a name replaces what is under it, so the seed must not hand the
+  // user the name of a profile they already have: the same pool with a second
+  // worker is exactly what this control is for, and it would have overwritten
+  // the first one with a toast saying it had been added.
+  it('steps around a name already taken', () => {
+    const taken = [{ id: 1, name: 'mine.ocean.xyz', url: 'stratum+tcp://mine.ocean.xyz:3334' }];
+    expect(suggestPoolName('stratum+tcp://mine.ocean.xyz:3334', taken)).toBe(
+      'mine.ocean.xyz (2)'
+    );
+  });
+
+  it('keeps stepping until the name is free', () => {
+    const taken = [
+      { name: 'mine.ocean.xyz' },
+      { name: 'mine.ocean.xyz (2)' },
+      { name: 'mine.ocean.xyz (3)' },
+    ];
+    expect(suggestPoolName('stratum+tcp://mine.ocean.xyz:3334', taken)).toBe(
+      'mine.ocean.xyz (4)'
+    );
+  });
+
+  it('leaves the host alone when nothing owns it', () => {
+    expect(suggestPoolName('stratum+tcp://rent:3333', saved)).toBe('rent');
+    expect(suggestPoolName('stratum+tcp://rent:3333', undefined)).toBe('rent');
+  });
 });
 
 describe('poolFieldsChanged', () => {

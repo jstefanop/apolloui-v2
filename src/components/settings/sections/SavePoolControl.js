@@ -37,8 +37,9 @@ const SavePoolControl = ({
               onChange({
                 enabled: e.target.checked,
                 // Seeded from the host so the common case is one click, and
-                // never overwritten once the user has typed.
-                name: value?.name || suggestPoolName(pool.url),
+                // never overwritten once the user has typed. The profiles go in
+                // so the seed cannot land on a name already in use.
+                name: value?.name || suggestPoolName(pool.url, profiles),
               })
             }
           />

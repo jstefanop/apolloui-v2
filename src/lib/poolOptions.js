@@ -73,10 +73,23 @@ export const isPoolAlreadySaved = (profiles = [], pool) =>
 
 // A first suggestion for the name field, so the common case is one keystroke:
 // the host, without the stratum scheme or the port.
-export const suggestPoolName = (url) => {
+//
+// Suffixed when that host is already taken. Saving under an existing name
+// replaces what is under it — that is how a profile is corrected with no manage
+// screen — but the same pool with a different worker is the very case this
+// control exists for, and the bare host would hand it the name of the profile
+// it was meant to sit beside.
+export const suggestPoolName = (url, profiles = []) => {
   if (!url) return '';
   const withoutScheme = String(url).replace(/^[a-z+]+:\/\//i, '');
-  return withoutScheme.split('/')[0].split(':')[0];
+  const host = withoutScheme.split('/')[0].split(':')[0];
+
+  const taken = new Set((profiles || []).map((profile) => profile.name));
+  if (!taken.has(host)) return host;
+
+  let n = 2;
+  while (taken.has(`${host} (${n})`)) n += 1;
+  return `${host} (${n})`;
 };
 
 // Has THIS pool been edited? The offer to keep a pool used to ride on the page's

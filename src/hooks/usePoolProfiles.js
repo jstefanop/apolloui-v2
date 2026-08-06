@@ -25,14 +25,28 @@ export const usePoolProfiles = () => {
     async (input) => {
       // errorPolicy leaves GraphQL failures in `errors` with data null, so both
       // have to be read: checking only one reports success for a failed save.
+      //
+      // `errors` arrives in two shapes. With `onError` given, useMutation
+      // returns the ApolloError *itself* for a transport failure, not an array
+      // of GraphQL errors — reading only `errors[0]` turned an unreachable
+      // device into a green toast for a pool that was never kept.
       const { data: saved, errors } = await saveMutation({ variables: { input } });
       const payload = saved?.PoolProfiles?.save;
-      const message = payload?.error?.message || errors?.[0]?.message;
+      const message =
+        payload?.error?.message ||
+        (Array.isArray(errors) ? errors[0]?.message : errors?.message);
 
       if (message) return { ok: false, message };
 
-      await refetch();
-      return { ok: true, profile: payload?.result?.profile };
+      const profile = payload?.result?.profile;
+      // No profile and no message either: nothing came back, so nothing was
+      // saved. Success is the one thing this cannot report.
+      if (!profile) return { ok: false, message: 'The pool could not be saved' };
+
+      // Refreshing the list is housekeeping — a save that already happened must
+      // not be reported as failed because the list could not be reread.
+      await refetch().catch(() => {});
+      return { ok: true, profile };
     },
     [saveMutation, refetch]
   );
