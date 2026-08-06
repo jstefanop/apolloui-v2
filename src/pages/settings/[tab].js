@@ -723,45 +723,54 @@ const SettingsTab = () => {
             >
               {intl.formatMessage({ id: 'settings.actions.discard' })}
             </Button>
-            {/* John's ask, literally: a toggle next to Save. It only appears on
-                the pools tab, and only for a pool the list does not already
-                have — otherwise it would offer to save what is already saved. */}
-            {tab === 'pools' && poolIsUnsaved && (
-              <Flex align="center" gap="3" mx="4" flex="1" justify="center">
-                <Switch
-                  id="savePoolProfile"
-                  isChecked={poolToSave.enabled}
-                  onChange={(e) =>
-                    setPoolToSave({
-                      enabled: e.target.checked,
-                      // Seeded from the host so the common case is one click,
-                      // and never overwritten once the user has typed.
-                      name: poolToSave.name || suggestPoolName(settings?.pool?.url),
-                    })
-                  }
-                />
-                <FormLabel htmlFor="savePoolProfile" color="white" mb="0" fontSize="sm" whiteSpace="nowrap">
-                  {intl.formatMessage({ id: 'settings.actions.save_pool' })}
-                </FormLabel>
-                {poolToSave.enabled && (
-                  <Input
-                    size="sm"
-                    bg="white"
-                    color="gray.900"
-                    borderRadius="6px"
-                    maxW="220px"
-                    value={poolToSave.name}
+            <Flex direction="row" align="center">
+              {/* Next to Save, not merely in the same bar: centred in a wide
+                  strip it sits half a screen from the button it belongs to, and
+                  the eye goes straight past it to Save. Only on the pools tab,
+                  and only for a pool the list does not already have. */}
+              {tab === 'pools' && poolIsUnsaved && (
+                <Flex align="center" gap="3" mr="6">
+                  {poolToSave.enabled && (
+                    <Input
+                      size="sm"
+                      bg="white"
+                      color="gray.900"
+                      borderRadius="6px"
+                      w={{ base: '140px', md: '200px' }}
+                      value={poolToSave.name}
+                      onChange={(e) =>
+                        setPoolToSave({ ...poolToSave, name: e.target.value })
+                      }
+                      placeholder={intl.formatMessage({
+                        id: 'settings.actions.save_pool_name',
+                      })}
+                    />
+                  )}
+                  <FormLabel
+                    htmlFor="savePoolProfile"
+                    color="white"
+                    fontWeight="600"
+                    mb="0"
+                    fontSize="sm"
+                    whiteSpace="nowrap"
+                    _hover={{ cursor: 'pointer' }}
+                  >
+                    {intl.formatMessage({ id: 'settings.actions.save_pool' })}
+                  </FormLabel>
+                  <Switch
+                    id="savePoolProfile"
+                    isChecked={poolToSave.enabled}
                     onChange={(e) =>
-                      setPoolToSave({ ...poolToSave, name: e.target.value })
+                      setPoolToSave({
+                        enabled: e.target.checked,
+                        // Seeded from the host so the common case is one click,
+                        // and never overwritten once the user has typed.
+                        name: poolToSave.name || suggestPoolName(settings?.pool?.url),
+                      })
                     }
-                    placeholder={intl.formatMessage({
-                      id: 'settings.actions.save_pool_name',
-                    })}
                   />
-                )}
-              </Flex>
-            )}
-            <Flex direction="row">
+                </Flex>
+              )}
               {restartNeeded && (
                 <Button
                   colorScheme="orange"
