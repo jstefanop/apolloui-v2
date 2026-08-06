@@ -13,8 +13,10 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloResta
     router.push('/signin');
   };
 
-  // For solo-node, check if either node or solo service is loading
-  const isLoading = isSoloNode ? (loadingSoloRestart || loadingNodeStart) : loadingMinerRestart;
+  // Which calls handleStartMining makes depends on the chassis and the mining
+  // mode picked, so watch all three: keying this off the device type left gaps
+  // where the button went live again between two awaited restarts.
+  const isLoading = loadingNodeStart || loadingMinerRestart || loadingSoloRestart;
 
   return (
     <Box mx="auto" py="150px">
@@ -35,9 +37,10 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloResta
           w="300px"
           h="50"
           mb="24px"
-          onClick={isSoloNode ? handleStartMining : handleStartMining}
+          onClick={handleStartMining}
           isDisabled={isLoading}
           isLoading={isLoading}
+          loadingText={intl.formatMessage({ id: 'setup.complete.warming_up' })}
         >
           {isSoloNode 
             ? intl.formatMessage({ id: 'setup.complete.button_solo' }) 

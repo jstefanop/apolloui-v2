@@ -765,7 +765,8 @@
       "title": "¡Configuración completada!",
       "subtitle": "¡Empecemos a minar Bitcoin!",
       "button": "Comenzar minería",
-      "button_solo": "Iniciar Solo Node"
+      "button_solo": "Iniciar Solo Node",
+      "warming_up": "Calentando…"
     },
     "common": {
       "previous": "Anterior",
