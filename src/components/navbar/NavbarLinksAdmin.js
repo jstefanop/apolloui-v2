@@ -573,9 +573,14 @@ export default function HeaderLinks({
                 >
                   Start
                 </MenuItem>
+                {/* Stopping is never gated on storage — the case where the
+                    drive went away with bitcoind still running is exactly when
+                    it must be stoppable, before the blockchain it is still
+                    writing lands on the SD card. Start is; nothing can start
+                    without somewhere to run. */}
                 <MenuItem
                   icon={<StopIcon />}
-                  isDisabled={noNodeStorage || nodeOnline === 'offline'}
+                  isDisabled={nodeOnline === 'offline'}
                   onClick={() => handleSystemAction('stopNode')}
                 >
                   Stop
