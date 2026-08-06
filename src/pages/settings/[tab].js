@@ -59,7 +59,7 @@ import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 import usePoolProfiles from '../../hooks/usePoolProfiles';
-import { isPoolAlreadySaved, suggestPoolName } from '../../lib/poolOptions';
+import { suggestPoolName } from '../../lib/poolOptions';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -75,12 +75,16 @@ const SettingsTab = () => {
   // is worth offering to keep only when it is not already in the list — picking
   // a preset or a saved profile has nothing new to remember.
   const { profiles: poolProfiles, save: savePoolProfile } = usePoolProfiles();
-  const [poolToSave, setPoolToSave] = useState({ enabled: false, name: '' });
-  // Offered whenever the pool in the form is not already kept as it stands —
-  // worker and password included. Gated on isChanged because saving the profile
-  // rides on the Save button: with nothing to save there is no button to press.
-  const poolIsUnsaved =
-    isChanged && !!settings?.pool?.url && !isPoolAlreadySaved(poolProfiles, settings.pool);
+  // One pending "keep this" per pool: a single flag kept whichever pool the
+  // handler happened to read, which is not the one the user was looking at when
+  // they turned it on. Gated on isChanged because saving a profile rides on the
+  // Save button — with nothing to save there is no button to press.
+  const emptySave = { enabled: false, name: '' };
+  const [poolToSave, setPoolToSave] = useState({
+    primary: emptySave,
+    backup: emptySave,
+  });
+  const poolSaveOffered = isChanged;
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -570,12 +574,21 @@ const SettingsTab = () => {
       // Keeping the pool is a side errand of saving, so it reports separately
       // and never fails the save: the settings are already applied by here, and
       // turning that into an error would say the opposite.
-      if (poolToSave.enabled && settings?.pool?.url) {
+      // Each section keeps its own pool. Sequential rather than parallel: two
+      // saves racing on the same name is the one case where "last write wins"
+      // would quietly drop one of them.
+      for (const [which, pool] of [
+        ['primary', settings?.pool],
+        ['backup', settings?.backupPool],
+      ]) {
+        const pending = poolToSave[which];
+        if (!pending?.enabled || !pool?.url) continue;
+
         const kept = await savePoolProfile({
-          name: poolToSave.name?.trim() || suggestPoolName(settings.pool.url),
-          url: settings.pool.url,
-          username: settings.pool.username || null,
-          password: settings.pool.password || null,
+          name: pending.name?.trim() || suggestPoolName(pool.url),
+          url: pool.url,
+          username: pool.username || null,
+          password: pool.password || null,
         });
 
         dispatch(
@@ -591,9 +604,9 @@ const SettingsTab = () => {
               : { message: kept.message, type: 'error' }
           )
         );
-
-        setPoolToSave({ enabled: false, name: '' });
       }
+
+      setPoolToSave({ primary: emptySave, backup: emptySave });
 
       // Handle restarts based on type
       if (type === 'miner') {
@@ -771,7 +784,7 @@ const SettingsTab = () => {
           poolProfiles,
           poolToSave,
           setPoolToSave,
-          poolIsUnsaved,
+          poolSaveOffered,
         }}
       >
         <Box minH="calc(100vh - 80px)" pb={isChanged ? "80px" : "0"}>

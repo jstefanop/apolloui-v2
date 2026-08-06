@@ -16,13 +16,13 @@ import { PoolIcon } from '../../UI/Icons/PoolIcon';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
 import Card from '../../card/Card';
+import SavePoolControl from './SavePoolControl';
 import { useSettings } from '../context/SettingsContext';
 import { useDeviceConfig } from '../../../contexts/DeviceConfigContext';
 import {
   buildPoolOptions,
   findPoolOption,
   matchPoolOption,
-  suggestPoolName,
 } from '../../../lib/poolOptions';
 
 const PoolSettings = () => {
@@ -34,7 +34,7 @@ const PoolSettings = () => {
     poolProfiles = [],
     poolToSave,
     setPoolToSave,
-    poolIsUnsaved,
+    poolSaveOffered,
   } = useSettings();
   // Backup pool is an Apollo III-only feature: hidden without an internal III,
   // badged "Apollo III only" in hybrid (mixed III + USB), plain on pure III.
@@ -236,55 +236,21 @@ const PoolSettings = () => {
         </GridItem>
       </Grid>
 
-      {/* Under the fields it belongs to, not up in the action bar: there it sat
-          half a screen from Save and went unnoticed. Shown for any change to the
-          pool — putting your own worker on a preset is the ordinary case. */}
-      {poolIsUnsaved && (
-        <SimpleCard title={''} textColor={textColor}>
-          <Flex align="center" justify="space-between" wrap="wrap" gap="3">
-            <Flex align="center" gap="3">
-              <Switch
-                id="savePoolProfile"
-                isChecked={!!poolToSave?.enabled}
-                onChange={(e) =>
-                  setPoolToSave({
-                    enabled: e.target.checked,
-                    // Seeded from the host so the common case is one click, and
-                    // never overwritten once the user has typed.
-                    name: poolToSave?.name || suggestPoolName(settings?.pool?.url),
-                  })
-                }
-              />
-              <FormLabel
-                htmlFor="savePoolProfile"
-                color={textColor}
-                fontWeight="bold"
-                mb="0"
-                _hover={{ cursor: 'pointer' }}
-              >
-                {intl.formatMessage({ id: 'settings.actions.save_pool' })}
-              </FormLabel>
-            </Flex>
-            {poolToSave?.enabled && (
-              <Input
-                color={inputTextColor}
-                maxW={{ base: '100%', md: '320px' }}
-                value={poolToSave.name}
-                onChange={(e) => setPoolToSave({ ...poolToSave, name: e.target.value })}
-                placeholder={intl.formatMessage({ id: 'settings.actions.save_pool_name' })}
-              />
-            )}
-          </Flex>
-          <Text fontSize="sm" color="gray.500" mt="2">
-            {intl.formatMessage({ id: 'settings.actions.save_pool_hint' })}
-          </Text>
-        </SimpleCard>
-      )}
+      <SavePoolControl
+        pool={settings.pool}
+        profiles={poolProfiles}
+        value={poolToSave?.primary}
+        onChange={(v) => setPoolToSave({ ...poolToSave, primary: v })}
+        visible={poolSaveOffered}
+        textColor={textColor}
+        inputTextColor={inputTextColor}
+        idSuffix="primary"
+      />
 
       {isApolloIii && (
         <>
-      <Card bg={panelBg} p="16px" mt="20px" mb="20px" borderRadius="12px">
-        <Flex justifyContent="space-between" alignItems="center">
+      <Card bg={panelBg} mx="22px" px="0" py="14px" mt="20px" mb="20px" borderRadius="12px">
+        <Flex justifyContent="space-between" alignItems="center" px="24px">
           <Flex align="center">
             <FormLabel
               htmlFor="backupPoolEnabled"
@@ -308,7 +274,7 @@ const PoolSettings = () => {
             isDisabled={settings.nodeEnableSoloMining}
           />
         </Flex>
-        <Text fontSize="sm" color="gray.500" mt="1">
+        <Text fontSize="sm" color="gray.500" mt="1" px="24px">
           {intl.formatMessage({ id: 'settings.sections.pool.backup.description' })}
         </Text>
 
@@ -401,6 +367,19 @@ const PoolSettings = () => {
             </SimpleCard>
           </GridItem>
         </Grid>
+      )}
+
+      {backupPool.enabled && (
+        <SavePoolControl
+          pool={backupPool}
+          profiles={poolProfiles}
+          value={poolToSave?.backup}
+          onChange={(v) => setPoolToSave({ ...poolToSave, backup: v })}
+          visible={poolSaveOffered}
+          textColor={textColor}
+          inputTextColor={inputTextColor}
+          idSuffix="backup"
+        />
       )}
       </Card>
         </>
