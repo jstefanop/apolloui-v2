@@ -5,10 +5,12 @@ import { CheckIcon } from '@chakra-ui/icons';
 import CustomAlert from './CustomAlert';
 import config from '../../config';
 import { useIntl } from 'react-intl';
+import useNodeStorage from '../../hooks/useNodeStorage';
 
 const NodeStatus = ({ serviceStatus, loading }) => {
   const intl = useIntl();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const { unavailable: noStorage, state: storageState } = useNodeStorage();
   const node = serviceStatus?.node;
 
   // Show success alert only when the component is first loaded, if the node is online and requested status is also online within 2 minutes of the request.
@@ -47,6 +49,19 @@ const NodeStatus = ({ serviceStatus, loading }) => {
         description={intl.formatMessage({ id: 'node.status.unavailable.description' })}
         status="error"
         variant="horizontal"
+      />
+    );
+  }
+
+  // Ahead of every service state, because none of them is the reason. The plain
+  // offline message tells you to start the node from the top menu — a menu where
+  // that entry is now disabled, which is a dead end dressed up as advice.
+  if (noStorage) {
+    return (
+      <CustomAlert
+        title={intl.formatMessage({ id: 'node.status.offline.title' })}
+        description={intl.formatMessage({ id: `node.storage.${storageState}` })}
+        status={storageState === 'no-drive' ? 'info' : 'warning'}
       />
     );
   }

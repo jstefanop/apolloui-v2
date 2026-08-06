@@ -1,10 +1,21 @@
 {
   "extends": "next/core-web-vitals",
-  "rules": {},
+  "rules": {
+    "no-undef": "error"
+  },
   "settings": {},
-  "ignorePatterns": ["node_modules/", ".next/"],
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/"
+  ],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true,
+    "jest": true
   }
 }

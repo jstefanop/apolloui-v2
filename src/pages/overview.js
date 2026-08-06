@@ -24,6 +24,7 @@ import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
+import useNodeStorage from '../hooks/useNodeStorage';
 import {
   bytesToSize,
   getNodeErrorMessage,
