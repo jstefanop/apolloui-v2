@@ -55,6 +55,7 @@ import { nodeSelector } from '../../redux/reselect/node';
 import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
+import useNodeStorage from '../../hooks/useNodeStorage';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -66,6 +67,7 @@ const SettingsTab = () => {
   const [backupData, setBackupData] = useState();
   const [restoreData, setRestoreData] = useState();
   const [isChanged, setIsChanged] = useState(false);
+  const { unavailable: noNodeStorage } = useNodeStorage();
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -287,11 +289,16 @@ const SettingsTab = () => {
         )
       : false;
     
-    const restartNodeNeeded = !_.isEqual(
-      _.pick(settings, restartNodeFields),
-      _.pick(currentSettings, restartNodeFields)
-    );
-    
+    // Node settings still save — they are what the node will use once it has
+    // somewhere to run — but with no drive there is nothing to restart, and
+    // offering "Save & Restart" promises a restart that quietly cannot happen.
+    const restartNodeNeeded =
+      !noNodeStorage &&
+      !_.isEqual(
+        _.pick(settings, restartNodeFields),
+        _.pick(currentSettings, restartNodeFields)
+      );
+
     const restartType =
       (restartMinerNeeded || restartSoloNeeded) && restartNodeNeeded
         ? 'both'
@@ -306,7 +313,7 @@ const SettingsTab = () => {
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
-  }, [settings, currentSettings, deviceType]);
+  }, [settings, currentSettings, deviceType, noNodeStorage]);
 
   // Handle backup download
   const handleBackup = async () => {

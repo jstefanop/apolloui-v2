@@ -514,7 +514,8 @@
           "title": "Bitcoin node configuration",
           "description": "Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. Please check Bitcoin Core documentation for valid options.)"
         },
-        "solo_mining_warning": "You have solo mining enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block"
+        "solo_mining_warning": "You have solo mining enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block",
+        "storage_note": "Settings on this tab are still saved and will apply once a drive is available."
       },
       "system": {
         "title": "System settings",

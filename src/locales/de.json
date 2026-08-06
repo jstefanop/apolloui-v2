@@ -514,7 +514,8 @@
           "title": "Bitcoin-Node-Konfiguration",
           "description": "Fügen Sie zusätzliche Konfigurationszeilen zur bitcoin.conf-Datei hinzu. (Hinweis: Dieser Abschnitt ist für fortgeschrittene Benutzer und es wird keine Validierung durchgeführt. Bitte überprüfen Sie die Bitcoin Core-Dokumentation für gültige Optionen.)"
         },
-        "solo_mining_warning": "Sie haben Solo-Mining aktiviert. Es wird empfohlen, Tor für Solo-Mining auszuschalten. Bitcoin-Nodes im Tor-Netzwerk verbreiten Blöcke langsamer, und es besteht eine höhere Chance, einen Block zu verwaisen."
+        "solo_mining_warning": "Sie haben Solo-Mining aktiviert. Es wird empfohlen, Tor für Solo-Mining auszuschalten. Bitcoin-Nodes im Tor-Netzwerk verbreiten Blöcke langsamer, und es besteht eine höhere Chance, einen Block zu verwaisen.",
+        "storage_note": "Die Einstellungen auf dieser Registerkarte werden trotzdem gespeichert und angewendet, sobald ein Laufwerk verfügbar ist."
       },
       "system": {
         "title": "Systemeinstellungen",

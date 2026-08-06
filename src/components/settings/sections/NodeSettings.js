@@ -27,6 +27,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { getNodeErrorMessage } from '../../../lib/utils';
 import { getGroupedNodeSoftware } from '../../../lib/nodeSoftware';
+import useNodeStorage from '../../../hooks/useNodeStorage';
 
 const NodeSettings = () => {
   const intl = useIntl();
@@ -67,6 +68,11 @@ const NodeSettings = () => {
     setIsModalConnectOpen(true);
   };
 
+  // The fields stay editable — what is saved here is what the node will run with
+  // once it has a drive — but nothing on this tab takes effect until then, and
+  // the save button drops its "& Restart" accordingly.
+  const { unavailable: noStorage, state: storageState } = useNodeStorage();
+
   return (
     <>
       {/* Main Node Settings Panel */}
@@ -84,6 +90,15 @@ const NodeSettings = () => {
         }
         mb={'20px'}
       >
+        {noStorage && (
+          <Alert status="info" borderRadius="10px" mb="20px">
+            <AlertIcon />
+            <AlertDescription fontSize="sm">
+              {intl.formatMessage({ id: `node.storage.${storageState}` })}{' '}
+              {intl.formatMessage({ id: 'settings.sections.node.storage_note' })}
+            </AlertDescription>
+          </Alert>
+        )}
         <SimpleCard title={intl.formatMessage({ id: 'settings.sections.node.software.title' })} textColor={textColor}>
           <Flex direction="column" gap="20px" mt={4}>
             {swGroups.map((group) => (
