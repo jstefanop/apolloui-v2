@@ -989,6 +989,8 @@
       "no-wifi-interface": "Kein WLAN-Adapter verfügbar",
       "not-a-wifi-interface": "Dieser Adapter ist kein WLAN-Adapter",
       "not-a-wifi-profile": "Dieses gespeicherte Netzwerk ist kein WLAN",
+      "disconnect-failed": "Die Verbindung konnte nicht getrennt werden",
+      "forget-failed": "Das gespeicherte Netzwerk konnte nicht gelöscht werden",
       "unreachable": "Keine Antwort — das Gerät ist möglicherweise ins andere Netzwerk gewechselt. Lade diese Seite über die neue Adresse neu."
     },
     "scan": {

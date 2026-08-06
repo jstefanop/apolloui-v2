@@ -67,6 +67,9 @@ export const WIFI_NETWORKS_QUERY = gql`
             active
             bands
             channel
+            # The only stable identity a hidden network has — it announces no
+            # name, and the list is keyed by one.
+            bssid
           }
         }
         error {

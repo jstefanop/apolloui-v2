@@ -413,7 +413,12 @@ const WifiPanel = () => {
           <Flex direction="column" gap={2}>
             {networks.map((n) => {
               // Key by identity, never by index: the list reorders on every scan.
-              const key = n.hidden ? `hidden-${n.channel}-${n.signal}` : n.ssid;
+              // For a hidden network the identity is the BSSID — the radio's own
+              // address. Channel and signal are not one: the signal moves on
+              // every scan, so each refresh remounted the row instead of
+              // updating it, and two hidden APs reading the same could collide
+              // on one key and take a row out of the list.
+              const key = n.hidden ? `hidden-${n.bssid || n.channel}` : n.ssid;
               const isCurrent = status?.connected && status.ssid === n.ssid;
               return (
                 <Flex

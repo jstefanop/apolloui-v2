@@ -989,6 +989,8 @@
       "no-wifi-interface": "Nessuna scheda Wi-Fi disponibile",
       "not-a-wifi-interface": "Quella scheda non è Wi-Fi",
       "not-a-wifi-profile": "Quella rete salvata non è Wi-Fi",
+      "disconnect-failed": "Impossibile disconnettersi dalla rete",
+      "forget-failed": "Impossibile eliminare la rete salvata",
       "unreachable": "Nessuna risposta: il dispositivo potrebbe essere passato all'altra rete. Ricarica questa pagina dal suo nuovo indirizzo."
     },
     "scan": {

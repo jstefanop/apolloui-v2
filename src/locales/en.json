@@ -989,6 +989,8 @@
       "no-wifi-interface": "No Wi-Fi adapter available",
       "not-a-wifi-interface": "That adapter is not Wi-Fi",
       "not-a-wifi-profile": "That saved network is not Wi-Fi",
+      "disconnect-failed": "Could not leave the network",
+      "forget-failed": "Could not delete the saved network",
       "unreachable": "No answer — the device may have moved to the other network. Reload this page from its new address."
     },
     "scan": {
