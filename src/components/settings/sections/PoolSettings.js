@@ -15,17 +15,27 @@ import { useIntl } from 'react-intl';
 import { PoolIcon } from '../../UI/Icons/PoolIcon';
 import PanelCard from '../../UI/PanelCard';
 import SimpleCard from '../../UI/SimpleCard';
+import Card from '../../card/Card';
 import { useSettings } from '../context/SettingsContext';
 import { useDeviceConfig } from '../../../contexts/DeviceConfigContext';
 import {
   buildPoolOptions,
   findPoolOption,
   matchPoolOption,
+  suggestPoolName,
 } from '../../../lib/poolOptions';
 
 const PoolSettings = () => {
   const intl = useIntl();
-  const { settings, setSettings, setErrorForm, poolProfiles = [] } = useSettings();
+  const {
+    settings,
+    setSettings,
+    setErrorForm,
+    poolProfiles = [],
+    poolToSave,
+    setPoolToSave,
+    poolIsUnsaved,
+  } = useSettings();
   // Backup pool is an Apollo III-only feature: hidden without an internal III,
   // badged "Apollo III only" in hybrid (mixed III + USB), plain on pure III.
   const { minerFamily, isHybrid } = useDeviceConfig();
@@ -52,6 +62,9 @@ const PoolSettings = () => {
   }, [poolOptions, settings?.backupPool]);
   const textColor = useColorModeValue('brands.900', 'white');
   const inputTextColor = useColorModeValue('gray.900', 'gray.300');
+  // Same recipe as the wifi panel's "connected to" card: a tinted block so the
+  // backup pool reads as its own thing instead of more fields under the primary.
+  const panelBg = useColorModeValue('gray.50', 'whiteAlpha.100');
 
   // Kept in settings, not in local state, so the save path and the
   // unsaved-changes detection see it like any other field.
@@ -223,9 +236,54 @@ const PoolSettings = () => {
         </GridItem>
       </Grid>
 
+      {/* Under the fields it belongs to, not up in the action bar: there it sat
+          half a screen from Save and went unnoticed. Shown for any change to the
+          pool — putting your own worker on a preset is the ordinary case. */}
+      {poolIsUnsaved && (
+        <SimpleCard title={''} textColor={textColor}>
+          <Flex align="center" justify="space-between" wrap="wrap" gap="3">
+            <Flex align="center" gap="3">
+              <Switch
+                id="savePoolProfile"
+                isChecked={!!poolToSave?.enabled}
+                onChange={(e) =>
+                  setPoolToSave({
+                    enabled: e.target.checked,
+                    // Seeded from the host so the common case is one click, and
+                    // never overwritten once the user has typed.
+                    name: poolToSave?.name || suggestPoolName(settings?.pool?.url),
+                  })
+                }
+              />
+              <FormLabel
+                htmlFor="savePoolProfile"
+                color={textColor}
+                fontWeight="bold"
+                mb="0"
+                _hover={{ cursor: 'pointer' }}
+              >
+                {intl.formatMessage({ id: 'settings.actions.save_pool' })}
+              </FormLabel>
+            </Flex>
+            {poolToSave?.enabled && (
+              <Input
+                color={inputTextColor}
+                maxW={{ base: '100%', md: '320px' }}
+                value={poolToSave.name}
+                onChange={(e) => setPoolToSave({ ...poolToSave, name: e.target.value })}
+                placeholder={intl.formatMessage({ id: 'settings.actions.save_pool_name' })}
+              />
+            )}
+          </Flex>
+          <Text fontSize="sm" color="gray.500" mt="2">
+            {intl.formatMessage({ id: 'settings.actions.save_pool_hint' })}
+          </Text>
+        </SimpleCard>
+      )}
+
       {isApolloIii && (
         <>
-      <SimpleCard title={''} textColor={textColor}>
+      <Card bg={panelBg} p="16px" mt="20px" mb="20px" borderRadius="12px">
         <Flex justifyContent="space-between" alignItems="center">
           <Flex align="center">
             <FormLabel
@@ -253,7 +311,6 @@ const PoolSettings = () => {
         <Text fontSize="sm" color="gray.500" mt="1">
           {intl.formatMessage({ id: 'settings.sections.pool.backup.description' })}
         </Text>
-      </SimpleCard>
 
       {backupPool.enabled && (
         <SimpleCard title={''} textColor={textColor}>
@@ -345,6 +402,7 @@ const PoolSettings = () => {
           </GridItem>
         </Grid>
       )}
+      </Card>
         </>
       )}
     </PanelCard>

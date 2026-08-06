@@ -54,9 +54,22 @@ export const matchPoolOption = (options, pool) => {
   return byUrl.find((option) => option.saved) ?? byUrl[0] ?? null;
 };
 
-// Whether "add this to the list" has anything to offer: only a pool typed by
-// hand. Picking a preset or an already-saved profile has nothing new to keep.
-export const isSaveablePool = (option) => !!option?.isCustom;
+// Whether "add this to the list" has anything to offer.
+//
+// It used to ask whether the URL was new, which meant putting your own worker on
+// a preset pool — the ordinary case — offered nothing, because the URL had not
+// moved. A profile here is the whole pool (URL, worker, password), so the
+// question is whether that whole thing is already kept, and presets do not count:
+// they carry no worker, so they can never be what the user configured.
+const same = (a, b) => (a ?? '') === (b ?? '');
+
+export const isPoolAlreadySaved = (profiles = [], pool) =>
+  (profiles || []).some(
+    (profile) =>
+      same(profile.url, pool?.url) &&
+      same(profile.username, pool?.username) &&
+      same(profile.password, pool?.password)
+  );
 
 // A first suggestion for the name field, so the common case is one keystroke:
 // the host, without the stratum scheme or the port.

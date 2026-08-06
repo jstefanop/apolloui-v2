@@ -386,7 +386,8 @@
       "saving": "Guardando...",
       "save_pool": "Añadir el pool a la lista",
       "save_pool_name": "Nombre para este pool",
-      "save_pool_done": "Pool «{name}» añadido a tu lista"
+      "save_pool_done": "Pool «{name}» añadido a tu lista",
+      "save_pool_hint": "Los pools guardados aparecen en la lista de arriba y en la del pool de respaldo."
     },
     "tabs": {
       "pools": "Pools",

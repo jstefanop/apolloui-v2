@@ -2,7 +2,7 @@ import {
   buildPoolOptions,
   findPoolOption,
   matchPoolOption,
-  isSaveablePool,
+  isPoolAlreadySaved,
   suggestPoolName,
   savedKey,
   CUSTOM_KEY,
@@ -74,13 +74,38 @@ describe('matchPoolOption', () => {
   });
 });
 
-describe('isSaveablePool', () => {
-  it('offers to save only a pool typed by hand', () => {
-    const options = buildPoolOptions(saved);
-    expect(isSaveablePool(findPoolOption(options, CUSTOM_KEY))).toBe(true);
-    expect(isSaveablePool(findPoolOption(options, savedKey(saved[0])))).toBe(false);
-    expect(isSaveablePool(options[0])).toBe(false);
-    expect(isSaveablePool(null)).toBe(false);
+describe('isPoolAlreadySaved', () => {
+  const kept = { url: 'stratum+tcp://a:1', username: 'w', password: 'p' };
+  const profiles = [{ id: 1, name: 'Kept', ...kept }];
+
+  it('is true only for the exact pool that was kept', () => {
+    expect(isPoolAlreadySaved(profiles, kept)).toBe(true);
+  });
+
+  // The case that sent the user looking: their own worker on a preset pool. The
+  // URL never moved, so a URL-only comparison said "already saved" and the offer
+  // to keep it never appeared.
+  it('is false when only the worker differs', () => {
+    expect(isPoolAlreadySaved(profiles, { ...kept, username: 'other' })).toBe(false);
+  });
+
+  it('is false when only the password differs', () => {
+    expect(isPoolAlreadySaved(profiles, { ...kept, password: 'other' })).toBe(false);
+  });
+
+  it('treats null and empty as the same absent value', () => {
+    const bare = [{ id: 2, name: 'Bare', url: 'stratum+tcp://b:2', username: null, password: null }];
+    expect(isPoolAlreadySaved(bare, { url: 'stratum+tcp://b:2', username: '', password: '' })).toBe(true);
+  });
+
+  it('never counts a preset as saved — a preset carries no worker', () => {
+    const preset = buildPoolOptions().find((o) => o.url);
+    expect(isPoolAlreadySaved([], { url: preset.url, username: 'w' })).toBe(false);
+  });
+
+  it('is false with nothing kept at all', () => {
+    expect(isPoolAlreadySaved([], kept)).toBe(false);
+    expect(isPoolAlreadySaved(undefined, kept)).toBe(false);
   });
 });
 

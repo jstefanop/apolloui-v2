@@ -59,11 +59,7 @@ import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 import usePoolProfiles from '../../hooks/usePoolProfiles';
-import {
-  buildPoolOptions,
-  matchPoolOption,
-  suggestPoolName,
-} from '../../lib/poolOptions';
+import { isPoolAlreadySaved, suggestPoolName } from '../../lib/poolOptions';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -80,9 +76,11 @@ const SettingsTab = () => {
   // a preset or a saved profile has nothing new to remember.
   const { profiles: poolProfiles, save: savePoolProfile } = usePoolProfiles();
   const [poolToSave, setPoolToSave] = useState({ enabled: false, name: '' });
+  // Offered whenever the pool in the form is not already kept as it stands —
+  // worker and password included. Gated on isChanged because saving the profile
+  // rides on the Save button: with nothing to save there is no button to press.
   const poolIsUnsaved =
-    !!settings?.pool?.url &&
-    !matchPoolOption(buildPoolOptions(poolProfiles), settings.pool);
+    isChanged && !!settings?.pool?.url && !isPoolAlreadySaved(poolProfiles, settings.pool);
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -724,53 +722,6 @@ const SettingsTab = () => {
               {intl.formatMessage({ id: 'settings.actions.discard' })}
             </Button>
             <Flex direction="row" align="center">
-              {/* Next to Save, not merely in the same bar: centred in a wide
-                  strip it sits half a screen from the button it belongs to, and
-                  the eye goes straight past it to Save. Only on the pools tab,
-                  and only for a pool the list does not already have. */}
-              {tab === 'pools' && poolIsUnsaved && (
-                <Flex align="center" gap="3" mr="6">
-                  {poolToSave.enabled && (
-                    <Input
-                      size="sm"
-                      bg="white"
-                      color="gray.900"
-                      borderRadius="6px"
-                      w={{ base: '140px', md: '200px' }}
-                      value={poolToSave.name}
-                      onChange={(e) =>
-                        setPoolToSave({ ...poolToSave, name: e.target.value })
-                      }
-                      placeholder={intl.formatMessage({
-                        id: 'settings.actions.save_pool_name',
-                      })}
-                    />
-                  )}
-                  <FormLabel
-                    htmlFor="savePoolProfile"
-                    color="white"
-                    fontWeight="600"
-                    mb="0"
-                    fontSize="sm"
-                    whiteSpace="nowrap"
-                    _hover={{ cursor: 'pointer' }}
-                  >
-                    {intl.formatMessage({ id: 'settings.actions.save_pool' })}
-                  </FormLabel>
-                  <Switch
-                    id="savePoolProfile"
-                    isChecked={poolToSave.enabled}
-                    onChange={(e) =>
-                      setPoolToSave({
-                        enabled: e.target.checked,
-                        // Seeded from the host so the common case is one click,
-                        // and never overwritten once the user has typed.
-                        name: poolToSave.name || suggestPoolName(settings?.pool?.url),
-                      })
-                    }
-                  />
-                </Flex>
-              )}
               {restartNeeded && (
                 <Button
                   colorScheme="orange"
@@ -818,6 +769,9 @@ const SettingsTab = () => {
           setIsModalRestoreOpen,
           setIsModalConnectOpen,
           poolProfiles,
+          poolToSave,
+          setPoolToSave,
+          poolIsUnsaved,
         }}
       >
         <Box minH="calc(100vh - 80px)" pb={isChanged ? "80px" : "0"}>
