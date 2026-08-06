@@ -25,6 +25,7 @@ import { nodeSelector } from '../../../redux/reselect/node';
 import { presetPools } from '../../../lib/utils';
 import { useIntl } from 'react-intl';
 import { useDeviceType } from '../../../contexts/DeviceConfigContext';
+import useNodeStorage from '../../../hooks/useNodeStorage';
 
 const SoloSettings = () => {
   const intl = useIntl();
@@ -59,6 +60,17 @@ const SoloSettings = () => {
   // Node data
   const { data: dataNode } = useSelector(nodeSelector, shallowEqual);
   const { blocksCount, blockHeader } = dataNode || {};
+
+  // Without a usable drive the node has nowhere to live, so solo mining cannot be
+  // turned on — but "not synced" is the wrong thing to tell someone about it: no
+  // amount of waiting fixes a missing disk. Same on a Solo Node, where the drive
+  // can just as easily be unseated or failed.
+  const { state: storageState } = useNodeStorage();
+  const storageBlocked =
+    storageState && storageState !== 'ready' && storageState !== 'unknown';
+  const blockerMessage = storageBlocked
+    ? intl.formatMessage({ id: `node.storage.${storageState}` })
+    : intl.formatMessage({ id: 'settings.sections.solo.node_not_synced' });
 
   // BTC Signature prefix and suffix (visual only)
   const btcsigPrefix = '/FutureBit-';
@@ -155,7 +167,8 @@ const SoloSettings = () => {
       icon={GrUserWorker}
     >
       {/* For solo-node, always show the wallet field. For miner, check if node is synced or solo mining is enabled */}
-      {isSoloNode || (blockHeader && blockHeader === blocksCount) || soloMiningMode.selected ? (
+      {!storageBlocked &&
+      (isSoloNode || (blockHeader && blockHeader === blocksCount) || soloMiningMode.selected) ? (
         <>
           {/* Show switch only for non-solo-node devices */}
           {!isSoloNode && (
@@ -242,7 +255,7 @@ const SoloSettings = () => {
           mt="20px"
         >
           <Text fontSize="sm" color="gray.800">
-            {intl.formatMessage({ id: 'settings.sections.solo.node_not_synced' })}
+            {blockerMessage}
           </Text>
         </SimpleCard>
       )}
