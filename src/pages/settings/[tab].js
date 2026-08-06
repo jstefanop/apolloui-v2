@@ -67,7 +67,7 @@ const SettingsTab = () => {
   const [backupData, setBackupData] = useState();
   const [restoreData, setRestoreData] = useState();
   const [isChanged, setIsChanged] = useState(false);
-  const { unavailable: noNodeStorage } = useNodeStorage();
+  const { storage, unavailable: noNodeStorage } = useNodeStorage();
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -106,7 +106,9 @@ const SettingsTab = () => {
     loading: loadingNode,
   } = useSelector(nodeSelector, shallowEqual);
   const { localaddresses } = dataNode || {};
-  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl);
+  // `sentence` is the key this helper returns; asking for one it does not left
+  // the value undefined, and with it the Connect button's loading state dead.
+  const { sentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl, storage);
 
   // Mcu data from Redux
   const { data: dataMcu } = useSelector(mcuSelector, shallowEqual);
