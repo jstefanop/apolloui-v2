@@ -25,7 +25,7 @@ const Setup = () => {
   const router = useRouter();
   const intl = useIntl();
   const textColor = useColorModeValue('brand.800', 'white');
-  const { deviceType } = useDeviceConfig();
+  const { deviceType, hasUsbMiners } = useDeviceConfig();
   const isSoloNode = deviceType === 'solo-node';
 
   const [step, setStep] = useState(1);
@@ -248,14 +248,17 @@ const Setup = () => {
     // Await each call before leaving: these are lazy queries, and navigating away
     // tears the page down — firing them unawaited let it abort the restart in
     // flight, so the miner never picked up the pool just saved.
-    if (isSoloNode) {
-      await startNode();
-      await restartSolo();
-    } else {
-      await startNode();
-      await restartMiner();
-      await restartSolo();
-    }
+    await startNode();
+
+    // The Solo Node has no internal board, but it still runs apollo-miner for
+    // USB hashboards, and the miner only reads the pool out of miner_config at
+    // launch — so it needs the restart too whenever one is plugged in.
+    if (!isSoloNode || hasUsbMiners) await restartMiner();
+
+    // Only when the user actually chose solo: manageBitcoinConf stops and
+    // disables ckpool for pooled mining, and starting it here undoes that.
+    if (soloMining) await restartSolo();
+
     // Go straight to signin — where the guard sends a completed setup anyway.
     // router.reload() instead remounted /setup and flashed step 1 of the wizard
     // while ProtectedRoutes waited for the async auth-status query to redirect.
