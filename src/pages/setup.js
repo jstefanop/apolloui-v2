@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import { useColorModeValue, useDisclosure } from '@chakra-ui/react';
@@ -8,7 +8,7 @@ import { MINER_RESTART_QUERY } from '../graphql/miner';
 import { SOLO_RESTART_QUERY } from '../graphql/solo';
 import { NODE_START_MUTATION } from '../graphql/node';
 import { AUTH_LOGIN_QUERY, SAVE_SETUP_QUERY } from '../graphql/auth';
-import { SET_POOLS_QUERY } from '../graphql/pools';
+import { UPDATE_POOLS_QUERY } from '../graphql/pools';
 import { SET_SETTINGS_QUERY } from '../graphql/settings';
 import { isValidBitcoinAddress, presetPools } from '../lib/utils';
 import { useDeviceConfig } from '../contexts/DeviceConfigContext';
@@ -69,7 +69,7 @@ const Setup = () => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const [createPool] = useLazyQuery(SET_POOLS_QUERY, {
+  const [savePools] = useLazyQuery(UPDATE_POOLS_QUERY, {
     fetchPolicy: 'no-cache',
   });
 
@@ -83,6 +83,20 @@ const Setup = () => {
     if (errorSaveSetup) setError(errorSaveSetup.message);
   }, [dataSaveSetup, errorSaveSetup]);
 
+  // Replaces the pool set, rather than adding to it. Creating one left whatever
+  // was already configured in place, and the miner config is built from the
+  // lowest priority first — so with two pools sharing a priority the older one
+  // won and the pool just chosen here silently became the backup. A
+  // factory-fresh device hid it: the only other pool sits at priority 99.
+  //
+  // The promise is kept so starting the miner can wait for it: this runs on its
+  // own as soon as setup completes, and the miner reads its pool only at launch.
+  const setupSave = useRef(null);
+  // The restart hooks cannot cover the wait for the save above, so the button
+  // needs its own busy flag — otherwise it stays live while the pool is still
+  // being written.
+  const [starting, setStarting] = useState(false);
+
   useEffect(() => {
     // Only proceed if setup is complete AND token is available
     if (!isComplete || !token) return;
@@ -90,23 +104,31 @@ const Setup = () => {
     // Token is already saved in localStorage in handlePassword
     // Now we can safely make authenticated requests
 
-    if (soloMining) {
-      saveSettings({
-        variables: { input: { nodeEnableSoloMining: true } },
-      });
-    }
+    setupSave.current = (async () => {
+      // Awaited in order: enabling solo rewrites bitcoin.conf and takes ckpool
+      // with it, so it has to land before anything is restarted.
+      if (soloMining) {
+        await saveSettings({
+          variables: { input: { nodeEnableSoloMining: true } },
+        });
+      }
 
-    createPool({
-      variables: {
-        input: {
-          enabled: true,
-          url: poolUrl,
-          username: poolUsername,
-          password: poolPassword,
-          index: 1,
+      await savePools({
+        variables: {
+          input: {
+            pools: [
+              {
+                enabled: true,
+                url: poolUrl,
+                username: poolUsername,
+                password: poolPassword,
+                index: 1,
+              },
+            ],
+          },
         },
-      },
-    });
+      });
+    })();
   }, [
     isComplete,
     token,
@@ -114,7 +136,7 @@ const Setup = () => {
     poolUrl,
     poolUsername,
     poolPassword,
-    createPool,
+    savePools,
     saveSettings,
   ]);
 
@@ -245,6 +267,13 @@ const Setup = () => {
   };
 
   const handleStartMining = async () => {
+    setStarting(true);
+    try {
+    // The pool is saved by the effect above, which runs on its own — so wait for
+    // it here. Restarting first left the miner reading the previous config, and
+    // it only reads it at launch.
+    await setupSave.current;
+
     // Await each call before leaving: these are lazy queries, and navigating away
     // tears the page down — firing them unawaited let it abort the restart in
     // flight, so the miner never picked up the pool just saved.
@@ -258,6 +287,10 @@ const Setup = () => {
     // Only when the user actually chose solo: manageBitcoinConf stops and
     // disables ckpool for pooled mining, and starting it here undoes that.
     if (soloMining) await restartSolo();
+
+    } finally {
+      setStarting(false);
+    }
 
     // Go straight to signin — where the guard sends a completed setup anyway.
     // router.reload() instead remounted /setup and flashed step 1 of the wizard
@@ -336,6 +369,7 @@ const Setup = () => {
           loadingMinerRestart={loadingMinerRestart}
           loadingSoloRestart={loadingSoloRestart}
           loadingNodeStart={loadingNodeStart}
+          starting={starting}
           isSoloNode={isSoloNode}
         />
       )}

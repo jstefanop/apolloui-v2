@@ -3,7 +3,7 @@ import { Box, Button, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 import { useRouter } from 'next/router';
 
-const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloRestart, loadingNodeStart, isSoloNode }) => {
+const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloRestart, loadingNodeStart, isSoloNode, starting }) => {
   const intl = useIntl();
   const router = useRouter();
   const textColor = useColorModeValue('white', 'white');
@@ -16,7 +16,11 @@ const StepComplete = ({ handleStartMining, loadingMinerRestart, loadingSoloResta
   // Which calls handleStartMining makes depends on the chassis and the mining
   // mode picked, so watch all three: keying this off the device type left gaps
   // where the button went live again between two awaited restarts.
-  const isLoading = loadingNodeStart || loadingMinerRestart || loadingSoloRestart;
+  // `starting` covers the wait for the pool save, which happens before any of
+  // the restarts below and which none of their loading flags can see — without
+  // it the button stayed live while the config was still being written.
+  const isLoading =
+    starting || loadingNodeStart || loadingMinerRestart || loadingSoloRestart;
 
   return (
     <Box mx="auto" py="150px">
