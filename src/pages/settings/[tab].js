@@ -63,6 +63,7 @@ import { servicesSelector } from '../../redux/reselect/services';
 import { nodeRestartNeeded, restartTypeFor } from '../../lib/settingsRestart';
 import usePoolProfiles from '../../hooks/usePoolProfiles';
 import { poolFieldsChanged, suggestPoolName } from '../../lib/poolOptions';
+import { savePendingPools } from '../../lib/savePendingPools';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -623,46 +624,25 @@ const SettingsTab = () => {
       // Each section keeps its own pool. Sequential rather than parallel: two
       // saves racing on the same name is the one case where "last write wins"
       // would quietly drop one of them.
-      const poolSaveFeedback = [];
-      try {
-        for (const [which, pool] of [
-          ['primary', settings?.pool],
-          ['backup', settings?.backupPool],
-        ]) {
-          const pending = poolToSave[which];
-          // The same gate the control is rendered behind, not just the toggle
-          // it left behind: withdrawing the edit hides the control but keeps
-          // the flag, and that was enough to save a pool the user had dropped.
-          if (
-            !poolSaveOffered[which] ||
-            settings.nodeEnableSoloMining ||
-            !pending?.enabled ||
-            !pool?.url
-          )
-            continue;
-
-          const kept = await savePoolProfile({
-            name: pending.name?.trim() || suggestPoolName(pool.url, poolProfiles),
-            url: pool.url,
-            username: pool.username || null,
-            password: pool.password || null,
-          });
-
-          poolSaveFeedback.push(
-            kept.ok
-              ? {
-                  message: intl.formatMessage(
-                    { id: 'settings.actions.save_pool_done' },
-                    { name: kept.profile?.name }
-                  ),
-                  type: 'success',
-                }
-              : { message: kept.message, type: 'error' }
-          );
-        }
-      } catch (error) {
-        poolSaveFeedback.push({ message: error.toString(), type: 'error' });
-      }
+      // Extracted so the one place these two features meet can be tested: it
+      // never throws, so a pool that could not be kept cannot skip the restarts
+      // below — the step that makes the saved settings take effect.
+      const poolSaveFeedback = await savePendingPools({
+        pending: poolToSave,
+        settings,
+        offered: poolSaveOffered,
+        profiles: poolProfiles,
+        save: savePoolProfile,
+        suggestName: suggestPoolName,
+        onSaved: (profile) => ({
+          message: intl.formatMessage(
+            { id: 'settings.actions.save_pool_done' },
+            { name: profile?.name }
+          ),
+          type: 'success',
+        }),
+        onFailed: (message) => ({ message, type: 'error' }),
+      });
 
       setPoolToSave({ primary: emptySave, backup: emptySave });
 
@@ -715,9 +695,7 @@ const SettingsTab = () => {
       // Last, and errors after successes: feedback holds one message at a time,
       // so a pool that could not be kept has to be dispatched after the restart
       // notice above rather than under it.
-      [...poolSaveFeedback]
-        .sort((a, b) => (a.type === 'error' ? 1 : 0) - (b.type === 'error' ? 1 : 0))
-        .forEach((message) => dispatch(sendFeedback(message)));
+      poolSaveFeedback.forEach((message) => dispatch(sendFeedback(message)));
 
       setIsSaving(false);
     } catch (error) {
