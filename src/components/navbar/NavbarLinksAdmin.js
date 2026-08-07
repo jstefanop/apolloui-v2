@@ -14,8 +14,10 @@ import {
   MenuDivider,
   Spinner,
   Box,
+  Tooltip,
   useDisclosure,
 } from '@chakra-ui/react';
+import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { signOut } from 'next-auth/react';
@@ -48,6 +50,7 @@ import { useQuery } from '@apollo/client';
 import { MCU_VERSION_QUERY } from '../../graphql/mcu';
 import NavbarUpdateModal from './NavbarUpdateModal';
 import NavbarFormatProgress from './NavbarFormatProgress';
+import useNodeStorage from '../../hooks/useNodeStorage';
 import { useSelector, shallowEqual } from 'react-redux';
 import { soloSelector } from '../../redux/reselect/solo';
 import moment from '../../lib/moment';
@@ -136,6 +139,11 @@ export default function HeaderLinks({
     '14px 17px 40px 4px rgba(112, 144, 176, 0.06)'
   );
 
+  // Without somewhere to put a blockchain the node cannot start, so the controls
+  // that would try are turned off rather than left to fail.
+  const intl = useIntl();
+  const { unavailable: noNodeStorage, state: nodeStorageState } =
+    useNodeStorage();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isLogsModalOpen,
@@ -241,65 +249,80 @@ export default function HeaderLinks({
 
       <Center>
         {/* NODE */}
-        <Flex
-          bg={badgeBg}
-          display={secondary ? 'flex' : 'none'}
-          borderRadius="30px"
-          ms="auto"
-          p="6px"
-          align="center"
-          me="8px"
-          px="10px"
+        {/* The badge alone says something is wrong without saying what: on a
+            device with no drive it is the only thing on screen, and "warning"
+            is not an instruction. */}
+        <Tooltip
+          isDisabled={!noNodeStorage}
+          label={
+            noNodeStorage
+              ? intl.formatMessage({ id: `node.storage.${nodeStorageState}` })
+              : ''
+          }
+          placement="bottom"
+          hasArrow
+          maxW="320px"
         >
           <Flex
-            align="center"
-            justify="center"
-            bg={badgeBox}
-            h="29px"
-            w="29px"
+            bg={badgeBg}
+            display={secondary ? 'flex' : 'none'}
             borderRadius="30px"
-            me="7px"
-          >
-            <Link href="/node">
-              <Icon w="18px" h="18px" color={navbarIcon} as={NodeIcon} />
-            </Link>
-          </Flex>
-          <Flex
+            ms="auto"
+            p="6px"
             align="center"
-            justify="center"
-            bg={
-              nodeStatusLabel === 'Online'
-                ? 'green.500'
-                : nodeStatusLabel === 'Offline'
-                ? 'gray.400'
-                : nodeStatusLabel === 'Error'
-                ? 'orange.500'
-                : nodeStatusLabel === 'Pending'
-                ? 'gray.300'
-                : null
-            }
-            h="20px"
-            w="20px"
-            borderRadius="30px"
+            me="8px"
+            px="10px"
           >
-            <Icon
-              w="12px"
-              h="12px"
-              color={badgeBox}
-              as={
+            <Flex
+              align="center"
+              justify="center"
+              bg={badgeBox}
+              h="29px"
+              w="29px"
+              borderRadius="30px"
+              me="7px"
+            >
+              <Link href="/node">
+                <Icon w="18px" h="18px" color={navbarIcon} as={NodeIcon} />
+              </Link>
+            </Flex>
+            <Flex
+              align="center"
+              justify="center"
+              bg={
                 nodeStatusLabel === 'Online'
-                  ? CheckIcon
+                  ? 'green.500'
                   : nodeStatusLabel === 'Offline'
-                  ? PowerIcon
+                  ? 'gray.400'
                   : nodeStatusLabel === 'Error'
-                  ? WarningIcon
+                  ? 'orange.500'
                   : nodeStatusLabel === 'Pending'
-                  ? Spinner
+                  ? 'gray.300'
                   : null
               }
-            />
+              h="20px"
+              w="20px"
+              borderRadius="30px"
+            >
+              <Icon
+                w="12px"
+                h="12px"
+                color={badgeBox}
+                as={
+                  nodeStatusLabel === 'Online'
+                    ? CheckIcon
+                    : nodeStatusLabel === 'Offline'
+                    ? PowerIcon
+                    : nodeStatusLabel === 'Error'
+                    ? WarningIcon
+                    : nodeStatusLabel === 'Pending'
+                    ? Spinner
+                    : null
+                }
+              />
+            </Flex>
           </Flex>
-        </Flex>
+        </Tooltip>
 
         {/* SOLO MINING */}
         {(deviceType === 'solo-node' || nodeEnableSoloMining) && (
@@ -544,17 +567,20 @@ export default function HeaderLinks({
                 <MenuItem
                   icon={<StartIcon />}
                   isDisabled={
-                    nodeOnline === 'online' || nodeOnline === 'pending'
+                    noNodeStorage || nodeOnline === 'online' || nodeOnline === 'pending'
                   }
                   onClick={() => handleSystemAction('startNode')}
                 >
                   Start
                 </MenuItem>
+                {/* Stopping is never gated on storage — the case where the
+                    drive went away with bitcoind still running is exactly when
+                    it must be stoppable, before the blockchain it is still
+                    writing lands on the SD card. Start is; nothing can start
+                    without somewhere to run. */}
                 <MenuItem
                   icon={<StopIcon />}
-                  isDisabled={
-                    nodeOnline === 'offline'
-                  }
+                  isDisabled={nodeOnline === 'offline'}
                   onClick={() => handleSystemAction('stopNode')}
                 >
                   Stop
@@ -565,7 +591,9 @@ export default function HeaderLinks({
                 <MenuItem
                   icon={<StartIcon />}
                   isDisabled={
-                    soloOnline === 'online' || soloOnline === 'pending'
+                    noNodeStorage ||
+                    soloOnline === 'online' ||
+                    soloOnline === 'pending'
                   }
                   onClick={() => handleSystemAction('startSolo')}
                 >
@@ -581,7 +609,9 @@ export default function HeaderLinks({
                 <MenuItem
                   icon={<RestartIcon />}
                   isDisabled={
-                    soloOnline === 'offline' || soloOnline === 'pending'
+                    noNodeStorage ||
+                    soloOnline === 'offline' ||
+                    soloOnline === 'pending'
                   }
                   onClick={() => handleSystemAction('restartSolo')}
                 >

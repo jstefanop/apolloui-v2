@@ -140,6 +140,12 @@
       "txs": "Transactions",
       "fees": "Fees",
       "miner": "Miner"
+    },
+    "storage": {
+      "no-drive": "No SSD drive detected. The Bitcoin node needs one to store the blockchain — fit a drive to enable it.",
+      "unformatted": "An SSD drive was found but is not formatted yet. Format it from Settings → Extra to enable the node.",
+      "not-mounted": "The SSD drive is not mounted, so the node cannot start. Try a reboot, or format the drive from Settings → Extra.",
+      "foreign": "The node folder is not on the SSD drive. The node will not start until this is corrected — formatting the drive resets it."
     }
   },
   "miner": {
@@ -496,11 +502,11 @@
         },
         "tor_mode": {
           "title": "TOR mode",
-          "description": "Connect your Bitcoin Node over the Tor network to increase security and anonymity. Note: your node will be restarted to apply."
+          "description": "Connect your Bitcoin Node over the Tor network to increase security and anonymity."
         },
         "allow_lan": {
           "title": "Allow LAN connections",
-          "description": "Allow LAN connections to your Bitcoin Node to connect external wallets and services. Note: your node will be restarted to apply."
+          "description": "Allow LAN connections to your Bitcoin Node to connect external wallets and services."
         },
         "max_connections": "Max connections",
         "extra_options": "Extra options",
@@ -508,7 +514,9 @@
           "title": "Bitcoin node configuration",
           "description": "Add additional configuration lines to the bitcoin.conf file. (Note: this section is for advanced users, and no validation is performed. Please check Bitcoin Core documentation for valid options.)"
         },
-        "solo_mining_warning": "You have solo mining enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block"
+        "solo_mining_warning": "You have solo mining enabled, it is suggested to turn off tor for solo mining. Bitcoin nodes over the tor network propagate blocks slower, and there is a higher chance of orphaning a block",
+        "storage_note": "Settings on this tab are still saved and will apply once a drive is available.",
+        "restart_note": "Note: your node will be restarted to apply."
       },
       "system": {
         "title": "System settings",

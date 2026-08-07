@@ -27,6 +27,7 @@ import { useSelector, shallowEqual } from 'react-redux';
 import { nodeSelector } from '../../../redux/reselect/node';
 import { getNodeErrorMessage } from '../../../lib/utils';
 import { getGroupedNodeSoftware } from '../../../lib/nodeSoftware';
+import useNodeStorage from '../../../hooks/useNodeStorage';
 
 const NodeSettings = () => {
   const intl = useIntl();
@@ -58,14 +59,36 @@ const NodeSettings = () => {
   const swIdleText = useColorModeValue('secondaryGray.900', 'gray.200');
   const swGroupLabel = useColorModeValue('secondaryGray.600', 'gray.400');
 
+  // The fields stay editable — what is saved here is what the node will run with
+  // once it has a drive — but nothing on this tab takes effect until then, and
+  // the save button drops its "& Restart" accordingly.
+  const { storage, unavailable: noStorage, state: storageState } = useNodeStorage();
+
   // Node data from Redux
   const { data: dataNode, error: errorNode, loading: loadingNode } = useSelector(nodeSelector, shallowEqual);
-  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl);
+  // `sentence`, the key the helper actually returns: destructuring the name it
+  // does not return left this permanently undefined, so the Connect button below
+  // never went into its loading state and opened a dialog full of RPC details
+  // for a node that is not answering.
+  const { sentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl, storage);
 
   // Handle button click to open connect modal
   const handleButtonClick = () => {
     setIsModalConnectOpen(true);
   };
+
+  // The toggles promise a restart to apply. That is true only when there is a
+  // node to restart, so the note is appended here rather than baked into the
+  // translated description.
+  const withRestartNote = (item) =>
+    noStorage
+      ? item
+      : {
+          ...item,
+          description: `${item.description} ${intl.formatMessage({
+            id: 'settings.sections.node.restart_note',
+          })}`,
+        };
 
   return (
     <>
@@ -84,6 +107,15 @@ const NodeSettings = () => {
         }
         mb={'20px'}
       >
+        {noStorage && (
+          <Alert status="info" borderRadius="10px" mx="24px" mt="16px" w="auto">
+            <AlertIcon />
+            <AlertDescription fontSize="sm">
+              {intl.formatMessage({ id: `node.storage.${storageState}` })}{' '}
+              {intl.formatMessage({ id: 'settings.sections.node.storage_note' })}
+            </AlertDescription>
+          </Alert>
+        )}
         <SimpleCard title={intl.formatMessage({ id: 'settings.sections.node.software.title' })} textColor={textColor}>
           <Flex direction="column" gap="20px" mt={4}>
             {swGroups.map((group) => (
@@ -152,7 +184,7 @@ const NodeSettings = () => {
         <Divider mb="10px" mt="10px" />
 
         <SimpleSwitchSettingsItem
-          item={nodeTorMode}
+          item={withRestartNote(nodeTorMode)}
           textColor={textColor}
           sliderTextColor={sliderTextColor}
           handleSwitch={handleSwitchNodeTorMode}
@@ -169,7 +201,7 @@ const NodeSettings = () => {
         <Divider mb="10px" />
 
         <SimpleSwitchSettingsItem
-          item={nodeAllowLan}
+          item={withRestartNote(nodeAllowLan)}
           textColor={textColor}
           sliderTextColor={sliderTextColor}
           handleSwitch={handleNodeAllowLan}

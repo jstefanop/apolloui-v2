@@ -7,10 +7,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { useDispatch } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { NODE_FORMAT_MUTATION, NODE_FORMAT_PROGRESS_QUERY } from '../graphql/node';
+import { NODE_STORAGE_QUERY } from '../graphql/nodeStorage';
 import { useTaskProgress } from '../hooks/useTaskProgress';
 import { sendFeedback } from '../redux/slices/feedbackSlice';
 
@@ -37,6 +38,7 @@ export const FormatTaskProvider = ({ children }) => {
       (data) => data?.Node?.formatProgress?.result?.value
     );
 
+  const client = useApolloClient();
   const [formatDisk] = useMutation(NODE_FORMAT_MUTATION);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -100,6 +102,13 @@ export const FormatTaskProvider = ({ children }) => {
     if (!outcome) return;
     acknowledgeOutcome();
 
+    // Whatever happened, the disk is not what the storage answer describes any
+    // more — a format that worked made it usable, one that failed may have left
+    // it wiped. That answer is polled slowly (hardware does not usually change
+    // while a page is open), so without this the panels keep saying "not
+    // formatted yet" for a minute after the format they were watching finished.
+    client.refetchQueries({ include: [NODE_STORAGE_QUERY] });
+
     if (outcome.status === 'success') {
       setIsModalOpen(false);
       setLastFailure(null);
@@ -126,7 +135,7 @@ export const FormatTaskProvider = ({ children }) => {
     setResult(outcome.status);
     if (resultTimer.current) clearTimeout(resultTimer.current);
     resultTimer.current = setTimeout(() => setResult(null), RESULT_LINGER_MS);
-  }, [outcome, acknowledgeOutcome, dispatch, intl]);
+  }, [outcome, acknowledgeOutcome, dispatch, intl, client]);
 
   // A new run cancels a lingering previous result.
   useEffect(() => {

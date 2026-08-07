@@ -55,6 +55,9 @@ import { nodeSelector } from '../../redux/reselect/node';
 import { mcuSelector } from '../../redux/reselect/mcu';
 import { CHANGE_PASSWORD_QUERY } from '../../graphql/auth';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
+import useNodeStorage from '../../hooks/useNodeStorage';
+import { servicesSelector } from '../../redux/reselect/services';
+import { nodeRestartNeeded, restartTypeFor } from '../../lib/settingsRestart';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -66,6 +69,12 @@ const SettingsTab = () => {
   const [backupData, setBackupData] = useState();
   const [restoreData, setRestoreData] = useState();
   const [isChanged, setIsChanged] = useState(false);
+  const { storage, unavailable: noNodeStorage } = useNodeStorage();
+  // Whether bitcoind is actually up, which outranks what the probe thinks of the
+  // drive when deciding if a save has anything to restart.
+  const { data: servicesStatusData } = useSelector(servicesSelector, shallowEqual);
+  const nodeServiceOnline = servicesStatusData?.node?.status === 'online';
+  const storageUsable = storage ? !noNodeStorage : null;
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -104,7 +113,9 @@ const SettingsTab = () => {
     loading: loadingNode,
   } = useSelector(nodeSelector, shallowEqual);
   const { localaddresses } = dataNode || {};
-  const { errorSentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl);
+  // `sentence` is the key this helper returns; asking for one it does not left
+  // the value undefined, and with it the Connect button's loading state dead.
+  const { sentence: errorNodeSentence } = getNodeErrorMessage(errorNode, intl, storage);
 
   // Mcu data from Redux
   const { data: dataMcu } = useSelector(mcuSelector, shallowEqual);
@@ -287,26 +298,27 @@ const SettingsTab = () => {
         )
       : false;
     
-    const restartNodeNeeded = !_.isEqual(
-      _.pick(settings, restartNodeFields),
-      _.pick(currentSettings, restartNodeFields)
-    );
-    
-    const restartType =
-      (restartMinerNeeded || restartSoloNeeded) && restartNodeNeeded
-        ? 'both'
-        : restartMinerNeeded
-        ? 'miner'
-        : restartSoloNeeded
-        ? 'solo'
-        : restartNodeNeeded
-        ? 'node'
-        : null;
+    // Not "does the drive look usable" but "is there a node to restart": see
+    // lib/settingsRestart for why this flag has been wrong in both directions.
+    const restartNodeNeeded = nodeRestartNeeded({
+      fieldsChanged: !_.isEqual(
+        _.pick(settings, restartNodeFields),
+        _.pick(currentSettings, restartNodeFields)
+      ),
+      nodeRunning: nodeServiceOnline,
+      storageUsable: storageUsable,
+    });
+
+    const restartType = restartTypeFor({
+      miner: restartMinerNeeded,
+      solo: restartSoloNeeded,
+      node: restartNodeNeeded,
+    });
     
     if (!isEqual && !settings.initial) setIsChanged(true);
     if (isEqual) setIsChanged(false);
     setRestartNeeded(restartType);
-  }, [settings, currentSettings, deviceType]);
+  }, [settings, currentSettings, deviceType, nodeServiceOnline, storageUsable]);
 
   // Handle backup download
   const handleBackup = async () => {

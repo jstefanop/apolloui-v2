@@ -180,7 +180,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         errorAction = errorShutdownMcu;
         break;
       default:
-        modal = false;
+        break;
     }
 
     const dataAction = {

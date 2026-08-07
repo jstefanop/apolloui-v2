@@ -24,6 +24,7 @@ import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
 import NoCardStatistics from '../components/UI/NoCardStatistics';
 import NoCardStatisticsGauge from '../components/UI/NoCardStatisticsGauge';
+import useNodeStorage from '../hooks/useNodeStorage';
 import {
   bytesToSize,
   getNodeErrorMessage,
@@ -170,8 +171,9 @@ const Overview = () => {
   const { used: memoryUsed, total: memoryTotal } = memory || {};
 
 
+  const { storage } = useNodeStorage();
   const { sentence: errorNodeSentence, type: errorNodeType } =
-    getNodeErrorMessage(errorNode, intl);
+    getNodeErrorMessage(errorNode, intl, storage);
 
   // Settings data
   const { data: settings } = useSelector(settingsSelector, shallowEqual);
