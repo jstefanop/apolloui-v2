@@ -13,6 +13,9 @@ import {
   Flex,
   Button,
   Spinner,
+  Switch,
+  FormLabel,
+  Input,
 } from '@chakra-ui/react';
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
@@ -58,6 +61,8 @@ import { useDeviceType } from '../../contexts/DeviceConfigContext';
 import useNodeStorage from '../../hooks/useNodeStorage';
 import { servicesSelector } from '../../redux/reselect/services';
 import { nodeRestartNeeded, restartTypeFor } from '../../lib/settingsRestart';
+import usePoolProfiles from '../../hooks/usePoolProfiles';
+import { poolFieldsChanged, suggestPoolName } from '../../lib/poolOptions';
 
 const SettingsTab = () => {
   const intl = useIntl();
@@ -75,6 +80,25 @@ const SettingsTab = () => {
   const { data: servicesStatusData } = useSelector(servicesSelector, shallowEqual);
   const nodeServiceOnline = servicesStatusData?.node?.status === 'online';
   const storageUsable = storage ? !noNodeStorage : null;
+  // Saved pools, and the pending "keep this one" the action bar offers. A pool
+  // is worth offering to keep only when it is not already in the list — picking
+  // a preset or a saved profile has nothing new to remember.
+  const { profiles: poolProfiles, save: savePoolProfile } = usePoolProfiles();
+  // One pending "keep this" per pool: a single flag kept whichever pool the
+  // handler happened to read, which is not the one the user was looking at when
+  // they turned it on. Gated on isChanged because saving a profile rides on the
+  // Save button — with nothing to save there is no button to press.
+  const emptySave = { enabled: false, name: '' };
+  const [poolToSave, setPoolToSave] = useState({
+    primary: emptySave,
+    backup: emptySave,
+  });
+  // Per pool, not per page: one global "something changed" made editing the
+  // primary offer to keep the backup pool as well.
+  const poolSaveOffered = {
+    primary: poolFieldsChanged(currentSettings?.pool, settings?.pool),
+    backup: poolFieldsChanged(currentSettings?.backupPool, settings?.backupPool),
+  };
   const [restartNeeded, setRestartNeeded] = useState(null);
   const [errorForm, setErrorForm] = useState(null);
   const [isModalRestoreOpen, setIsModalRestoreOpen] = useState(false);
@@ -326,9 +350,17 @@ const SettingsTab = () => {
       await refetchSettings();
       await refetchPools();
 
-      const blob = new Blob([JSON.stringify(backupData)], {
-        type: 'application/json',
-      });
+      // The saved pools are configuration like the rest, and this file is the
+      // only thing that carries any of it across a reflash. Written out by
+      // field: the ids are this device's, and would mean nothing on another.
+      const poolProfilesBackup = poolProfiles.map(
+        ({ name, url, username, password }) => ({ name, url, username, password })
+      );
+
+      const blob = new Blob(
+        [JSON.stringify({ ...backupData, poolProfiles: poolProfilesBackup })],
+        { type: 'application/json' }
+      );
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -355,7 +387,7 @@ const SettingsTab = () => {
     try {
       setIsSaving(true);
 
-      const { pools, settings } = restoreData;
+      const { pools, settings, poolProfiles: savedPools } = restoreData;
       delete settings.__typename;
       pools.forEach((element) => {
         delete element.__typename;
@@ -363,14 +395,31 @@ const SettingsTab = () => {
 
       await saveSettings({ variables: { input: settings } });
       await savePools({ variables: { input: { pools } } });
+
+      // Backups taken before saved pools existed simply carry none. One that
+      // cannot be written back is reported rather than thrown: the settings
+      // above are already restored.
+      let poolsNotRestored = 0;
+      for (const saved of savedPools || []) {
+        if (!saved?.name || !saved?.url) continue;
+        const kept = await savePoolProfile({
+          name: saved.name,
+          url: saved.url,
+          username: saved.username || null,
+          password: saved.password || null,
+        });
+        if (!kept.ok) poolsNotRestored += 1;
+      }
+
       await refetchSettings();
       await refetchPools();
       setIsModalRestoreOpen(false);
       dispatch(
         sendFeedback({
-          message:
-            'Restore done! Please remember to restart your miner and node.',
-          type: 'success',
+          message: poolsNotRestored
+            ? `Restore done, but ${poolsNotRestored} saved pool(s) could not be restored. Please remember to restart your miner and node.`
+            : 'Restore done! Please remember to restart your miner and node.',
+          type: poolsNotRestored ? 'error' : 'success',
         })
       );
 
@@ -385,6 +434,8 @@ const SettingsTab = () => {
   const handleDiscardChanges = () => {
     setSettings(currentSettings);
     setErrorForm(null);
+    // The pending "keep this pool" belongs to the edit being discarded.
+    setPoolToSave({ primary: emptySave, backup: emptySave });
   };
 
   // Handle save settings
@@ -564,6 +615,57 @@ const SettingsTab = () => {
       await refetchSettings();
       await refetchPools();
 
+      // Keeping the pool is a side errand of saving, so it reports separately
+      // and never fails the save: the settings are already applied by here, and
+      // turning that into an error would say the opposite. Hence its own try —
+      // a throw from in here escaped into the handler's catch and skipped the
+      // restart below, the one step that makes the saved pool take effect.
+      // Each section keeps its own pool. Sequential rather than parallel: two
+      // saves racing on the same name is the one case where "last write wins"
+      // would quietly drop one of them.
+      const poolSaveFeedback = [];
+      try {
+        for (const [which, pool] of [
+          ['primary', settings?.pool],
+          ['backup', settings?.backupPool],
+        ]) {
+          const pending = poolToSave[which];
+          // The same gate the control is rendered behind, not just the toggle
+          // it left behind: withdrawing the edit hides the control but keeps
+          // the flag, and that was enough to save a pool the user had dropped.
+          if (
+            !poolSaveOffered[which] ||
+            settings.nodeEnableSoloMining ||
+            !pending?.enabled ||
+            !pool?.url
+          )
+            continue;
+
+          const kept = await savePoolProfile({
+            name: pending.name?.trim() || suggestPoolName(pool.url, poolProfiles),
+            url: pool.url,
+            username: pool.username || null,
+            password: pool.password || null,
+          });
+
+          poolSaveFeedback.push(
+            kept.ok
+              ? {
+                  message: intl.formatMessage(
+                    { id: 'settings.actions.save_pool_done' },
+                    { name: kept.profile?.name }
+                  ),
+                  type: 'success',
+                }
+              : { message: kept.message, type: 'error' }
+          );
+        }
+      } catch (error) {
+        poolSaveFeedback.push({ message: error.toString(), type: 'error' });
+      }
+
+      setPoolToSave({ primary: emptySave, backup: emptySave });
+
       // Handle restarts based on type
       if (type === 'miner') {
         await restartMiner();
@@ -609,6 +711,13 @@ const SettingsTab = () => {
       } else {
         dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
+
+      // Last, and errors after successes: feedback holds one message at a time,
+      // so a pool that could not be kept has to be dispatched after the restart
+      // notice above rather than under it.
+      [...poolSaveFeedback]
+        .sort((a, b) => (a.type === 'error' ? 1 : 0) - (b.type === 'error' ? 1 : 0))
+        .forEach((message) => dispatch(sendFeedback(message)));
 
       setIsSaving(false);
     } catch (error) {
@@ -690,7 +799,7 @@ const SettingsTab = () => {
             >
               {intl.formatMessage({ id: 'settings.actions.discard' })}
             </Button>
-            <Flex direction="row">
+            <Flex direction="row" align="center">
               {restartNeeded && (
                 <Button
                   colorScheme="orange"
@@ -737,6 +846,10 @@ const SettingsTab = () => {
           handleSaveSettings,
           setIsModalRestoreOpen,
           setIsModalConnectOpen,
+          poolProfiles,
+          poolToSave,
+          setPoolToSave,
+          poolSaveOffered,
         }}
       >
         <Box minH="calc(100vh - 80px)" pb={isChanged ? "80px" : "0"}>

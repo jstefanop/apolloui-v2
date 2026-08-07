@@ -389,7 +389,11 @@
       "discard": "Discard changes",
       "save": "Save",
       "save_restart": "Save & Restart",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "save_pool": "Add pool to list",
+      "save_pool_name": "Name for this pool",
+      "save_pool_done": "Pool \"{name}\" added to your list",
+      "save_pool_hint": "Saved pools appear in the list above, and in the backup pool list."
     },
     "tabs": {
       "pools": "Pools",

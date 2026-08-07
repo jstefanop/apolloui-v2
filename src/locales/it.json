@@ -389,7 +389,11 @@
       "discard": "Annulla le modifiche",
       "save": "Salva",
       "save_restart": "Salva e Riavvia",
-      "saving": "Salvataggio in corso..."
+      "saving": "Salvataggio in corso...",
+      "save_pool": "Aggiungi il pool alla lista",
+      "save_pool_name": "Nome per questo pool",
+      "save_pool_done": "Pool \"{name}\" aggiunto alla tua lista",
+      "save_pool_hint": "I pool salvati compaiono nella lista qui sopra e in quella del pool di backup."
     },
     "tabs": {
       "pools": "Pool",
