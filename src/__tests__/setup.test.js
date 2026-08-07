@@ -1,4 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { print } from 'graphql';
+import { useLazyQuery } from '@apollo/client';
 import { renderWithProviders } from '../test-utils';
 import Setup from '../pages/setup';
 
@@ -52,5 +54,24 @@ describe('Setup wizard — password step validation (solo-node path)', () => {
     expect(await screen.findByText('Please add a valid Bitcoin address')).toBeInTheDocument();
     // stays on the wallet step (no password inputs yet)
     expect(document.querySelectorAll('input').length).toBe(1);
+  });
+});
+
+
+// The wizard used to CREATE a pool, which left whatever was already configured
+// in place. The miner config is built from the lowest priority first, so with
+// two pools sharing priority 1 the older one won and the pool chosen here
+// silently became the backup — the device kept mining to the previous pool.
+// A factory-fresh device hid it: the only other pool sits at priority 99.
+describe('Setup wizard — pools', () => {
+  it('replaces the pool set rather than adding to it', () => {
+    renderWithProviders(<Setup />);
+
+    const documents = useLazyQuery.mock.calls
+      .map(([document]) => (document ? print(document) : ''))
+      .join('\n');
+
+    expect(documents).toContain('updateAll');
+    expect(documents).not.toContain('create (input: $input)');
   });
 });
