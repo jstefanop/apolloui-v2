@@ -41,6 +41,8 @@ export const WIFI_STATUS_QUERY = gql`
           kind
           carriesDefaultRoute
           ipAddress
+          signal
+          signalDbm
           band
           channel
         }

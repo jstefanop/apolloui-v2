@@ -320,7 +320,14 @@ const WifiPanel = () => {
       <Card bg={rowBg} p="16px" mb="20px" borderRadius="12px">
         <Flex justify="space-between" align="center" gap={3} wrap="wrap">
           <Flex align="center" gap={3}>
-            <Icon as={status?.connected ? MdWifi : MdWifiOff} w="20px" h="20px" />
+            {/* Bars for the link you are ON, from the live reading rather than the
+                scan list: a scanned value is as old as the scan, and this one
+                moves every second. */}
+            {status?.connected && Number.isFinite(status?.signal) ? (
+              <SignalBars signal={status.signal} />
+            ) : (
+              <Icon as={status?.connected ? MdWifi : MdWifiOff} w="20px" h="20px" />
+            )}
             <Box>
               <Text fontWeight="700">
                 {status?.connected
@@ -334,6 +341,9 @@ const WifiPanel = () => {
                   // Which band the link is really on — the point of being able
                   // to choose one.
                   status?.band && intl.formatMessage({ id: 'wifi.band' }, { band: status.band }),
+                  Number.isFinite(status?.signalDbm)
+                    ? `${status.signalDbm} dBm`
+                    : null,
                 ]
                   .filter(Boolean)
                   .join(' · ') || intl.formatMessage({ id: 'wifi.notConnected.hint' })}
