@@ -191,9 +191,6 @@ const System = () => {
                 bg={wlan0 && wlan0.address ? 'green.500' : 'red.500'}
                 ml="10px"
               />
-              {wlan0 && wlan0.address && Number.isFinite(wifiStatus?.signal) && (
-                <SignalBars signal={wifiStatus.signal} ml="10px" />
-              )}
             </Flex>
             <Text fontSize="sm" color="gray.500">
               {intl.formatMessage({ id: 'system.stats.active_wifi' })}
@@ -206,14 +203,7 @@ const System = () => {
             {wlan0 && wlan0.address && (
               <Flex alignItems="center" mt="5px">
                 <Text fontSize="sm" color="gray.500">
-                  {[
-                    `${wlan0.address} - ${wlan0.mac}`,
-                    Number.isFinite(wifiStatus?.signalDbm)
-                      ? `${wifiStatus.signalDbm} dBm`
-                      : null,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')}
+                  {`${wlan0.address} - ${wlan0.mac}`}
                 </Text>
                 <IconButton
                   aria-label="Copy IP"
@@ -223,6 +213,9 @@ const System = () => {
                   variant="ghost"
                   onClick={() => copyToClipboard(wlan0.address)}
                 />
+                {Number.isFinite(wifiStatus?.signal) && (
+                  <SignalBars signal={wifiStatus.signal} ml="8px" />
+                )}
               </Flex>
             )}
           </Flex>
