@@ -30,6 +30,8 @@ import moment from 'moment';
 import MultiStatistics from '../components/UI/MultiStatistics';
 import { NetworkIcon } from '../components/UI/Icons/NetworkIcon';
 import { FaWifi, FaEthernet, FaCopy, FaThermometerHalf, FaServer } from 'react-icons/fa';
+import SignalBars from '../components/wifi/SignalBars';
+import { useWifiStatus } from '../hooks/useWifiStatus';
 
 const System = () => {
   const intl = useIntl();
@@ -87,7 +89,11 @@ const System = () => {
 
   const { threads: cpuCores, usedPercent: cpuUsage } = cpu || {};
 
-  const wifi = activeWifi && typeof activeWifi === 'string' ? activeWifi.split(',')[0] : null;
+  // The name of the network, from the interface itself. `activeWifi` is every
+  // active connection joined by commas, so with ethernet up too this card used
+  // to announce the wired one.
+  const { status: wifiStatus } = useWifiStatus();
+  const wifi = wifiStatus?.ssid || null;
   const eth0 = _.find(network, { name: 'eth0' });
   const wlan0 = _.find(network, { name: 'wlan0' });
 
@@ -185,17 +191,29 @@ const System = () => {
                 bg={wlan0 && wlan0.address ? 'green.500' : 'red.500'}
                 ml="10px"
               />
+              {wlan0 && wlan0.address && Number.isFinite(wifiStatus?.signal) && (
+                <SignalBars signal={wifiStatus.signal} ml="10px" />
+              )}
             </Flex>
             <Text fontSize="sm" color="gray.500">
               {intl.formatMessage({ id: 'system.stats.active_wifi' })}
             </Text>
             <Text fontSize="lg" fontWeight="bold" mt="5px">
-              {wlan0 && wlan0.address ? wifi : intl.formatMessage({ id: 'system.stats.disconnected' })}
+              {wlan0 && wlan0.address && wifi
+                ? wifi
+                : intl.formatMessage({ id: 'system.stats.disconnected' })}
             </Text>
             {wlan0 && wlan0.address && (
               <Flex alignItems="center" mt="5px">
                 <Text fontSize="sm" color="gray.500">
-                  {`${wlan0.address} - ${wlan0.mac}`}
+                  {[
+                    `${wlan0.address} - ${wlan0.mac}`,
+                    Number.isFinite(wifiStatus?.signalDbm)
+                      ? `${wifiStatus.signalDbm} dBm`
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
                 </Text>
                 <IconButton
                   aria-label="Copy IP"
