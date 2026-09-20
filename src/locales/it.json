@@ -145,7 +145,11 @@
       "no-drive": "Nessun disco SSD rilevato. Il nodo Bitcoin ne ha bisogno per la blockchain: inseriscine uno per abilitarlo.",
       "unformatted": "È stato trovato un disco SSD ma non è ancora formattato. Formattalo da Impostazioni → Extra per abilitare il nodo.",
       "not-mounted": "Il disco SSD non è montato, quindi il nodo non può partire. Prova a riavviare, oppure formatta il disco da Impostazioni → Extra.",
-      "foreign": "La cartella del nodo non si trova sul disco SSD. Il nodo non partirà finché non viene corretto: formattare il disco lo ripristina."
+      "foreign": "La cartella del nodo non si trova sul disco SSD. Il nodo non partirà finché non viene corretto: formattare il disco lo ripristina.",
+      "low": {
+        "title": "Il disco del nodo si sta riempiendo",
+        "description": "Restano solo {free} sull'SSD. La blockchain continua a crescere (circa 10 GB al mese) e quando il disco si riempie il nodo si ferma finché non si libera spazio. Libera spazio, o passa a un disco più grande."
+      }
     }
   },
   "miner": {

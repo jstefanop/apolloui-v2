@@ -145,7 +145,11 @@
       "no-drive": "No SSD drive detected. The Bitcoin node needs one to store the blockchain — fit a drive to enable it.",
       "unformatted": "An SSD drive was found but is not formatted yet. Format it from Settings → Extra to enable the node.",
       "not-mounted": "The SSD drive is not mounted, so the node cannot start. Try a reboot, or format the drive from Settings → Extra.",
-      "foreign": "The node folder is not on the SSD drive. The node will not start until this is corrected — formatting the drive resets it."
+      "foreign": "The node folder is not on the SSD drive. The node will not start until this is corrected — formatting the drive resets it.",
+      "low": {
+        "title": "Node drive is running out of space",
+        "description": "Only {free} left on the SSD. The blockchain keeps growing (about 10 GB a month), and when the drive fills up the node stops until space is freed. Free some space, or move to a larger drive."
+      }
     }
   },
   "miner": {

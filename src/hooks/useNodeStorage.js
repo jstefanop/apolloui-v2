@@ -25,6 +25,12 @@ export const useNodeStorage = () => {
     // failed check as "no drive" would tell a working node to buy hardware.
     unavailable: !!storage && storage.state !== 'ready' && storage.state !== 'unknown',
     state: storage?.state ?? null,
+    // The drive is filling up. Distinct from `unavailable` on purpose: a low
+    // drive still runs the node, and the pages that gate on availability must
+    // not start treating it as missing.
+    low: storage?.low === true,
+    // Bytes, as a number; null when the device could not measure.
+    free: storage?.free != null ? Number(storage.free) : null,
   };
 };
 

@@ -12,6 +12,8 @@ export const NODE_STORAGE_QUERY = gql`
           size
           disk
           mountpoint
+          free
+          low
         }
         error {
           ...ErrorFragment
