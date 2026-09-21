@@ -6,38 +6,8 @@ import CustomAlert from './CustomAlert';
 import config from '../../config';
 import { useIntl } from 'react-intl';
 import useNodeStorage from '../../hooks/useNodeStorage';
-import { bytesToSize } from '../../lib/utils';
 
-// The drive is filling up. Shown above whatever the service state is, because
-// it is true regardless of it: a node that is running is about to stop, and a
-// node that has just stopped most likely stopped for this. bitcoind halts itself
-// when the disk fills and leaves a datadir that refuses to restart — so the
-// notice has to arrive weeks before, not be found afterwards.
-const NodeStorageLowAlert = ({ free }) => {
-  const intl = useIntl();
-  return (
-    <CustomAlert
-      title={intl.formatMessage({ id: 'node.storage.low.title' })}
-      description={intl.formatMessage(
-        { id: 'node.storage.low.description' },
-        { free: free != null ? bytesToSize(free, 0) : '?' }
-      )}
-      status="warning"
-    />
-  );
-};
-
-const NodeStatus = (props) => {
-  const { low, free } = useNodeStorage();
-  return (
-    <>
-      {low && <NodeStorageLowAlert free={free} />}
-      <NodeServiceStatus {...props} />
-    </>
-  );
-};
-
-const NodeServiceStatus = ({ serviceStatus, loading }) => {
+const NodeStatus = ({ serviceStatus, loading }) => {
   const intl = useIntl();
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const { unavailable: noStorage, state: storageState } = useNodeStorage();

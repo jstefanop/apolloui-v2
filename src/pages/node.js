@@ -49,6 +49,7 @@ import {
   MdArrowUpward,
 } from 'react-icons/md';
 import NodeStatus from '../components/UI/NodeStatus';
+import NodeStorageLowPanel from '../components/UI/NodeStorageLowPanel';
 import LatestBlocks from '../components/apollo/LatestBlocks';
 import { DatabaseIcon } from '../components/UI/Icons/DatabaseIcon';
 
@@ -705,6 +706,7 @@ const Node = () => {
                           reversed={true}
                         />
                       </SimpleGrid>
+                      <NodeStorageLowPanel storage={storage} mt="5" />
                       <SimpleGrid columns={{ base: 1 }} spacing="20px" mt="5">
                         <MiniStatistics
                           bgColor={statisticColor}
