@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import dynamic from 'next/dynamic';
+import AreaChart from '../charts/AreaChart';
 import moment from '../../lib/moment';
 import { displayHashrate } from '../../lib/utils';
 import { 
@@ -16,7 +16,6 @@ import { useAnalyticsData } from '../../hooks/useAnalyticsData';
 import { useSoloAnalyticsData } from '../../hooks/useSoloAnalyticsData';
 import { GET_ANALYTICS_QUERY, GET_SOLO_ANALYTICS_QUERY } from '../../graphql/analytics';
 
-const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 // Interval configuration
 export const INTERVAL_CONFIG = {
@@ -138,17 +137,6 @@ const HashrateChart = React.memo(({
     return rawLimitedData.slice(-currentConfig.points);
   }, [rawLimitedData, currentConfig.points]);
 
-  // Format labels for display based on interval
-  const labels = useMemo(() => {
-    return limitedData.map((item) => {
-      const date = moment(item.date);
-      if (interval === 'day') {
-        return date.format('DD MMM');
-      }
-      // For tenmin and hour, show time
-      return date.format('HH:mm');
-    });
-  }, [limitedData, interval]);
 
   // Get colors and series names based on source
   const primaryColor = isSolo ? soloHashrateColor : minerColor;
@@ -157,155 +145,42 @@ const HashrateChart = React.memo(({
   const secondarySeriesName = isSolo ? 'Workers' : 'Pool';
 
   // Memoize chart options to prevent unnecessary re-renders
-  const chartOptions = useMemo(() => ({
-    chart: {
-      type: 'line',
-      toolbar: {
-        show: false
-      },
-      animations: {
-        enabled: true,
-        easing: 'linear',
-        dynamicAnimation: {
-          speed: 1000
-        }
-      },
-      zoom: {
-        enabled: false
-      },
-      redrawOnWindowResize: false,
-      redrawOnParentResize: false
-    },
-    stroke: {
-      curve: 'smooth',
-      width: 2
-    },
-    grid: {
-      borderColor: gridColor,
-      strokeDashArray: 4,
-      xaxis: {
-        lines: {
-          show: true
-        }
-      },
-      yaxis: {
-        lines: {
-          show: true
-        }
-      }
-    },
-    xaxis: {
-      categories: labels,
-      labels: {
-        style: {
-          colors: textColor
-        },
-        rotate: interval === 'day' ? -45 : 0,
-        rotateAlways: interval === 'day'
-      },
-      axisBorder: {
-        show: false
-      },
-      axisTicks: {
-        show: false
-      }
-    },
-    yaxis: isSolo ? [
-      {
-        title: {
-          text: 'Hashrate',
-          style: {
-            color: primaryColor
-          }
-        },
-        labels: {
-          formatter: (value) => displayHashrate(value, 'GH/s', true, 2),
-          style: {
-            colors: textColor
-          }
-        },
-        min: 0
-      }
-    ] : {
-      labels: {
-        formatter: (value) => displayHashrate(value, 'GH/s', true, 2),
-        style: {
-          colors: textColor
-        }
-      },
-      min: 0
-    },
-    tooltip: {
-      theme: 'dark',
-      x: {
-        formatter: (value, { dataPointIndex }) => {
-          if (limitedData[dataPointIndex]) {
-            const date = moment(limitedData[dataPointIndex].date);
-            return interval === 'day' 
-              ? date.format('DD MMM YYYY')
-              : date.format('HH:mm');
-          }
-          return value;
-        }
-      },
-      y: {
-        formatter: (value, { seriesIndex }) => {
-          if (isSolo) {
-            return seriesIndex === 0 
-              ? displayHashrate(value, 'GH/s', true, 2)
-              : `${value} workers`;
-          }
-          const label = seriesIndex === 0 ? 'Miner' : 'Pool';
-          return `${label} ${displayHashrate(value, 'GH/s', true, 2)}`;
-        }
-      }
-    },
-    legend: {
-      position: 'top',
-      horizontalAlign: 'left',
-      labels: {
-        colors: textColor
-      }
-    },
-    colors: [primaryColor, secondaryColor],
-    markers: {
-      size: interval === 'day' ? 3 : 4,
-      hover: {
-        size: interval === 'day' ? 6 : 8
-      },
-      fillColors: [primaryColor, secondaryColor],
-      strokeColors: [primaryColor, secondaryColor],
-      strokeWidth: 2,
-      strokeOpacity: 0.8,
-      fillOpacity: 0.8
-    }
-  }), [labels, gridColor, textColor, primaryColor, secondaryColor, isSolo, interval, limitedData]);
+
 
   // Memoize series data with proper limiting
-  const series = useMemo(() => {
+  const chartSeries = useMemo(() => {
     const limitedHashrates = chartData.hashrates?.slice(-currentConfig.points) || [];
-    
-    if (isSolo) {
-      return [
-        {
-          name: primarySeriesName,
-          data: limitedHashrates
-        }
-      ];
-    }
-    
-    const limitedPoolHashrates = chartData.poolhashrates?.slice(-currentConfig.points) || [];
+    const primo = {
+      id: 'hashrate-primary',
+      name: primarySeriesName,
+      data: limitedHashrates,
+      colorFrom: primaryColor,
+      colorTo: primaryColor,
+      format: (v) => displayHashrate(v, 'GH/s', true, 2),
+    };
+    if (isSolo) return [primo];
+
     return [
+      primo,
       {
-        name: primarySeriesName,
-        data: limitedHashrates
-      },
-      {
+        id: 'hashrate-secondary',
         name: secondarySeriesName,
-        data: limitedPoolHashrates
-      }
+        data: chartData.poolhashrates?.slice(-currentConfig.points) || [],
+        colorFrom: secondaryColor,
+        colorTo: secondaryColor,
+        format: (v) => displayHashrate(v, 'GH/s', true, 2),
+      },
     ];
-  }, [chartData.hashrates, chartData.poolhashrates, isSolo, primarySeriesName, secondarySeriesName, currentConfig.points]);
+  }, [
+    chartData.hashrates,
+    chartData.poolhashrates,
+    isSolo,
+    primarySeriesName,
+    secondarySeriesName,
+    currentConfig.points,
+    primaryColor,
+    secondaryColor,
+  ]);
 
   // Show loader when no data available
   if (!limitedData.length) {
@@ -397,13 +272,22 @@ const HashrateChart = React.memo(({
         </Flex>
       )}
       
-      <ReactApexChart
-        options={chartOptions}
-        series={series}
-        type="line"
-        height="100%"
-        width="100%"
-      />
+      <Box pl="64px" pr="8px" pb="26px" h="100%">
+        <AreaChart
+          series={chartSeries}
+          labels={limitedData.map((d) => d.date)}
+          height={230}
+          fill={false}
+          showAxes
+          gridColor={gridColor}
+          axisColor={textColor}
+          formatY={(v) => displayHashrate(v, 'GH/s', true, 2)}
+          formatDate={(v) =>
+            v ? moment(v).format(interval === 'day' ? 'DD MMM' : 'HH:mm') : ''
+          }
+          xTicks={interval === 'day' ? 4 : 5}
+        />
+      </Box>
     </Box>
   );
 });
