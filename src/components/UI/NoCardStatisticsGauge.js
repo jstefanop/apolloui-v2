@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { percentColor } from '../../lib/utils';
-import GaugeChart from '../charts/GaugeCharts';
+import GaugeArc from '../charts/GaugeArc';
 import ChartLoader from './Loaders/ChartLoader';
 import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 
@@ -53,61 +53,7 @@ const NoCardStatisticsGauge = React.memo(({
   const gaugeColor = percentColor(roundedPercentage);
 
 
-  const chartOptions = {
-    chart: {
-      sparkline: {
-        enabled: true,
-      },
-    },
-    plotOptions: {
-      radialBar: {
-        hollow: {
-          size: '70%',
-        },
-        startAngle: -90,
-        endAngle: 90,
-        track: {
-          background: '#a3aed0',
-          strokeWidth: '20%',
-          opacity: 0.3,
-          dropShadow: {
-            enabled: true,
-            blur: 3,
-            opacity: 0.25,
-          },
-        },
-        dataLabels: {
-          name: {
-            show: false,
-          },
-          value: {
-            offsetY: -2,
-            fontSize: '14px',
-            color: '#a3aed0',
-            formatter: function (val) {
-              return legendValue || `${val}%`;
-            },
-          },
-        },
-      },
-    },
-    stroke: {
-      lineCap: 'round',
-    },
-    colors: [gaugeColor],
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shade: 'light',
-        type: 'horizontal',
-        gradientToColors: [gaugeColor],
-        inverseColors: false,
-        opacityFrom: 0.15,
-        opacityTo: 1,
-        stops: [0, 100],
-      },
-    },
-  };
+
 
   return (
     <Flex
@@ -172,9 +118,10 @@ const NoCardStatisticsGauge = React.memo(({
           </Flex>
           {!isOnError && gauge && roundedPercentage !== null && roundedPercentage !== undefined && (
             <Box>
-              <GaugeChart
-                chartOptions={chartOptions}
-                chartData={[parseFloat(roundedPercentage) || 0]}
+              <GaugeArc
+                percent={parseFloat(roundedPercentage) || 0}
+                color={gaugeColor}
+                label={legendValue}
                 id={id}
               />
             </Box>
