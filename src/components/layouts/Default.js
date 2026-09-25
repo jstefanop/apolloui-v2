@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Portal, Box, useDisclosure } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useSession, signOut } from 'next-auth/react';
@@ -272,20 +272,40 @@ const Layout = ({ children }) => {
   // ProtectedRoutes straight back here, where it rewrites the same rejected token
   // into localStorage and the socket is refused again — a reload loop with no way
   // out. The session has to be ended, and the stored token with it.
+  //
+  // Ending it is all we do. Asking next-auth to land on /signin cannot work in
+  // this app: its `redirect` callback turns any URL containing '/signin' into the
+  // site root, and the root redirects to /overview (next.config), so the sign-out
+  // navigation comes straight back to a page whose socket is still refused — the
+  // very loop, one layer further down. With the session gone, ProtectedRoutes
+  // sees 'unauthenticated' and does the navigating, as it does everywhere else.
+  const signingOut = useRef(false);
+
   useEffect(() => {
     if (wsStatus !== 'unauthorized') return;
-    try {
-      localStorage.removeItem('token');
-    } catch {
-      // A browser that refuses storage still needs to reach the sign-in page.
-    }
-    signOut({ callbackUrl: '/signin' });
-  }, [wsStatus]);
+    // Nothing to end, and the sign-in page is already on its way.
+    if (status !== 'authenticated') return;
+    // The status is module-level and sticky, so this effect runs again on every
+    // remount; without the latch each one fires another sign-out.
+    if (signingOut.current) return;
+    signingOut.current = true;
+    // The stored token goes after the session, not before: while the session is
+    // still alive ProtectedRoutes copies it back out of it on every pass, so an
+    // early removal is undone within the same tick.
+    signOut({ redirect: false }).finally(() => {
+      try {
+        localStorage.removeItem('token');
+      } catch {
+        // A browser that refuses storage still reaches the sign-in page.
+      }
+    });
+  }, [wsStatus, status]);
 
   if (status === 'loading' || status === 'unauthenticated') return <></>;
 
-
-  if (wsStatus === 'unauthorized') return null;
+  // Sign-out in flight: hold the page blank rather than render a dashboard whose
+  // data source has just rejected us.
+  if (wsStatus === 'unauthorized') return <></>;
 
   // Show the full-screen offline overlay when the WS connection is completely lost.
   // The 'connecting' state is transient (retry in progress) so we only block on 'offline'.
