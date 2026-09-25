@@ -777,7 +777,7 @@ const Overview = () => {
                               }
                             >
                               {servicesStatus?.miner?.status === 'online' &&
-                              avgBoardTemp !== null
+                              Number.isFinite(avgBoardTemp)
                                 ? `${formatTemperature(
                                     avgBoardTemp,
                                     temperatureUnit
@@ -849,7 +849,7 @@ const Overview = () => {
                               }
                             >
                               {servicesStatus?.miner?.status === 'online' &&
-                              avgBoardErrors !== null
+                              Number.isFinite(avgBoardErrors)
                                 ? `${avgBoardErrors}%`
                                 : 'N/A'}
                             </span>
