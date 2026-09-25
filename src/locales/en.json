@@ -21,6 +21,7 @@
       "blockchain_size": "Blockchain size"
     },
     "system": {
+      "title": "System",
       "cpu_usage": "CPU usage",
       "memory_usage": "Memory usage",
       "disk_usage": "System disk usage",

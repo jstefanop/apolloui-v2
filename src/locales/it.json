@@ -21,6 +21,7 @@
       "blockchain_size": "Dimensione blockchain"
     },
     "system": {
+      "title": "Sistema",
       "cpu_usage": "Utilizzo CPU",
       "memory_usage": "Utilizzo memoria",
       "disk_usage": "Utilizzo disco di sistema",

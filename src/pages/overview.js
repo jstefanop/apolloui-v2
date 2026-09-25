@@ -6,6 +6,7 @@ import {
   Text,
   Flex,
   Stack,
+  SimpleGrid,
   Icon,
   Alert,
   AlertIcon,
@@ -66,6 +67,10 @@ const Overview = () => {
   const cardColor = useColorModeValue('white', 'brand.800');
   const iconColor = useColorModeValue('white');
   const iconColorReversed = useColorModeValue('brand.500', 'white');
+  // The theme redefines gray.400 as #E0E5F2, which is a light grey on a white
+  // card and all but white on a dark one — so the total next to the value lost
+  // its subordinate reading in dark mode. Dim it against the surface instead.
+  const totalColor = useColorModeValue('gray.400', 'whiteAlpha.600');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
@@ -316,7 +321,7 @@ const Overview = () => {
               position="relative"
               overflowX="hidden"
             >
-              <GridItem gridArea="soloHashrate" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="soloHashrate" minW={0}>
                 <Card
                   bgColor={cardColor}
                   boxShadow={shadow}
@@ -377,7 +382,7 @@ const Overview = () => {
                 </Card>
               </GridItem>
 
-              <GridItem gridArea="soloBestShare" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="soloBestShare" minW={0}>
                 <Card
                   bgColor={cardColor}
                   boxShadow={shadow}
@@ -429,7 +434,7 @@ const Overview = () => {
                 </Card>
               </GridItem>
 
-              <GridItem gridArea="soloDailyChance" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="soloDailyChance" minW={0}>
                 <Card
                   bgColor={cardColor}
                   boxShadow={shadow}
@@ -630,7 +635,7 @@ const Overview = () => {
             overflowX="hidden"
           >
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="hashrate" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="hashrate" minW={0}>
                 <HashrateCard
                   loading={loadingMiner}
                   errors={errorMiner}
@@ -644,7 +649,7 @@ const Overview = () => {
             )}
 
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="chart" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="chart" minW={0}>
                 {/* Interval selector row */}
                 <Flex mb={3} justify="space-between" align="center" px={1}>
                   <Text fontSize="lg" fontWeight="800">
@@ -691,7 +696,7 @@ const Overview = () => {
             )}
 
             {deviceType === 'solo-node' && (
-              <GridItem gridArea="soloChart" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="soloChart" minW={0}>
                 <Card bgColor={cardColor} boxShadow={shadow} py="15px" pb="30px" width="100%" maxWidth="100%" overflow="hidden">
                   <Flex m="2" justify="space-between" align="center">
                     <Text fontSize="lg" fontWeight="800">
@@ -740,7 +745,7 @@ const Overview = () => {
             )}
 
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="temperatures" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="temperatures" minW={0}>
                 <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow} width="100%" maxWidth="100%" overflow="hidden">
                   <Flex direction="column" my="auto">
                     {loadingMiner ? (
@@ -869,7 +874,7 @@ const Overview = () => {
             )}
 
             {deviceType !== 'solo-node' && (
-              <GridItem gridArea="power" width="100%" maxWidth="100%" overflow="hidden">
+              <GridItem gridArea="power" minW={0}>
                 <PowerCard
                   loading={loadingMiner}
                   errors={errorMiner}
@@ -882,7 +887,7 @@ const Overview = () => {
               </GridItem>
             )}
 
-            <GridItem gridArea="node" width="100%" maxWidth="100%" overflow="hidden">
+            <GridItem gridArea="node" minW={0}>
               <Card py="15px" pb="30px" bgColor={cardColor} boxShadow={shadow} width="100%" maxWidth="100%" overflow="hidden">
                 <Flex m="2">
                   <Text fontSize="lg" fontWeight="800">
@@ -979,7 +984,7 @@ const Overview = () => {
                           >
                             {connectionCount}
                           </span>
-                          <Text color="gray.400">
+                          <Text color={totalColor}>
                             /{nodeMaxConnections || 64}
                           </Text>
                         </Flex>
@@ -1055,112 +1060,117 @@ const Overview = () => {
               </Card>
             </GridItem>
 
-            <GridItem gridArea="gauges" width="100%" maxWidth="100%" overflow="hidden">
-              <Stack
-                direction={{ base: 'column', md: 'row' }}
-                spacing="20px"
-                p="20px"
-                borderRadius="2xl"
-              >
-                <NoCardStatisticsGauge
-                  id="minerTemp"
-                  startContent={
-                    <IconBox
-                      w="56px"
-                      h="56px"
-                      icon={
-                        <Icon
-                          w="32px"
-                          h="32px"
-                          as={CpuIcon}
-                          color={iconColorReversed}
-                        />
-                      }
-                    />
-                  }
-                  name={
+            <GridItem gridArea="gauges" minW={0}>
+              <Card bgColor={cardColor} boxShadow={shadow} py="15px" width="100%" maxWidth="100%" overflow="hidden">
+                <Flex m="2">
+                  <Text fontSize="lg" fontWeight="800">
                     <FormattedMessage
-                      id="overview.system.cpu_usage"
-                      defaultMessage="CPU usage"
+                      id="overview.system.title"
+                      defaultMessage="System"
                     />
-                  }
-                    value={cpuUsage !== null && cpuUsage !== undefined ? `${cpuUsage}%` : 'N/A'}
-                  legendValue={`${cpuCores} ${intl.formatMessage({
-                    id: 'overview.system.cores',
-                  })}`}
-                  percent={cpuUsage}
-                  gauge={true}
-                  loading={loadingMcu}
-                  error={errorMcu}
-                />
+                  </Text>
+                </Flex>
+                <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
+                  <NoCardStatisticsGauge
+                    id="minerTemp"
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        icon={
+                          <Icon
+                            w="32px"
+                            h="32px"
+                            as={CpuIcon}
+                            color={iconColorReversed}
+                          />
+                        }
+                      />
+                    }
+                    name={
+                      <FormattedMessage
+                        id="overview.system.cpu_usage"
+                        defaultMessage="CPU usage"
+                      />
+                    }
+                      value={cpuUsage !== null && cpuUsage !== undefined ? `${cpuUsage}%` : 'N/A'}
+                    legendValue={`${cpuCores} ${intl.formatMessage({
+                      id: 'overview.system.cores',
+                    })}`}
+                    percent={cpuUsage}
+                    gauge={true}
+                    loading={loadingMcu}
+                    error={errorMcu}
+                  />
 
-                <NoCardStatisticsGauge
-                  id="hwErr"
-                  startContent={
-                    <IconBox
-                      w="56px"
-                      h="56px"
-                      icon={
-                        <Icon
-                          w="32px"
-                          h="32px"
-                          as={MemoryIcon}
-                          color={iconColorReversed}
-                        />
-                      }
-                    />
-                  }
-                  name={
-                    <FormattedMessage
-                      id="overview.system.memory_usage"
-                      defaultMessage="Memory usage"
-                    />
-                  }
-                  legendValue={`${bytesToSize(
-                    memoryUsed * 1024,
-                    0
-                  )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
-                  rawValue={memoryUsed}
-                  total={memoryTotal}
-                  gauge={true}
-                  loading={loadingMcu}
-                  error={errorMcu}
-                />
+                  <NoCardStatisticsGauge
+                    id="hwErr"
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        icon={
+                          <Icon
+                            w="32px"
+                            h="32px"
+                            as={MemoryIcon}
+                            color={iconColorReversed}
+                          />
+                        }
+                      />
+                    }
+                    name={
+                      <FormattedMessage
+                        id="overview.system.memory_usage"
+                        defaultMessage="Memory usage"
+                      />
+                    }
+                    legendValue={`${bytesToSize(
+                      memoryUsed * 1024,
+                      0
+                    )} / ${bytesToSize(memoryTotal * 1024, 0)}`}
+                    rawValue={memoryUsed}
+                    total={memoryTotal}
+                    gauge={true}
+                    loading={loadingMcu}
+                    error={errorMcu}
+                  />
 
-                <NoCardStatisticsGauge
-                  id="systemTemp"
-                  startContent={
-                    <IconBox
-                      w="56px"
-                      h="56px"
-                      icon={
-                        <Icon
-                          w="32px"
-                          h="32px"
-                          as={DatabaseIcon}
-                          color={iconColorReversed}
-                        />
-                      }
-                    />
-                  }
-                  name={
-                    <FormattedMessage
-                      id="overview.system.disk_usage"
-                      defaultMessage="System disk usage"
-                    />
-                  }
-                  legendValue={`${bytesToSize(
-                    diskUsed * 1024,
-                    0,
-                    false
-                  )} / ${bytesToSize(diskTotal * 1024, 0)}`}
-                  rawValue={diskUsed}
-                  total={diskTotal}
-                  gauge={true}
-                  loading={loadingMcu}
-                  error={errorMcu}
-                />
-              </Stack>
+                  <NoCardStatisticsGauge
+                    id="systemTemp"
+                    startContent={
+                      <IconBox
+                        w="56px"
+                        h="56px"
+                        icon={
+                          <Icon
+                            w="32px"
+                            h="32px"
+                            as={DatabaseIcon}
+                            color={iconColorReversed}
+                          />
+                        }
+                      />
+                    }
+                    name={
+                      <FormattedMessage
+                        id="overview.system.disk_usage"
+                        defaultMessage="System disk usage"
+                      />
+                    }
+                    legendValue={`${bytesToSize(
+                      diskUsed * 1024,
+                      0,
+                      false
+                    )} / ${bytesToSize(diskTotal * 1024, 0)}`}
+                    rawValue={diskUsed}
+                    total={diskTotal}
+                    gauge={true}
+                    loading={loadingMcu}
+                    error={errorMcu}
+                  />
+                </SimpleGrid>
+              </Card>
             </GridItem>
           </Grid>
         </>
