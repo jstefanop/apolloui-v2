@@ -18,22 +18,66 @@ import { Box } from '@chakra-ui/react';
 const W = 1000;
 const GRID_LINES = 4;
 
-// Catmull-Rom through the points, emitted as cubic béziers. This is the "smooth"
-// curve the cards had: a polyline reads as jagged at this size, and interpolating
-// is honest here because the series is a regular time sampling.
-const smoothPath = (pts) => {
+// A smooth curve through the points, emitted as cubic béziers.
+//
+// Monotone cubic (Fritsch-Carlson), not Catmull-Rom. Catmull-Rom sets each
+// tangent from the neighbours on either side, which makes it overshoot where
+// the slope changes abruptly: a hashrate that sat at zero all night and then
+// climbs made the curve dip *below* zero first, drawing hashrate the miner
+// never produced and a reading the axis says is impossible. This scheme limits
+// every tangent so a segment stays inside the values at its two ends — no
+// invented minima, no invented peaks.
+export const smoothPath = (pts) => {
   if (pts.length < 2) return pts.length ? `M ${pts[0].x} ${pts[0].y}` : '';
+
+  const n = pts.length;
+  // Secant slope of each segment.
+  const slope = [];
+  for (let i = 0; i < n - 1; i += 1) {
+    const dx = pts[i + 1].x - pts[i].x;
+    slope.push(dx === 0 ? 0 : (pts[i + 1].y - pts[i].y) / dx);
+  }
+
+  // Start from the average of the neighbouring secants, the Catmull-Rom
+  // tangent, then clamp it.
+  const tangent = new Array(n);
+  tangent[0] = slope[0];
+  tangent[n - 1] = slope[n - 2];
+  for (let i = 1; i < n - 1; i += 1) {
+    // A turning point is flat. Where the series changes direction the average
+    // of the two secants still leans one way, and the curve rounds past the
+    // sample — a peak drawn higher than the highest reading, a trough drawn
+    // lower than the lowest.
+    tangent[i] =
+      slope[i - 1] * slope[i] <= 0 ? 0 : (slope[i - 1] + slope[i]) / 2;
+  }
+
+  for (let i = 0; i < n - 1; i += 1) {
+    if (slope[i] === 0) {
+      // A flat segment must stay flat: this is the run of zeros that used to
+      // be bent into a dip by whatever came after it.
+      tangent[i] = 0;
+      tangent[i + 1] = 0;
+      continue;
+    }
+    const a = tangent[i] / slope[i];
+    const b = tangent[i + 1] / slope[i];
+    const h = a * a + b * b;
+    if (h > 9) {
+      const t = 3 / Math.sqrt(h);
+      tangent[i] = t * a * slope[i];
+      tangent[i + 1] = t * b * slope[i];
+    }
+  }
+
   let d = `M ${pts[0].x} ${pts[0].y}`;
-  for (let i = 0; i < pts.length - 1; i += 1) {
-    const p0 = pts[i - 1] || pts[i];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2] || p2;
-    const c1x = p1.x + (p2.x - p0.x) / 6;
-    const c1y = p1.y + (p2.y - p0.y) / 6;
-    const c2x = p2.x - (p3.x - p1.x) / 6;
-    const c2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
+  for (let i = 0; i < n - 1; i += 1) {
+    const dx = (pts[i + 1].x - pts[i].x) / 3;
+    const c1x = pts[i].x + dx;
+    const c1y = pts[i].y + tangent[i] * dx;
+    const c2x = pts[i + 1].x - dx;
+    const c2y = pts[i + 1].y - tangent[i + 1] * dx;
+    d += ` C ${c1x.toFixed(2)} ${c1y.toFixed(2)}, ${c2x.toFixed(2)} ${c2y.toFixed(2)}, ${pts[i + 1].x.toFixed(2)} ${pts[i + 1].y.toFixed(2)}`;
   }
   return d;
 };
