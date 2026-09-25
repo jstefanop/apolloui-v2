@@ -105,7 +105,6 @@ const MiniMetricChart = React.memo(({
       boxShadow={cardShadow}
       overflow="hidden"
       width="100%"
-      pb={2}
     >
       {/* Header: title + value(s) */}
       <Flex px={5} pt={5} pb={2} justify="space-between" align="flex-start" gap={3}>
@@ -173,7 +172,12 @@ const MiniMetricChart = React.memo(({
           </Text>
         </Flex>
       ) : (
-        <Box mx={-1}>
+        // The chart closes the card: it runs to the bottom edge and into the
+        // rounded corners, which `overflow: hidden` on the card clips for it.
+        // Anything below it — padding, a row of labels on white — reads as the
+        // panel being cut short rather than finished, so the time range is laid
+        // over the fill instead.
+        <Box position="relative" mx={-1}>
           <AreaChart
             series={chartSeries}
             labels={labels}
@@ -182,15 +186,20 @@ const MiniMetricChart = React.memo(({
             dualScale={dualScale}
             formatDate={(v) => (v ? moment(v).format(tooltipDateFmt) : '')}
           />
-        </Box>
-      )}
 
-      {/* Time range strip */}
-      {!loading && data.length > 0 && (
-        <Flex px={5} justify="space-between" mt="-6px">
-          <Text fontSize="xs" color={timeColor}>{startLabel}</Text>
-          <Text fontSize="xs" color={timeColor}>Now</Text>
-        </Flex>
+          <Flex
+            position="absolute"
+            bottom="6px"
+            left="0"
+            right="0"
+            px={5}
+            justify="space-between"
+            pointerEvents="none"
+          >
+            <Text fontSize="xs" color={timeColor}>{startLabel}</Text>
+            <Text fontSize="xs" color={timeColor}>Now</Text>
+          </Flex>
+        </Box>
       )}
     </Box>
   );
