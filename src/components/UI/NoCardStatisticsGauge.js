@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { percentColor } from '../../lib/utils';
 import GaugeArc from '../charts/GaugeArc';
-import ChartLoader from './Loaders/ChartLoader';
+import GaugeSkeleton from './GaugeSkeleton';
 import { ErrorIcon } from '../UI/Icons/ErrorIcon';
 
 const NoCardStatisticsGauge = React.memo(({
@@ -62,7 +62,7 @@ const NoCardStatisticsGauge = React.memo(({
       w="100%"
     >
       {loading ? (
-        <ChartLoader />
+        <GaugeSkeleton />
       ) : (
         <>
           <Flex justify="space-between">

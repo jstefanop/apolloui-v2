@@ -18,7 +18,7 @@ import _ from 'lodash';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { BulletList, List } from 'react-content-loader';
+import CardSkeleton from '../components/UI/CardSkeleton';
 import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
 import IconBox from '../components/icons/IconBox';
@@ -553,7 +553,9 @@ const Overview = () => {
                   </Text>
                 </Flex>
               ) : loadingSolo ? (
-                <List />
+                <Flex height="100%" align="center" px="20px">
+                  <CardSkeleton lines={2} />
+                </Flex>
               ) : errorSolo && errorSolo.length > 0 ? (
                 <Alert borderRadius={'10px'} status="error">
                   <AlertIcon />
@@ -742,7 +744,11 @@ const Overview = () => {
                 <Card py="15px" bgColor={cardColor} h="100%" boxShadow={shadow} width="100%" maxWidth="100%" overflow="hidden">
                   <Flex direction="column" my="auto">
                     {loadingMiner ? (
-                      <BulletList />
+                      <Stack spacing={5} px="20px" py="10px">
+                        <CardSkeleton lines={2} iconSize="40px" />
+                        <CardSkeleton lines={2} iconSize="40px" />
+                        <CardSkeleton lines={2} iconSize="40px" />
+                      </Stack>
                     ) : (
                       <>
                         <NoCardStatistics
@@ -928,7 +934,11 @@ const Overview = () => {
                     <AlertDescription>{errorNodeSentence}</AlertDescription>
                   </Alert>
                 ) : loadingNode ? (
-                  <List />
+                  <Flex px="20px" py="10px" gap={10} wrap="wrap">
+                    <CardSkeleton lines={2} />
+                    <CardSkeleton lines={2} />
+                    <CardSkeleton lines={2} />
+                  </Flex>
                 ) : (
                   <Flex
                     my="auto"

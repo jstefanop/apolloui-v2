@@ -6043,11 +6043,6 @@ react-clientside-effect@^1.2.6:
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-react-content-loader@^7.1.1:
-  version "7.1.1"
-  resolved "https://registry.yarnpkg.com/react-content-loader/-/react-content-loader-7.1.1.tgz#e9a9746b1fa54f0cab4c39a543fb944371c83441"
-  integrity sha512-yNkqtd+15wXRLfDKZb5nTqDV2fPTG2kpUgeGRb+WBz43bU0j4DSGXETF0bnFr44fAoTPpm0Dya0WGdhpHSvtYA==
-
 react-countup@^6.5.3:
   version "6.5.3"
   resolved "https://registry.yarnpkg.com/react-countup/-/react-countup-6.5.3.tgz#e892aa3eab2d6ba9c3cdba30bf4ed6764826d848"

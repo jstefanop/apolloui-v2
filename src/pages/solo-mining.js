@@ -1,5 +1,6 @@
 import {
   Box,
+  Stack,
   Icon,
   Flex,
   Text,
@@ -17,8 +18,8 @@ import {
   Tooltip,
   Divider,
 } from '@chakra-ui/react';
+import CardSkeleton from '../components/UI/CardSkeleton';
 import { useRef, useEffect, useState } from 'react';
-import { BulletList } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
@@ -583,7 +584,10 @@ const SoloMining = () => {
                   </Text>
                 </Flex>
                 {loadingSolo ? (
-                  <BulletList />
+                  <Stack spacing={5} px="20px" py="10px">
+                    <CardSkeleton lines={2} />
+                    <CardSkeleton lines={2} />
+                  </Stack>
                 ) : (
                   <Flex my="auto" direction="column">
                     <Tooltip
@@ -766,7 +770,10 @@ const SoloMining = () => {
                   </Flex>
                 </Flex>
                 {loadingSolo ? (
-                  <BulletList />
+                  <Stack spacing={5} px="20px" py="10px">
+                    <CardSkeleton lines={2} />
+                    <CardSkeleton lines={2} />
+                  </Stack>
                 ) : !dataTableBoards.length ? (
                   <Text m="3">
                     {intl.formatMessage({

@@ -10,6 +10,7 @@ import { switchStyles } from './components/switch';
 import { linkStyles } from './components/link';
 import { breakpoints } from './foundations/breakpoints';
 import { menuStyles } from './components/menu';
+import { skeletonStyles } from './components/skeleton';
 import { globalStyles } from './styles';
 export default extendTheme(
   {
@@ -28,5 +29,6 @@ export default extendTheme(
   inputStyles, // input styles
   textareaStyles, // textarea styles
   switchStyles, // switch styles
+  skeletonStyles, // placeholders, one definition for the whole app
   CardComponent // card component
 );

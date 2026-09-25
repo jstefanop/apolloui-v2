@@ -30,7 +30,12 @@ const HashrateCard = ({
 
   const tileCardIcon = (() => {
     if (currentStatus === 'offline') return MdOfflineBolt;
-    if (currentStatus === 'pending') return Spinner;
+    // `status` and not `currentStatus`: the latter reads "pending" before the
+    // device has answered at all, which turned the icon into a third spinner on
+    // a card that already has two. A spinner belongs to a miner that really is
+    // starting, not to one we have yet to hear from. Power usage never had the
+    // problem because it never invented a status.
+    if (status === 'pending') return Spinner;
     return MinerIcon;
   })();
 

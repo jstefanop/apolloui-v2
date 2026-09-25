@@ -1,5 +1,6 @@
 import {
   Box,
+  Stack,
   Icon,
   Flex,
   Text,
@@ -12,8 +13,8 @@ import {
   Center,
   useDisclosure,
 } from '@chakra-ui/react';
+import CardSkeleton from '../components/UI/CardSkeleton';
 import { useRef, useEffect } from 'react';
-import { BulletList, List } from 'react-content-loader';
 import { useSelector, shallowEqual } from 'react-redux';
 import { useIntl } from 'react-intl';
 
@@ -379,7 +380,10 @@ const Miner = () => {
                   </Text>
                 </Flex>
                 {loadingMiner ? (
-                  <BulletList />
+                  <Stack spacing={5} px="20px" py="10px">
+                    <CardSkeleton lines={2} />
+                    <CardSkeleton lines={2} />
+                  </Stack>
                 ) : (
                   <Flex my="auto" direction="column">
                     {soloMining && (
@@ -566,7 +570,10 @@ const Miner = () => {
                   </Flex>
                 </Flex>
                 {loadingMiner ? (
-                  <BulletList />
+                  <Stack spacing={5} px="20px" py="10px">
+                    <CardSkeleton lines={2} />
+                    <CardSkeleton lines={2} />
+                  </Stack>
                 ) : (
                   <Box mt="3">
                     <PanelGrid
@@ -597,7 +604,10 @@ const Miner = () => {
                   </Text>
                 </Flex>
                 {loadingMiner ? (
-                  <List />
+                  <Stack spacing={5} px="20px" py="10px">
+                    <CardSkeleton lines={2} />
+                    <CardSkeleton lines={2} />
+                  </Stack>
                 ) : (
                   <SimpleGrid columns={{ base: 1, md: 3 }} gap="20px">
                     <NoCardStatisticsGauge

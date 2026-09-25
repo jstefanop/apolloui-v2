@@ -50,7 +50,6 @@
     "next-redux-wrapper": "^8.1.0",
     "prop-types": "^15.8.1",
     "react": "19.1.1",
-    "react-content-loader": "^7.1.1",
     "react-countup": "^6.5.3",
     "react-custom-scrollbars-2": "^4.5.0",
     "react-dom": "19.1.1",
