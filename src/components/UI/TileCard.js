@@ -12,7 +12,14 @@ const TileCard = ({
   secondaryTextColor,
   title,
   mainData,
+  // Overrides the size of the main figure. A card whose value can be five
+  // characters or thirteen cannot have one right size.
+  mainFontSize,
+  // Optional line under the main figure, for a card whose two numbers would
+  // otherwise be indistinguishable.
+  mainCaption,
   secondaryData,
+  secondaryFontSize,
   secondaryText,
   loading,
   errors,
@@ -28,6 +35,9 @@ const TileCard = ({
       width="100%"
       maxWidth="100%"
       overflow="hidden"
+      // What `cqi` in mainFontSize is a percentage of. Without it the unit
+      // falls back to the viewport's container, which is not this card.
+      sx={{ containerType: 'inline-size' }}
       {...props}
       style={
         bannerImage && {
@@ -76,12 +86,14 @@ const TileCard = ({
               />
               <Box
                 color="white"
-                fontSize={{
-                  base: '2.5rem',
-                  md: '3rem',
-                  lg: bigFont ? '4.5rem' : '3.5rem',
-                  xl: bigFont ? '5rem' : '4rem',
-                }}
+                fontSize={
+                  mainFontSize || {
+                    base: '2.5rem',
+                    md: '3rem',
+                    lg: bigFont ? '4.5rem' : '3.5rem',
+                    xl: bigFont ? '5rem' : '4rem',
+                  }
+                }
                 fontWeight="800"
                 textAlign="center"
                 lineHeight="1.2"
@@ -103,6 +115,11 @@ const TileCard = ({
                   {loading ? <LoadingIcon /> : mainData}
                 </Text>
               </Box>
+              {mainCaption && !loading && (
+                <Text color={secondaryTextColor} fontSize="xs" fontWeight="800" mt="1">
+                  {mainCaption}
+                </Text>
+              )}
             </>
           )}
         </Flex>
@@ -113,7 +130,7 @@ const TileCard = ({
               <Text 
                 mx="auto" 
                 color="white" 
-                fontSize={{ base: 'lg', md: 'xl', lg: '2xl' }} 
+                fontSize={secondaryFontSize || { base: 'lg', md: 'xl', lg: '2xl' }} 
                 fontWeight="800"
                 textAlign="center"
                 wordBreak="break-word"

@@ -1,4 +1,4 @@
-import { isValidBitcoinAddress, isCompatibleBitcoinAddress, calculateWattsPerTh } from './utils';
+import { isValidBitcoinAddress, isCompatibleBitcoinAddress, calculateWattsPerTh, fitTextSize, bytesPairToSize } from './utils';
 import { render, screen } from '@testing-library/react';
 
 // Synthetic addresses that hit the exact length branches of the validators.
@@ -75,5 +75,84 @@ describe('calculateWattsPerTh', () => {
 
   it('accepts numeric strings, which is how some stat fields arrive', () => {
     expect(calculateWattsPerTh('100', '8')).toBe(12.5);
+  });
+});
+
+describe('fitTextSize', () => {
+  const cqiOf = (value) => Number(value.match(/([\d.]+)cqi/)[1]);
+
+  // The two failures that brought this in: John does not want the digits cut
+  // off with an ellipsis, and the number must not wrap onto a second line.
+  it('gives a longer string a smaller share of the container', () => {
+    expect(cqiOf(fitTextSize(13))).toBeLessThan(cqiOf(fitTextSize(6)));
+  });
+
+  it('leaves room for the padding around the text', () => {
+    // 13 characters at this size occupy under the full container width.
+    const cqi = cqiOf(fitTextSize(13));
+    expect(13 * 0.62 * cqi).toBeLessThan(100);
+  });
+
+  // The bounds are part of the clamp() string whatever the input, so asserting
+  // on the text proves nothing. What matters is the number between them.
+  it('asks for more than the container when there is little to draw', () => {
+    // One character would happily take the whole card; the ceiling holds it.
+    expect(cqiOf(fitTextSize(1))).toBeGreaterThan(100);
+    expect(fitTextSize(1)).toContain('5rem)');
+  });
+
+  it('asks for almost nothing when there is far too much', () => {
+    // 200 characters cannot fit at any readable size; the floor holds it.
+    expect(cqiOf(fitTextSize(200))).toBeLessThan(1);
+    expect(fitTextSize(200)).toContain('clamp(1.1rem,');
+  });
+
+  it('keeps a scaled line subordinate to the one above it', () => {
+    expect(cqiOf(fitTextSize(13, { scale: 0.62 }))).toBeLessThan(cqiOf(fitTextSize(13)));
+  });
+
+  it('does not divide by nothing', () => {
+    expect(() => fitTextSize(0)).not.toThrow();
+    expect(() => fitTextSize(undefined)).not.toThrow();
+    expect(cqiOf(fitTextSize(0))).toBeGreaterThan(0);
+  });
+});
+
+describe('bytesPairToSize', () => {
+  const GB = 1024 ** 3;
+  const TB = 1024 ** 4;
+
+  // The reason it exists: formatted separately these became "500/4 TB", which
+  // reads as five hundred terabytes of four.
+  it('puts both figures in the unit the total would choose', () => {
+    expect(bytesPairToSize(500 * GB, 4 * TB)).toEqual({
+      part: '0.5',
+      total: '4 TB',
+      unit: null,
+    });
+  });
+
+  it('keeps a pair that already shares a unit as it was', () => {
+    expect(bytesPairToSize(373 * GB, 932 * GB)).toEqual({
+      part: '373',
+      total: '932 GB',
+      unit: null,
+    });
+  });
+
+  // A nearly full disk rendered as "0.0" is indistinguishable from a reading we
+  // do not have — and that is the moment the number matters most.
+  it('gives each figure its own unit when they are far apart', () => {
+    expect(bytesPairToSize(3 * GB, 4 * TB)).toEqual({
+      part: '3 GB',
+      total: '4 TB',
+      unit: null,
+    });
+  });
+
+  it('says nothing when it has nothing to say', () => {
+    expect(bytesPairToSize(null, 4 * TB)).toBeNull();
+    expect(bytesPairToSize(100, 0)).toBeNull();
+    expect(bytesPairToSize(undefined, undefined)).toBeNull();
   });
 });

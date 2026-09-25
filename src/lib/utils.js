@@ -87,7 +87,11 @@ export const convertHashrateStringToValue = (hashrateString, unit = 'GH/s') => {
   }
 };
 
-export const numberToText = (num, intl) => {
+// `approx` prefixes the reading with "about". On by default because rounding to
+// one decimal is an approximation and most callers have room to say so — but a
+// quarter-row card does not, and "About 110.0 trillion" clipped to "About 110.0
+// t…" says less than the same number without the word.
+export const numberToText = (num, intl, approx = true) => {
   if (num < 1e6)
     return `${Math.ceil(num)}`; // Less than 1 million
 
@@ -100,9 +104,10 @@ export const numberToText = (num, intl) => {
   for (const unit of units) {
     if (num >= unit.value) {
       const value = (num / unit.value).toFixed(1);
-      return `${intl.formatMessage({ id: 'utils.about' })} ${value} ${
-        unit.name
-      }`;
+      const reading = `${value} ${unit.name}`;
+      return approx
+        ? `${intl.formatMessage({ id: 'utils.about' })} ${reading}`
+        : reading;
     }
   }
 
@@ -549,4 +554,75 @@ export const useDailyChanceVisualizations = (data, networkhashps) => {
   ];
 
   return visualizations;
+};
+
+// A font size that makes `chars` characters fit the width of the container they
+// are drawn in, expressed in container query units so it re-fits at every card
+// width rather than at a handful of breakpoints.
+//
+// A table of sizes per breakpoint cannot do this job: the same card is a
+// quarter of a 1500px page and a quarter of a 1000px one, and a thirteen-digit
+// best share fits the first and not the second. What it must never do is the
+// two things that brought this about — clip the digits with an ellipsis, or
+// wrap the number onto a second line.
+// `scale` keeps a second line of text subordinate to the first: a fixed size
+// for it inverts the hierarchy as soon as the main figure has to shrink.
+export const fitTextSize = (
+  chars,
+  { max = '5rem', min = '1.1rem', scale = 1 } = {}
+) => {
+  const count = Math.max(Number(chars) || 0, 1);
+  // 0.62em is about the advance of a digit in the UI face; the extra tenth
+  // leaves the card its side padding.
+  const cqi = (100 / (count * 0.62 * 1.12)) * scale;
+  return `clamp(${min}, ${cqi.toFixed(1)}cqi, ${max})`;
+};
+
+// A pair of byte counts shown as "free of total", both in the unit the larger
+// of the two would choose.
+//
+// `bytesToSize` picks its magnitude per call, so formatting the two separately
+// gives "500/4 TB" for 500 GB free on a 4 TB drive — which reads as 500 TB of
+// 4. Sizing both by the total keeps the comparison true, at the cost of "0.5"
+// where the drive is nearly full, which is the honest way round.
+export const bytesPairToSize = (part, total, decimals = 1) => {
+  // Number(null) is 0, and a missing free-space reading rendered as "0" says
+  // the drive is full — the opposite of "we do not know".
+  if (part == null || total == null) return null;
+
+  const a = Number(part);
+  const b = Number(total);
+  if (!Number.isFinite(a) || !Number.isFinite(b) || b <= 0) return null;
+
+  const k = 1024;
+  const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const magnitude = (value) =>
+    value <= 0
+      ? 0
+      : Math.min(Math.floor(Math.log(value) / Math.log(k)), units.length - 1);
+  const scaled = (value, i) => {
+    const n = value / Math.pow(k, i);
+    // Whole numbers stay whole; only a part that would vanish keeps a decimal.
+    return String(parseFloat(n.toFixed(n < 10 ? decimals : 0)));
+  };
+
+  const big = magnitude(b);
+  const totalText = `${scaled(b, big)} ${units[big]}`;
+  const shared = scaled(a, big);
+
+  // Three gigabytes left on a four-terabyte drive rounds to "0" in the total's
+  // unit — a nearly full disk rendered exactly like a reading we do not have,
+  // at the moment the number matters most. When the shared unit erases the
+  // part, each figure gets its own: "3 GB / 4 TB" is longer than "373/932 GB"
+  // and still unambiguous, which is all the shared unit was ever for.
+  if (a > 0 && parseFloat(shared) === 0) {
+    const small = magnitude(a);
+    return {
+      part: `${scaled(a, small)} ${units[small]}`,
+      total: totalText,
+      unit: null,
+    };
+  }
+
+  return { part: shared, total: totalText, unit: null };
 };

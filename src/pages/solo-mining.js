@@ -175,6 +175,7 @@ const SoloMining = () => {
     summary: poolSummary,
     blockFound,
     timestamp,
+    bestShareEver,
     hasUsers = false,
   } = soloData || {};
 
@@ -440,9 +441,16 @@ const SoloMining = () => {
               base: 'auto auto auto auto auto',
               lg: 'auto auto',
             }}
+            /* minmax(0, 1fr), not 1fr: a bare `1fr` is `minmax(auto, 1fr)`,
+               and that `auto` floor is the widest the content refuses to break
+               below. The best share is one unbreakable number, so as CountUp
+               ticks through its digits the column's floor changes on every
+               frame and the whole row shifts left and right — measured here at
+               a 49px swing on a ten-digit figure. A zero floor lets the columns
+               stay equal and the content fit itself to them. */
             templateColumns={{
-              base: '1fr',
-              lg: '1fr 1fr 1fr 1fr',
+              base: 'minmax(0, 1fr)',
+              lg: 'repeat(4, minmax(0, 1fr))',
             }}
             gap={'20px'}
             mb={'10px'}
@@ -468,6 +476,7 @@ const SoloMining = () => {
                 errors={errorSolo}
                 data={ckPoolGlobalBestshare}
                 prevData={prevCkPoolGlobalBestshare}
+                bestEver={bestShareEver}
                 shadow={shadow}
                 iconColor={iconColor}
               />

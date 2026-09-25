@@ -226,8 +226,8 @@ const Miner = () => {
               lg: 'auto auto auto auto',
             }}
             templateColumns={{
-              base: '1fr',
-              lg: '1fr 1fr 1fr 1fr',
+              base: 'minmax(0, 1fr)',
+              lg: 'repeat(4, minmax(0, 1fr))',
             }}
             gap={'20px'}
             mb={'10px'}
