@@ -40,6 +40,14 @@ const MiniMetricChart = React.memo(({
   secondary = null,
 }) => {
   const cardBg     = useColorModeValue('white', 'navy.800');
+  // The panel shadow the rest of the app uses. Chakra's own `md` is a tight
+  // black one: along a straight edge it hides under the card, but the rounded
+  // corners cut the card away and expose it, which is why these two cards had a
+  // grey crescent at each bottom corner and no other panel did.
+  const cardShadow = useColorModeValue(
+    '0px 17px 40px 0px rgba(112, 144, 176, 0.1)',
+    'none'
+  );
   const gridColor  = useColorModeValue('#EDF2F7', '#2D3748');
   const unitColor  = useColorModeValue('#A0AEC0', '#718096');
   const titleColor = useColorModeValue('#1A202C', '#FFFFFF');
@@ -93,8 +101,8 @@ const MiniMetricChart = React.memo(({
   return (
     <Box
       bg={cardBg}
-      borderRadius="2xl"
-      boxShadow="md"
+      borderRadius="20px"
+      boxShadow={cardShadow}
       overflow="hidden"
       width="100%"
       pb={2}
