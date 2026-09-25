@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Portal, Box, useDisclosure } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 
 import Sidebar from '../sidebar/Sidebar';
 import Footer from '../footer/FooterAdmin';
@@ -266,7 +266,26 @@ const Layout = ({ children }) => {
   });
 
   const { status } = useSession();
+
+  // A refused token is not an unreachable backend, and the remedy is not a
+  // redirect: navigating to /signin with the next-auth session still valid sends
+  // ProtectedRoutes straight back here, where it rewrites the same rejected token
+  // into localStorage and the socket is refused again — a reload loop with no way
+  // out. The session has to be ended, and the stored token with it.
+  useEffect(() => {
+    if (wsStatus !== 'unauthorized') return;
+    try {
+      localStorage.removeItem('token');
+    } catch {
+      // A browser that refuses storage still needs to reach the sign-in page.
+    }
+    signOut({ callbackUrl: '/signin' });
+  }, [wsStatus]);
+
   if (status === 'loading' || status === 'unauthenticated') return <></>;
+
+
+  if (wsStatus === 'unauthorized') return null;
 
   // Show the full-screen offline overlay when the WS connection is completely lost.
   // The 'connecting' state is transient (retry in progress) so we only block on 'offline'.

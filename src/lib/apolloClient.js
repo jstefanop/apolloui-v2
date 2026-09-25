@@ -149,7 +149,11 @@ export const checkBackendAvailability = async () => {
 // ---------------------------------------------------------------------------
 // WS connection status — tracked module-level, published to React subscribers
 // ---------------------------------------------------------------------------
-// Status values: 'connecting' | 'online' | 'offline'
+// Status values: 'connecting' | 'online' | 'offline' | 'unauthorized'
+//
+// 'unauthorized' is not a degree of 'offline': the backend is there and
+// answering, it is the token it will not take. Treating the two alike sent
+// people to check cables and services while the fix was to sign in again.
 let _wsStatus = 'connecting';
 const _wsStatusListeners = new Set();
 // True once we successfully connect for the first time in this page session.
@@ -164,6 +168,13 @@ let _offlineTimer = null;
 //  - 15 s if we lost a previously-working connection (brief drop / restart)
 const WS_FIRST_CONNECT_TIMEOUT_MS = 8000;
 const WS_RECONNECT_TIMEOUT_MS = 15000;
+
+// 4403 is what the server sends when it refuses the token (onConnect returns
+// false). Deliberately not 4401: in graphql-ws that means a Subscribe arrived
+// before the ack — a timing race on a slow device, with a perfectly good
+// session — and treating it as a bad token would sign the user out for nothing.
+const WS_FORBIDDEN = 4403;
+const isAuthRefusal = (event) => event?.code === WS_FORBIDDEN;
 
 function _setWsStatus(next) {
   if (next === _wsStatus) return;
@@ -195,7 +206,10 @@ function createWsLink() {
         return { authorization: token ? `Bearer ${token}` : '' };
       },
       retryAttempts: Infinity,
-      shouldRetry: () => true,
+      // graphql-ws retries 4403 by default, on the theory that access might be
+      // granted later. Here it will not: the same stored token goes back every
+      // time, so the retry only delays sending the user to sign in.
+      shouldRetry: (errOrCloseEvent) => !isAuthRefusal(errOrCloseEvent),
       on: {
         connecting: () => {
           // Retries are in progress — don't touch the timer here.
@@ -209,7 +223,16 @@ function createWsLink() {
           _offlineTimer = null;
           _setWsStatus('online');
         },
-        closed: () => {
+        closed: (event) => {
+          // A refused token is a different problem with a different remedy, and
+          // no amount of waiting fixes it.
+          if (isAuthRefusal(event)) {
+            clearTimeout(_offlineTimer);
+            _offlineTimer = null;
+            _setWsStatus('unauthorized');
+            return;
+          }
+
           // Move from 'online' → 'connecting' so the UI knows data may be stale,
           // but don't show the full offline screen yet — wait for an 'error' event
           // or for the grace-period timer to fire.
@@ -231,6 +254,8 @@ function createWsLink() {
           }
         },
         error: () => {
+          // Close events never reach here — graphql-ws routes them to `closed`,
+          // and this receives the raw socket error instead.
           // The browser fires this immediately when the TCP connection is refused
           // (e.g. backend is completely down). No need to wait for a timer — show
           // the offline screen right away. If the next retry succeeds, 'connected'
