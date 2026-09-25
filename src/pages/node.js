@@ -26,15 +26,17 @@ import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import { ConnectionsIcons } from '../components/UI/Icons/ConnectionsIcons';
 import FormattedNumber from '../components/UI/FormattedNumber';
 import MiniStatistics from '../components/UI/MiniStatistics';
-import { bytesToSize, displayHashrate, numberToText } from '../lib/utils';
+import ProgressRing from '../components/UI/ProgressRing';
+import { bytesPairToSize, bytesToSize, displayHashrate, numberToText } from '../lib/utils';
 import { nodeSelector } from '../redux/reselect/node';
 import { servicesSelector } from '../redux/reselect/services';
 import { FormattedMessage } from 'react-intl';
 import { TimeIcon } from '../components/UI/Icons/TimeIcon';
 import { BlockchainIcon } from '../components/UI/Icons/BlockchainIcon';
+import { DifficultyIcon } from '../components/UI/Icons/DifficultyIcon';
 import { MinersIcon } from '../components/UI/Icons/MinersIcon';
 import { NetworkIcon } from '../components/UI/Icons/NetworkIcon';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { mcuSelector } from '../redux/reselect/mcu';
 import DynamicTable from '../components/UI/DynamicTable';
 import BannerNode from '../assets/img/node_banner.png';
@@ -63,12 +65,14 @@ const Node = () => {
     'linear-gradient(290.56deg, #5E71D7 -2.34%, #364285 60.45%)'
   );
   const iconColorReversed = useColorModeValue('brand.500', 'white');
+  // The theme redefines gray.400 as #E0E5F2: a light grey on white, all but
+  // white on navy, which is no way to mark a subordinate total.
+  const totalColor = useColorModeValue('gray.400', 'whiteAlpha.600');
   const shadow = useColorModeValue(
     '0px 17px 40px 0px rgba(112, 144, 176, 0.1)'
   );
 
   const [lastBlockTime, setLastBlockTime] = useState();
-  const [remainingSpace, setRemainingSpace] = useState(0);
   const [dataTable, setDataTable] = useState([]);
   const [hadValidData, setHadValidData] = useState(false);
 
@@ -116,7 +120,30 @@ const Node = () => {
 
   const isStaleData = !!dataNode?.stale;
 
-  const { storage } = useNodeStorage();
+  const { storage, loading: loadingStorage } = useNodeStorage();
+
+  // Read from Node.storage, the same source the Overview widgets use. This page
+  // used to compute the figure itself from mcu.disks, so the two could disagree
+  // about the same drive. `available` on NodeStorage is a boolean, not bytes,
+  // and `size` and `free` arrive as strings.
+  const nodeDisk = useMemo(() => {
+    const size = storage?.size != null ? Number(storage.size) : null;
+    const free = storage?.free != null ? Number(storage.free) : null;
+    const usable = Number.isFinite(size) && Number.isFinite(free) && size > 0;
+    return {
+      size: Number.isFinite(size) ? size : null,
+      free: Number.isFinite(free) ? free : null,
+      // The ring fills as the drive fills, not as it empties.
+      percentUsed: usable ? ((size - free) / size) * 100 : 0,
+    };
+  }, [storage]);
+
+  // Both figures in one unit: formatted separately, 500 GB free on a 4 TB drive
+  // reads "500/4 TB".
+  const diskPair = useMemo(
+    () => bytesPairToSize(nodeDisk.free, nodeDisk.size),
+    [nodeDisk]
+  );
   const { sentence: errorNodeSentence, type: errorNodeType } =
     getNodeErrorMessage(errorNode, intl, storage);
 
@@ -155,7 +182,7 @@ const Node = () => {
     shallowEqual
   );
 
-  const { disks, network } = dataMcu;
+  const { network } = dataMcu;
 
   const eth0 = _.find(network, { name: 'eth0' });
   const wlan0 = _.find(network, { name: 'wlan0' });
@@ -186,23 +213,6 @@ const Node = () => {
 
     setLastBlockTime(last);
   }, [blockTime, timestamp]);
-
-  useEffect(() => {
-    if (!disks.length) return;
-
-    const nodeDisk = _.find(disks, { mountPoint: '/media/nvme' });
-    const { used = 0, total = 0 } = nodeDisk || {};
-
-    // If total is 0, set remainingSpace to 0 to avoid division by zero
-    if (total === 0) {
-      setRemainingSpace(0);
-      return;
-    }
-
-    const difference = total - used;
-    const percentage = (difference / total) * 100;
-    setRemainingSpace(Math.round(percentage * 100) / 100);
-  }, [disks]);
 
   useEffect(() => {
     if (!peerInfo || !peerInfo.length) return;
@@ -528,11 +538,130 @@ const Node = () => {
                     </Alert>
                   ) : (
                     <Box>
-                      {/* TOP */}
+                      {/* The same four the Overview shows, in the same order,
+                          with the same labels and from the same sources. A
+                          figure that disagrees with itself between two pages is
+                          worse than one missing from a page. Here there is room
+                          for the rest underneath, which on the Overview had to
+                          be left out. */}
                       <SimpleGrid
-                        columns={{ base: 1, md: 2 }}
+                        columns={{ base: 1, md: 2, xl: 4 }}
                         spacing="20px"
                         mb="5"
+                      >
+                        <MiniStatistics
+                          bgColor={statisticColor}
+                          loading={loadingNode}
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <ConnectionsIcons
+                                  w="32px"
+                                  h="32px"
+                                  color={iconColorReversed}
+                                />
+                              }
+                            />
+                          }
+                          name={<FormattedMessage id="node.widget.connections" />}
+                          value={
+                            <Flex>
+                              <span>{connectionCount ?? 0}</span>
+                              <Text color={totalColor}>/{nodeMaxConnections || 64}</Text>
+                            </Flex>
+                          }
+                        />
+
+                        <MiniStatistics
+                          bgColor={statisticColor}
+                          loading={loadingNode}
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <BlocksIcon
+                                  w="32px"
+                                  h="32px"
+                                  color={iconColorReversed}
+                                />
+                              }
+                            />
+                          }
+                          name={<FormattedMessage id="node.widget.current_block" />}
+                          value={
+                            blocksCount
+                              ? blocksCount.toLocaleString('en-US', {
+                                  maximumFractionDigits: 0,
+                                })
+                              : 'N/A'
+                          }
+                        />
+
+                        <MiniStatistics
+                          bgColor={statisticColor}
+                          loading={loadingNode}
+                          startContent={
+                            <IconBox
+                              w="56px"
+                              h="56px"
+                              bg={'transparent'}
+                              icon={
+                                <BlockchainIcon
+                                  w="32px"
+                                  h="32px"
+                                  color={iconColorReversed}
+                                />
+                              }
+                            />
+                          }
+                          name={<FormattedMessage id="node.widget.blockchain_size" />}
+                          value={sizeOnDisk ? bytesToSize(sizeOnDisk) : 'N/A'}
+                        />
+
+                        <MiniStatistics
+                          bgColor={statisticColor}
+                          loading={loadingStorage}
+                          startContent={
+                            <ProgressRing
+                              percent={nodeDisk.percentUsed}
+                              color={storage?.low ? 'red.500' : undefined}
+                            >
+                              <Icon
+                                w="24px"
+                                h="24px"
+                                as={DatabaseIcon}
+                                color={iconColorReversed}
+                              />
+                            </ProgressRing>
+                          }
+                          name={<FormattedMessage id="node.widget.disk_free" />}
+                          value={
+                            diskPair ? (
+                              <Flex>
+                                <span>{diskPair.part}</span>
+                                <Text color={totalColor}>/{diskPair.total}</Text>
+                              </Flex>
+                            ) : (
+                              'N/A'
+                            )
+                          }
+                        />
+                      </SimpleGrid>
+
+                      {/* What the Node page has and the Overview does not, in
+                          the same four columns as the row above. One card per
+                          figure: the connections breakdown was four lines
+                          stacked inside another card's value, and difficulty
+                          was a second number hung under the hashrate — which
+                          made that card taller than the two beside it. */}
+                      <SimpleGrid
+                        columns={{ base: 1, md: 2, xl: 4 }}
+                        spacing="20px"
                       >
                         <MiniStatistics
                           bgColor={statisticColor}
@@ -574,8 +703,8 @@ const Node = () => {
                               '...'
                             )
                           }
-                          reversed={true}
                         />
+
                         <MiniStatistics
                           bgColor={statisticColor}
                           loading={loadingNode}
@@ -585,7 +714,7 @@ const Node = () => {
                               h="56px"
                               bg={'transparent'}
                               icon={
-                                <BlockchainIcon
+                                <NetworkIcon
                                   w="32px"
                                   h="32px"
                                   color={iconColorReversed}
@@ -593,16 +722,20 @@ const Node = () => {
                               }
                             />
                           }
-                          name={
-                            <FormattedMessage id="node.stats.blockchain_size" />
+                          name={<FormattedMessage id="node.stats.connections_in_out" />}
+                          value={
+                            <Flex align="center" gap={2}>
+                              <Icon as={MdArrowDownward} color="green.200" />
+                              {connectionsIn}
+                              <Box as="span" mx={1} color={totalColor}>
+                                /
+                              </Box>
+                              <Icon as={MdArrowUpward} color="green.500" />
+                              {connectionsOut}
+                            </Flex>
                           }
-                          value={bytesToSize(sizeOnDisk)}
-                          reversed={true}
                         />
-                      </SimpleGrid>
 
-                      {/* BOTTOM */}
-                      <SimpleGrid columns={{ base: 1, md: 3 }} spacing="20px">
                         <MiniStatistics
                           bgColor={statisticColor}
                           loading={loadingNode}
@@ -620,16 +753,10 @@ const Node = () => {
                               }
                             />
                           }
-                          name={
-                            <FormattedMessage id="node.stats.network_hashrate" />
-                          }
+                          name={<FormattedMessage id="node.stats.network_hashrate" />}
                           value={displayHashrate(networkhashps, 'h', true, 2)}
-                          secondaryText={numberToText(difficulty, intl)}
-                          secondaryDescription={
-                            <FormattedMessage id="node.stats.difficulty" />
-                          }
-                          reversed={true}
                         />
+
                         <MiniStatistics
                           bgColor={statisticColor}
                           loading={loadingNode}
@@ -639,7 +766,7 @@ const Node = () => {
                               h="56px"
                               bg={'transparent'}
                               icon={
-                                <ConnectionsIcons
+                                <DifficultyIcon
                                   w="32px"
                                   h="32px"
                                   color={iconColorReversed}
@@ -647,63 +774,36 @@ const Node = () => {
                               }
                             />
                           }
+                          name={<FormattedMessage id="node.stats.difficulty" />}
+                          /* "About" set small and grey, so the width goes to
+                             the number. Spelled out at full size it did not fit
+                             a quarter-row card, and MiniStatistics clips a plain
+                             value to one line — it read "About 110.0 t…". */
+                          fontSize="xl"
                           value={
-                            <Flex direction="column">
-                              <Flex align="center" gap={2} fontSize="2xl">
-                                <Icon as={MdArrowDownward} color="green.200" />
-                                {connectionsIn}
-                                <Box as="span" mx={2}>
-                                  /
+                            difficulty ? (
+                              <Flex align="baseline" gap="1.5" minW={0}>
+                                <Text
+                                  fontSize="xs"
+                                  fontWeight="600"
+                                  color={totalColor}
+                                  /* The qualifier yields before the number
+                                     does: in Spanish it is "Aproximadamente",
+                                     and a difficulty cut short is worse than an
+                                     abbreviated "about". */
+                                  noOfLines={1}
+                                  minW={0}
+                                >
+                                  <FormattedMessage id="utils.about" />
+                                </Text>
+                                <Box as="span" flexShrink={0} whiteSpace="nowrap">
+                                  {numberToText(difficulty, intl, false)}
                                 </Box>
-                                <Icon as={MdArrowUpward} color="green.500" />
-                                {connectionsOut}
                               </Flex>
-                              <Text
-                                fontSize="sm"
-                                color="secondaryGray.600"
-                                mb={2}
-                                fontWeight="500"
-                              >
-                                <FormattedMessage id="node.stats.connections_in_out" />
-                              </Text>
-                              <Text fontSize="md">
-                                {connectionCount}/{nodeMaxConnections || 64}
-                              </Text>
-                              <Text
-                                fontSize="sm"
-                                color="secondaryGray.600"
-                                fontWeight="500"
-                              >
-                                <FormattedMessage id="node.stats.total_connections" />
-                              </Text>
-                            </Flex>
+                            ) : (
+                              'N/A'
+                            )
                           }
-                          reversed={true}
-                        />
-                        <MiniStatistics
-                          bgColor={statisticColor}
-                          loading={loadingNode}
-                          startContent={
-                            <IconBox
-                              w="56px"
-                              h="56px"
-                              bg={'transparent'}
-                              icon={
-                                <DatabaseIcon
-                                  w="32px"
-                                  h="32px"
-                                  color={iconColorReversed}
-                                />
-                              }
-                            />
-                          }
-                          name={
-                            <FormattedMessage id="node.stats.remaining_space" />
-                          }
-                          value={`${remainingSpace}%`}
-                          progress={true}
-                          progressPercent={remainingSpace}
-                          reversed={true}
                         />
                       </SimpleGrid>
                       <NodeStorageLowPanel storage={storage} mt="5" />
