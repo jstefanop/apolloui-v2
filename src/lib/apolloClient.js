@@ -187,6 +187,44 @@ const isAuthRefusal = (event) => event?.code === WS_FORBIDDEN;
 const MAX_AUTH_REFUSALS = 3;
 let _authRefusals = 0;
 
+// A socket can die without the client being told. The machine sleeps, the WiFi
+// drops, the path is cut: the server sees the connection go and the browser is
+// handed nothing. The page then keeps a dashboard on screen that answers clicks
+// and reports nothing — no offline screen, because as far as it knows it is
+// still connected — and only a reload brings it back.
+//
+// Measured on two devices at once: the backend logged the disconnect at
+// 09:33:11 and the next connection at 09:40:06, and in between the miner was
+// restarted four times from a UI that never said a word.
+//
+// So the connection is made to prove itself. `keepAlive` sends a ping once the
+// socket has been quiet, the server answers with a pong, and any message at all
+// re-arms the watchdog below. Silence past the limit means the socket is gone
+// whatever it claims: terminating it closes with 4499, which graphql-ws is
+// happy to retry.
+const WS_KEEPALIVE_MS = 10000;
+const WS_SILENCE_LIMIT_MS = 30000;
+// Uncapped, graphql-ws doubles the wait on every failed attempt — nine in a row
+// and the next try is eight minutes away. On a dashboard served from the same
+// LAN there is nothing to spare the backend from.
+const WS_MAX_RETRY_WAIT_MS = 10000;
+
+let _wsClient = null;
+let _silenceTimer = null;
+
+function _armSilenceWatchdog() {
+  clearTimeout(_silenceTimer);
+  _silenceTimer = setTimeout(() => {
+    _silenceTimer = null;
+    _wsClient?.terminate();
+  }, WS_SILENCE_LIMIT_MS);
+}
+
+function _disarmSilenceWatchdog() {
+  clearTimeout(_silenceTimer);
+  _silenceTimer = null;
+}
+
 function _setWsStatus(next) {
   if (next === _wsStatus) return;
   _wsStatus = next;
@@ -207,83 +245,102 @@ export function subscribeWsStatus(callback) {
 // Creates a WebSocket link that authenticates via connectionParams.
 // Called lazily (browser-only) so it never runs during SSR.
 function createWsLink() {
-  return new GraphQLWsLink(
-    createClient({
-      url: () => getBackendUrl('/api/graphql', { ws: true }),
-      // connectionParams is a function so it re-evaluates on every (re)connect,
-      // picking up the latest token automatically.
-      connectionParams: () => {
-        const token = ls.getItem('token');
-        return { authorization: token ? `Bearer ${token}` : '' };
+  _wsClient = createClient({
+    url: () => getBackendUrl('/api/graphql', { ws: true }),
+    // connectionParams is a function so it re-evaluates on every (re)connect,
+    // picking up the latest token automatically.
+    connectionParams: () => {
+      const token = ls.getItem('token');
+      return { authorization: token ? `Bearer ${token}` : '' };
+    },
+    retryAttempts: Infinity,
+    keepAlive: WS_KEEPALIVE_MS,
+    retryWait: (retries) =>
+      new Promise((resolve) =>
+        setTimeout(
+          resolve,
+          Math.min(1000 * 2 ** retries, WS_MAX_RETRY_WAIT_MS) +
+            Math.floor(Math.random() * 500)
+        )
+      ),
+    // graphql-ws retries 4403 by default, on the theory that access might be
+    // granted later. Here it will not: the same stored token goes back every
+    // time, so the retry only delays sending the user to sign in.
+    shouldRetry: (errOrCloseEvent) =>
+      !isAuthRefusal(errOrCloseEvent) || _authRefusals < MAX_AUTH_REFUSALS,
+    on: {
+      connecting: () => {
+        // Retries are in progress — don't touch the timer here.
+        // The timer must keep ticking so it eventually fires if the backend
+        // stays down through multiple retries.
       },
-      retryAttempts: Infinity,
-      // graphql-ws retries 4403 by default, on the theory that access might be
-      // granted later. Here it will not: the same stored token goes back every
-      // time, so the retry only delays sending the user to sign in.
-      shouldRetry: (errOrCloseEvent) =>
-        !isAuthRefusal(errOrCloseEvent) || _authRefusals < MAX_AUTH_REFUSALS,
-      on: {
-        connecting: () => {
-          // Retries are in progress — don't touch the timer here.
-          // The timer must keep ticking so it eventually fires if the backend
-          // stays down through multiple retries.
-        },
-        connected: () => {
-          // Connection (re)established — cancel any pending offline timer and go online.
-          _everConnected = true;
-          _authRefusals = 0;
+      // Anything arriving proves the socket is alive — a pong from our own
+      // keepAlive counts, so this works on a device with nothing to push.
+      message: () => {
+        _armSilenceWatchdog();
+      },
+      connected: () => {
+        // Connection (re)established — cancel any pending offline timer and go online.
+        _everConnected = true;
+        _authRefusals = 0;
+        _armSilenceWatchdog();
+        clearTimeout(_offlineTimer);
+        _offlineTimer = null;
+        _setWsStatus('online');
+      },
+      closed: (event) => {
+        _disarmSilenceWatchdog();
+
+        // A refused token is a different problem with a different remedy, and
+        // no amount of waiting fixes it.
+        if (isAuthRefusal(event)) {
+          _authRefusals += 1;
+          // A retry is on its way; say nothing yet, or a token that is one
+          // tick late would send the user to sign in again.
+          if (_authRefusals < MAX_AUTH_REFUSALS) return;
           clearTimeout(_offlineTimer);
           _offlineTimer = null;
-          _setWsStatus('online');
-        },
-        closed: (event) => {
-          // A refused token is a different problem with a different remedy, and
-          // no amount of waiting fixes it.
-          if (isAuthRefusal(event)) {
-            _authRefusals += 1;
-            // A retry is on its way; say nothing yet, or a token that is one
-            // tick late would send the user to sign in again.
-            if (_authRefusals < MAX_AUTH_REFUSALS) return;
-            clearTimeout(_offlineTimer);
+          _setWsStatus('unauthorized');
+          return;
+        }
+
+        // Move from 'online' → 'connecting' so the UI knows data may be stale,
+        // but don't show the full offline screen yet — wait for an 'error' event
+        // or for the grace-period timer to fire.
+        if (_wsStatus === 'online') {
+          _setWsStatus('connecting');
+        }
+
+        // Start the offline timer ONLY IF one isn't already running.
+        // Subsequent 'closed' events during retries must NOT reset the timer —
+        // otherwise the countdown never finishes while retries keep happening.
+        if (!_offlineTimer) {
+          const delay = _everConnected
+            ? WS_RECONNECT_TIMEOUT_MS
+            : WS_FIRST_CONNECT_TIMEOUT_MS;
+          _offlineTimer = setTimeout(() => {
             _offlineTimer = null;
-            _setWsStatus('unauthorized');
-            return;
-          }
-
-          // Move from 'online' → 'connecting' so the UI knows data may be stale,
-          // but don't show the full offline screen yet — wait for an 'error' event
-          // or for the grace-period timer to fire.
-          if (_wsStatus === 'online') {
-            _setWsStatus('connecting');
-          }
-
-          // Start the offline timer ONLY IF one isn't already running.
-          // Subsequent 'closed' events during retries must NOT reset the timer —
-          // otherwise the countdown never finishes while retries keep happening.
-          if (!_offlineTimer) {
-            const delay = _everConnected
-              ? WS_RECONNECT_TIMEOUT_MS
-              : WS_FIRST_CONNECT_TIMEOUT_MS;
-            _offlineTimer = setTimeout(() => {
-              _offlineTimer = null;
-              _setWsStatus('offline');
-            }, delay);
-          }
-        },
-        error: () => {
-          // Close events never reach here — graphql-ws routes them to `closed`,
-          // and this receives the raw socket error instead.
-          // The browser fires this immediately when the TCP connection is refused
-          // (e.g. backend is completely down). No need to wait for a timer — show
-          // the offline screen right away. If the next retry succeeds, 'connected'
-          // will fire and the screen will disappear automatically.
-          clearTimeout(_offlineTimer);
-          _offlineTimer = null;
-          _setWsStatus('offline');
-        },
+            _setWsStatus('offline');
+          }, delay);
+        }
       },
-    })
-  );
+      error: () => {
+        _disarmSilenceWatchdog();
+
+        // Close events never reach here — graphql-ws routes them to `closed`,
+        // and this receives the raw socket error instead.
+        // The browser fires this immediately when the TCP connection is refused
+        // (e.g. backend is completely down). No need to wait for a timer — show
+        // the offline screen right away. If the next retry succeeds, 'connected'
+        // will fire and the screen will disappear automatically.
+        clearTimeout(_offlineTimer);
+        _offlineTimer = null;
+        _setWsStatus('offline');
+      },
+    },
+  });
+
+  return new GraphQLWsLink(_wsClient);
 }
 
 function createApolloClient() {

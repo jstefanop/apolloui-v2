@@ -17,7 +17,10 @@ let wsOptions = null;
 jest.mock('graphql-ws', () => ({
   createClient: (opts) => {
     wsOptions = opts;
-    return { dispose: () => {} };
+    // The module keeps the client to terminate a frozen socket; hand the test
+    // the same object so it can watch for that.
+    wsOptions._client = { dispose: () => {}, terminate: () => {} };
+    return wsOptions._client;
   },
 }));
 
@@ -110,5 +113,69 @@ describe('WebSocket auth refusals', () => {
     wsOptions.on.closed(FORBIDDEN);
 
     expect(wsOptions.shouldRetry(GONE)).toBe(true);
+  });
+});
+
+describe('a socket that dies without saying so', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('terminates a connection that has gone silent', () => {
+    load();
+    const terminate = jest.spyOn(wsOptions._client, 'terminate');
+
+    wsOptions.on.connected();
+    jest.advanceTimersByTime(29000);
+    expect(terminate).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(2000);
+    // Nothing for 30 s on a connection that pings every 10: it is gone,
+    // whatever the browser still believes.
+    expect(terminate).toHaveBeenCalled();
+  });
+
+  it('lets a talking connection be', () => {
+    load();
+    const terminate = jest.spyOn(wsOptions._client, 'terminate');
+
+    wsOptions.on.connected();
+    for (let i = 0; i < 6; i += 1) {
+      jest.advanceTimersByTime(20000);
+      wsOptions.on.message({ type: 'next' });
+    }
+
+    expect(terminate).not.toHaveBeenCalled();
+  });
+
+  it('stops watching once the socket is known to be closed', () => {
+    load();
+    const terminate = jest.spyOn(wsOptions._client, 'terminate');
+
+    wsOptions.on.connected();
+    wsOptions.on.closed(GONE);
+    jest.advanceTimersByTime(60000);
+
+    expect(terminate).not.toHaveBeenCalled();
+  });
+
+  it('caps the wait between attempts', async () => {
+    load();
+    const waits = [];
+    jest.spyOn(global, 'setTimeout').mockImplementation((fn, ms) => {
+      waits.push(ms);
+      return 0;
+    });
+
+    wsOptions.retryWait(0);
+    wsOptions.retryWait(12);
+
+    expect(waits[0]).toBeLessThan(2000);
+    // Uncapped this would be 2^12 seconds — over an hour.
+    expect(waits[1]).toBeLessThanOrEqual(10500);
   });
 });
