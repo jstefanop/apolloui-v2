@@ -34,7 +34,26 @@
       "daily_chance": "Daily Chance",
       "pending": "Pending... Please wait.",
       "offline": "Solo service is offline.",
-      "unknown": "Solo service status unknown."
+      "unknown": "Solo service status unknown.",
+      "start": "Start solo pool",
+      "state": {
+        "starting": {
+          "title": "Starting the solo pool",
+          "description": "It takes a few seconds before the pool accepts connections."
+        },
+        "off": {
+          "title": "The solo pool is off",
+          "description": "Nothing can mine to this device until the pool is running."
+        },
+        "unknown": {
+          "title": "Solo pool status unknown",
+          "description": "The device has not reported whether the pool is running."
+        },
+        "stopping": {
+          "title": "Stopping the solo pool",
+          "description": "Anything mining to this device is about to be disconnected."
+        }
+      }
     },
     "metrics": {
       "no_data": "No data yet",
@@ -155,6 +174,12 @@
         "title": "Node drive is running out of space",
         "description": "Only {free} left on the SSD. The blockchain keeps growing (about 10 GB a month), and when the drive fills up the node stops until space is freed. Free some space, or move to a larger drive."
       }
+    },
+    "widget": {
+      "connections": "Node Connections",
+      "current_block": "Node Current Block",
+      "blockchain_size": "Blockchain Size",
+      "disk_free": "Node Disk Free"
     }
   },
   "miner": {
@@ -281,7 +306,9 @@
       "accepted_shares": "Accepted shares",
       "rejected_shares": "Rejected shares",
       "last_share": "Last share",
-      "uptime": "Uptime"
+      "uptime": "Uptime",
+      "best_share_ever": "Best share ever",
+      "best_share_session": "This session"
     },
     "info": {
       "title": "Solo Info",

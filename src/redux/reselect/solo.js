@@ -28,6 +28,9 @@ export const soloSelector = createSelector(
     const poolData = resultStats?.pool ?? null;
     const usersData = resultStats?.users ?? [];
     const blockFound = resultStats?.blockFound ?? false;
+    // The device's record, kept in the database. Unlike the pool figure beside
+    // it, it is not tied to a connected worker or to the current ckpool run.
+    const bestShareEver = resultStats?.bestShareEver ?? null;
     const timestamp = resultStats?.timestamp ?? null;
 
     // Serialize errors to ensure they are always safe to pass to React components
@@ -154,6 +157,7 @@ export const soloSelector = createSelector(
         totalAccepted,
         totalRejected,
         blockFound,
+        bestShareEver,
         timestamp,
       };
     }
@@ -171,6 +175,7 @@ export const soloSelector = createSelector(
         users: usersStats,
         summary: summaryStats,
         blockFound,
+        bestShareEver,
         timestamp,
         hasUsers,
       },

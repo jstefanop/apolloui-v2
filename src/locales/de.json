@@ -34,7 +34,26 @@
       "daily_chance": "Tägliche Chance",
       "pending": "Ausstehend... Bitte warten.",
       "offline": "Der Solo-Dienst ist offline.",
-      "unknown": "Solo-Dienststatus unbekannt."
+      "unknown": "Solo-Dienststatus unbekannt.",
+      "start": "Solo-Pool starten",
+      "state": {
+        "starting": {
+          "title": "Solo-Pool wird gestartet",
+          "description": "Es dauert einige Sekunden, bis der Pool Verbindungen annimmt."
+        },
+        "off": {
+          "title": "Der Solo-Pool ist aus",
+          "description": "Auf diesem Gerät kann niemand minen, solange der Pool nicht läuft."
+        },
+        "unknown": {
+          "title": "Status des Solo-Pools unbekannt",
+          "description": "Das Gerät hat nicht gemeldet, ob der Pool läuft."
+        },
+        "stopping": {
+          "title": "Solo-Pool wird gestoppt",
+          "description": "Alles, was auf diesem Gerät mint, wird gleich getrennt."
+        }
+      }
     },
     "metrics": {
       "no_data": "Noch keine Daten",
@@ -155,6 +174,12 @@
         "title": "Der Speicher des Nodes wird knapp",
         "description": "Nur noch {free} frei auf der SSD. Die Blockchain wächst weiter (etwa 10 GB pro Monat), und wenn das Laufwerk voll ist, stoppt der Node, bis wieder Platz frei ist. Schaffe Platz oder wechsle auf ein größeres Laufwerk."
       }
+    },
+    "widget": {
+      "connections": "Node-Verbindungen",
+      "current_block": "Aktueller Block",
+      "blockchain_size": "Blockchain-Größe",
+      "disk_free": "Freier Speicher des Nodes"
     }
   },
   "miner": {
@@ -281,7 +306,9 @@
       "accepted_shares": "Akzeptierte Shares",
       "rejected_shares": "Abgelehnte Shares",
       "last_share": "Letzter Share",
-      "uptime": "Betriebszeit"
+      "uptime": "Betriebszeit",
+      "best_share_ever": "Bester Share aller Zeiten",
+      "best_share_session": "Diese Sitzung"
     },
     "info": {
       "title": "Solo Info",

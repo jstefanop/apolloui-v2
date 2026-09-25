@@ -73,6 +73,10 @@ export const SOLO_STATS_QUERY = gql`
             }
           }
           blockFound
+          bestShareEver {
+            value
+            at
+          }
           timestamp
         }
         error {
@@ -189,6 +193,7 @@ export const initialState = {
           },
         ],
         blockFound: null,
+        bestShareEver: null,
         timestamp: null,
       },
       error: null,

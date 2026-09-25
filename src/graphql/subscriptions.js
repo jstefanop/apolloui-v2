@@ -100,6 +100,10 @@ export const SOLO_SUBSCRIPTION = gql`
           }
         }
         blockFound
+        bestShareEver {
+          value
+          at
+        }
         timestamp
       }
       error {

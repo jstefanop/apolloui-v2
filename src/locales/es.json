@@ -34,7 +34,26 @@
       "daily_chance": "Probabilidad Diaria",
       "pending": "Pendiente... Por favor espera.",
       "offline": "El servicio Solo está fuera de línea.",
-      "unknown": "Estado del servicio Solo desconocido."
+      "unknown": "Estado del servicio Solo desconocido.",
+      "start": "Iniciar el pool solo",
+      "state": {
+        "starting": {
+          "title": "Iniciando el pool solo",
+          "description": "Tarda unos segundos antes de que el pool acepte conexiones."
+        },
+        "off": {
+          "title": "El pool solo está apagado",
+          "description": "Nadie puede minar en este dispositivo mientras el pool no esté activo."
+        },
+        "unknown": {
+          "title": "Estado del pool solo desconocido",
+          "description": "El dispositivo no ha informado si el pool está activo."
+        },
+        "stopping": {
+          "title": "Deteniendo el pool solo",
+          "description": "Todo lo que esté minando en este dispositivo va a desconectarse."
+        }
+      }
     },
     "metrics": {
       "no_data": "Aún no hay datos",
@@ -155,6 +174,12 @@
         "title": "El disco del nodo se está quedando sin espacio",
         "description": "Solo quedan {free} en el SSD. La cadena de bloques sigue creciendo (unos 10 GB al mes) y, cuando el disco se llena, el nodo se detiene hasta que se libere espacio. Libera espacio o cambia a un disco más grande."
       }
+    },
+    "widget": {
+      "connections": "Conexiones del nodo",
+      "current_block": "Bloque actual",
+      "blockchain_size": "Tamaño de la blockchain",
+      "disk_free": "Espacio libre del nodo"
     }
   },
   "miner": {
@@ -281,7 +306,9 @@
       "accepted_shares": "Shares aceptadas",
       "rejected_shares": "Shares rechazadas",
       "last_share": "Última share",
-      "uptime": "Tiempo en funcionamiento"
+      "uptime": "Tiempo en funcionamiento",
+      "best_share_ever": "Mejor share de siempre",
+      "best_share_session": "Esta sesión"
     },
     "info": {
       "title": "Información de Solo",

@@ -34,7 +34,26 @@
       "daily_chance": "Probabilità Giornaliera",
       "pending": "In attesa... Attendere prego.",
       "offline": "Il servizio Solo è offline.",
-      "unknown": "Stato del servizio Solo sconosciuto."
+      "unknown": "Stato del servizio Solo sconosciuto.",
+      "start": "Avvia il pool solo",
+      "state": {
+        "starting": {
+          "title": "Avvio del pool solo",
+          "description": "Servono pochi secondi prima che il pool accetti connessioni."
+        },
+        "off": {
+          "title": "Il pool solo è spento",
+          "description": "Nessuno può minare su questo device finché il pool non è attivo."
+        },
+        "unknown": {
+          "title": "Stato del pool solo sconosciuto",
+          "description": "Il device non ha comunicato se il pool è attivo."
+        },
+        "stopping": {
+          "title": "Arresto del pool solo",
+          "description": "Tutto ciò che sta minando su questo device sta per essere disconnesso."
+        }
+      }
     },
     "metrics": {
       "no_data": "Ancora nessun dato",
@@ -155,6 +174,12 @@
         "title": "Il disco del nodo si sta riempiendo",
         "description": "Restano solo {free} sull'SSD. La blockchain continua a crescere (circa 10 GB al mese) e quando il disco si riempie il nodo si ferma finché non si libera spazio. Libera spazio, o passa a un disco più grande."
       }
+    },
+    "widget": {
+      "connections": "Connessioni del nodo",
+      "current_block": "Blocco corrente",
+      "blockchain_size": "Dimensione blockchain",
+      "disk_free": "Spazio libero del nodo"
     }
   },
   "miner": {
@@ -281,7 +306,9 @@
       "accepted_shares": "Share accettate",
       "rejected_shares": "Share rifiutate",
       "last_share": "Ultima share",
-      "uptime": "Tempo di attività"
+      "uptime": "Tempo di attività",
+      "best_share_ever": "Miglior share di sempre",
+      "best_share_session": "Questa sessione"
     },
     "info": {
       "title": "Info Solo",
