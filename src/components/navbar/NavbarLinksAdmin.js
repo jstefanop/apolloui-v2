@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { signOut } from 'next-auth/react';
 
 import { SidebarResponsive } from '../sidebar/Sidebar';
@@ -53,6 +53,7 @@ import NavbarFormatProgress from './NavbarFormatProgress';
 import useNodeStorage from '../../hooks/useNodeStorage';
 import { useSelector, shallowEqual } from 'react-redux';
 import { soloSelector } from '../../redux/reselect/solo';
+import { servicesSelector } from '../../redux/reselect/services';
 import moment from '../../lib/moment';
 import { useDeviceType } from '../../contexts/DeviceConfigContext';
 
@@ -199,21 +200,66 @@ export default function HeaderLinks({
 
   // Extract ckpool disconnected status from solo service
   const { pool: poolData } = soloData || {};
-  const ckPoolDisconnected = poolData?.lastupdate ? 
-    moment().diff(moment.unix(poolData.lastupdate), 'seconds') > 90 : 
-    true;
+  // Never having heard from ckpool is not the same as having heard from it too
+  // long ago. On a pool that has just been started there is no `lastupdate`
+  // yet — it appears when ckpool first writes its status file — and treating
+  // that absence as "disconnected" put a warning badge in the navbar on a pool
+  // that was coming up perfectly well, for as long as it took to write.
+  const ckPoolSilent = !poolData?.lastupdate;
+  const ckPoolDisconnected =
+    !ckPoolSilent &&
+    moment().diff(moment.unix(poolData.lastupdate), 'seconds') > 90;
+
+  // Silence is only patience for so long. A pool that has been online for a
+  // minute without ever writing its status file is not still coming up — the
+  // writer is gone, or logs/pool/ is unreadable — and that has to read as a
+  // fault again, not as a spinner that never ends.
+  const [ckPoolSilentTooLong, setCkPoolSilentTooLong] = useState(false);
+  useEffect(() => {
+    if (!(soloOnline === 'online' && ckPoolSilent)) {
+      setCkPoolSilentTooLong(false);
+      return undefined;
+    }
+    const timer = setTimeout(() => setCkPoolSilentTooLong(true), 60000);
+    return () => clearTimeout(timer);
+  }, [soloOnline, ckPoolSilent]);
+
+  const ckPoolComingUp = soloOnline === 'online' && ckPoolSilent && !ckPoolSilentTooLong;
 
   // Parse stats
   const { globalHashrate, avgBoardTemp } = minerStats || {};
 
   const { nodeEnableSoloMining, temperatureUnit } = settings || {};
 
+  // Whether the service statuses failed to arrive at all. `servicesSelector`
+  // nulls its data on error, so without this an error and a first load look
+  // identical from here — and "absent means pending" would leave all three
+  // badges spinning for ever over a failure nothing else in the navbar reports.
+  const { error: servicesError } = useSelector(servicesSelector, shallowEqual);
+  const servicesFailed = !!servicesError?.length;
+
+  // Not having heard yet is not an error.
+  //
+  // Service statuses arrive on their own WebSocket topic; miner and node stats
+  // arrive on theirs, every 5 and 8 seconds. So the numbers are routinely on
+  // screen before the first services push lands — and until it did, these
+  // badges read "Error" in orange next to live data. An absent status is a
+  // question, not an answer: it shows as pending until the device says
+  // otherwise. A status of 'unknown' is different — that is the backend
+  // asserting it could not tell — and keeps its warning.
   const nodeStatusLabel = nodeOnline
     ? capitalizeFirstLetter(nodeOnline)
-    : 'Error';
+    : servicesFailed
+    ? 'Error'
+    : 'Pending';
 
-  const minerStatusLabel =
-    minerOnline && !error.length ? capitalizeFirstLetter(minerOnline) : 'Error';
+  const minerStatusLabel = minerOnline
+    ? error.length
+      ? 'Error'
+      : capitalizeFirstLetter(minerOnline)
+    : servicesFailed
+    ? 'Error'
+    : 'Pending';
 
   return (
     <Flex
@@ -359,11 +405,13 @@ export default function HeaderLinks({
               align="center"
               justify="center"
               bg={
-                soloOnline === 'online' && !ckPoolDisconnected
+                soloOnline === 'online' && !ckPoolDisconnected && !ckPoolSilent
                   ? 'green.500'
                   : soloOnline === 'offline'
                   ? 'gray.400'
-                  : soloOnline === 'pending'
+                  : (!soloOnline && !servicesFailed) ||
+                    soloOnline === 'pending' ||
+                    ckPoolComingUp
                   ? 'gray.300'
                   : 'orange.500'
               }
@@ -376,11 +424,13 @@ export default function HeaderLinks({
                 h="12px"
                 color={badgeBox}
                 as={
-                  soloOnline === 'online' && !ckPoolDisconnected
+                  soloOnline === 'online' && !ckPoolDisconnected && !ckPoolSilent
                     ? CheckIcon
                     : soloOnline === 'offline'
                     ? PowerIcon
-                    : soloOnline === 'pending'
+                    : (!soloOnline && !servicesFailed) ||
+                      soloOnline === 'pending' ||
+                      ckPoolComingUp
                     ? Spinner
                     : WarningIcon
                 }
