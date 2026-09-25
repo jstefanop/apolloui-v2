@@ -176,6 +176,17 @@ const WS_RECONNECT_TIMEOUT_MS = 15000;
 const WS_FORBIDDEN = 4403;
 const isAuthRefusal = (event) => event?.code === WS_FORBIDDEN;
 
+// A refusal is only believed when it repeats. The socket is opened by the
+// layout's subscriptions, which mount before ProtectedRoutes has copied the
+// token out of the session and into storage — so the first attempt after a
+// fresh sign-in can legitimately carry no token at all. Giving up on that one
+// refusal leaves the page rendered but deaf: graphql-ws stops reconnecting for
+// good, every subscription is dead, and nothing short of a reload brings the
+// pushes back. connectionParams is re-read on each attempt, so a retry is what
+// lets a token that arrived a tick late be used.
+const MAX_AUTH_REFUSALS = 3;
+let _authRefusals = 0;
+
 function _setWsStatus(next) {
   if (next === _wsStatus) return;
   _wsStatus = next;
@@ -209,7 +220,8 @@ function createWsLink() {
       // graphql-ws retries 4403 by default, on the theory that access might be
       // granted later. Here it will not: the same stored token goes back every
       // time, so the retry only delays sending the user to sign in.
-      shouldRetry: (errOrCloseEvent) => !isAuthRefusal(errOrCloseEvent),
+      shouldRetry: (errOrCloseEvent) =>
+        !isAuthRefusal(errOrCloseEvent) || _authRefusals < MAX_AUTH_REFUSALS,
       on: {
         connecting: () => {
           // Retries are in progress — don't touch the timer here.
@@ -219,6 +231,7 @@ function createWsLink() {
         connected: () => {
           // Connection (re)established — cancel any pending offline timer and go online.
           _everConnected = true;
+          _authRefusals = 0;
           clearTimeout(_offlineTimer);
           _offlineTimer = null;
           _setWsStatus('online');
@@ -227,6 +240,10 @@ function createWsLink() {
           // A refused token is a different problem with a different remedy, and
           // no amount of waiting fixes it.
           if (isAuthRefusal(event)) {
+            _authRefusals += 1;
+            // A retry is on its way; say nothing yet, or a token that is one
+            // tick late would send the user to sign in again.
+            if (_authRefusals < MAX_AUTH_REFUSALS) return;
             clearTimeout(_offlineTimer);
             _offlineTimer = null;
             _setWsStatus('unauthorized');
