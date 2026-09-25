@@ -34,6 +34,10 @@
       "pending": "Pending... Please wait.",
       "offline": "Solo service is offline.",
       "unknown": "Solo service status unknown."
+    },
+    "metrics": {
+      "no_data": "No data yet",
+      "load_error": "Couldn't load history"
     }
   },
   "node": {

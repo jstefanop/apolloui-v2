@@ -34,6 +34,10 @@
       "pending": "Pendiente... Por favor espera.",
       "offline": "El servicio Solo está fuera de línea.",
       "unknown": "Estado del servicio Solo desconocido."
+    },
+    "metrics": {
+      "no_data": "Aún no hay datos",
+      "load_error": "No se pudo cargar el historial"
     }
   },
   "node": {

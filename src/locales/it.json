@@ -34,6 +34,10 @@
       "pending": "In attesa... Attendere prego.",
       "offline": "Il servizio Solo è offline.",
       "unknown": "Stato del servizio Solo sconosciuto."
+    },
+    "metrics": {
+      "no_data": "Ancora nessun dato",
+      "load_error": "Impossibile caricare lo storico"
     }
   },
   "node": {

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { FormattedMessage } from 'react-intl';
 import moment from '../../lib/moment';
 import { Box, Flex, Text, Icon, useColorModeValue, Skeleton } from '@chakra-ui/react';
 import AreaChart from '../charts/AreaChart';
@@ -32,6 +33,7 @@ const MiniMetricChart = React.memo(({
   icon,
   interval = 'hour',
   loading = false,
+  error = null,
   // Optional second series rendered on the same card. When provided, the
   // header shows both values stacked and the chart uses a dual y-axis
   // (independent scale + axis on the right for the secondary series).
@@ -142,8 +144,26 @@ const MiniMetricChart = React.memo(({
       </Flex>
 
       {/* Chart area */}
-      {loading || !data.length ? (
+      {/* A skeleton says "wait", and it must not be shown to someone who has
+          nothing to wait for: with the stats unavailable the data never arrives,
+          and a card pulsing forever reads as a hung page. */}
+      {loading ? (
         <Skeleton height="120px" mx={3} mb={3} borderRadius="lg" />
+      ) : !data.length ? (
+        <Flex height="120px" mx={3} mb={3} align="center" justify="center">
+          <Text fontSize="sm" color={unitColor}>
+            {/* An empty history and a failed request look identical from here —
+                one is normal on a fresh device, the other is a fault. */}
+            {error ? (
+              <FormattedMessage
+                id="overview.metrics.load_error"
+                defaultMessage="Couldn't load history"
+              />
+            ) : (
+              <FormattedMessage id="overview.metrics.no_data" defaultMessage="No data yet" />
+            )}
+          </Text>
+        </Flex>
       ) : (
         <Box mx={-1}>
           <AreaChart

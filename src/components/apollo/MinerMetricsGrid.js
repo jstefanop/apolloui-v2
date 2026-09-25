@@ -29,7 +29,7 @@ const MinerMetricsGrid = React.memo(({
 }) => {
   const config = INTERVAL_CONFIG[interval] || INTERVAL_CONFIG.hour;
 
-  const { loading, data: queryData } = useQuery(GET_ANALYTICS_QUERY, {
+  const { loading, error, data: queryData } = useQuery(GET_ANALYTICS_QUERY, {
     variables: { input: { interval } },
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first',
@@ -103,6 +103,7 @@ const MinerMetricsGrid = React.memo(({
         tooltipFormatter={hashrateTooltipFmt}
         interval={interval}
         loading={isLoading}
+        error={error}
         secondary={{
           title: 'Pool',
           valueNum: poolParts.num,
@@ -128,6 +129,7 @@ const MinerMetricsGrid = React.memo(({
         tooltipUnit="°C"
         interval={interval}
         loading={isLoading}
+        error={error}
         secondary={{
           title: 'Power',
           valueNum: powerParts.num,

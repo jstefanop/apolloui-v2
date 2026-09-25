@@ -34,6 +34,10 @@
       "pending": "Ausstehend... Bitte warten.",
       "offline": "Der Solo-Dienst ist offline.",
       "unknown": "Solo-Dienststatus unbekannt."
+    },
+    "metrics": {
+      "no_data": "Noch keine Daten",
+      "load_error": "Verlauf konnte nicht geladen werden"
     }
   },
   "node": {
