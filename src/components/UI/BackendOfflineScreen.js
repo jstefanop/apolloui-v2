@@ -14,6 +14,7 @@ import {
   Badge,
 } from '@chakra-ui/react';
 import { WarningTwoIcon, RepeatIcon, ExternalLinkIcon } from '@chakra-ui/icons';
+import { useIntl } from 'react-intl';
 import { getBackendUrl } from '../../lib/apolloClient';
 
 function getHealthUrl() {
@@ -39,6 +40,8 @@ function formatElapsed(s) {
 }
 
 export default function BackendOfflineScreen({ onRetry }) {
+  const intl = useIntl();
+  const t = (id) => intl.formatMessage({ id: `backend_offline.${id}` });
   const elapsed = useElapsed();
   const [retrying, setRetrying] = useState(false);
 
@@ -94,11 +97,10 @@ export default function BackendOfflineScreen({ onRetry }) {
             fontWeight="700"
             letterSpacing="-0.02em"
           >
-            Backend offline
+            {t('title')}
           </Heading>
           <Text color="whiteAlpha.600" fontSize="sm" lineHeight="1.6">
-            Cannot reach the Apollo API service. Check that the backend
-            is running and that your device is on the same network.
+            {t('description')}
           </Text>
         </VStack>
 
@@ -118,7 +120,7 @@ export default function BackendOfflineScreen({ onRetry }) {
           <HStack spacing={3}>
             <Spinner size="sm" color="orange.400" speed="0.9s" />
             <Text color="whiteAlpha.700" fontSize="sm">
-              Trying to reconnect…
+              {t('reconnecting')}
             </Text>
           </HStack>
           <Badge
@@ -145,21 +147,17 @@ export default function BackendOfflineScreen({ onRetry }) {
           borderColor="whiteAlpha.100"
         >
           <Text color="whiteAlpha.500" fontSize="xs" fontWeight="600" textTransform="uppercase" letterSpacing="0.08em">
-            Troubleshooting
+            {t('troubleshooting')}
           </Text>
           {[
-            {
-              text: 'Verify the Apollo API service is running',
-              link: getHealthUrl(),
-              linkLabel: '/health',
-            },
-            { text: 'Check that your device is connected to the local network' },
-            { text: 'Try rebooting your device' },
-          ].map(({ text, link, linkLabel }) => (
-            <HStack key={text} spacing={2} align="flex-start">
+            { id: 'tip_service', link: getHealthUrl(), linkLabel: '/health' },
+            { id: 'tip_network' },
+            { id: 'tip_reboot' },
+          ].map(({ id, link, linkLabel }) => (
+            <HStack key={id} spacing={2} align="flex-start">
               <Text color="whiteAlpha.400" fontSize="sm" mt="1px">•</Text>
               <Text color="whiteAlpha.600" fontSize="sm" lineHeight="1.5">
-                {text}{link && (
+                {t(id)}{link && (
                   <>
                     {' — '}
                     <Link
@@ -186,12 +184,12 @@ export default function BackendOfflineScreen({ onRetry }) {
           borderRadius="xl"
           w="full"
           isLoading={retrying}
-          loadingText="Retrying…"
+          loadingText={t('retrying')}
           onClick={handleRetry}
           _hover={{ transform: 'translateY(-1px)', shadow: 'lg' }}
           transition="all 0.15s"
         >
-          Retry now
+          {t('retry')}
         </Button>
 
         {/* Branding */}

@@ -6,7 +6,10 @@
       "description": "C'è un problema nel recupero dei dati dal server."
     },
     "hashrate": {
-      "title": "Hashrate ultime 24h"
+      "title": "Hashrate ultime 24h",
+      "chart": {
+        "title": "Metriche del miner"
+      }
     },
     "temperatures": {
       "miner": "Temperatura miner",
@@ -917,6 +920,17 @@
       "button": "Spegni"
     }
   },
+  "backend_offline": {
+    "title": "Backend offline",
+    "description": "Impossibile raggiungere il servizio Apollo API. Verifica che il backend sia in esecuzione e che il dispositivo sia sulla stessa rete.",
+    "reconnecting": "Tentativo di riconnessione…",
+    "troubleshooting": "Risoluzione dei problemi",
+    "tip_service": "Verifica che il servizio Apollo API sia in esecuzione",
+    "tip_network": "Controlla che il dispositivo sia connesso alla rete locale",
+    "tip_reboot": "Prova a riavviare il dispositivo",
+    "retry": "Riprova ora",
+    "retrying": "Nuovo tentativo…"
+  },
   "update": {
     "title": {
       "check_failed": "Impossibile verificare la disponibilità di aggiornamenti",
@@ -1057,5 +1071,12 @@
     },
     "band": "{band} GHz",
     "band.auto": "Auto"
+  },
+  "chart": {
+    "interval": {
+      "6hours": "Ultime 6 ore",
+      "24hours": "Ultime 24 ore",
+      "30days": "Ultimi 30 giorni"
+    }
   }
 }

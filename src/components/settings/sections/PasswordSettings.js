@@ -60,15 +60,18 @@ const PasswordSettings = () => {
                 placeholder={intl.formatMessage({ id: 'settings.sections.system.password.password_placeholder' })}
                 mb="24px"
                 size="lg"
-                // Keep the text and placeholder clear of the Show/Hide button.
-                pr="4.5rem"
+                // Keep the text and placeholder clear of the Show/Hide button, whose
+                // width follows the label ("Mostra", "Anzeigen"); a placeholder
+                // too long for the rest ends in an ellipsis, not mid-word.
+                pr="6.5rem"
+                textOverflow="ellipsis"
                 type={showLockPassword ? 'text' : 'password'}
                 id="password"
                 value={lockPassword}
                 onChange={(e) => setLockPassword(e.target.value)}
                 isInvalid={!!isLockpasswordError}
               />
-              <InputRightElement width="4.5rem">
+              <InputRightElement width="auto" pe="2">
                 <Button
                   h="1.75rem"
                   size="sm"
@@ -102,15 +105,18 @@ const PasswordSettings = () => {
                 placeholder={intl.formatMessage({ id: 'settings.sections.system.password.verify_password_placeholder' })}
                 mb="24px"
                 size="lg"
-                // Keep the text and placeholder clear of the Show/Hide button.
-                pr="4.5rem"
+                // Keep the text and placeholder clear of the Show/Hide button, whose
+                // width follows the label ("Mostra", "Anzeigen"); a placeholder
+                // too long for the rest ends in an ellipsis, not mid-word.
+                pr="6.5rem"
+                textOverflow="ellipsis"
                 type={showLockPassword ? 'text' : 'password'}
                 id="verifypassword"
                 value={verifyLockpassword}
                 onChange={(e) => setVerifyLockPassword(e.target.value)}
                 isInvalid={!!isLockpasswordError}
               />
-              <InputRightElement width="4.5rem">
+              <InputRightElement width="auto" pe="2">
                 <Button
                   h="1.75rem"
                   size="sm"

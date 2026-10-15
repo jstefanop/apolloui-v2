@@ -6,7 +6,10 @@
       "description": "Es gibt ein Problem beim Abrufen von Daten vom Server."
     },
     "hashrate": {
-      "title": "Hashrate der letzten 24 Stunden"
+      "title": "Hashrate der letzten 24 Stunden",
+      "chart": {
+        "title": "Miner-Metriken"
+      }
     },
     "temperatures": {
       "miner": "Miner-Temperatur",
@@ -917,6 +920,17 @@
       "button": "Herunterfahren"
     }
   },
+  "backend_offline": {
+    "title": "Backend offline",
+    "description": "Der Apollo-API-Dienst ist nicht erreichbar. Prüfe, ob das Backend läuft und dein Gerät im selben Netzwerk ist.",
+    "reconnecting": "Verbindung wird wiederhergestellt…",
+    "troubleshooting": "Fehlerbehebung",
+    "tip_service": "Prüfe, ob der Apollo-API-Dienst läuft",
+    "tip_network": "Prüfe, ob dein Gerät mit dem lokalen Netzwerk verbunden ist",
+    "tip_reboot": "Versuche, dein Gerät neu zu starten",
+    "retry": "Jetzt erneut versuchen",
+    "retrying": "Erneuter Versuch…"
+  },
   "update": {
     "title": {
       "check_failed": "Updates konnten nicht geprüft werden",
@@ -1057,5 +1071,12 @@
     },
     "band": "{band} GHz",
     "band.auto": "Auto"
+  },
+  "chart": {
+    "interval": {
+      "6hours": "Letzte 6 Stunden",
+      "24hours": "Letzte 24 Stunden",
+      "30days": "Letzte 30 Tage"
+    }
   }
 }

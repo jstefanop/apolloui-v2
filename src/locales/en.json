@@ -6,7 +6,10 @@
       "description": "There is a problem getting data from the server."
     },
     "hashrate": {
-      "title": "Last 24h Hashrate"
+      "title": "Last 24h Hashrate",
+      "chart": {
+        "title": "Miner Metrics"
+      }
     },
     "temperatures": {
       "miner": "Miner temperature",
@@ -917,6 +920,17 @@
       "button": "Shutdown"
     }
   },
+  "backend_offline": {
+    "title": "Backend offline",
+    "description": "Cannot reach the Apollo API service. Check that the backend is running and that your device is on the same network.",
+    "reconnecting": "Trying to reconnect…",
+    "troubleshooting": "Troubleshooting",
+    "tip_service": "Verify the Apollo API service is running",
+    "tip_network": "Check that your device is connected to the local network",
+    "tip_reboot": "Try rebooting your device",
+    "retry": "Retry now",
+    "retrying": "Retrying…"
+  },
   "update": {
     "title": {
       "check_failed": "Unable to check for updates",
@@ -1057,5 +1071,12 @@
     },
     "band": "{band} GHz",
     "band.auto": "Auto"
+  },
+  "chart": {
+    "interval": {
+      "6hours": "Last 6 hours",
+      "24hours": "Last 24 hours",
+      "30days": "Last 30 days"
+    }
   }
 }
