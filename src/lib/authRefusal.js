@@ -15,9 +15,11 @@
 // No token at all, before and after, means there is nothing to end (this is the
 // sign-in page, or a signed-out one).
 
+// By code only. The backend's @auth directive always sets it, and a message match
+// would also catch any error that merely mentions "authenticated" — and sign the
+// user out for it.
 export const isUnauthenticated = (error) =>
-  error?.extensions?.code === 'UNAUTHENTICATED' ||
-  /authenticated/.test(error?.message || '');
+  error?.extensions?.code === 'UNAUTHENTICATED';
 
 export const createAuthRefusalHandler = ({
   getToken,

@@ -19,11 +19,15 @@ export const reportLinkErrors = (
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, extensions }) => {
       console.log(`[GraphQL error]: Message: ${message}, Operation: ${name}`);
-      if (isUnauthenticated({ message, extensions })) {
+      if (isUnauthenticated({ extensions })) {
         onUnauthenticated?.(operation);
         return;
       }
-      if (message) dispatch(sendFeedback({ message, type: 'error' }));
+      // A caller that shows the failure itself (an inline form alert) opts out of
+      // the toast with `context: { silentErrors: true }`: the same text twice,
+      // one above the other, is noise.
+      if (message && !operation?.getContext?.().silentErrors)
+        dispatch(sendFeedback({ message, type: 'error' }));
     });
   if (networkError) {
     if (networkError.message === 'Timeout exceeded') {

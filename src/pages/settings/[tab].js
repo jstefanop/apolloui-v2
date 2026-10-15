@@ -69,6 +69,10 @@ import { applyTimezone } from '../../lib/applyTimezone';
 import { callFailure, runSteps } from '../../lib/callFailure';
 import { isUnauthenticated } from '../../lib/authRefusal';
 
+// These writes report their failure themselves (the form's inline alert, or the
+// restore's own message): the global toast for the same error would repeat it.
+const SILENT = { silentErrors: true };
+
 const SettingsTab = () => {
   const intl = useIntl();
   const deviceType = useDeviceType();
@@ -430,8 +434,8 @@ const SettingsTab = () => {
       // A failed write stops the restore: reporting "Restore done" over a
       // configuration that was only half written is worse than an error.
       const written = await runSteps([
-        { name: 'settings', run: () => saveSettings({ variables: { input: settings } }) },
-        { name: 'pools', run: () => savePools({ variables: { input: { pools } } }) },
+        { name: 'settings', run: () => saveSettings({ variables: { input: settings }, context: SILENT }) },
+        { name: 'pools', run: () => savePools({ variables: { input: { pools } }, context: SILENT }) },
       ]);
       if (!written.ok) throw new Error(written.message);
 
@@ -632,8 +636,8 @@ const SettingsTab = () => {
       // The backend refuses some passwords (line breaks, NUL): say so instead of
       // letting the bar clear as if the change had been applied.
       const saved = await runSteps([
-        { name: 'settings', run: () => saveSettings({ variables: { input } }) },
-        { name: 'pools', run: () => savePools({ variables: { input: { pools: poolsInput } } }) },
+        { name: 'settings', run: () => saveSettings({ variables: { input }, context: SILENT }) },
+        { name: 'pools', run: () => savePools({ variables: { input: { pools: poolsInput } }, context: SILENT }) },
         ...(changePassword
           ? [
               {
@@ -641,6 +645,7 @@ const SettingsTab = () => {
                 run: () =>
                   changeLockPassword({
                     variables: { input: { password: settings.lockPassword } },
+                    context: SILENT,
                   }),
               },
             ]
@@ -772,7 +777,8 @@ const SettingsTab = () => {
     // A refused token is settled elsewhere (the session is ended, or the read is
     // retried once the stored token catches up): show that something is under
     // way, not the raw error.
-    if (isUnauthenticated((errorQuerySettings || errorQueryPools).graphQLErrors?.[0] || errorQuerySettings || errorQueryPools)) {
+    const queryError = errorQuerySettings || errorQueryPools;
+    if (queryError.graphQLErrors?.some(isUnauthenticated)) {
       return (
         <Flex justify="center" py="40px">
           <Spinner />

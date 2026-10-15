@@ -16,10 +16,13 @@ beforeEach(() => jest.useFakeTimers());
 afterEach(() => jest.useRealTimers());
 
 describe('isUnauthenticated', () => {
-  it('knows the backend error by code or by message', () => {
+  it('goes by the code the @auth directive sets, and by nothing else', () => {
     expect(isUnauthenticated({ extensions: { code: 'UNAUTHENTICATED' } })).toBe(true);
-    expect(isUnauthenticated({ message: 'You must be authenticated to access this resource' })).toBe(true);
+    // The same words without the code are not a refused token.
+    expect(isUnauthenticated({ message: 'You must be authenticated to access this resource' })).toBe(false);
+    expect(isUnauthenticated({ message: 'Wifi profile not authenticated', extensions: { code: 'BAD_USER_INPUT' } })).toBe(false);
     expect(isUnauthenticated({ message: 'Duplicate input name' })).toBe(false);
+    expect(isUnauthenticated(undefined)).toBe(false);
   });
 });
 

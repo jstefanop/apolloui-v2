@@ -11,7 +11,7 @@ const ProtectedRoute = ({ router, children }) => {
   const [prevStatus, setPrevStatus] = useState(null); // Keep track of previous status
   const [poolCheckDone, setPoolCheckDone] = useState(false);
 
-  const [getStatus, { data: setup }] = useLazyQuery(AUTH_STATUS_QUERY, {
+  const [getStatus, { data: setup, error: setupError }] = useLazyQuery(AUTH_STATUS_QUERY, {
     fetchPolicy: 'no-cache',
   });
 
@@ -23,6 +23,16 @@ const ProtectedRoute = ({ router, children }) => {
     if (!router.isReady) return;
     getStatus();
   }, [router.pathname, getStatus, router.isReady]);
+
+  // The status query is what every redirect below waits for. When it fails and
+  // there is no session, nothing would ever move: Default renders nothing for a
+  // signed-out user, and the page stayed blank with no way out. Signed out is
+  // the one thing known without it.
+  useEffect(() => {
+    if (!router.isReady || setup || !setupError || status !== 'unauthenticated') return;
+    if (router.pathname === '/signin' || router.pathname === '/setup') return;
+    router.push('/signin');
+  }, [setup, setupError, status, router]);
 
   // Check for pool configuration when authenticated
   useEffect(() => {

@@ -17,7 +17,10 @@ it('speaks the chosen language, not English', () => {
     </ChakraProvider>
   );
   expect(screen.getByText('Riprova ora')).toBeInTheDocument();
-  expect(screen.getByText('Tentativo di riconnessione…')).toBeInTheDocument();
+  // Shown once, and once more as the spinner's accessible label.
+  expect(screen.getAllByText('Tentativo di riconnessione…')).toHaveLength(2);
   expect(screen.getByText('Risoluzione dei problemi')).toBeInTheDocument();
   expect(screen.queryByText('Retry now')).not.toBeInTheDocument();
+  // The spinner's own accessible label, which Chakra defaults to English.
+  expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
 });

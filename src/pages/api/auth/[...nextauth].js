@@ -59,12 +59,12 @@ export const authOptions = {
           const { result, error } = authData?.data?.data?.Auth?.login;
 
           if (error) {
-            console.log('Authentication error:', error);
+            console.log('Authentication refused:', error.message);
             return null;
           }
 
           if (!result || !result.accessToken) {
-            console.log('No access token received');
+            console.log('Authentication failed: empty login response');
             return null;
           }
 
@@ -75,7 +75,8 @@ export const authOptions = {
           // other kind of properties excluding email, name, image
           return { name: accessToken };
         } catch (err) {
-          console.log('Authentication exception:', err?.response?.data);
+          // The message only: the response and the request carry the credentials.
+          console.log('Authentication exception:', err?.message);
           return null;
         }
       },
@@ -83,14 +84,12 @@ export const authOptions = {
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      console.log('signIn callback called with:', { user, account, profile, email, credentials });
       if (!user) {
         return false;
       }
       return true;
     },
     async redirect({ url, baseUrl }) {
-      console.log('redirect callback called with:', { url, baseUrl });
       // If the URL is the signin page and we have a valid session, redirect to the main page
       if (url.includes('/signin')) {
         return baseUrl;
@@ -98,18 +97,15 @@ export const authOptions = {
       return url.startsWith(baseUrl) ? url : baseUrl;
     },
     async session({ session, token, user }) {
-      console.log('session callback called with:', { session, token, user });
       return session;
     },
     async jwt({ token, user, account, profile }) {
-      console.log('jwt callback called with:', { token, user, account, profile });
       if (user) {
         token.accessToken = user.name;
       }
       return token;
     },
   },
-  debug: true, // Enable debug mode to see more detailed error messages
 };
 
 export default NextAuth(authOptions);

@@ -118,7 +118,7 @@ export default function BackendOfflineScreen({ onRetry }) {
           borderColor="whiteAlpha.100"
         >
           <HStack spacing={3}>
-            <Spinner size="sm" color="orange.400" speed="0.9s" />
+            <Spinner size="sm" color="orange.400" speed="0.9s" label={t('reconnecting')} />
             <Text color="whiteAlpha.700" fontSize="sm">
               {t('reconnecting')}
             </Text>

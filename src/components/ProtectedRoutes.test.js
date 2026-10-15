@@ -16,9 +16,9 @@ jest.mock('@apollo/client', () => ({
 const setupData = (status) => ({ Auth: { status: { result: { status } } } });
 const poolsWithValid = { Pool: { list: { result: { pools: [{ url: 'stratum+tcp://p:1', username: 'w' }] } } } };
 
-const mockLazy = ({ setup, pools }) => {
+const mockLazy = ({ setup, pools, setupError }) => {
   useLazyQuery.mockImplementation((query) => {
-    if (query === AUTH_STATUS_QUERY) return [jest.fn(), { data: setup }];
+    if (query === AUTH_STATUS_QUERY) return [jest.fn(), { data: setup, error: setupError }];
     if (query === GET_POOLS_QUERY) return [jest.fn(), { data: pools }];
     return [jest.fn(), {}];
   });
@@ -65,5 +65,22 @@ describe('ProtectedRoute redirects', () => {
     renderGuard(router);
     await new Promise((r) => setTimeout(r, 50));
     expect(router.push).not.toHaveBeenCalledWith(expect.stringContaining('/settings'));
+  });
+
+  it('sends a signed-out user to /signin when the status query itself failed', async () => {
+    useSession.mockReturnValue({ status: 'unauthenticated', data: null });
+    mockLazy({ setup: undefined, setupError: new Error('boom'), pools: undefined });
+    const router = makeRouter({ pathname: '/overview' });
+    renderGuard(router);
+    await waitFor(() => expect(router.push).toHaveBeenCalledWith('/signin'));
+  });
+
+  it('does not loop on /signin when the status query failed', async () => {
+    useSession.mockReturnValue({ status: 'unauthenticated', data: null });
+    mockLazy({ setup: undefined, setupError: new Error('boom'), pools: undefined });
+    const router = makeRouter({ pathname: '/signin' });
+    renderGuard(router);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(router.push).not.toHaveBeenCalled();
   });
 });
