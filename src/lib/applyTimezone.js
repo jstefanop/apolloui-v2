@@ -13,6 +13,8 @@
 // Only what comes back from here can move it — without that, the bar stays lit
 // on a change that was already applied, until the page is reloaded.
 
+import { callFailure } from './callFailure';
+
 export const applyTimezone = async ({ wanted, current, setTimezone, refetch }) => {
   const feedback = [];
 
@@ -20,10 +22,12 @@ export const applyTimezone = async ({ wanted, current, setTimezone, refetch }) =
 
   try {
     const result = await setTimezone({ variables: { input: { timezone: wanted } } });
-    const error = result?.data?.Mcu?.setTimezone?.error;
+    // The mutation does not reject on a GraphQL error (errorPolicy 'all'): the
+    // refusal is in `errors`, and a payload `error` is the device's own.
+    const failure = callFailure(result);
 
-    if (error) {
-      feedback.push({ message: error.message, type: 'error' });
+    if (failure) {
+      feedback.push({ message: failure, type: 'error' });
       return { feedback, applied: null };
     }
 

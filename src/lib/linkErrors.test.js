@@ -63,4 +63,15 @@ describe('apollo error link reporting', () => {
     await act(async () => new Promise((r) => setTimeout(r, 100)));
     expect(store.getState().feedback.seq).toBe(0);
   });
+
+  it('hands an unauthenticated error to the session handler with its operation', () => {
+    const onUnauthenticated = jest.fn();
+    const operation = { operationName: 'GetPools' };
+    reportLinkErrors(
+      { operation, graphQLErrors: [{ message: 'You must be authenticated', extensions: { code: 'UNAUTHENTICATED' } }] },
+      jest.fn(),
+      onUnauthenticated
+    );
+    expect(onUnauthenticated).toHaveBeenCalledWith(operation);
+  });
 });

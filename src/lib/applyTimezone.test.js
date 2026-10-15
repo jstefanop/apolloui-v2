@@ -106,3 +106,14 @@ describe('applyTimezone', () => {
     expect(applied).toBe('Europe/Rome');
   });
 });
+
+describe('applyTimezone with a GraphQL error', () => {
+  it('reports the failure and applies nothing', async () => {
+    const setTimezone = jest.fn().mockResolvedValue({ data: null, errors: [{ message: 'Unknown zone' }] });
+    const refetch = jest.fn();
+    const out = await applyTimezone({ wanted: 'Mars/Base', current: 'Europe/Rome', setTimezone, refetch });
+    expect(out.applied).toBeNull();
+    expect(out.feedback).toEqual([{ message: 'Unknown zone', type: 'error' }]);
+    expect(refetch).not.toHaveBeenCalled();
+  });
+});

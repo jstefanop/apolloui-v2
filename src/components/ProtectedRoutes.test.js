@@ -56,4 +56,14 @@ describe('ProtectedRoute redirects', () => {
     renderGuard(router);
     await waitFor(() => expect(router.push).toHaveBeenCalledWith('/signin'));
   });
+
+  it('does not send a signed-in user to the pools page when the pools read failed', async () => {
+    useSession.mockReturnValue({ status: 'authenticated', data: { user: { name: 'token' } } });
+    // A refused read comes back as partial data with the list nulled out.
+    mockLazy({ setup: setupData('done'), pools: { Pool: null } });
+    const router = makeRouter({ pathname: '/overview' });
+    renderGuard(router);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(router.push).not.toHaveBeenCalledWith(expect.stringContaining('/settings'));
+  });
 });

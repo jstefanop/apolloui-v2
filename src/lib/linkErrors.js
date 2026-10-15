@@ -1,4 +1,5 @@
 import { sendFeedback } from '../redux/slices/feedbackSlice';
+import { isUnauthenticated } from './authRefusal';
 
 // What the user is told about a failed operation.
 //
@@ -7,15 +8,21 @@ import { sendFeedback } from '../redux/slices/feedbackSlice';
 // failures (offline, timeout) are not toasted: BackendOfflineScreen already owns
 // that state, and a toast per polled operation would bury it. They are still
 // logged. An unauthenticated error is not toasted either: an expired token is
-// handled by the session flow (ProtectedRoutes / the sign-out on a refused
-// socket), and a toast on top of that redirect would just flash.
-export const reportLinkErrors = ({ graphQLErrors, networkError, operation }, dispatch) => {
+// handled by the session flow (authRefusal.js, ProtectedRoutes), and a toast on
+// top of that redirect would just flash.
+export const reportLinkErrors = (
+  { graphQLErrors, networkError, operation },
+  dispatch,
+  onUnauthenticated
+) => {
   const name = operation?.operationName;
   if (graphQLErrors)
     graphQLErrors.forEach(({ message, extensions }) => {
       console.log(`[GraphQL error]: Message: ${message}, Operation: ${name}`);
-      if (extensions?.code === 'UNAUTHENTICATED') return;
-      if (message && /authenticated/.test(message)) return;
+      if (isUnauthenticated({ message, extensions })) {
+        onUnauthenticated?.(operation);
+        return;
+      }
       if (message) dispatch(sendFeedback({ message, type: 'error' }));
     });
   if (networkError) {

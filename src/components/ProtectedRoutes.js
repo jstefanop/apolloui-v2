@@ -40,6 +40,11 @@ const ProtectedRoute = ({ router, children }) => {
     if (!poolsData || poolCheckDone) return;
 
     const pools = poolsData?.Pool?.list?.result?.pools;
+
+    // A refused or failed read is not an empty list. Taking it for one sent a
+    // signed-in user with a rejected token from /overview to the pools page, to
+    // fill in a form for a configuration that was never looked at.
+    if (!Array.isArray(pools)) return;
     const hasValidPool = pools && pools.length > 0 && pools[0]?.url && pools[0]?.username;
     
     // If no valid pool and not on setup or settings page, redirect to settings

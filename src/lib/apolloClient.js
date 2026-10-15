@@ -15,7 +15,9 @@ import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from './moment';
+import { signOut } from 'next-auth/react';
 import { reportLinkErrors } from './linkErrors';
+import { createAuthRefusalHandler } from './authRefusal';
 import { store } from '../redux/store';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
@@ -84,7 +86,32 @@ const convertMomentToString = (obj) => {
   return obj;
 };
 
-const errorLink = onError((error) => reportLinkErrors(error, store.dispatch));
+// An HTTP read refused for its token ends the session the way a refused socket
+// does (see authRefusal.js for why it waits before deciding).
+const onAuthRefusal =
+  typeof window === 'undefined'
+    ? () => {}
+    : createAuthRefusalHandler({
+        getToken: () => ls.getItem('token'),
+        endSession: () => signOut({ redirect: false }),
+        clearToken: () => {
+          try {
+            localStorage.removeItem('token');
+          } catch {
+            // A browser that refuses storage still reaches the sign-in page.
+          }
+        },
+        refetch: () => apolloClient?.refetchQueries({ include: 'active' }),
+      });
+
+const tokenOf = (operation) =>
+  (operation?.getContext?.().headers?.authorization || '').replace(/^Bearer\s*/, '');
+
+const errorLink = onError((error) =>
+  reportLinkErrors(error, store.dispatch, (operation) =>
+    onAuthRefusal(tokenOf(operation))
+  )
+);
 
 const httpLink = new HttpLink({
   uri: () => getBackendUrl('/api/graphql'),
