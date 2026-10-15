@@ -15,7 +15,7 @@ import { onError } from '@apollo/client/link/error';
 import merge from 'deepmerge';
 import isEqual from 'lodash/isEqual';
 import moment from './moment';
-import { sendFeedback } from '../redux/slices/feedbackSlice';
+import { reportLinkErrors } from './linkErrors';
 import { store } from '../redux/store';
 
 export const APOLLO_STATE_PROP_NAME = '__APOLLO_STATE__';
@@ -84,26 +84,7 @@ const convertMomentToString = (obj) => {
   return obj;
 };
 
-const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
-  if (graphQLErrors)
-    graphQLErrors.forEach(({ message }) => {
-      const err = `[GraphQL error]: Message: ${message}, Operation: ${operation.operationName}`;
-      store.dispatch(sendFeedback({ message: err, type: 'error' }));
-      console.log(err);
-    });
-  if (networkError) {
-    let err;
-    if (networkError.message === 'Timeout exceeded') {
-      err = `[Timeout error]: Operation: ${operation.operationName}`;
-    } else if (networkError.message === 'Failed to fetch') {
-      err = `[Connection error]: Backend service is unavailable, Operation: ${operation.operationName}`;
-    } else {
-      err = `[Network error]: ${networkError.message}, Operation: ${operation.operationName}`;
-    }
-    store.dispatch(sendFeedback({ message: err, type: 'error' }));
-    console.log(err);
-  }
-});
+const errorLink = onError((error) => reportLinkErrors(error, store.dispatch));
 
 const httpLink = new HttpLink({
   uri: () => getBackendUrl('/api/graphql'),

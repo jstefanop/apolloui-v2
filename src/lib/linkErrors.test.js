@@ -1,0 +1,66 @@
+import { act } from 'react';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { renderWithProviders, screen } from '../test-utils';
+import GlobalFeedback from '../components/UI/GlobalFeedback';
+import feedbackReducer from '../redux/slices/feedbackSlice';
+import { reportLinkErrors } from './linkErrors';
+
+const setup = () => {
+  const store = configureStore({ reducer: { feedback: feedbackReducer } });
+  renderWithProviders(
+    <Provider store={store}>
+      <GlobalFeedback />
+    </Provider>
+  );
+  return store;
+};
+
+const report = (store, err) =>
+  act(() => reportLinkErrors({ operation: { operationName: 'Op' }, ...err }, store.dispatch));
+
+describe('apollo error link reporting', () => {
+  beforeEach(() => jest.spyOn(console, 'log').mockImplementation(() => {}));
+  afterEach(() => console.log.mockRestore());
+
+  it('does not toast a network error', async () => {
+    const store = setup();
+    report(store, { networkError: new Error('Failed to fetch') });
+    report(store, { networkError: new Error('Timeout exceeded') });
+    await act(async () => new Promise((r) => setTimeout(r, 100)));
+    expect(store.getState().feedback.seq).toBe(0);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(console.log).toHaveBeenCalledTimes(2);
+  });
+
+  it('toasts a GraphQL error with the bare server message', async () => {
+    const store = setup();
+    report(store, { graphQLErrors: [{ message: 'Duplicate input name' }] });
+    expect(await screen.findByText('Duplicate input name')).toBeVisible();
+  });
+
+  it('shows each distinct message of one response', async () => {
+    const store = setup();
+    report(store, { graphQLErrors: [{ message: 'First problem' }, { message: 'Second problem' }] });
+    expect(await screen.findByText('First problem')).toBeVisible();
+    expect(await screen.findByText('Second problem')).toBeVisible();
+  });
+
+  it('shows one toast when two operations fail with the same message', async () => {
+    const store = setup();
+    report(store, { graphQLErrors: [{ message: 'Same failure' }] });
+    report(store, { graphQLErrors: [{ message: 'Same failure' }], operation: { operationName: 'Other' } });
+    expect(await screen.findAllByText('Same failure')).toHaveLength(1);
+  });
+
+  it('leaves unauthenticated errors to the session flow', async () => {
+    const store = setup();
+    report(store, {
+      graphQLErrors: [
+        { message: 'You must be authenticated to access this resource', extensions: { code: 'UNAUTHENTICATED' } },
+      ],
+    });
+    await act(async () => new Promise((r) => setTimeout(r, 100)));
+    expect(store.getState().feedback.seq).toBe(0);
+  });
+});
