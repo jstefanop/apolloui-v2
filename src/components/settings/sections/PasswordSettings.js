@@ -60,6 +60,8 @@ const PasswordSettings = () => {
                 placeholder={intl.formatMessage({ id: 'settings.sections.system.password.password_placeholder' })}
                 mb="24px"
                 size="lg"
+                // Keep the text and placeholder clear of the Show/Hide button.
+                pr="4.5rem"
                 type={showLockPassword ? 'text' : 'password'}
                 id="password"
                 value={lockPassword}
@@ -100,6 +102,8 @@ const PasswordSettings = () => {
                 placeholder={intl.formatMessage({ id: 'settings.sections.system.password.verify_password_placeholder' })}
                 mb="24px"
                 size="lg"
+                // Keep the text and placeholder clear of the Show/Hide button.
+                pr="4.5rem"
                 type={showLockPassword ? 'text' : 'password'}
                 id="verifypassword"
                 value={verifyLockpassword}

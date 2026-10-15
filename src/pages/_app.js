@@ -17,6 +17,7 @@ import wrapper from '../redux/store';
 import AuthLayout from '../components/layouts/Auth';
 import DefaultLayout from '../components/layouts/Default';
 import DocumentTitle from '../components/UI/DocumentTitle';
+import GlobalFeedback from '../components/UI/GlobalFeedback';
 import ProtectedRoutes from '../components/ProtectedRoutes';
 import illustration from '../assets/img/networking_banner.png';
 import { flattenMessages } from '../lib/utils';
@@ -90,6 +91,7 @@ function App({ Component, pageProps: { session, ...pageProps }, ...rest }) {
               }}
             >
               <DocumentTitle />
+              <GlobalFeedback />
               <DeviceConfigProvider>
                 <ProtectedRoutes router={router}>
                   <AnimatePresence mode='wait' initial={false}>
