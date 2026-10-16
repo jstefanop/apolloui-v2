@@ -121,5 +121,40 @@ describe('ProtectedRoute redirects', () => {
       renderGuard(router);
       await waitFor(() => expect(router.push).toHaveBeenCalledWith('/setup'));
     });
+
+    it('goes to /setup when the status that first failed later answers pending, without a reload', async () => {
+      useSession.mockReturnValue({ status: 'authenticated', data: { user: { name: 'token' } } });
+      mockLazy({ setup: unknown, pools: poolsWithValid });
+      const router = makeRouter({ pathname: '/overview' });
+      const view = renderGuard(router);
+      await new Promise((r) => setTimeout(r, 30));
+      expect(router.push).not.toHaveBeenCalled();
+
+      mockLazy({ setup: setupData('pending'), pools: poolsWithValid });
+      view.rerender(
+        <ProtectedRoute router={router}>
+          <div>child</div>
+        </ProtectedRoute>
+      );
+      await waitFor(() => expect(router.push).toHaveBeenCalledWith('/setup'));
+    });
+
+    it('evaluates each (session, setup) pair once: re-renders with the same answer do not redirect again', async () => {
+      useSession.mockReturnValue({ status: 'unauthenticated', data: null });
+      mockLazy({ setup: setupData('done'), pools: poolsWithValid });
+      const router = makeRouter({ pathname: '/overview' });
+      const view = renderGuard(router);
+      await waitFor(() => expect(router.push).toHaveBeenCalledWith('/signin'));
+      for (let i = 0; i < 3; i += 1) {
+        mockLazy({ setup: setupData('done'), pools: poolsWithValid });
+        view.rerender(
+          <ProtectedRoute router={{ ...router }}>
+            <div>child</div>
+          </ProtectedRoute>
+        );
+      }
+      await new Promise((r) => setTimeout(r, 30));
+      expect(router.push).toHaveBeenCalledTimes(1);
+    });
   });
 });

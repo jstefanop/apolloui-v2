@@ -82,8 +82,13 @@ const ProtectedRoute = ({ router, children }) => {
     // Set Graphql token to localstorage
     if (data?.user?.name) localStorage.setItem('token', data.user.name);
 
-    // Check if status has changed to prevent infinite loop
-    if (status !== prevStatus) {
+    // What the redirects below depend on: the session AND what the device says
+    // about setup. Keyed on the session alone, a status that failed first and
+    // answered `pending` on the next try was never looked at again until a reload.
+    // Same key, no redirect, so the loop guarantee stays: one evaluation per
+    // (session, setup) pair.
+    const evaluated = `${status}|${setupDone ?? 'unknown'}`;
+    if (evaluated !== prevStatus) {
       // Redirect unsetup users - this should be checked FIRST. Only on the
       // device's own word: a status payload with an error and no result says
       // nothing about setup, and reading "no answer" as "not done" sent an
@@ -112,7 +117,7 @@ const ProtectedRoute = ({ router, children }) => {
         router.push('/overview');
       }
 
-      setPrevStatus(status); // Update prevStatus
+      setPrevStatus(evaluated);
     }
   }, [status, data, setup, router, prevStatus]);
 

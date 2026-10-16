@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback, useContext } from 'react';
-import { ReactReduxContext } from 'react-redux';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useToast, useColorModeValue, Box, Flex, Text, IconButton } from '@chakra-ui/react';
 import { MdOfflineBolt, MdPending, MdCheckCircle, MdClose } from 'react-icons/md';
 import { useIntl } from 'react-intl';
@@ -8,8 +7,6 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
   const intl = useIntl();
   const [lastStatus, setLastStatus] = useState(null);
   const toast = useToast();
-  // Not useStore: the tests of the status components render without a Provider.
-  const reduxContext = useContext(ReactReduxContext);
   const lastLocale = useRef(intl.locale);
   const activeToastIds = useRef(new Set());
   const toastRef = useRef(null);
@@ -164,15 +161,6 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
       return;
     }
 
-    // A restart the settings page just reported as failed leaves the service in a
-    // pending transition on the backend, and announcing "The miner is starting"
-    // right under the error that says it is not contradicts it. The failure
-    // feedback carries a tag for as long as it is current (it is cleared with the
-    // message), so the transition is simply not announced meanwhile.
-    if (reduxContext?.store?.getState().feedback?.tag === 'restart-failed') {
-      return setLastStatus(status);
-    }
-
     const toastPosition = 'top-center';
 
     // Define dynamic labels based on type
@@ -268,7 +256,7 @@ const StatusTransitionFeedback = ({ serviceStatus, type }) => {
 
     // Update the last status to prevent duplicate notifications
     setLastStatus(status);
-  }, [serviceStatus, type, toast, lastStatus, intl, toastBg, toastBorderColor, toastTextColor, renderToast, reduxContext]);
+  }, [serviceStatus, type, toast, lastStatus, intl, toastBg, toastBorderColor, toastTextColor, renderToast]);
 
   return null; // This component does not render anything
 };

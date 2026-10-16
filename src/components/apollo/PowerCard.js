@@ -27,6 +27,11 @@ const PowerCard = ({
 
   const { status } = serviceStatus?.miner || {};
 
+  // A word ("Offline", "Pending") at the size of a figure does not fit a
+  // three-column card at 1280 px and was cut to "Offli…": scale it to the card.
+  const showsWord = !(status === 'online' && data != null);
+  const wordFontSize = 'clamp(1.75rem, 20cqi, 3.5rem)';
+
   const tileCardIcon = (() => {
     if (status === 'offline') return MdOfflineBolt;
     if (status === 'pending') return Spinner;
@@ -63,6 +68,7 @@ const PowerCard = ({
       secondaryTextColor={powerSecondaryColor}
       secondaryText={<FormattedMessage id="miner.power.watts_per_th" />}
       mainData={mainDataContent}
+      mainFontSize={showsWord ? wordFontSize : undefined}
       secondaryData={
         status === 'online' && avgData != null ? (
           <CountUp

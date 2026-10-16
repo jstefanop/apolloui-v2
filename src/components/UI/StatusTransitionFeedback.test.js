@@ -33,14 +33,28 @@ describe('StatusTransitionFeedback', () => {
     expect(await screen.findByText('Starting miner')).toBeInTheDocument();
   });
 
-  it('does not announce one right after a restart was reported as failed', async () => {
+  it('says nothing when a refused restart left the service where it was', async () => {
+    // The backend puts the row back and publishes that, never a pending state.
     const store = configureStore({ reducer: { feedback: feedbackReducer } });
     const { view, ui } = mount(store);
     act(() => {
-      store.dispatch(sendFeedback({ message: 'Restart refused', type: 'error', tag: 'restart-failed' }));
+      store.dispatch(sendFeedback({ message: 'Restart refused', type: 'error' }));
     });
-    await transition(view, ui);
+    await act(async () => {
+      view.rerender(ui({ miner: { status: 'online', requested_status: 'online', requestedStatus: 'online' } }));
+    });
     await act(async () => new Promise((r) => setTimeout(r, 100)));
     expect(screen.queryByText('Starting miner')).not.toBeInTheDocument();
+  });
+
+  it('still announces an unrelated service that really starts, after an error', async () => {
+    // An error toast must not swallow a genuine transition (it used to, for ten seconds).
+    const store = configureStore({ reducer: { feedback: feedbackReducer } });
+    const { view, ui } = mount(store);
+    act(() => {
+      store.dispatch(sendFeedback({ message: 'Something else failed', type: 'error' }));
+    });
+    await transition(view, ui);
+    expect(await screen.findByText('Starting miner')).toBeInTheDocument();
   });
 });
