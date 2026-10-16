@@ -921,7 +921,7 @@
     }
   },
   "backend_offline": {
-    "title": "Backend offline",
+    "title": "Backend nicht erreichbar",
     "description": "Der Apollo-API-Dienst ist nicht erreichbar. Prüfe, ob das Backend läuft und dein Gerät im selben Netzwerk ist.",
     "reconnecting": "Verbindung wird wiederhergestellt…",
     "troubleshooting": "Fehlerbehebung",

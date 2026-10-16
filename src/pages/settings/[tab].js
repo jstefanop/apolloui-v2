@@ -716,7 +716,9 @@ const SettingsTab = () => {
       const restarting = async (run, message) => {
         const failure = callFailure(await run());
         if (failure) {
-          dispatch(sendFeedback({ message: failure, type: 'error' }));
+          // Tagged so the service-status toasts do not announce the transition
+          // the backend may have begun before refusing.
+          dispatch(sendFeedback({ message: failure, type: 'error', tag: 'restart-failed' }));
           return false;
         }
         dispatch(sendFeedback({ message, type: 'info' }));
@@ -725,7 +727,8 @@ const SettingsTab = () => {
       const restartingNode = async () => {
         if (!(await restarting(() => stopNode(), 'Restarting Bitcoin node...'))) return;
         const failure = callFailure(await startNode());
-        if (failure) dispatch(sendFeedback({ message: failure, type: 'error' }));
+        if (failure)
+          dispatch(sendFeedback({ message: failure, type: 'error', tag: 'restart-failed' }));
       };
 
       if (type === 'miner') {

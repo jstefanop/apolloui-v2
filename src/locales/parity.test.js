@@ -22,6 +22,10 @@ describe.each(['it', 'de', 'es'])('%s locale', (locale) => {
     expect(keys.filter((k) => !(k in flat.en))).toEqual([]);
   });
 
+  it('translates the backend-offline title rather than copying the English', () => {
+    expect(flat[locale]['backend_offline.title']).not.toBe(flat.en['backend_offline.title']);
+  });
+
   it('has no empty text', () => {
     expect(Object.entries(flat[locale]).filter(([, v]) => v === '')).toEqual([]);
   });

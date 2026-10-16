@@ -83,4 +83,43 @@ describe('ProtectedRoute redirects', () => {
     await new Promise((r) => setTimeout(r, 50));
     expect(router.push).not.toHaveBeenCalled();
   });
+
+  describe('a status payload that carries an error and no result', () => {
+    const unknown = { Auth: { status: { result: null, error: { message: 'db busy' } } } };
+
+    it('does not send an already-configured device to /setup', async () => {
+      useSession.mockReturnValue({ status: 'authenticated', data: { user: { name: 'token' } } });
+      mockLazy({ setup: unknown, pools: poolsWithValid });
+      const router = makeRouter({ pathname: '/overview' });
+      renderGuard(router);
+      await new Promise((r) => setTimeout(r, 50));
+      expect(router.push).not.toHaveBeenCalled();
+    });
+
+    it('sends a signed-out visitor to /signin, once', async () => {
+      useSession.mockReturnValue({ status: 'unauthenticated', data: null });
+      mockLazy({ setup: unknown, pools: poolsWithValid });
+      const router = makeRouter({ pathname: '/overview' });
+      renderGuard(router);
+      await waitFor(() => expect(router.push).toHaveBeenCalledWith('/signin'));
+      expect(router.push).toHaveBeenCalledTimes(1);
+    });
+
+    it('lets a signed-in user past the sign-in page, and does not bounce them back', async () => {
+      useSession.mockReturnValue({ status: 'authenticated', data: { user: { name: 'token' } } });
+      mockLazy({ setup: unknown, pools: poolsWithValid });
+      const router = makeRouter({ pathname: '/signin' });
+      renderGuard(router);
+      await waitFor(() => expect(router.push).toHaveBeenCalledWith('/overview'));
+      expect(router.push).not.toHaveBeenCalledWith('/signin');
+    });
+
+    it('still sends a genuinely pending device to /setup', async () => {
+      useSession.mockReturnValue({ status: 'unauthenticated', data: null });
+      mockLazy({ setup: setupData('pending'), pools: poolsWithValid });
+      const router = makeRouter({ pathname: '/overview' });
+      renderGuard(router);
+      await waitFor(() => expect(router.push).toHaveBeenCalledWith('/setup'));
+    });
+  });
 });

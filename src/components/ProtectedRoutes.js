@@ -84,9 +84,22 @@ const ProtectedRoute = ({ router, children }) => {
 
     // Check if status has changed to prevent infinite loop
     if (status !== prevStatus) {
-      // Redirect unsetup users - this should be checked FIRST
-      if (setupDone !== 'done') {
+      // Redirect unsetup users - this should be checked FIRST. Only on the
+      // device's own word: a status payload with an error and no result says
+      // nothing about setup, and reading "no answer" as "not done" sent an
+      // already-configured device to the setup wizard.
+      if (setupDone === 'pending') {
         router.push('/setup');
+      }
+      // Unknown: act on what is known without it. A session that ended goes to
+      // sign-in; a live one has a token, which only exists after setup, so it
+      // leaves the sign-in page for the app. Everything else stays where it is.
+      // These conditions are disjoint by page and session, so they cannot chain
+      // into a loop, and the whole block runs once per session status.
+      else if (setupDone !== 'done') {
+        const onAuthPage = router.pathname === '/signin' || router.pathname === '/setup';
+        if (status === 'unauthenticated' && !onAuthPage) router.push('/signin');
+        else if (status === 'authenticated' && router.pathname === '/signin') router.push('/overview');
       }
       // Redirect unauthenticated users
       else if (router.pathname === '/setup' && setupDone === 'done') {

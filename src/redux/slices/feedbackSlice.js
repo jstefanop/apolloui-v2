@@ -7,6 +7,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   message: null,
   type: null,
+  // Optional label a sender can attach (see StatusTransitionFeedback).
+  tag: null,
   seq: 0,
 };
 
@@ -17,12 +19,14 @@ const feedbackSlice = createSlice({
     sendFeedback: (state, action) => {
       state.message = action.payload.message;
       state.type = action.payload.type;
+      state.tag = action.payload.tag ?? null;
       state.seq += 1;
     },
     // Clears the text but keeps seq: it must stay monotonic.
     resetFeedback: (state) => {
       state.message = null;
       state.type = null;
+      state.tag = null;
     },
   },
 });
