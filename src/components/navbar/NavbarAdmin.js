@@ -30,6 +30,7 @@ import { minerSelector } from '../../redux/reselect/miner';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { MCU_REBOOT_MUTATION, MCU_SHUTDOWN_MUTATION } from '../../graphql/mcu';
 import { sendFeedback } from '../../redux/slices/feedbackSlice';
+import { reportFailure } from '../../lib/reportFailure';
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import { servicesSelector } from '../../redux/reselect/services';
 import StatusTransitionFeedback from '../UI/StatusTransitionFeedback';
@@ -54,46 +55,36 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
   const { data: servicesStatus } = useSelector(servicesSelector, shallowEqual);
 
   // Miner actions
-  const [startMiner, { loading: loadingMinerStart, error: errorMinerStart }] =
+  const [startMiner] =
     useLazyQuery(MINER_START_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [stopMiner, { loading: loadingMinerStop, error: errorMinerStop }] =
+  const [stopMiner] =
     useLazyQuery(MINER_STOP_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [
-    restartMiner,
-    { loading: loadingMinerRestart, error: errorMinerRestart },
-  ] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
+  const [restartMiner] = useLazyQuery(MINER_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
-  // Node actions. Mutations now — onError noop so the fire-and-forget calls
-  // below cannot reject unhandled; errors still surface via the hook's error
-  // state, exactly as the lazy queries did.
-  const [startNode, { loading: loadingNodeStart, error: errorNodeStart }] =
+  // Node actions. Mutations now — onError noop so the calls below cannot reject
+  // unhandled; how each one ended is read from its result (see handleSystemAction).
+  const [startNode] =
     useMutation(NODE_START_MUTATION, { onError: () => {} });
 
-  const [stopNode, { loading: loadingNodeStop, error: errorNodeStop }] =
+  const [stopNode] =
     useMutation(NODE_STOP_MUTATION, { onError: () => {} });
 
   // Solo actions
-  const [startSolo, { loading: loadingSoloStart, error: errorSoloStart }] =
+  const [startSolo] =
     useLazyQuery(SOLO_START_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [stopSolo, { loading: loadingSoloStop, error: errorSoloStop }] =
+  const [stopSolo] =
     useLazyQuery(SOLO_STOP_QUERY, { fetchPolicy: 'no-cache' });
 
-  const [
-    restartSolo,
-    { loading: loadingSoloRestart, error: errorSoloRestart },
-  ] = useLazyQuery(SOLO_RESTART_QUERY, { fetchPolicy: 'no-cache' });
+  const [restartSolo] = useLazyQuery(SOLO_RESTART_QUERY, { fetchPolicy: 'no-cache' });
 
   // MCU actions
-  const [rebootMcu, { loading: loadingRebootMcu, error: errorRebootMcu }] =
+  const [rebootMcu] =
     useMutation(MCU_REBOOT_MUTATION, { onError: () => {} });
 
-  const [
-    shutdownMcu,
-    { loading: loadingShutdownMcu, error: errorShutdownMcu },
-  ] = useMutation(MCU_SHUTDOWN_MUTATION, { onError: () => {} });
+  const [shutdownMcu] = useMutation(MCU_SHUTDOWN_MUTATION, { onError: () => {} });
 
   useEffect(() => {
     window.addEventListener('scroll', changeNavbar);
@@ -103,85 +94,73 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     };
   }, []);
 
-  const handleSystemAction = (action) => {
+  const handleSystemAction = async (action) => {
     let title;
     let description;
-    let loadingAction;
-    let errorAction;
+    let call;
     switch (action) {
       case 'stopMiner':
-        stopMiner();
+        call = () => stopMiner();
         title = intl.formatMessage({ id: 'action.miner.stop.title', defaultMessage: 'Stopping miner' });
         description = intl.formatMessage({ id: 'action.miner.stop.description', defaultMessage: 'Your miner will be stopped in a few seconds' });
-        loadingAction = loadingMinerStop;
-        errorAction = errorMinerStop;
         break;
       case 'startMiner':
-        startMiner();
+        call = () => startMiner();
         title = intl.formatMessage({ id: 'action.miner.start.title', defaultMessage: 'Starting miner' });
         description = intl.formatMessage({ id: 'action.miner.start.description', defaultMessage: 'Your miner will be available in a moment, please hold on' });
-        loadingAction = loadingMinerStart;
-        errorAction = errorMinerStart;
         break;
       case 'restartMiner':
-        restartMiner();
+        call = () => restartMiner();
         title = intl.formatMessage({ id: 'action.miner.restart.title', defaultMessage: 'Restarting miner' });
         description = intl.formatMessage({ id: 'action.miner.restart.description', defaultMessage: 'Your miner will be available in a moment, please hold on' });
-        loadingAction = loadingMinerRestart;
-        errorAction = errorMinerRestart;
         break;
       case 'stopNode':
-        stopNode();
+        call = () => stopNode();
         title = intl.formatMessage({ id: 'action.node.stop.title', defaultMessage: 'Stopping Bitcoin node' });
         description = intl.formatMessage({ id: 'action.node.stop.description', defaultMessage: 'Your node will be stopped in a few seconds' });
-        loadingAction = loadingNodeStart;
-        errorAction = errorNodeStart;
         break;
       case 'startNode':
-        startNode();
+        call = () => startNode();
         title = intl.formatMessage({ id: 'action.node.start.title', defaultMessage: 'Starting Bitcoin node' });
         description = intl.formatMessage({ id: 'action.node.start.description', defaultMessage: 'Your node will be available in a moment, please hold on' });
-        loadingAction = loadingNodeStop;
-        errorAction = errorNodeStop;
         break;
       case 'stopSolo':
-        stopSolo();
+        call = () => stopSolo();
         title = intl.formatMessage({ id: 'action.solo.stop.title', defaultMessage: 'Stopping Solo Pool' });
         description = intl.formatMessage({ id: 'action.solo.stop.description', defaultMessage: 'Your solo pool service will be stopped in a few seconds' });
-        loadingAction = loadingSoloStop;
-        errorAction = errorSoloStop;
         break;
       case 'startSolo':
-        startSolo();
+        call = () => startSolo();
         title = intl.formatMessage({ id: 'action.solo.start.title', defaultMessage: 'Starting Solo Pool' });
         description = intl.formatMessage({ id: 'action.solo.start.description', defaultMessage: 'Your solo pool service will be available in a moment, please hold on' });
-        loadingAction = loadingSoloStart;
-        errorAction = errorSoloStart;
         break;
       case 'restartSolo':
-        restartSolo();
+        call = () => restartSolo();
         title = intl.formatMessage({ id: 'action.solo.restart.title', defaultMessage: 'Restarting Solo Pool' });
         description = intl.formatMessage({ id: 'action.solo.restart.description', defaultMessage: 'Your solo pool service will be available in a moment, please hold on' });
-        loadingAction = loadingSoloRestart;
-        errorAction = errorSoloRestart;
         break;
       case 'rebootMcu':
-        rebootMcu();
+        call = () => rebootMcu();
         title = intl.formatMessage({ id: 'action.system.reboot.title', defaultMessage: 'Rebooting system' });
         description = intl.formatMessage({ id: 'action.system.reboot.description', defaultMessage: 'Your system is rebooting, please wait at least 1 minute you should see stats again' });
-        loadingAction = loadingRebootMcu;
-        errorAction = errorRebootMcu;
         break;
       case 'shutdownMcu':
-        shutdownMcu();
+        call = () => shutdownMcu();
         title = intl.formatMessage({ id: 'action.system.shutdown.title', defaultMessage: 'Shutting down system' });
         description = intl.formatMessage({ id: 'action.system.shutdown.description', defaultMessage: 'Your system is halting, you will need to start it manually. See you.' });
-        loadingAction = loadingShutdownMcu;
-        errorAction = errorShutdownMcu;
         break;
       default:
         break;
     }
+
+    // A service action is announced once the backend has accepted it, and told
+    // as a failure if it did not: it used to announce "Stopping miner" the moment
+    // the button was pressed, whatever came back. Reboot and shutdown cannot be
+    // waited for — the connection goes down with the system — so they are
+    // announced at once, as before.
+    const waitsForAnswer = !/Mcu$/.test(action);
+    const pending = call?.();
+    if (waitsForAnswer && reportFailure(dispatch, await pending)) return;
 
     const dataAction = {
       action,
@@ -191,8 +170,8 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
 
     dispatch(
       updateMinerAction({
-        loading: loadingAction,
-        error: errorAction,
+        loading: false,
+        error: undefined,
         data: dataAction,
         status: action.match(/start/i) ? 'online' : 'offline',
         timestamp: Date.now(),
@@ -202,7 +181,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
     dispatch(
       sendFeedback({
         message: `${title} - ${description}`,
-        type: errorAction ? 'error' : 'success',
+        type: 'success',
       })
     );
   };

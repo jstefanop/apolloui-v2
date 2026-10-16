@@ -20,6 +20,7 @@ import _ from 'lodash';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { reportFailure } from '../lib/reportFailure';
 import CardSkeleton from '../components/UI/CardSkeleton';
 import { useSelector, shallowEqual } from 'react-redux';
 import Card from '../components/card/Card';
@@ -494,7 +495,7 @@ const Overview = () => {
                 _active={{ bg: soloWarn ? warnBtnHover : offBtnHover }}
                 leftIcon={<Icon as={MdPlayArrow} w="20px" h="20px" />}
                 isLoading={startingSolo}
-                onClick={() => startSolo()}
+                onClick={async () => reportFailure(dispatch, await startSolo())}
               >
                 <FormattedMessage
                   id="overview.solo.start"

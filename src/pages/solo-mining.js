@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import CardSkeleton from '../components/UI/CardSkeleton';
 import { useRef, useEffect, useState } from 'react';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { useRouter } from 'next/router';
 import { useIntl } from 'react-intl';
 import IconBox from '../components/icons/IconBox';
@@ -44,6 +44,7 @@ import { GiDiamondTrophy } from 'react-icons/gi';
 import ActiveBadge from '../components/apollo/ActiveBadge';
 import PanelGrid from '../components/UI/PanelGrid';
 import moment from '../lib/moment';
+import { reportFailure } from '../lib/reportFailure';
 import _ from 'lodash';
 import { BlocksIcon } from '../components/UI/Icons/BlocksIcon';
 import {
@@ -69,6 +70,7 @@ import { useDeviceType } from '../contexts/DeviceConfigContext';
 
 const SoloMining = () => {
   const intl = useIntl();
+  const dispatch = useDispatch();
   const router = useRouter();
   const deviceType = useDeviceType();
 
@@ -103,8 +105,8 @@ const SoloMining = () => {
     { fetchPolicy: 'no-cache' }
   );
 
-  const handleStartSolo = () => {
-    startSolo();
+  const handleStartSolo = async () => {
+    reportFailure(dispatch, await startSolo());
   };
 
   // Settings data

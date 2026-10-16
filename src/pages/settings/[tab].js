@@ -34,8 +34,7 @@ import { MINER_RESTART_QUERY } from '../../graphql/miner';
 import { MCU_TIMEZONE_QUERY, MCU_SET_TIMEZONE_MUTATION } from '../../graphql/mcu';
 import { SOLO_RESTART_QUERY } from '../../graphql/solo';
 import {
-  NODE_START_MUTATION,
-  NODE_STOP_MUTATION,
+  NODE_RESTART_MUTATION,
 } from '../../graphql/node';
 import { sendFeedback } from '../../redux/slices/feedbackSlice';
 import { SettingsProvider } from '../../components/settings/context/SettingsContext';
@@ -201,13 +200,10 @@ const SettingsTab = () => {
 
   // Mutations — onError noop so the awaited restart flow below cannot reject
   // unhandled; errors surface via the hook's error state like the lazy queries.
-  const [stopNode, { loading: loadingNodeStop }] = useMutation(
-    NODE_STOP_MUTATION,
-    { onError: () => {} }
-  );
-
-  const [startNode, { loading: loadingNodeStart }] = useMutation(
-    NODE_START_MUTATION,
+  // One restart, not a stop and then a start: a stop still queued in systemd can
+  // be replaced by the start that follows it, and the node would never restart.
+  const [restartNode, { loading: loadingNodeRestart }] = useMutation(
+    NODE_RESTART_MUTATION,
     { onError: () => {} }
   );
 
@@ -727,15 +723,8 @@ const SettingsTab = () => {
         dispatch(sendFeedback({ message, type: 'info' }));
         return true;
       };
-      const restartingNode = async () => {
-        if (!(await restarting(() => stopNode(), 'Restarting Bitcoin node...'))) return;
-        const started = await startNode();
-        const failure = callFailure(started);
-        if (failure)
-          dispatch(
-            sendFeedback({ message: failure, messageId: serviceFailureIdOf(started), type: 'error' })
-          );
-      };
+      const restartingNode = () =>
+        restarting(() => restartNode(), 'Restarting Bitcoin node...');
 
       if (type === 'miner') {
         await restarting(() => restartMiner(), 'Restarting miner...');
@@ -776,8 +765,7 @@ const SettingsTab = () => {
     loadingSavePools ||
     loadingMinerRestart ||
     loadingSoloRestart ||
-    loadingNodeStart ||
-    loadingNodeStop ||
+    loadingNodeRestart ||
     loadingSetTimezone ||
     changeLockPasswordLoading;
 

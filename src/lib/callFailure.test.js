@@ -108,3 +108,37 @@ describe('serviceFailureIdOf', () => {
     expect(serviceFailureIdOf(undefined)).toBeNull();
   });
 });
+
+describe('serviceFailureIdOf, from the payload of start/stop/restart', () => {
+  const { serviceFailureIdOf } = require('./callFailure');
+
+  // Exactly what the resolvers answer for a refused command (errorPayload.js):
+  // the code in `type`, "service.action" in `path`.
+  const payload = (domain, op, path) => ({
+    data: { [domain]: { [op]: { error: { message: 'Could not x', type: 'SERVICE_COMMAND_FAILED', path } } } },
+  });
+
+  it.each([
+    ['Node', 'start', 'node.start', 'service_error.node.start'],
+    ['Node', 'restart', 'node.restart', 'service_error.node.restart'],
+    ['Miner', 'stop', 'miner.stop', 'service_error.miner.stop'],
+    ['Solo', 'restart', 'solo.restart', 'service_error.solo.restart'],
+  ])('%s.%s -> %s', (domain, op, path, id) => {
+    expect(serviceFailureIdOf(payload(domain, op, path))).toBe(id);
+  });
+
+  it('is null for a payload error that is anything else', () => {
+    expect(serviceFailureIdOf({ data: { Node: { start: { error: { message: 'boom' } } } } })).toBeNull();
+    expect(serviceFailureIdOf(payload('Node', 'start', 'not a path'))).toBeNull();
+  });
+
+  it('every id it can produce exists in all four locales', () => {
+    const { flattenMessages } = require('./utils');
+    const locales = ['en', 'it', 'de', 'es'].map((l) => flattenMessages(require(`../locales/${l}.json`)));
+    for (const service of ['miner', 'node', 'solo']) {
+      for (const action of ['start', 'stop', 'restart']) {
+        for (const messages of locales) expect(messages[`service_error.${service}.${action}`]).toBeTruthy();
+      }
+    }
+  });
+});

@@ -62,12 +62,27 @@ export const serviceFailureId = (graphQLError) => {
     : null;
 };
 
-// Same, for a whole result of a call (see callFailure for the shapes).
+// Same, for a whole result of a call (see callFailure for the shapes): the
+// failure may be a GraphQL error carrying the extensions, or — for the start,
+// stop and restart actions, whose resolvers catch it — the payload `error`, where
+// the backend puts the code in `type` and "service.action" in `path`.
 export const serviceFailureIdOf = (result) => {
   const errors = [].concat(result?.errors || [], result?.error?.graphQLErrors || []);
   for (const e of errors) {
     const id = serviceFailureId(e);
     if (id) return id;
+  }
+  const data = result?.data;
+  if (data && typeof data === 'object') {
+    for (const domain of Object.values(data)) {
+      if (!domain || typeof domain !== 'object') continue;
+      for (const op of Object.values(domain)) {
+        const e = op && typeof op === 'object' ? op.error : null;
+        if (e?.type === 'SERVICE_COMMAND_FAILED' && /^\w+\.\w+$/.test(e.path || '')) {
+          return `service_error.${e.path}`;
+        }
+      }
+    }
   }
   return null;
 };

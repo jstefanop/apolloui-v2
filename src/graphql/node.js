@@ -66,6 +66,19 @@ export const NODE_STOP_MUTATION = gql`
   }
 `;
 
+export const NODE_RESTART_MUTATION = gql`
+  ${ERROR_FRAGMENT}
+  mutation NODE_RESTART {
+    Node {
+      restart {
+        error {
+          ...ErrorFragment
+        }
+      }
+    }
+  }
+`;
+
 export const NODE_START_MUTATION = gql`
   ${ERROR_FRAGMENT}
   mutation NODE_START {
