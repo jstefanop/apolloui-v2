@@ -88,3 +88,23 @@ it('a restore stops after a failed settings write', async () => {
   expect(out.ok).toBe(false);
   expect(savePools).not.toHaveBeenCalled();
 });
+
+describe('serviceFailureIdOf', () => {
+  const { serviceFailureIdOf } = require('./callFailure');
+  const refused = (service, action) => ({
+    data: null,
+    errors: [{ message: 'x', extensions: { code: 'SERVICE_COMMAND_FAILED', service, action } }],
+  });
+
+  it('finds the message id of a refused service command', () => {
+    expect(serviceFailureIdOf(refused('node', 'stop'))).toBe('service_error.node.stop');
+    expect(serviceFailureIdOf({ error: { graphQLErrors: refused('solo', 'start').errors } })).toBe(
+      'service_error.solo.start'
+    );
+  });
+
+  it('is null for any other failure', () => {
+    expect(serviceFailureIdOf({ data: null, errors: [{ message: 'Invalid pool' }] })).toBeNull();
+    expect(serviceFailureIdOf(undefined)).toBeNull();
+  });
+});

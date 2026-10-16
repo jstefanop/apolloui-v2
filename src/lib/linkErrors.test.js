@@ -96,4 +96,19 @@ describe('apollo error link reporting', () => {
     expect(onUnauthenticated).not.toHaveBeenCalled();
     expect(await screen.findByText('Profile not authenticated')).toBeVisible();
   });
+
+  it('turns a refused service command into the localisable message, with no shell text', async () => {
+    const store = setup();
+    report(store, {
+      graphQLErrors: [
+        {
+          message: 'Could not restart the miner',
+          extensions: { code: 'SERVICE_COMMAND_FAILED', service: 'miner', action: 'restart' },
+        },
+      ],
+    });
+    expect(await screen.findByText('Could not restart the miner.')).toBeVisible();
+    expect(store.getState().feedback.messageId).toBe('service_error.miner.restart');
+    expect(screen.queryByText(/sudo|systemctl/)).not.toBeInTheDocument();
+  });
 });

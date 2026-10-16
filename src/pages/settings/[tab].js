@@ -66,7 +66,7 @@ import usePoolProfiles from '../../hooks/usePoolProfiles';
 import { poolFieldsChanged, suggestPoolName } from '../../lib/poolOptions';
 import { savePendingPools } from '../../lib/savePendingPools';
 import { applyTimezone } from '../../lib/applyTimezone';
-import { callFailure, runSteps } from '../../lib/callFailure';
+import { callFailure, runSteps, serviceFailureIdOf } from '../../lib/callFailure';
 import { isUnauthenticated } from '../../lib/authRefusal';
 
 // These writes report their failure themselves (the form's inline alert, or the
@@ -714,11 +714,14 @@ const SettingsTab = () => {
       // such: announcing "Restarting miner..." over a call that failed told the
       // user the new settings were taking effect when they were not.
       const restarting = async (run, message) => {
-        const failure = callFailure(await run());
+        const result = await run();
+        const failure = callFailure(result);
         if (failure) {
           // The backend no longer publishes a transition it refused, so there is
           // nothing for the status toasts to announce here.
-          dispatch(sendFeedback({ message: failure, type: 'error' }));
+          dispatch(
+            sendFeedback({ message: failure, messageId: serviceFailureIdOf(result), type: 'error' })
+          );
           return false;
         }
         dispatch(sendFeedback({ message, type: 'info' }));
@@ -726,8 +729,12 @@ const SettingsTab = () => {
       };
       const restartingNode = async () => {
         if (!(await restarting(() => stopNode(), 'Restarting Bitcoin node...'))) return;
-        const failure = callFailure(await startNode());
-        if (failure) dispatch(sendFeedback({ message: failure, type: 'error' }));
+        const started = await startNode();
+        const failure = callFailure(started);
+        if (failure)
+          dispatch(
+            sendFeedback({ message: failure, messageId: serviceFailureIdOf(started), type: 'error' })
+          );
       };
 
       if (type === 'miner') {

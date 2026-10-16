@@ -1,5 +1,6 @@
 import { sendFeedback } from '../redux/slices/feedbackSlice';
 import { isUnauthenticated } from './authRefusal';
+import { serviceFailureId } from './callFailure';
 
 // What the user is told about a failed operation.
 //
@@ -27,7 +28,7 @@ export const reportLinkErrors = (
       // the toast with `context: { silentErrors: true }`: the same text twice,
       // one above the other, is noise.
       if (message && !operation?.getContext?.().silentErrors)
-        dispatch(sendFeedback({ message, type: 'error' }));
+        dispatch(sendFeedback({ message, messageId: serviceFailureId({ extensions }), type: 'error' }));
     });
   if (networkError) {
     if (networkError.message === 'Timeout exceeded') {

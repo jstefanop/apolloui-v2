@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useStore } from 'react-redux';
+import { useIntl } from 'react-intl';
 import {
   useToast,
   useColorModeValue,
@@ -35,6 +36,10 @@ const KINDS = {
 // that is already there when the component appears never toasts.
 const GlobalFeedback = () => {
   const store = useStore();
+  const intl = useIntl();
+  // The subscription below outlives renders; it reads the language through this.
+  const intlRef = useRef(intl);
+  intlRef.current = intl;
   const toast = useToast();
   const lastSeq = useRef(store.getState().feedback?.seq ?? 0);
 
@@ -48,12 +53,16 @@ const GlobalFeedback = () => {
   style.current = { bg, borderColor, textColor };
 
   useEffect(() => {
-    const show = ({ message, type }) => {
+    const show = ({ message, messageId, type }) => {
       const kind = KINDS[type] || KINDS.info;
-      const text = typeof message === 'string' ? message : String(message);
+      const text = messageId
+        ? intlRef.current.formatMessage({ id: messageId, defaultMessage: String(message ?? '') })
+        : typeof message === 'string'
+          ? message
+          : String(message);
       // Identical messages fired in a burst (or while still on screen) are one
       // toast; once dismissed or expired, the same message may toast again.
-      const id = `feedback:${type}:${text}`;
+      const id = `feedback:${type}:${messageId || text}`;
       if (toast.isActive(id)) return;
       const { Icon } = kind;
       toast({
@@ -98,7 +107,7 @@ const GlobalFeedback = () => {
       const fb = store.getState().feedback;
       if (!fb || fb.seq === lastSeq.current) return;
       lastSeq.current = fb.seq;
-      if (fb.message) show(fb);
+      if (fb.message || fb.messageId) show(fb);
     });
   }, [store, toast]);
 

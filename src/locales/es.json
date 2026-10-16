@@ -931,6 +931,23 @@
     "retry": "Reintentar ahora",
     "retrying": "Reintentando…"
   },
+  "service_error": {
+    "miner": {
+      "start": "No se pudo iniciar el minero.",
+      "stop": "No se pudo detener el minero.",
+      "restart": "No se pudo reiniciar el minero."
+    },
+    "node": {
+      "start": "No se pudo iniciar el nodo de Bitcoin.",
+      "stop": "No se pudo detener el nodo de Bitcoin.",
+      "restart": "No se pudo reiniciar el nodo de Bitcoin."
+    },
+    "solo": {
+      "start": "No se pudo iniciar el pool solo.",
+      "stop": "No se pudo detener el pool solo.",
+      "restart": "No se pudo reiniciar el pool solo."
+    }
+  },
   "update": {
     "title": {
       "check_failed": "No se pudo comprobar si hay actualizaciones",

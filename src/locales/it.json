@@ -931,6 +931,23 @@
     "retry": "Riprova ora",
     "retrying": "Nuovo tentativo…"
   },
+  "service_error": {
+    "miner": {
+      "start": "Impossibile avviare il miner.",
+      "stop": "Impossibile fermare il miner.",
+      "restart": "Impossibile riavviare il miner."
+    },
+    "node": {
+      "start": "Impossibile avviare il nodo Bitcoin.",
+      "stop": "Impossibile fermare il nodo Bitcoin.",
+      "restart": "Impossibile riavviare il nodo Bitcoin."
+    },
+    "solo": {
+      "start": "Impossibile avviare il pool solo.",
+      "stop": "Impossibile fermare il pool solo.",
+      "restart": "Impossibile riavviare il pool solo."
+    }
+  },
   "update": {
     "title": {
       "check_failed": "Impossibile verificare la disponibilità di aggiornamenti",

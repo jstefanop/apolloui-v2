@@ -7,6 +7,9 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   message: null,
   type: null,
+  // A locale key, for a message the sender cannot word itself (the server only
+  // has English): when present it is what is shown, and `message` the fallback.
+  messageId: null,
   seq: 0,
 };
 
@@ -17,12 +20,14 @@ const feedbackSlice = createSlice({
     sendFeedback: (state, action) => {
       state.message = action.payload.message;
       state.type = action.payload.type;
+      state.messageId = action.payload.messageId ?? null;
       state.seq += 1;
     },
     // Clears the text but keeps seq: it must stay monotonic.
     resetFeedback: (state) => {
       state.message = null;
       state.type = null;
+      state.messageId = null;
     },
   },
 });

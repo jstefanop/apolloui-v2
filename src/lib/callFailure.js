@@ -52,3 +52,22 @@ export const runSteps = async (steps) => {
   }
   return { ok: true };
 };
+
+// The backend refuses a start/stop/restart with a clean English message and the
+// code below; the screen shows its own localised text for the pair.
+export const serviceFailureId = (graphQLError) => {
+  const { code, service, action } = graphQLError?.extensions || {};
+  return code === 'SERVICE_COMMAND_FAILED' && service && action
+    ? `service_error.${service}.${action}`
+    : null;
+};
+
+// Same, for a whole result of a call (see callFailure for the shapes).
+export const serviceFailureIdOf = (result) => {
+  const errors = [].concat(result?.errors || [], result?.error?.graphQLErrors || []);
+  for (const e of errors) {
+    const id = serviceFailureId(e);
+    if (id) return id;
+  }
+  return null;
+};

@@ -931,6 +931,23 @@
     "retry": "Jetzt erneut versuchen",
     "retrying": "Erneuter Versuch…"
   },
+  "service_error": {
+    "miner": {
+      "start": "Miner konnte nicht gestartet werden.",
+      "stop": "Miner konnte nicht gestoppt werden.",
+      "restart": "Miner konnte nicht neu gestartet werden."
+    },
+    "node": {
+      "start": "Bitcoin-Node konnte nicht gestartet werden.",
+      "stop": "Bitcoin-Node konnte nicht gestoppt werden.",
+      "restart": "Bitcoin-Node konnte nicht neu gestartet werden."
+    },
+    "solo": {
+      "start": "Solo-Pool konnte nicht gestartet werden.",
+      "stop": "Solo-Pool konnte nicht gestoppt werden.",
+      "restart": "Solo-Pool konnte nicht neu gestartet werden."
+    }
+  },
   "update": {
     "title": {
       "check_failed": "Updates konnten nicht geprüft werden",

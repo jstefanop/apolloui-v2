@@ -101,4 +101,19 @@ describe('GlobalFeedback', () => {
     // Visible once the enter animation has run.
     await waitFor(() => expect(screen.getByText('Boom')).toBeVisible());
   });
+
+  it('shows the localised text for a message id, not the server\'s English', async () => {
+    const store = makeStore();
+    mount(store);
+    act(() => {
+      store.dispatch(
+        sendFeedback({
+          message: 'Could not restart the miner',
+          messageId: 'service_error.miner.restart',
+          type: 'error',
+        })
+      );
+    });
+    expect(await screen.findByText('Could not restart the miner.')).toBeVisible();
+  });
 });

@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react'; // Import useState hook
+import { useEffect, useRef, useState } from 'react'; // Import useState hook
 import { useSession } from 'next-auth/react';
 import { AUTH_STATUS_QUERY } from '../graphql/auth';
 import { GET_POOLS_QUERY } from '../graphql/pools';
 import { useLazyQuery } from '@apollo/client';
 import { useDeviceType } from '../contexts/DeviceConfigContext';
+
+// Waits before each retry of a failed status query (the number of entries is the
+// number of retries).
+export const STATUS_RETRY_DELAYS_MS = [2000, 5000, 15000, 30000, 60000];
 
 const ProtectedRoute = ({ router, children }) => {
   const { status, data } = useSession();
@@ -23,6 +27,29 @@ const ProtectedRoute = ({ router, children }) => {
     if (!router.isReady) return;
     getStatus();
   }, [router.pathname, getStatus, router.isReady]);
+
+  // A status query that failed is asked again, a bounded number of times and
+  // further apart each time: until now it was only asked on navigation, so a
+  // visitor who stayed put never got an answer and nothing ever re-aligned. The
+  // answer, when it comes, goes through the same (session, setup) evaluation as
+  // any other, so it cannot loop: after the last attempt it simply stays failed.
+  const statusAttempts = useRef(0);
+  // Re-arms the effect after each attempt even if Apollo hands back the very same
+  // error object.
+  const [retryTick, setRetryTick] = useState(0);
+  useEffect(() => {
+    if (setup) {
+      statusAttempts.current = 0;
+      return undefined;
+    }
+    if (!setupError || statusAttempts.current >= STATUS_RETRY_DELAYS_MS.length) return undefined;
+    const timer = setTimeout(() => {
+      statusAttempts.current += 1;
+      getStatus();
+      setRetryTick((n) => n + 1);
+    }, STATUS_RETRY_DELAYS_MS[statusAttempts.current]);
+    return () => clearTimeout(timer);
+  }, [setup, setupError, getStatus, retryTick]);
 
   // The status query is what every redirect below waits for. When it fails and
   // there is no session, nothing would ever move: Default renders nothing for a

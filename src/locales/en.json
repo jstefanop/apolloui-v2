@@ -931,6 +931,23 @@
     "retry": "Retry now",
     "retrying": "Retrying…"
   },
+  "service_error": {
+    "miner": {
+      "start": "Could not start the miner.",
+      "stop": "Could not stop the miner.",
+      "restart": "Could not restart the miner."
+    },
+    "node": {
+      "start": "Could not start the Bitcoin node.",
+      "stop": "Could not stop the Bitcoin node.",
+      "restart": "Could not restart the Bitcoin node."
+    },
+    "solo": {
+      "start": "Could not start the solo pool.",
+      "stop": "Could not stop the solo pool.",
+      "restart": "Could not restart the solo pool."
+    }
+  },
   "update": {
     "title": {
       "check_failed": "Unable to check for updates",
