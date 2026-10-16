@@ -65,7 +65,8 @@ import usePoolProfiles from '../../hooks/usePoolProfiles';
 import { poolFieldsChanged, suggestPoolName } from '../../lib/poolOptions';
 import { savePendingPools } from '../../lib/savePendingPools';
 import { applyTimezone } from '../../lib/applyTimezone';
-import { callFailure, runSteps, serviceFailureIdOf } from '../../lib/callFailure';
+import { runSteps } from '../../lib/callFailure';
+import { runRestarts } from '../../lib/runRestarts';
 import { isUnauthenticated } from '../../lib/authRefusal';
 
 // These writes report their failure themselves (the form's inline alert, or the
@@ -706,42 +707,19 @@ const SettingsTab = () => {
 
       setPoolToSave({ primary: emptySave, backup: emptySave });
 
-      // Handle restarts based on type. A restart that was refused is reported as
-      // such: announcing "Restarting miner..." over a call that failed told the
-      // user the new settings were taking effect when they were not.
-      const restarting = async (run, message) => {
-        const result = await run();
-        const failure = callFailure(result);
-        if (failure) {
-          // The backend no longer publishes a transition it refused, so there is
-          // nothing for the status toasts to announce here.
-          dispatch(
-            sendFeedback({ message: failure, messageId: serviceFailureIdOf(result), type: 'error' })
-          );
-          return false;
-        }
-        dispatch(sendFeedback({ message, type: 'info' }));
-        return true;
-      };
-      const restartingNode = () =>
-        restarting(() => restartNode(), 'Restarting Bitcoin node...');
-
-      if (type === 'miner') {
-        await restarting(() => restartMiner(), 'Restarting miner...');
-      } else if (type === 'solo') {
-        await restarting(() => restartSolo(), 'Restarting solo service...');
-      } else if (type === 'node') {
-        await restartingNode();
-      } else if (type === 'both') {
-        // For solo-node, restart solo service + node; for a miner, the miner.
-        const first =
-          deviceType === 'solo-node'
-            ? await restarting(() => restartSolo(), 'Restarting solo service...')
-            : await restarting(() => restartMiner(), 'Restarting miner...');
-        if (first) await restartingNode();
-      } else if (!timezoneFeedback.some((m) => m.type === 'error')) {
-        // Not after a step that failed: the error toast says what did not
-        // happen, and "saved" on top of it says the opposite.
+      // Restarts, if the change needs them: only a refusal is reported (see
+      // runRestarts). Then "saved" — but not on top of a step that failed: the
+      // error toast says what did not happen, and "saved" beside it says the
+      // opposite.
+      const restartedOk = await runRestarts({
+        type,
+        deviceType,
+        restartMiner: () => restartMiner(),
+        restartSolo: () => restartSolo(),
+        restartNode: () => restartNode(),
+        dispatch,
+      });
+      if (restartedOk && !timezoneFeedback.some((m) => m.type === 'error')) {
         dispatch(sendFeedback({ message: 'Settings saved.', type: 'success' }));
       }
 
