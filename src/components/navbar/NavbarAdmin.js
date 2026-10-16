@@ -25,12 +25,10 @@ import {
 } from '../../graphql/miner';
 import { NODE_START_MUTATION, NODE_STOP_MUTATION } from '../../graphql/node';
 import { SOLO_START_QUERY, SOLO_STOP_QUERY, SOLO_RESTART_QUERY } from '../../graphql/solo';
-import { updateMinerAction } from '../../redux/slices/minerActionSlice';
 import { minerSelector } from '../../redux/reselect/miner';
 import { settingsSelector } from '../../redux/reselect/settings';
 import { MCU_REBOOT_MUTATION, MCU_SHUTDOWN_MUTATION } from '../../graphql/mcu';
-import { sendFeedback } from '../../redux/slices/feedbackSlice';
-import { reportFailure } from '../../lib/reportFailure';
+import { runSystemAction } from '../../lib/systemAction';
 import { SidebarResponsive } from '../sidebar/Sidebar';
 import { servicesSelector } from '../../redux/reselect/services';
 import StatusTransitionFeedback from '../UI/StatusTransitionFeedback';
@@ -153,37 +151,7 @@ const AdminNavbar = ({ secondary, message, routes, ...props }) => {
         break;
     }
 
-    // A service action is announced once the backend has accepted it, and told
-    // as a failure if it did not: it used to announce "Stopping miner" the moment
-    // the button was pressed, whatever came back. Reboot and shutdown cannot be
-    // waited for — the connection goes down with the system — so they are
-    // announced at once, as before.
-    const waitsForAnswer = !/Mcu$/.test(action);
-    const pending = call?.();
-    if (waitsForAnswer && reportFailure(dispatch, await pending)) return;
-
-    const dataAction = {
-      action,
-      title,
-      description,
-    };
-
-    dispatch(
-      updateMinerAction({
-        loading: false,
-        error: undefined,
-        data: dataAction,
-        status: action.match(/start/i) ? 'online' : 'offline',
-        timestamp: Date.now(),
-      })
-    );
-
-    dispatch(
-      sendFeedback({
-        message: `${title} - ${description}`,
-        type: 'success',
-      })
-    );
+    await runSystemAction({ dispatch, action, call, title, description });
   };
 
   const currentRoute = _.find(routes, { path: router.pathname });
